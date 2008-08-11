@@ -7,11 +7,11 @@
 ***************************************/
 #include "uoReportCtrl.h"
 
-#include <QtGlobal>
+
 #include <QPainter>
-#include <QBrush>
 #include <QPalette>
-#include <QPen>
+//#include <QBrush>
+//#include <QPen>
 #include <QRect>
 #include <QRectF>
 #include <QMenu>
@@ -208,12 +208,18 @@ void uoReportCtrl::calcGroupItemPosition(uoRptGroupItem* grItem, uoRptHeaderType
 	uoReportDoc* doc =  getDoc();
 	if (!doc)
 		return;
+	grItem->_rectMidlePos = 0.0;
+	grItem->_rectEndPos = 0.0;
+	grItem->_sizeTail = 0.0;
 
 	rptSize xPos = -10,yPos = -10, xSize = 0, ySize = 0;
 	if (rht == rhtHorizontal) {
 
 		if (_scaleStartPositionMapH.contains(grItem->_start))
 			xPos = _scaleStartPositionMapH[grItem->_start];
+
+		grItem->_sizeTail = xPos;
+
 		grItem->_rectIteract.setLeft(xPos);
 
 		yPos = _rectGroupH->top() + ( UORPT_OFFSET_LINE * 2 + _charHeightPlus) * grItem->_level - UORPT_OFFSET_LINE;
@@ -221,14 +227,20 @@ void uoReportCtrl::calcGroupItemPosition(uoRptGroupItem* grItem, uoRptHeaderType
 		yPos = yPos - _charHeightPlus;
 		grItem->_rectIteract.setTop(yPos);
 
+		grItem->_rectMidlePos = yPos + _charHeightPlus / 2;
+
 		xSize = doc->getScaleSize(rht, grItem->_start);
+		grItem->_sizeTail = xPos + xSize; // Координаты конца ячейки.
+
 
 		xSize = (xSize - (UORPT_OFFSET_LINE + _charWidthPlus)) / 2;
 		xPos = xPos + xSize;
 		grItem->_rectIteract.setLeft(xPos);
-
 		xPos = xPos + UORPT_OFFSET_LINE * 2 + _charWidthPlus;
 		grItem->_rectIteract.setRight(xPos);
+		grItem->_rectEndPos = xPos;
+		grItem->_sizeTail = grItem->_sizeTail - xPos; // Координаты конца ячейки.
+
 
 	} else if (rht == rhtVertical) {
 		///\todo доделать расчеты смещений вертикальных группировок.
@@ -246,9 +258,29 @@ void uoReportCtrl::calcGroupItemPosition(uoRptGroupItem* grItem, uoRptHeaderType
 	}
 }
 
+/// Вычислить длину диапазона ячеек.
+rptSize uoReportCtrl::getLengthOfScale(uoRptHeaderType rht, int start, int stop)
+{
+	rptSize retVal = 0.0;
+
+	if (rht == rhtUnknown || start > stop || stop<=0 || start<=0)
+		return retVal;
+	uoReportDoc* doc =  getDoc();
+	if (!doc)
+		return retVal;
+
+
+	for (int i = start; i<=stop; i++) {
+		retVal = retVal + doc->getScaleSize(rht, i);
+	}
+
+	return retVal;
+}
+
+
 ///Перекалькуляция размеров линеек, регионов секций и т.п.
 ///\todo Перекалькуляция размеров линеек, регионов секций и т.п.
-void uoReportCtrl::recalcGroupSectionRects(){
+void uoReportCtrl::recalcGroupSectionRects(uoRptHeaderType rht){
 
 	// Нужно просчитать последнюю показываемую ячейку
 	uoReportDoc* doc =  getDoc();
@@ -261,65 +293,70 @@ void uoReportCtrl::recalcGroupSectionRects(){
 	int i = 0, yy = 0;
 	rptSize rSize = rptSizeNull;
 
-	_lastVisibleCol = recalcVisibleScales(rhtHorizontal);
-	_lastVisibleRow = recalcVisibleScales(rhtVertical);
+	// Маленькая оптимизация. Если у нас поменялась только высота строки, не нужно пересчитывать вертикальный хейдер.
+	if (rht == rhtUnknown || rht == rhtHorizontal)
+		_lastVisibleCol = recalcVisibleScales(rhtHorizontal);
+
+	if (rht == rhtUnknown || rht == rhtVertical)
+		_lastVisibleRow = recalcVisibleScales(rhtVertical);
+
 	if (_showGroup) {
 		uoLineSpan* spn;
 		uoRptGroupItem* grItem;
 		uoRptHeaderType rht = rhtHorizontal;
 
-		int spnCnt = doc->getGroupLevel(rht);
-		if (spnCnt>0) {
-			const spanList* spanListH = doc->getGroupList(rht, _firstVisible_ColLeft, _lastVisibleCol);
-			for (i=0; i<spanListH->size(); i++){
-				spn = spanListH->at(i);
-				grItem = getGropItemFromCache();
-				if (grItem)	{
-					grItem->_start 	= spn->getStart();
-					grItem->_end 	= spn->getEnd();
-					grItem->_folded = spn->getFolded();
-					grItem->_level	= spn->getLevel();
-					grItem->_sizeTail = rptSizeNull;
+		int spnCnt = 0;
 
-					zeroQRect(&grItem->_rectIteract);
+		if (rht == rhtUnknown || rht == rhtHorizontal) {
+			spnCnt = doc->getGroupLevel(rht);
+			if (spnCnt>0) {
+				const spanList* spanListH = doc->getGroupList(rht, _firstVisible_ColLeft, _lastVisibleCol);
+				for (i=0; i<spanListH->size(); i++){
+					spn = spanListH->at(i);
+					grItem = getGropItemFromCache();
+					if (grItem)	{
+						grItem->_start 	= spn->getStart();
+						grItem->_end 	= spn->getEnd();
+						grItem->_folded = spn->getFolded();
+						grItem->_level	= spn->getLevel();
+						grItem->_sizeTail = rptSizeNull;
 
-					rSize = rptSizeNull;
-					calcGroupItemPosition(grItem, rht);
-					for (yy = grItem->_end; yy>grItem->_start; yy--){
-						if (_scaleStartPositionMapH.contains(yy)) {
-							rSize = _scaleStartPositionMapH[grItem->_start];
-							rSize = rSize + doc->getScaleSize(rht, grItem->_start);
-							break;
-						}
+						zeroQRect(&grItem->_rectIteract);
+
+						rSize = rptSizeNull;
+						calcGroupItemPosition(grItem, rht);
+						// посчитаем длину линии группировки.
+						// хвост есть, нужно вычислить только толщину последующих ячеек и добавить его к хвосту.
+						grItem->_sizeTail = grItem->_sizeTail + getLengthOfScale(rht, grItem->_start + 1, grItem->_end);
+						_groupListH.append(grItem);
 					}
-					if (rSize>0) {
-						grItem->_sizeTail = rSize - grItem->_rectIteract.right();
-					}
-					_groupListH.append(grItem);
 				}
+				delete spanListH;
 			}
-			delete spanListH;
 		}
 
 		rht = rhtVertical;
-		spnCnt = doc->getGroupLevel(rht);
-		if (spnCnt>0) {
-			const spanList* spanListV = doc->getGroupList(rht, _firstVisible_RowTop, _lastVisibleRow);
-			for (i=0; i<spanListV->size(); i++){
-				spn = spanListV->at(i);
-				grItem = getGropItemFromCache();
-				if (grItem)	{
-					grItem->_start 	= spn->getStart();
-					grItem->_end 	= spn->getEnd();
-					grItem->_folded = spn->getFolded();
-					grItem->_level	= spn->getLevel();
-					zeroQRect(&grItem->_rectIteract);
-					calcGroupItemPosition(grItem, rht);
+		if (rht == rhtUnknown || rht == rhtVertical) {
 
-					_groupListV.append(grItem);
+			spnCnt = doc->getGroupLevel(rht);
+			if (spnCnt>0) {
+				const spanList* spanListV = doc->getGroupList(rht, _firstVisible_RowTop, _lastVisibleRow);
+				for (i=0; i<spanListV->size(); i++){
+					spn = spanListV->at(i);
+					grItem = getGropItemFromCache();
+					if (grItem)	{
+						grItem->_start 	= spn->getStart();
+						grItem->_end 	= spn->getEnd();
+						grItem->_folded = spn->getFolded();
+						grItem->_level	= spn->getLevel();
+						zeroQRect(&grItem->_rectIteract);
+						calcGroupItemPosition(grItem, rht);
+
+						_groupListV.append(grItem);
+					}
 				}
+				delete spanListV;
 			}
-			delete spanListV;
 		}
 	}
 
@@ -526,9 +563,9 @@ void uoReportCtrl::drawHeaderControl(QPainter& painter){
 	_penText.setStyle(Qt::SolidLine);
 	painter.setPen(_penText);
 	QPointF pointStart, pointEnd;
+
 	// Рисуем шапку, как она сама есть...
 	if (_showGroup) {
-//		int cngGrp = doc->getGroupLevel(rhtVertical);
 		if (_rectGroupV->width()>noLen)	{
 			if (!_groupListV.isEmpty()) {
 				for (cntr = 0; cntr<_groupListV.size(); cntr++) {
@@ -551,11 +588,16 @@ void uoReportCtrl::drawHeaderControl(QPainter& painter){
 					if (rgItem->_folded)
 						paintStr = "+";
 					painter.drawText(rgItem->_rectIteract,Qt::AlignCenter,  paintStr);
+
 					if (rgItem->_sizeTail > 0) {
-						pointStart.setX(rgItem->_rectIteract.right());
-						pointStart.setY(rgItem->_rectIteract.bottom() - rgItem->_rectIteract.top()/2);
-						pointEnd = _rectAll->bottomRight();
-						painter.drawLine(pointEnd, pointStart );
+						pointStart.setX(rgItem->_rectEndPos);
+						pointStart.setY(rgItem->_rectMidlePos);
+						pointEnd.setX(rgItem->_rectEndPos + rgItem->_sizeTail);
+						pointEnd.setY(rgItem->_rectMidlePos);
+						painter.drawLine(pointStart, pointEnd );
+						pointStart =  pointEnd;
+						pointStart.setY(pointStart.y()+3);
+						painter.drawLine(pointEnd, pointStart);
 					}
 				}
 			}
@@ -586,7 +628,6 @@ void uoReportCtrl::drawHeaderControl(QPainter& painter){
 			| 10 |
 			| 11 |
 			| 12 |
-		// _rectRulerV, _firstVisible_ColLeft, _shift_ColLeft
 		*/
 		painter.drawRect(*_rectRuleCorner); /// Верхний корнер-виджет слева от горизонтальной и сверху от вертикальной линейки
 		hdrType = rhtVertical;

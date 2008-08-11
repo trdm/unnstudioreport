@@ -53,7 +53,8 @@ typedef enum uoIntersectMode {
 	, ismBelowDown 	= 12
 };
 typedef enum uoRptHeaderType {
-	  rhtVertical = 1
+	  rhtUnknown = 0
+	, rhtVertical = 1
 	, rhtHorizontal = 2
 };
 
