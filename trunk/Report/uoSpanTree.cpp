@@ -439,7 +439,6 @@ int uoSpanTree::onLineExclude(int lineStart, int lineCnt, spanList* list)
 }
 
 
-///\todo onSave - сделать запись в файл вместе с наименований секций
 void uoSpanTree::onSave()
 {}
 void uoSpanTree::onLoad()

@@ -83,6 +83,8 @@ class uoReportCtrl : public QWidget
         void contextMenuEvent(QContextMenuEvent *event);
 		void showEvent( QShowEvent* event );
 		void resizeEvent ( QResizeEvent * event );
+		//-------------------------------------------------
+		bool mousePressEventForGroup(QMouseEvent *event);
 
     protected:
 		//-------- draw section ----------------
@@ -188,9 +190,9 @@ class uoReportCtrl : public QWidget
 		int _lastVisibleRow; 	///< Первая верхняя видимая строка
 		int _lastVisibleCol; 	///< Первая левая видимая колонка
 
-		rptGroupItemList _groupListCache;	///< кешь для экземпляров uoRptGroupItem
-		rptGroupItemList _groupListV;		///< список ректов группировок столбцов
-		rptGroupItemList _groupListH;		///< список ректов группировок строк
+		rptGroupItemList* _groupListCache;	///< кешь для экземпляров uoRptGroupItem
+		rptGroupItemList* _groupListV;		///< список ректов группировок столбцов
+		rptGroupItemList* _groupListH;		///< список ректов группировок строк
 
 		rptScalePositionMap _scaleStartPositionMapH; 	///< Координаты х() ячеек горизонтальной линейки (видимой части)
 		rptScalePositionMap _scaleStartPositionMapV;	///< Координаты y() ячеек вертикальной линейки (видимой части)

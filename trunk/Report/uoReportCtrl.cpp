@@ -68,6 +68,11 @@ uoReportCtrl::uoReportCtrl(QWidget *parent)
 	_shift_RowTop = 0; ///< Смещение первой видимой строки вверх (грубо - размер невидимой их части)
 	_shift_ColLeft = 0;
 
+	_groupListCache = new rptGroupItemList;	///< кешь для экземпляров uoRptGroupItem
+	_groupListV = new rptGroupItemList;		///< список ректов группировок столбцов
+	_groupListH = new rptGroupItemList;		///< список ректов группировок строк
+
+
 
 	initControls(parent);
 
@@ -126,7 +131,7 @@ uoReportCtrl::~uoReportCtrl()
 ///Очистка данных класса.
 void uoReportCtrl::clear(){
 	dropGropItemToCache();
-	while (!_groupListCache.isEmpty())    delete _groupListCache.takeFirst();
+	while (!_groupListCache->isEmpty())    delete _groupListCache->takeFirst();
 	_scaleStartPositionMapH.clear();
 	_scaleStartPositionMapV.clear();
 
@@ -182,11 +187,11 @@ int uoReportCtrl::recalcVisibleScales(uoRptHeaderType rht){
 
 void uoReportCtrl::dropGropItemToCache()
 {
-	while (!_groupListV.isEmpty()) {
-		 _groupListCache.append(_groupListV.takeFirst());
+	while (!_groupListV->isEmpty()) {
+		 _groupListCache->append(_groupListV->takeFirst());
 	}
-	while (!_groupListH.isEmpty()) {
-		 _groupListCache.append(_groupListH.takeFirst());
+	while (!_groupListH->isEmpty()) {
+		 _groupListCache->append(_groupListH->takeFirst());
 	}
 
 }
@@ -195,8 +200,8 @@ void uoReportCtrl::dropGropItemToCache()
 uoRptGroupItem* uoReportCtrl::getGropItemFromCache()
 {
 	uoRptGroupItem* item = NULL;
-	if (!_groupListCache.isEmpty())
-		item = _groupListCache.takeFirst();
+	if (!_groupListCache->isEmpty())
+		item = _groupListCache->takeFirst();
 	else
 		item = new uoRptGroupItem();
 	return item;
@@ -212,13 +217,12 @@ void uoReportCtrl::calcGroupItemPosition(uoRptGroupItem* grItem, uoRptHeaderType
 	grItem->_rectEndPos = 0.0;
 	grItem->_sizeTail = 0.0;
 
-	rptSize xPos = -10,yPos = -10, xSize = 0, ySize = 0;
+
+	rptSize xPos = -10,yPos = -10, yPos0 = -10, xSize = 0, ySize = 0, ySize0 = 0;
 	if (rht == rhtHorizontal) {
 
 		if (_scaleStartPositionMapH.contains(grItem->_start))
 			xPos = _scaleStartPositionMapH[grItem->_start];
-
-		grItem->_sizeTail = xPos;
 
 		grItem->_rectIteract.setLeft(xPos);
 
@@ -239,22 +243,40 @@ void uoReportCtrl::calcGroupItemPosition(uoRptGroupItem* grItem, uoRptHeaderType
 		xPos = xPos + UORPT_OFFSET_LINE * 2 + _charWidthPlus;
 		grItem->_rectIteract.setRight(xPos);
 		grItem->_rectEndPos = xPos;
+
 		grItem->_sizeTail = grItem->_sizeTail - xPos; // Координаты конца ячейки.
 
 
 	} else if (rht == rhtVertical) {
-		///\todo доделать расчеты смещений вертикальных группировок.
 		if (_scaleStartPositionMapV.contains(grItem->_start))
-			yPos = _scaleStartPositionMapV[grItem->_start];
+			yPos0 = yPos = _scaleStartPositionMapV[grItem->_start];
 
-		grItem->_rectIteract.setTop(yPos);
-		yPos = yPos + doc->getScaleSize(rht, grItem->_start);
-		grItem->_rectIteract.setBottom(yPos);
+		grItem->_sizeTail = yPos;
+
+		ySize0 = ySize = doc->getScaleSize(rht, grItem->_start);
+		ySize = (ySize - _charHeightPlus ) / 2;
+		grItem->_sizeTail = yPos + ySize0; // Координаты конца ячейки.
+
+
+		grItem->_rectIteract.setTop(yPos + ySize);
+		ySize = ySize + _charHeightPlus + UORPT_OFFSET_LINE*2;
+		grItem->_rectIteract.setBottom(yPos + ySize);
 
 		xPos = _rectGroupV->left() + ( UORPT_OFFSET_LINE * 2 + _charWidthPlus) * grItem->_level;
 		grItem->_rectIteract.setRight(xPos);
 		xPos = xPos - (_charWidthPlus + UORPT_OFFSET_LINE * 2);
 		grItem->_rectIteract.setLeft(xPos);
+
+		grItem->_rectMidlePos = xPos + _charWidthPlus / 2 + UORPT_OFFSET_LINE;
+
+		if (ySize0 < grItem->_rectIteract.height() && (yPos0 - 1) > 3) {
+			grItem->_rectIteract.setTop(yPos0 + 1);
+			grItem->_rectIteract.setBottom(yPos0 + ySize0 - 2);
+		}
+		grItem->_rectEndPos = grItem->_rectIteract.bottom();
+		grItem->_sizeTail = grItem->_sizeTail - grItem->_rectEndPos; // Координаты конца ячейки.
+
+
 	}
 }
 
@@ -279,7 +301,7 @@ rptSize uoReportCtrl::getLengthOfScale(uoRptHeaderType rht, int start, int stop)
 
 
 ///Перекалькуляция размеров линеек, регионов секций и т.п.
-///\todo Перекалькуляция размеров линеек, регионов секций и т.п.
+///\todo Перекалькуляция размеров РЕГИОНОВ СЕКЦИЙ
 void uoReportCtrl::recalcGroupSectionRects(uoRptHeaderType rht){
 
 	// Нужно просчитать последнюю показываемую ячейку
@@ -290,7 +312,7 @@ void uoReportCtrl::recalcGroupSectionRects(uoRptHeaderType rht){
 	// Сбрасываем гроуп итемы в кешь.
 	dropGropItemToCache();
 
-	int i = 0, yy = 0;
+	int i = 0;
 	rptSize rSize = rptSizeNull;
 
 	// Маленькая оптимизация. Если у нас поменялась только высота строки, не нужно пересчитывать вертикальный хейдер.
@@ -328,7 +350,7 @@ void uoReportCtrl::recalcGroupSectionRects(uoRptHeaderType rht){
 						// посчитаем длину линии группировки.
 						// хвост есть, нужно вычислить только толщину последующих ячеек и добавить его к хвосту.
 						grItem->_sizeTail = grItem->_sizeTail + getLengthOfScale(rht, grItem->_start + 1, grItem->_end);
-						_groupListH.append(grItem);
+						_groupListH->append(grItem);
 					}
 				}
 				delete spanListH;
@@ -351,8 +373,8 @@ void uoReportCtrl::recalcGroupSectionRects(uoRptHeaderType rht){
 						grItem->_level	= spn->getLevel();
 						zeroQRect(&grItem->_rectIteract);
 						calcGroupItemPosition(grItem, rht);
-
-						_groupListV.append(grItem);
+						grItem->_sizeTail = grItem->_sizeTail + getLengthOfScale(rht, grItem->_start + 1, grItem->_end);
+						_groupListV->append(grItem);
 					}
 				}
 				delete spanListV;
@@ -484,18 +506,18 @@ void uoReportCtrl::debugRects()
 	int cntr;
 	uoRptGroupItem* rgItem;
 
-	if (!_groupListH.isEmpty()) {
+	if (!_groupListH->isEmpty()) {
 		qDebug() << "_groupListH";
-		for (cntr = 0; cntr<_groupListH.size(); cntr++) {
-			rgItem = _groupListH.at(cntr);
+		for (cntr = 0; cntr<_groupListH->size(); cntr++) {
+			rgItem = _groupListH->at(cntr);
 			qDebug() << rgItem->_rectIteract << rgItem->_start << rgItem->_end;
 		}
 	}
 
-	if (!_groupListV.isEmpty()) {
+	if (!_groupListV->isEmpty()) {
 		qDebug() << "_groupListV";
-		for (cntr = 0; cntr<_groupListV.size(); cntr++) {
-			rgItem = _groupListV.at(cntr);
+		for (cntr = 0; cntr<_groupListV->size(); cntr++) {
+			rgItem = _groupListV->at(cntr);
 			qDebug() << rgItem->_rectIteract << rgItem->_start << rgItem->_end;
 		}
 	}
@@ -567,22 +589,33 @@ void uoReportCtrl::drawHeaderControl(QPainter& painter){
 	// Рисуем шапку, как она сама есть...
 	if (_showGroup) {
 		if (_rectGroupV->width()>noLen)	{
-			if (!_groupListV.isEmpty()) {
-				for (cntr = 0; cntr<_groupListV.size(); cntr++) {
-					rgItem = _groupListV.at(cntr);
+			if (!_groupListV->isEmpty()) {
+				for (cntr = 0; cntr<_groupListV->size(); cntr++) {
+					rgItem = _groupListV->at(cntr);
 					painter.drawRect(rgItem->_rectIteract);
 					paintStr = "-";
 					if (rgItem->_folded)
 						paintStr = "+";
 					painter.drawText(rgItem->_rectIteract,Qt::AlignCenter,  paintStr);
+					if (rgItem->_sizeTail > 0) {
+						pointStart.setY(rgItem->_rectEndPos);
+						pointStart.setX(rgItem->_rectMidlePos);
+						pointEnd.setY(rgItem->_rectEndPos + rgItem->_sizeTail);
+						pointEnd.setX(rgItem->_rectMidlePos);
+						painter.drawLine(pointStart, pointEnd );
+
+						pointStart =  pointEnd;
+						pointStart.setX(pointStart.x()+3);
+						painter.drawLine(pointEnd, pointStart);
+					}
 
 				}
 			}
 		}
 		if (_rectGroupH->height()>noLen)		{
-			if (!_groupListH.isEmpty()) {
-				for (cntr = 0; cntr<_groupListH.size(); cntr++) {
-					rgItem = _groupListH.at(cntr);
+			if (!_groupListH->isEmpty()) {
+				for (cntr = 0; cntr<_groupListH->size(); cntr++) {
+					rgItem = _groupListH->at(cntr);
 					painter.drawRect(rgItem->_rectIteract);
 					paintStr = "-";
 					if (rgItem->_folded)
@@ -753,8 +786,38 @@ void uoReportCtrl::paintEvent(QPaintEvent *event)
 	}
 
 }
+
+/// Реакция на нажатие мышки-норушки на группах.
+///\todo !!! Автоматизировать данную реакию.
+bool uoReportCtrl::mousePressEventForGroup(QMouseEvent *event){
+	bool retVal = false;
+	if (_rectGroupV->contains(event->x(), event->y()) || _rectGroupH->contains(event->x(), event->y()))
+	{
+		retVal = true;
+		event->accept();
+
+		uoRptHeaderType rht = rhtHorizontal;
+		if (_rectGroupV->contains(event->x(), event->y()))
+			rht = rhtVertical;
+
+		rptGroupItemList _groupListV;		///< список ректов группировок столбцов
+		rptGroupItemList _groupListH;		///< список ректов группировок строк
+
+
+
+	}
+
+	return retVal;
+
+}
+
+/// Реакция на нажатие мышки-норушки...
 void uoReportCtrl::mousePressEvent(QMouseEvent *event)
-{}
+{
+	int i = 0;
+	if (_showGroup && mousePressEventForGroup(event)) {	return;	}
+}
+
 void uoReportCtrl::mouseReleaseEvent(QMouseEvent *event)
 {}
 void uoReportCtrl::mouseMoveEvent(QMouseEvent *event)
@@ -846,7 +909,6 @@ void uoReportCtrl::optionShow(bool shGrid, bool shGroup, bool shSection, bool sh
 
 }
 
-// \todo (trdm#1#): Первая очередь.\Выбор типа файла и имени файла.
 ///Запись документа.
 bool uoReportCtrl::saveDoc(){
 	uoReportDoc* doc =  getDoc();
