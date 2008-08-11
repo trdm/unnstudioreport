@@ -251,7 +251,6 @@ class uoSpanTree : public QObject
 
 		void onProcessAll(uoSpanTreeScan* scanObj, spanList* list = NULL);
 
-		///\todo onSave - сделать запись в файл вместе с наименований секций
 		// Сохранение/восстановление.
 		void onSave();
 		void onLoad();
