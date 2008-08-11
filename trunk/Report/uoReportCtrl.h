@@ -9,6 +9,7 @@
 #ifndef UOREPTOPRULER_H
 #define UOREPTOPRULER_H
 
+#include <QtGlobal>
 #include <QWidget>
 #include <QFrame>
 #include <QRect>
@@ -47,6 +48,8 @@ struct uoRptGroupItem {
 		,_level(-1)
 		,_start(-1)
 		,_end(-1)
+		,_rectEndPos(0)
+		,_rectMidlePos(0)
 		,_sizeTail(0)
 		{}
 	QRectF 	_rectIteract; 	///< область "кнопки" свертки/развертки структуры.
@@ -54,6 +57,8 @@ struct uoRptGroupItem {
 	int _level; 			///< уровень группировки.
 	int _start; 			///< Начало диапазона.
 	int _end;				///< Конец диапазона.
+	qreal	_rectEndPos; 	///< Координаты правой|нижней стороны ректа. для расчета длины линии группировки.
+	qreal	_rectMidlePos; 	///< Координаты середины правой|нижней стороны ректа для вычерчивания горизонтальной линии группировки.
 	rptSize _sizeTail;		///< Размер "хвоста" группировки.
 };
 
@@ -112,7 +117,8 @@ class uoReportCtrl : public QWidget
 		int getHeightWidget(){return height() * (1/_scaleFactor);};	///< Высота с учетом масштаба
 
 		void recalcHeadersRects();
-		void recalcGroupSectionRects();
+		void recalcGroupSectionRects(uoRptHeaderType rht = rhtUnknown);
+		rptSize getLengthOfScale(uoRptHeaderType rht, int start, int stop);
 		int  recalcVisibleScales(uoRptHeaderType rht);
 		void calcGroupItemPosition(uoRptGroupItem* grItem, uoRptHeaderType rht);
 
