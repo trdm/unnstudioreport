@@ -87,13 +87,22 @@ int uoReportDoc::getSectionLevel(uoRptHeaderType ht){
 }
 
 /// Свертка/развертка группы.
-void uoReportDoc::doGroupFold(int idGrop, uoRptHeaderType rht, bool expand){
+void uoReportDoc::doGroupFold(int idGrop, uoRptHeaderType rht, bool fold){
 	uoSpanTree* treeGrp = NULL;
 	if(rht == rhtVertical)	treeGrp = _spanTreeGrV;
 	else					treeGrp = _spanTreeGrH;
 
-	QList<int>* lineList= treeGrp->onGroupFold(idGrop, expand);
-
+	QList<int>* lineList= treeGrp->onGroupFold(idGrop, fold);
+	if (!lineList)
+		return;
+	if (!lineList->isEmpty()){
+		int lineNo = 0;
+		for (int i = 0; i<lineList->size(); i++){
+			lineNo = lineList->at(i);
+			uoReportDocBody::setScalesHide(rht, lineNo, 1, fold);
+		}
+	}
+	delete lineList;
 }
 
 /// Возвращает установленный формат сохранения

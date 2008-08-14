@@ -43,7 +43,7 @@ class uoReportDoc
 		int getGroupLevel(uoRptHeaderType ht);
 		int getSectionLevel(uoRptHeaderType ht);
 
-		void doGroupFold(int idGrop, uoRptHeaderType rht, bool expand);
+		void doGroupFold(int idGrop, uoRptHeaderType rht, bool fold);
 
 		bool save();
 		bool saveToFile(QString path, uoRptStoreFormat stFormat);

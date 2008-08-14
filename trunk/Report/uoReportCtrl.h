@@ -128,8 +128,8 @@ class uoReportCtrl : public QWidget
 		void optionShow(bool shGrid, bool shGroup, bool shSection, bool shRuler);
 
 	protected:
-		int getWidhtWidget() {return width() * (1/_scaleFactor);}; 	///< Ширина с учетом масштаба
-		int getHeightWidget(){return height() * (1/_scaleFactor);};	///< Высота с учетом масштаба
+		qreal getWidhtWidget() {return width() * (1/_scaleFactor);}; 	///< Ширина с учетом масштаба
+		qreal getHeightWidget(){return height() * (1/_scaleFactor);};	///< Высота с учетом масштаба
 
 		void recalcHeadersRects();
 		void recalcGroupSectionRects(uoRptHeaderType rht = rhtUnknown);
