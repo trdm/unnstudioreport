@@ -185,28 +185,53 @@ class uoSpanTreeScan {
 		uoSpanTreeScan();
 		virtual ~uoSpanTreeScan() = 0;
 	public:
-		virtual void visitSpan(uoLineSpan* _lastAddedSpan = 0) = 0;
+		/// возвращает: true - надо обходить полчиненные, false - не надо.
+		virtual bool visitSpan(uoLineSpan* curSpan = 0) = 0;
+		virtual bool visitSpanAfter(uoLineSpan* curSpan = 0) = 0;
+		virtual bool breakProcess() {return false;};
 };
 
+
 ///\class uoSTS_hidePerLevel сканер для упрятывания спанов с определенным уровнем.
-class uoSTS_hidePerLevel : public uoSpanTreeScan
+class uoSTScan_FoldPerId : public uoSpanTreeScan
 {
+	///\todo - Доработать получение списка строк которые надо спрятать или показать.
 	public:
-		uoSTS_hidePerLevel(int perLevel, bool hide = true)
-			: _perLevel(perLevel),_hMark(hide)
+		uoSTScan_FoldPerId(int id, bool expand)
+			: _perId(id),_bExpand(expand)
 		{
-			if (perLevel<=1) perLevel = 1;
-		};
-		void visitSpan(uoLineSpan* psSpn)
+			_bBreak = false;
+			_bFound = false;
+		}
+		bool visitSpan(uoLineSpan* curSpan)
 		{
-			if (psSpn) {
-				if (psSpn->_level >= _perLevel)
-					psSpn->_folded = _hMark;
+			if (!curSpan)
+				return false;
+			if (curSpan->_id == _perId){
+				_bFound = true;
+				curSpan->_folded = _bExpand;
+			}
+
+			return true;
+		}
+		bool visitSpanAfter(uoLineSpan* curSpan = 0){
+			if (curSpan) {
+				if (curSpan->_id == _perId){
+					_bBreak = true;
+				}
 			}
 		}
-		int _perLevel;
-		bool _hMark;
+
+		bool breakProcess() {
+			return _bBreak;
+		};
+
+		int _perId;
+		bool _bExpand;
+		bool _bFound;
+		bool _bBreak;
 };
+
 
 
 
@@ -247,7 +272,11 @@ class uoSpanTree : public QObject
 
 		// Обрабатываем исключение строк из спанов.
 		void onLineExclude(int lineStart, int lineCnt);
-		int onLineExclude(int lineStart, int lineCnt, spanList* list);
+		int  onLineExclude(int lineStart, int lineCnt, spanList* list);
+
+		QList<int>* onGroupFold(int id, bool fold);
+
+		uoLineSpan* getSpanById(int id);
 
 		void onProcessAll(uoSpanTreeScan* scanObj, spanList* list = NULL);
 

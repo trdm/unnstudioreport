@@ -68,6 +68,7 @@ bool uoReportDoc::addGroup(int start, int end, uoRptHeaderType ht)
 	return retVal;
 }
 
+/// Максимальный уровень вложения групп.
 int uoReportDoc::getGroupLevel(uoRptHeaderType ht){
 	uoSpanTree* treeGrp = NULL;
 	if(ht == rhtVertical)
@@ -77,6 +78,7 @@ int uoReportDoc::getGroupLevel(uoRptHeaderType ht){
 	return treeGrp->getLevel();
 }
 
+/// Максимальный уровень вложения секций.
 int uoReportDoc::getSectionLevel(uoRptHeaderType ht){
 	uoSpanTree* treeGrp = NULL;
 	if(ht == rhtVertical)	treeGrp = _spanTreeSctV;
@@ -84,7 +86,33 @@ int uoReportDoc::getSectionLevel(uoRptHeaderType ht){
 	return treeGrp->getLevel();
 }
 
-/// Получить список спанов
+/// Свертка/развертка группы.
+void uoReportDoc::doGroupFold(int idGrop, uoRptHeaderType rht, bool expand){
+	uoSpanTree* treeGrp = NULL;
+	if(rht == rhtVertical)	treeGrp = _spanTreeGrV;
+	else					treeGrp = _spanTreeGrH;
+
+	QList<int>* lineList= treeGrp->onGroupFold(idGrop, expand);
+
+}
+
+/// Возвращает установленный формат сохранения
+uoRptStoreFormat uoReportDoc::getStoreFormat()	{
+	return _storeFormat;
+}
+
+/// Возвращает установленное имя файла.
+QString uoReportDoc::getStorePathFile()	{
+	return _docFilePath;
+}
+
+/// установим опции сохранения
+void uoReportDoc::setStoreOptions(QString  filePath, uoRptStoreFormat stFormat)	{
+	_docFilePath = filePath;
+	_storeFormat = stFormat;
+}
+
+/// Получить список спанов группировок по диапазону строк/столбцов
 const spanList* uoReportDoc::getGroupList(uoRptHeaderType rht, int start, int end)
 {
 	if (rht == rhtHorizontal)
