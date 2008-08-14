@@ -388,8 +388,8 @@ void uoReportCtrl::recalcHeadersRects()
 	QFontMetrics fm = QFontMetrics(font());
     _charWidthPlus = fm.width("+");
     _charHeightPlus = fm.height();
-    int wWidth = getWidhtWidget() -2;
-    int wHeight = getHeightWidget() -2;
+    qreal wWidth = getWidhtWidget() -2;
+    qreal wHeight = getHeightWidget() -2;
 
 	zeroQRect(_rectGroupV);  zeroQRect(_rectSectionV);	zeroQRect(_rectRulerV);
 	zeroQRect(_rectGroupH);  zeroQRect(_rectSectionH);	zeroQRect(_rectRulerH);
@@ -786,6 +786,10 @@ bool uoReportCtrl::mousePressEventForGroup(QMouseEvent *event){
 	if (_rectGroupV->contains(event->x(), event->y()) || _rectGroupH->contains(event->x(), event->y()))
 	{
 		retVal = true;
+		uoReportDoc* doc = getDoc();
+		if (!doc)
+			return retVal;
+
 		event->accept();
 		rptGroupItemList* groupItList = _groupListH;
 
@@ -798,13 +802,21 @@ bool uoReportCtrl::mousePressEventForGroup(QMouseEvent *event){
 		if (groupItList->isEmpty())
 			return retVal;
 		uoRptGroupItem* rptGrItem = NULL;
+		bool found = false;
 		for (int i = 0; i< groupItList->size(); i++){
 			rptGrItem = groupItList->at(i);
 
 			if (rptGrItem->_rectIteract.contains(event->x(), event->y())){
 				// Нашли итем на котором сделан клик мышкой.
+				doc->doGroupFold(rptGrItem->_id, rht, !rptGrItem->_folded);
+				found = true;
 				break;
 			}
+		}
+
+		if (found) {
+			recalcGroupSectionRects();
+			emit update();
 		}
 	}
 
@@ -815,7 +827,7 @@ bool uoReportCtrl::mousePressEventForGroup(QMouseEvent *event){
 /// Реакция на нажатие мышки-норушки...
 void uoReportCtrl::mousePressEvent(QMouseEvent *event)
 {
-	int i = 0;
+//	int i = 0;
 	if (_showGroup && mousePressEventForGroup(event)) {	return;	}
 }
 

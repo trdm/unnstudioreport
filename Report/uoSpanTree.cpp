@@ -369,9 +369,11 @@ uoLineSpan* uoSpanTree::getSpanById(int id){
 /// Обрабатываем свертку/развертку группы.
 QList<int>* uoSpanTree::onGroupFold(int id, bool fold){
 	// см. uoReportDescr.h логика работы свертки/развертки.
-	uoLineSpan* spn = getSpanById(id);
-	if (!spn)
-		return NULL;
+	uoSpanTreeScan* scaner = new uoSTScan_FoldPerId(id, fold);
+	onProcessAll(scaner);
+	QList<int>* list = ((uoSTScan_FoldPerId*)scaner)->_listProcLn;
+	delete scaner;
+	return list;
 
 
 	return NULL;

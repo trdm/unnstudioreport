@@ -37,7 +37,15 @@ struct uoLineSpan{
 		int getStart() 	{ return _start;}
 		int getEnd() 	{ return _end;	}
 		int getLevel() 	{ return _level;	}
+		int getChildCount() {
+			if (!_child) {
+				return 0;
+			} else {
+				return _child->size();
+			}
+		}
 		bool getFolded() { return _folded;	}
+		bool isFolded() { return _folded;	}
 
 		/// Получить размер отрезка
 		int getSizeSpan() 	{
@@ -182,50 +190,118 @@ typedef QList<uoLineSpan*>::iterator  spanList_iter;
 // классы сканеров для дерева.
 class uoSpanTreeScan {
 	public:
-		uoSpanTreeScan();
-		virtual ~uoSpanTreeScan() = 0;
+//		uoSpanTreeScan();
+		virtual ~uoSpanTreeScan(){};
 	public:
 		/// возвращает: true - надо обходить полчиненные, false - не надо.
 		virtual bool visitSpan(uoLineSpan* curSpan = 0) = 0;
+
+		/// Вызывается после обходя чилдов этого спана, можно скалькулировать признак отказа от последующего сканирования.
 		virtual bool visitSpanAfter(uoLineSpan* curSpan = 0) = 0;
+
+		/// Проверка признака отказа от последующего сканирования. Если true сканирование прекращается.
 		virtual bool breakProcess() {return false;};
+
 };
 
 
-///\class uoSTS_hidePerLevel сканер для упрятывания спанов с определенным уровнем.
+///\class uoSTS_hidePerLevel сканер для вычисления списка строк/столбцов, которые надо спрятать, показать.
 class uoSTScan_FoldPerId : public uoSpanTreeScan
 {
 	///\todo - Доработать получение списка строк которые надо спрятать или показать.
+	/*
+		Скрывать/показывать надо с 2-й строки/колонки спана.
+	*/
 	public:
 		uoSTScan_FoldPerId(int id, bool expand)
 			: _perId(id),_bExpand(expand)
 		{
 			_bBreak = false;
 			_bFound = false;
+			_listProcLn 	= new QList<int>;
+			_listFoldedLine = new QList<int>;
+			_foundLevel = -1;
 		}
+		virtual ~uoSTScan_FoldPerId(){
+			delete _listFoldedLine;
+		}
+
+		void addToList(int start, int cnt){
+			for (int i = 0; i<cnt; i++){
+				_listProcLn->append(i+start);
+			}
+		}
+		/*
+			Посчитаем от обратного, соберем все сфолденные диапазоны,
+			а потом пробегусь по диапазону свертки.
+		*/
+		void addToFoldedList(int start, int cnt){
+			for (int i = 0; i<cnt; i++){
+				_listFoldedLine->append(i+start);
+			}
+		}
+
+		void calcProcessList(uoLineSpan* curSpan)
+		{
+			if (_listFoldedLine->isEmpty()){
+				addToList(curSpan->getStart()+1,curSpan->getSizeSpan()-1);
+			} else {
+				for (int i = curSpan->getStart()+1; i<curSpan->getEnd() ; i++){
+					if (!_listFoldedLine->contains(i)){
+						_listProcLn->append(i);
+					}
+				}
+			}
+		}
+
 		bool visitSpan(uoLineSpan* curSpan)
 		{
+			bool retVal = false;
 			if (!curSpan)
-				return false;
+				return retVal;
 			if (curSpan->_id == _perId){
+				// Нашли узел. с него и начнем вычисления диапазона.
 				_bFound = true;
 				curSpan->_folded = _bExpand;
+				_foundLevel = curSpan->getLevel();
+				if (curSpan->getChildCount() == 0) {
+					addToList(curSpan->getStart()+1, curSpan->getSizeSpan()-1);
+					_bBreak = true;
+					return retVal;
+				}
 			}
 
+			if (_bFound)
+			{
+				// Найден, но есть чилды.
+				if (curSpan->getLevel()>_foundLevel){
+					if (curSpan->isFolded()){
+						addToFoldedList(curSpan->getStart()-1, curSpan->getSizeSpan()-1);
+						return retVal;
+					}
+				}
+			}
 			return true;
 		}
+
 		bool visitSpanAfter(uoLineSpan* curSpan = 0){
 			if (curSpan) {
 				if (curSpan->_id == _perId){
+					_bFound = true;
 					_bBreak = true;
+					calcProcessList(curSpan);
 				}
 			}
+			return true;
 		}
 
 		bool breakProcess() {
 			return _bBreak;
 		};
 
+		QList<int>* _listFoldedLine;
+		QList<int>* _listProcLn;
+		int _foundLevel;
 		int _perId;
 		bool _bExpand;
 		bool _bFound;

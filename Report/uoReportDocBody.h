@@ -93,7 +93,7 @@ class uoReportDocBody
 		void test();
 		rptSize getScaleSize(uoRptHeaderType hType, int nom, bool isDef = true);
 		void 	setScaleSize(uoRptHeaderType hType, int nom, rptSize size, bool isDef = true);
-		void 	setScalesHide(uoRptHeaderType hType, int nmStart, int cnt = 0,  bool hide = true);
+		void 	setScalesHide(uoRptHeaderType hType, int nmStart, int cnt = 1,  bool hide = true);
 		bool 	getScaleHide(uoRptHeaderType hType, int nom);
 
 
