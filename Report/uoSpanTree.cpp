@@ -209,18 +209,25 @@ void uoSpanTree::onProcessAll(uoSpanTreeScan* scanObj, spanList* list)
 {
 	if (!scanObj)
 		return;
+	if(scanObj->breakProcess())
+		return;
+
 	spanList* visitList = list;
 	if (visitList == NULL)
 		visitList = _firstChild;
 	if (!visitList)
 		return;
+	bool needProcChild = true;
 	uoLineSpan* spn = NULL;
 	for (int i = 0; i<visitList->size(); i++) {
 		spn = visitList->at(i);
-		scanObj->visitSpan(spn);
-		if (spn->_child) {
+		needProcChild = scanObj->visitSpan(spn);
+		if (spn->_child && needProcChild) {
 			onProcessAll(scanObj, spn->_child);
 		}
+		scanObj->visitSpanAfter(spn);
+		if(scanObj->breakProcess())
+			return;
 	}
 }
 
@@ -312,6 +319,7 @@ void uoSpanTree::onLinesDelete(int lineStart, int count, spanList* list)
 void uoSpanTree::onLineAdd(int lineStart){
 	onLinesAdd(lineStart, 1);
 }
+
 void uoSpanTree::onLinesAdd(int lineStart, int lineCnt){
 	if (!_firstChild)
 		return;
@@ -350,6 +358,23 @@ void uoSpanTree::onLinesAdd(int lineStart, int lineEnd, spanList* list, int move
 			}
 		}
 	}
+}
+
+/// Поиск спана по id.
+uoLineSpan* uoSpanTree::getSpanById(int id){
+	uoLineSpan* spn = NULL;
+	return spn;
+}
+
+/// Обрабатываем свертку/развертку группы.
+QList<int>* uoSpanTree::onGroupFold(int id, bool fold){
+	// см. uoReportDescr.h логика работы свертки/развертки.
+	uoLineSpan* spn = getSpanById(id);
+	if (!spn)
+		return NULL;
+
+
+	return NULL;
 }
 
 /// Обрабатываем исключение строк из спанов.

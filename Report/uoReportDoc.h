@@ -43,21 +43,17 @@ class uoReportDoc
 		int getGroupLevel(uoRptHeaderType ht);
 		int getSectionLevel(uoRptHeaderType ht);
 
+		void doGroupFold(int idGrop, uoRptHeaderType rht, bool expand);
+
 		bool save();
 		bool saveToFile(QString path, uoRptStoreFormat stFormat);
 		bool saveOptionsIsValid();
 		bool flush(uoReportLoader* loader);
 
-		/// Возвращает установленный формат сохранения
-		uoRptStoreFormat 	getStoreFormat()	{return _storeFormat;}
-		/// Возвращает установленное имя файла.
-		QString 			getStorePathFile()	{return _docFilePath;}
-		/// установим опции сохранения
 
-		void setStoreOptions(QString  filePath, uoRptStoreFormat stFormat)	{
-			_docFilePath = filePath;
-			_storeFormat = stFormat;
-		}
+		uoRptStoreFormat 	getStoreFormat(); ///< Возвращает установленный формат сохранения
+		QString 			getStorePathFile();///< Возвращает установленное имя файла.
+		void 				setStoreOptions(QString  filePath, uoRptStoreFormat stFormat); ///< установим опции сохранения
 
 	protected:
 	private:

@@ -48,6 +48,7 @@ struct uoRptGroupItem {
 		,_level(-1)
 		,_start(-1)
 		,_end(-1)
+		,_id(-1)
 		,_rectEndPos(0)
 		,_rectMidlePos(0)
 		,_sizeTail(0)
@@ -57,9 +58,21 @@ struct uoRptGroupItem {
 	int _level; 			///< уровень группировки.
 	int _start; 			///< Начало диапазона.
 	int _end;				///< Конец диапазона.
+	int _id;				///< Идентификатор гроуп итема.
 	qreal	_rectEndPos; 	///< Координаты правой|нижней стороны ректа. для расчета длины линии группировки.
 	qreal	_rectMidlePos; 	///< Координаты середины правой|нижней стороны ректа для вычерчивания горизонтальной линии группировки.
 	rptSize _sizeTail;		///< Размер "хвоста" группировки.
+
+	/// копируем данные из uoLineSpan
+	void copyFrom(uoLineSpan* spn){
+		_start 	= spn->getStart();
+		_end 	= spn->getEnd();
+
+		_folded = spn->getFolded();
+		_level	= spn->getLevel();
+
+		_id 	= spn->getId();
+	}
 };
 
 typedef QList<uoRptGroupItem*> rptGroupItemList;
@@ -162,7 +175,8 @@ class uoReportCtrl : public QWidget
 		void onSetScaleFactor(const qreal sFactor);
 
 	private:
-		/// данные
+		/// данные/ректы для областей....
+		///\todo Добавить наруральну линейку для точного расчета местоположения встраиваемых объектов!!! кул идейка!!!!
 		QRectF* _rectGroupV;		///< Вертикальные группировки
 		QRectF* _rectGroupH;		///< Горизонтальные группировки
 		QRectF* _rectSectionV;		///< Вертикальные секции
@@ -196,8 +210,6 @@ class uoReportCtrl : public QWidget
 
 		rptScalePositionMap _scaleStartPositionMapH; 	///< Координаты х() ячеек горизонтальной линейки (видимой части)
 		rptScalePositionMap _scaleStartPositionMapV;	///< Координаты y() ячеек вертикальной линейки (видимой части)
-
-
 
 };
 

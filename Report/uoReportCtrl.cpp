@@ -10,8 +10,6 @@
 
 #include <QPainter>
 #include <QPalette>
-//#include <QBrush>
-//#include <QPen>
 #include <QRect>
 #include <QRectF>
 #include <QMenu>
@@ -337,12 +335,8 @@ void uoReportCtrl::recalcGroupSectionRects(uoRptHeaderType rht){
 					spn = spanListH->at(i);
 					grItem = getGropItemFromCache();
 					if (grItem)	{
-						grItem->_start 	= spn->getStart();
-						grItem->_end 	= spn->getEnd();
-						grItem->_folded = spn->getFolded();
-						grItem->_level	= spn->getLevel();
+						grItem->copyFrom(spn);
 						grItem->_sizeTail = rptSizeNull;
-
 						zeroQRect(&grItem->_rectIteract);
 
 						rSize = rptSizeNull;
@@ -367,10 +361,8 @@ void uoReportCtrl::recalcGroupSectionRects(uoRptHeaderType rht){
 					spn = spanListV->at(i);
 					grItem = getGropItemFromCache();
 					if (grItem)	{
-						grItem->_start 	= spn->getStart();
-						grItem->_end 	= spn->getEnd();
-						grItem->_folded = spn->getFolded();
-						grItem->_level	= spn->getLevel();
+						grItem->copyFrom(spn);
+
 						zeroQRect(&grItem->_rectIteract);
 						calcGroupItemPosition(grItem, rht);
 						grItem->_sizeTail = grItem->_sizeTail + getLengthOfScale(rht, grItem->_start + 1, grItem->_end);
@@ -795,16 +787,25 @@ bool uoReportCtrl::mousePressEventForGroup(QMouseEvent *event){
 	{
 		retVal = true;
 		event->accept();
+		rptGroupItemList* groupItList = _groupListH;
 
 		uoRptHeaderType rht = rhtHorizontal;
-		if (_rectGroupV->contains(event->x(), event->y()))
+		if (_rectGroupV->contains(event->x(), event->y())){
 			rht = rhtVertical;
+			groupItList = _groupListV;
 
-		rptGroupItemList _groupListV;		///< список ректов группировок столбцов
-		rptGroupItemList _groupListH;		///< список ректов группировок строк
+		}
+		if (groupItList->isEmpty())
+			return retVal;
+		uoRptGroupItem* rptGrItem = NULL;
+		for (int i = 0; i< groupItList->size(); i++){
+			rptGrItem = groupItList->at(i);
 
-
-
+			if (rptGrItem->_rectIteract.contains(event->x(), event->y())){
+				// Нашли итем на котором сделан клик мышкой.
+				break;
+			}
+		}
 	}
 
 	return retVal;
