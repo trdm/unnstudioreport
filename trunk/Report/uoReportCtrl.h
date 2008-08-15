@@ -117,6 +117,11 @@ class uoReportCtrl : public QWidget
 		qreal _scaleFactor;			///< Положительный соэффициент масштаба виджета, если он > 0, тогда виджет крупнее, если меньше, виджет мельче.
 		qreal _scaleFactorO;		///< обратная величина фактора. для пересчетов смещений.
 
+		QPointF _pointScale;			///< Оттраслированный с пом. _scaleFactorO QPointF
+		QRectF  _rectScale;				///< Оттраслированный с пом. _scaleFactorO QRectF
+		void 	scalePoint(const QPoint& point); ///<Транслируется переданный point, результат в _pointScale
+		void 	scaleRect(QRectF& rect);	///<Транслируется переданный rect, результат в _rectScale
+
 	private:
 		void initControls(QWidget *parent);
 		QScrollBar  *_vScrollCtrl, *_hScrollCtrl;

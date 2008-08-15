@@ -121,13 +121,13 @@ void uoReportDoc::setStoreOptions(QString  filePath, uoRptStoreFormat stFormat)	
 	_storeFormat = stFormat;
 }
 
-/// Получить список спанов группировок по диапазону строк/столбцов
+/// Получить список спанов группировок по диапазону строк/столбцов. Исключая зафолденные...
 const spanList* uoReportDoc::getGroupList(uoRptHeaderType rht, int start, int end)
 {
 	if (rht == rhtHorizontal)
-		return _spanTreeGrH->getSpanList(start, end);
+		return _spanTreeGrH->getSpanList(start, end, true);
 	else
-		return _spanTreeGrV->getSpanList(start, end);
+		return _spanTreeGrV->getSpanList(start, end, true);
 }
 
 

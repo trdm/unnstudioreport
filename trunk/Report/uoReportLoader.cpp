@@ -114,6 +114,7 @@ bool uoReportLoaderXML::saveDocStart(uoReportDoc* doc){
 	outStr = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
 	_textStream << outStr;
 	_textStream << QString("<Doc type = \"%1\" version = \"%2\">\n").arg(UORPT_XMLTYPEDOC).arg(uoReportVersion);
+	_textStream << QString("<!-- Scales and Group types \"%1\"=Vertical  \"%2\"=Horizontal -->\n").arg(rhtVertical).arg(rhtHorizontal);
 
 
 	return true;

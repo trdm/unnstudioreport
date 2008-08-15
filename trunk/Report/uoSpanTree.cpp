@@ -62,6 +62,7 @@ uoSpanTree::uoSpanTree(QObject *parent)
 	,_lastAddedSpan(0)
 	,_possibleOnlyOne(false)
 	,_freezeComputeLevel(false)
+	,_foldExclude(false)
 {
 	_lastSpanId = _maxLevel = _count = 0;
 }
@@ -563,6 +564,8 @@ spanList* uoSpanTree::getSpanListScan(int startLine, int endLine, spanList* from
 		if (truSpan) {
 			list->append(spn);
 			if (spn->_child) {
+				if (spn->_folded && _foldExclude) {
+				} else
 				if (!spn->_child->isEmpty()) {
 					getSpanListScan(startLine, endLine, spn->_child, list);
 				}
@@ -572,10 +575,13 @@ spanList* uoSpanTree::getSpanListScan(int startLine, int endLine, spanList* from
 	return list;
 }
 
-const spanList* uoSpanTree::getSpanList(int startLine, int endLine)
+const spanList* uoSpanTree::getSpanList(int startLine, int endLine, bool foldExclude)
 {
+	bool foldExcludeOld = _foldExclude;
+	_foldExclude = foldExclude;
 	spanList* list = new spanList;
 	getSpanListScan(startLine, endLine, _firstChild, list);
+	_foldExclude = foldExcludeOld;
 	return list;
 }
 

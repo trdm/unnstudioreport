@@ -226,12 +226,13 @@ class uoSTScan_FoldPerId : public uoSpanTreeScan
 			delete _listFoldedLine;
 		}
 
+		/// Добавим позицЫи к обрабоке в список.
 		void addToList(int start, int cnt){
 			for (int i = 0; i<cnt; i++){
 				_listProcLn->append(i+start);
 			}
 		}
-		/*
+		/**
 			Посчитаем от обратного, соберем все сфолденные диапазоны,
 			а потом пробегусь по диапазону свертки.
 		*/
@@ -240,13 +241,17 @@ class uoSTScan_FoldPerId : public uoSpanTreeScan
 				_listFoldedLine->append(i+start);
 			}
 		}
-
+		/**
+			Завершающий штрих, калькулируем секции которые надо скрыть или показать,
+			с пом дианазона зафолденных позиций. Если таковых нет, значит фолдим
+			диапазон спана...
+		*/
 		void calcProcessList(uoLineSpan* curSpan)
 		{
 			if (_listFoldedLine->isEmpty()){
 				addToList(curSpan->getStart()+1,curSpan->getSizeSpan()-1);
 			} else {
-				for (int i = curSpan->getStart()+1; i<curSpan->getEnd() ; i++){
+				for (int i = curSpan->getStart()+1; i<=curSpan->getEnd() ; i++){
 					if (!_listFoldedLine->contains(i)){
 						_listProcLn->append(i);
 					}
@@ -254,6 +259,7 @@ class uoSTScan_FoldPerId : public uoSpanTreeScan
 			}
 		}
 
+		/// Функция посещения первого спана
 		bool visitSpan(uoLineSpan* curSpan)
 		{
 			bool retVal = false;
@@ -276,7 +282,7 @@ class uoSTScan_FoldPerId : public uoSpanTreeScan
 				// Найден, но есть чилды.
 				if (curSpan->getLevel()>_foundLevel){
 					if (curSpan->isFolded()){
-						addToFoldedList(curSpan->getStart()-1, curSpan->getSizeSpan()-1);
+						addToFoldedList(curSpan->getStart()+1, curSpan->getSizeSpan()-1);
 						return retVal;
 					}
 				}
@@ -284,6 +290,7 @@ class uoSTScan_FoldPerId : public uoSpanTreeScan
 			return true;
 		}
 
+		/// Функция финального посещения спана. Она может установить признак завершения сканирования.
 		bool visitSpanAfter(uoLineSpan* curSpan = 0){
 			if (curSpan) {
 				if (curSpan->_id == _perId){
@@ -294,7 +301,7 @@ class uoSTScan_FoldPerId : public uoSpanTreeScan
 			}
 			return true;
 		}
-
+		/// проверим опию завершения сканирования...
 		bool breakProcess() {
 			return _bBreak;
 		};
@@ -360,7 +367,7 @@ class uoSpanTree : public QObject
 		void onSave();
 		void onLoad();
 
-		const spanList* getSpanList(const int startLine = -1, const int endLine = -1);
+		const spanList* getSpanList(const int startLine = -1, const int endLine = -1, bool foldExclude = false);
 		spanList* getSpanListScan(const int startLine, const int endLine, spanList* fromList = NULL, spanList* toList = NULL);
 
 		int testClass(); // тестирование
@@ -381,6 +388,8 @@ class uoSpanTree : public QObject
 		spanList* _firstChild;
 		QList<int>* _startGrpList;
 		uoLineSpan* _lastAddedSpan;
+
+		bool _foldExclude; /// При выборке спанов исключать зафолденные.
 
 		/// возможность вставлять спаны с единичным размером: 1:1, 15:15. Изначально отключена.
 		bool _possibleOnlyOne;
