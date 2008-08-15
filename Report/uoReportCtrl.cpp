@@ -291,7 +291,8 @@ rptSize uoReportCtrl::getLengthOfScale(uoRptHeaderType rht, int start, int stop)
 
 
 	for (int i = start; i<=stop; i++) {
-		retVal = retVal + doc->getScaleSize(rht, i);
+		if (!doc->getScaleHide(rht, i))
+			retVal = retVal + doc->getScaleSize(rht, i);
 	}
 
 	return retVal;
@@ -776,52 +777,70 @@ void uoReportCtrl::paintEvent(QPaintEvent *event)
 		painter.scale(1/_scaleFactor,1/_scaleFactor);
 		painter.fillRect(_cornerWidget->frameGeometry(), _brushWindow);
 	}
-
 }
 
+///Транслируется переданный point, результат в _pointScale
+void uoReportCtrl::scalePoint(const QPoint& point){
+	_pointScale.setX(point.x() * _scaleFactor);
+	_pointScale.setY(point.y() * _scaleFactor);
+}
+///Транслируется переданный rect, результат в _rectScale
+void uoReportCtrl::scaleRect(QRectF& rect){
+	_rectScale.setTop(rect.top() * _scaleFactor);
+	_rectScale.setBottom(rect.bottom() * _scaleFactor);
+	_rectScale.setLeft(rect.left() * _scaleFactor);
+	_rectScale.setRight(rect.right() * _scaleFactor);
+}
+
+
 /// Реакция на нажатие мышки-норушки на группах.
-///\todo !!! Автоматизировать данную реакию.
 bool uoReportCtrl::mousePressEventForGroup(QMouseEvent *event){
 	bool retVal = false;
-	if (_rectGroupV->contains(event->x(), event->y()) || _rectGroupH->contains(event->x(), event->y()))
+	if (event->button() != Qt::LeftButton)
+		return retVal;
+	int posX = 0, posY = 0;
+	posX = event->x();
+	posY = event->y();
+	if (_scaleFactor != 1.0){
+		posX = posX * _scaleFactorO;
+		posY = posY * _scaleFactorO;
+	}
+
+	if (_rectGroupV->contains(posX, posY) || _rectGroupH->contains(posX, posY))
 	{
 		retVal = true;
 		uoReportDoc* doc = getDoc();
-		if (!doc)
-			return retVal;
+		if (doc) {
+			event->accept();
+			rptGroupItemList* groupItList = _groupListH;
 
-		event->accept();
-		rptGroupItemList* groupItList = _groupListH;
+			uoRptHeaderType rht = rhtHorizontal;
+			if (_rectGroupV->contains(posX, posY)){
+				rht = rhtVertical;
+				groupItList = _groupListV;
 
-		uoRptHeaderType rht = rhtHorizontal;
-		if (_rectGroupV->contains(event->x(), event->y())){
-			rht = rhtVertical;
-			groupItList = _groupListV;
+			}
+			if (!groupItList->isEmpty()) {
+				uoRptGroupItem* rptGrItem = NULL;
+				bool found = false;
+				for (int i = 0; i< groupItList->size(); i++){
+					rptGrItem = groupItList->at(i);
 
-		}
-		if (groupItList->isEmpty())
-			return retVal;
-		uoRptGroupItem* rptGrItem = NULL;
-		bool found = false;
-		for (int i = 0; i< groupItList->size(); i++){
-			rptGrItem = groupItList->at(i);
-
-			if (rptGrItem->_rectIteract.contains(event->x(), event->y())){
-				// Нашли итем на котором сделан клик мышкой.
-				doc->doGroupFold(rptGrItem->_id, rht, !rptGrItem->_folded);
-				found = true;
-				break;
+					if (rptGrItem->_rectIteract.contains(posX, posY)){
+						// Нашли итем на котором сделан клик мышкой.
+						doc->doGroupFold(rptGrItem->_id, rht, !rptGrItem->_folded);
+						found = true;
+						break;
+					}
+				}
+				if (found) {
+					recalcGroupSectionRects();
+					emit update();
+				}
 			}
 		}
-
-		if (found) {
-			recalcGroupSectionRects();
-			emit update();
-		}
 	}
-
 	return retVal;
-
 }
 
 /// Реакция на нажатие мышки-норушки...
