@@ -58,7 +58,7 @@ struct uoRptNumLine {
 // по typename:
 // http://alenacpp.blogspot.com/2006/08/typename.html
 
-///\class uorHeaderScale Хранение и обработки длинных нумерованных структур. \n
+///\class uoHeaderScale Хранение и обработки длинных нумерованных структур. \n
 ///\brief Предназначен для хранения и обработки длинных нумерованных структур. \n
 ///
 /// Перечень структр: Заголовки колонок и строк табличного документа, самих \n
@@ -66,12 +66,12 @@ struct uoRptNumLine {
 /// форматирование, рамки, данные по их объединению и т.п.
 /// (примечание) Scale - ячейка линейки, Cell - ячейка основного поля, \n чисто для изучения английского :)
 
-class uorHeaderScale
+class uoHeaderScale
 	: public uoNumVector<uoRptNumLine>
 {
 	public:
-		uorHeaderScale();
-		~uorHeaderScale();
+		uoHeaderScale();
+		~uoHeaderScale();
 
 	void printToDebug();
 	bool getHide(int nom );
@@ -98,8 +98,8 @@ class uoReportDocBody
 
 
 	protected:
-		uorHeaderScale* _headerV; ///< Вертикальный заголовок
-		uorHeaderScale* _headerH; ///< Горизонтальный заголовок
+		uoHeaderScale* _headerV; ///< Вертикальный заголовок
+		uoHeaderScale* _headerH; ///< Горизонтальный заголовок
 
 	private:
 		int _rowCount;

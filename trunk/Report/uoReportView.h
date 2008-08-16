@@ -11,8 +11,11 @@
 #include <QFrame>
 #include "uoReport.h"
 #include "uoReportCtrl.h"
+
 namespace uoReport {
 
+///\class uoReportView - контрол для размещения всех чилдов репорта. Просто прослойка.
+///\brief uoReportView - контрол для размещения всех чилдов репорта. Просто прослойка.
 class uoReportView : public QFrame
 {
 	Q_OBJECT

@@ -15,15 +15,15 @@ namespace uoReport {
 
 
 
-uorHeaderScale::uorHeaderScale()
+uoHeaderScale::uoHeaderScale()
 	: uoNumVector<uoRptNumLine>()
 {}
 
-uorHeaderScale::~uorHeaderScale()
+uoHeaderScale::~uoHeaderScale()
 {}
 
 /// Получение признака спрятанности итема
-bool uorHeaderScale::getHide(int nom ){
+bool uoHeaderScale::getHide(int nom ){
 	if (!findItem(nom)){
 		return false;
 	} else {
@@ -36,7 +36,7 @@ bool uorHeaderScale::getHide(int nom ){
 }
 
 /// Установка признака спрятанности итема
-void uorHeaderScale::setHide(int nom, bool hide){
+void uoHeaderScale::setHide(int nom, bool hide){
 	if (!findItem(nom, true)){
 		return;
 	} else {
@@ -49,7 +49,7 @@ void uorHeaderScale::setHide(int nom, bool hide){
 	return;
 }
 /// сохраняем итемы...
-bool uorHeaderScale::onStoreItems(uoReportLoader* loader){
+bool uoHeaderScale::onStoreItems(uoReportLoader* loader){
 
 	detachIter();
 	if (_list->isEmpty())
@@ -66,7 +66,7 @@ bool uorHeaderScale::onStoreItems(uoReportLoader* loader){
 
 
 /// Вывод в текстовый файл отладочной информации.
-void uorHeaderScale::printToDebug()
+void uoHeaderScale::printToDebug()
 {
 	detachIter();
 	if (_list->isEmpty())
@@ -90,8 +90,8 @@ void uorHeaderScale::printToDebug()
 
 
 uoReportDocBody::uoReportDocBody()
-	: _headerV(new uorHeaderScale)
-	, _headerH(new uorHeaderScale)
+	: _headerV(new uoHeaderScale)
+	, _headerH(new uoHeaderScale)
 {
 	_headerV->setDefSize(UORPT_SCALE_SIZE_DEF_VERTICAL);
 	_headerH->setDefSize(UORPT_SCALE_SIZE_DEF_HORIZONTAL);
@@ -123,7 +123,7 @@ void uoReportDocBody::setScaleSize(uoRptHeaderType hType, int nom, rptSize size,
 
 /// Прячем/Показываем диапазон ячеек...
 void uoReportDocBody::setScalesHide(uoRptHeaderType hType, int nmStart, int cnt,  bool hide){
-	uorHeaderScale* header = NULL;
+	uoHeaderScale* header = NULL;
 	if (hType == rhtVertical)
 		header = _headerV;
 	else

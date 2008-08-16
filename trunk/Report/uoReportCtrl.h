@@ -98,6 +98,7 @@ class uoReportCtrl : public QWidget
 		void resizeEvent ( QResizeEvent * event );
 		//-------------------------------------------------
 		bool mousePressEventForGroup(QMouseEvent *event);
+		bool mousePressEventForRuler(QMouseEvent *event);
 
     protected:
 		//-------- draw section ----------------
