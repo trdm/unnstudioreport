@@ -15,6 +15,7 @@ namespace uoReport {
 
 /**
 	\class uoReportTest - класс обобщенного тестирования
+	\brief класс для тестирования всех классов в пространстве uoReport
 */
 uoReportTest::uoReportTest()
 {

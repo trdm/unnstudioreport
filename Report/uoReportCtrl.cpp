@@ -843,11 +843,38 @@ bool uoReportCtrl::mousePressEventForGroup(QMouseEvent *event){
 	return retVal;
 }
 
+/// отработаем реакцию на нажатие мышки на линейке.
+bool uoReportCtrl::mousePressEventForRuler(QMouseEvent *event)
+{
+	bool retVal = false;
+	if (event->button() != Qt::LeftButton)
+		return retVal;
+	int posX = event->x(), posY = event->y();
+
+	if (_scaleFactor != 1.0){
+		posX = posX * _scaleFactorO;
+		posY = posY * _scaleFactorO;
+	}
+	if (!(_rectRulerH->contains(posX, posY) || _rectRulerV->contains(posX, posY))) {
+		return retVal;
+	}
+	uoRptHeaderType rhtCur = rhtVertical;
+	if (_rectRulerH->contains(posX, posY))
+		rhtCur = rhtHorizontal;
+
+
+	return retVal;
+}
+
 /// Реакция на нажатие мышки-норушки...
 void uoReportCtrl::mousePressEvent(QMouseEvent *event)
 {
-//	int i = 0;
-	if (_showGroup && mousePressEventForGroup(event)) {	return;	}
+	if (_showGroup && mousePressEventForGroup(event)) {
+		return;
+	}
+	if (_showRuler && mousePressEventForRuler(event)){
+		return;
+	}
 }
 
 void uoReportCtrl::mouseReleaseEvent(QMouseEvent *event)

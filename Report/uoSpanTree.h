@@ -187,7 +187,8 @@ typedef QList<uoLineSpan*>::const_iterator  spanList_iterConst;
 typedef QList<uoLineSpan*>::iterator  spanList_iter;
 
 
-// классы сканеров для дерева.
+///\class uoSpanTreeScan - классы сканеров для дерева.
+///\brief Абстрактный класс обходчика дерева uoSpanTree
 class uoSpanTreeScan {
 	public:
 //		uoSpanTreeScan();
@@ -205,10 +206,10 @@ class uoSpanTreeScan {
 };
 
 
-///\class uoSTS_hidePerLevel сканер для вычисления списка строк/столбцов, которые надо спрятать, показать.
+///\class uoSTScan_FoldPerId сканер для вычисления списка строк/столбцов, которые надо спрятать, показать.
+///\brief сканер для вычисления списка строк/столбцов, которые надо спрятать, показать.
 class uoSTScan_FoldPerId : public uoSpanTreeScan
 {
-	///\todo - Доработать получение списка строк которые надо спрятать или показать.
 	/*
 		Скрывать/показывать надо с 2-й строки/колонки спана.
 	*/

@@ -238,7 +238,7 @@ bool uoReportDoc::flush(uoReportLoader* loader){
 	}
 	if (!retVal) return false;
 
-	uorHeaderScale* headerScale = NULL;
+	uoHeaderScale* headerScale = NULL;
 
 	// ---------------выгрузка размеров строк/столбцов --------------
 	// Тут же надо делать выгрузку соодержимого ячеек.
