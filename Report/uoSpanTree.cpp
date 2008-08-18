@@ -61,10 +61,9 @@ uoSpanTree::uoSpanTree(QObject *parent)
 	,_startGrpList(0)
 	,_lastAddedSpan(0)
 	,_possibleOnlyOne(false)
-	,_freezeComputeLevel(false)
-	,_foldExclude(false)
 {
 	_lastSpanId = _maxLevel = _count = 0;
+	_freezeComputeLevel = _foldExclude = false;
 }
 
 uoSpanTree::~uoSpanTree()

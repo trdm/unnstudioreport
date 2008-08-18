@@ -42,6 +42,7 @@ class uoReportDocBody;
 template <typename T> class uoNumVector;
 class uoReportLoader;
 class uoReportLoaderXML;
+class uoReportSelection;
 
 
 ///\enum uoIntersectMode - варианты перечения отрезков
@@ -82,13 +83,25 @@ typedef enum uoRptStoreFormat {
 	, uoRsf_HTML = 3
 };
 
-///spares - запчасти ; запасные части; spare parts, spares
-/// пригодятся когда буду выгружать в бинарный формат.
-///\enum uoRptDocSparesType - nbgs
-typedef enum uoRptDocSparesType {
+/**
+	\enum uoRptDocSparesType - типы запасных частей документа.
+	\brief - Перечисление пространственных частей документа/вьюва.
+	spares - запчасти ; запасные части; spare parts, spares.
 
-	  uoDst_defFontName = 10
-	, uoDst_defFontSize
+	Пока буду использовать для акселерации вычисления части документа по
+	пространственным координатам.
+	Vst = view Spares Type
+*/
+typedef enum uoRptSparesType {
+	  uoVst_Unknown = 0
+	, uoVst_GroupV = 1	///< рект вертикальной группы
+	, uoVst_GroupH		///< рект ГОРИЗОНтальной группы
+	, uoVst_ScaleVH 	///< Прямоугольник для выделения документа.
+	, uoVst_ScaleV 		///< Ячейка вертикальной линейки.
+	, uoVst_ScaleH 		///< Ячейка ГОРИЗОНтальной линейки.
+	, uoVst_SectionV 	///< Вертикальная секция.
+	, uoVst_SectionH 	///< Горизонтальная секция.
+	, uoVst_Cell	 	///< Ячейка таблицы или объединение.
 };	// Dst - (DocSparesType)
 
 ///\enum uoRptSelectionType типы выделения во вьюве.
