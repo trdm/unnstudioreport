@@ -81,6 +81,9 @@ uoReportCtrl::uoReportCtrl(QWidget *parent)
 
 	connect(_iteractView, SIGNAL(onScaleChange(qreal)), this, SLOT(onSetScaleFactor(qreal)));
 
+	_selections = new uoReportSelection(this);
+
+
 }
 
 /// Инициализация контролов поля отчета.
@@ -216,32 +219,39 @@ void uoReportCtrl::calcGroupItemPosition(uoRptGroupItem* grItem, uoRptHeaderType
 	grItem->_sizeTail = 0.0;
 
 
-	rptSize xPos = -10,yPos = -10, yPos0 = -10, xSize = 0, ySize = 0, ySize0 = 0;
+	rptSize xPos = -10,yPos = -10, yPos0 = -10, xSize = 0, xSize0 = 0, ySize = 0, ySize0 = 0;
 	if (rht == rhtHorizontal) {
 
 		if (_scaleStartPositionMapH.contains(grItem->_start))
 			xPos = _scaleStartPositionMapH[grItem->_start];
 
-		grItem->_rectIteract.setLeft(xPos);
-
+		xSize0 = xSize = doc->getScaleSize(rht, grItem->_start);
 		yPos = _rectGroupH->top() + ( UORPT_OFFSET_LINE * 2 + _charHeightPlus) * grItem->_level - UORPT_OFFSET_LINE;
+		grItem->_rectIteract.setLeft(xPos);
+		grItem->_rectIteract.setRight(xPos);
+
 		grItem->_rectIteract.setBottom(yPos);
 		yPos = yPos - _charHeightPlus;
 		grItem->_rectIteract.setTop(yPos);
 
 		grItem->_rectMidlePos = yPos + _charHeightPlus / 2;
 
-		xSize = doc->getScaleSize(rht, grItem->_start);
 		grItem->_sizeTail = xPos + xSize; // Координаты конца ячейки.
 
+		if (xSize0 > (_charWidthPlus + UORPT_OFFSET_LINE*2)){
 
-		xSize = (xSize - (UORPT_OFFSET_LINE + _charWidthPlus)) / 2;
-		xPos = xPos + xSize;
-		grItem->_rectIteract.setLeft(xPos);
-		xPos = xPos + UORPT_OFFSET_LINE * 2 + _charWidthPlus;
-		grItem->_rectIteract.setRight(xPos);
+
+			xSize = (xSize - (UORPT_OFFSET_LINE + _charWidthPlus)) / 2;
+			xPos = xPos + xSize;
+			grItem->_rectIteract.setLeft(xPos);
+			xPos = xPos + UORPT_OFFSET_LINE * 2 + _charWidthPlus;
+			grItem->_rectIteract.setRight(xPos);
+		} else if (xSize0>0){
+			grItem->_rectIteract.setLeft(xPos);
+			xPos = xPos + xSize;
+			grItem->_rectIteract.setRight(xPos);
+		}
 		grItem->_rectEndPos = xPos;
-
 		grItem->_sizeTail = grItem->_sizeTail - xPos; // Координаты конца ячейки.
 
 
@@ -252,13 +262,16 @@ void uoReportCtrl::calcGroupItemPosition(uoRptGroupItem* grItem, uoRptHeaderType
 		grItem->_sizeTail = yPos;
 
 		ySize0 = ySize = doc->getScaleSize(rht, grItem->_start);
-		ySize = (ySize - _charHeightPlus ) / 2;
+		ySize = (ySize  - _charHeightPlus) / 2;
 		grItem->_sizeTail = yPos + ySize0; // Координаты конца ячейки.
 
-
 		grItem->_rectIteract.setTop(yPos + ySize);
-		ySize = ySize + _charHeightPlus + UORPT_OFFSET_LINE*2;
+		ySize = ySize + _charHeightPlus; // + UORPT_OFFSET_LINE*2;
 		grItem->_rectIteract.setBottom(yPos + ySize);
+		if (grItem->_rectIteract.height()> ySize0){
+			grItem->_rectIteract.setTop(yPos0);
+			grItem->_rectIteract.setBottom(yPos0 + ySize0);
+		}
 
 		xPos = _rectGroupV->left() + ( UORPT_OFFSET_LINE * 2 + _charWidthPlus) * grItem->_level;
 		grItem->_rectIteract.setRight(xPos);
@@ -374,8 +387,6 @@ void uoReportCtrl::recalcGroupSectionRects(uoRptHeaderType rht){
 			}
 		}
 	}
-
-
 }
 
 /// Пересчитываем размеры прямоугольников для областей отчета в зависимости от количества \n
@@ -579,17 +590,23 @@ void uoReportCtrl::drawHeaderControl(QPainter& painter){
 	painter.setPen(_penText);
 	QPointF pointStart, pointEnd;
 
+	qreal minDrawSize = 2.5;
+	bool isSell = false;
+
 	// Рисуем шапку, как она сама есть...
 	if (_showGroup) {
 		if (_rectGroupV->width()>noLen)	{
 			if (!_groupListV->isEmpty()) {
 				for (cntr = 0; cntr<_groupListV->size(); cntr++) {
 					rgItem = _groupListV->at(cntr);
-					painter.drawRect(rgItem->_rectIteract);
-					paintStr = "-";
-					if (rgItem->_folded)
-						paintStr = "+";
-					painter.drawText(rgItem->_rectIteract,Qt::AlignCenter,  paintStr);
+
+					if (rgItem->_rectIteract.height() > minDrawSize) {
+						painter.drawRect(rgItem->_rectIteract);
+						paintStr = "-";
+						if (rgItem->_folded)
+							paintStr = "+";
+						painter.drawText(rgItem->_rectIteract,Qt::AlignCenter,  paintStr);
+					}
 					if (rgItem->_sizeTail > 0) {
 						pointStart.setY(rgItem->_rectEndPos);
 						pointStart.setX(rgItem->_rectMidlePos);
@@ -609,11 +626,13 @@ void uoReportCtrl::drawHeaderControl(QPainter& painter){
 			if (!_groupListH->isEmpty()) {
 				for (cntr = 0; cntr<_groupListH->size(); cntr++) {
 					rgItem = _groupListH->at(cntr);
-					painter.drawRect(rgItem->_rectIteract);
-					paintStr = "-";
-					if (rgItem->_folded)
-						paintStr = "+";
-					painter.drawText(rgItem->_rectIteract,Qt::AlignCenter,  paintStr);
+					if (rgItem->_rectIteract.width() > minDrawSize) {
+						painter.drawRect(rgItem->_rectIteract);
+						paintStr = "-";
+						if (rgItem->_folded)
+							paintStr = "+";
+						painter.drawText(rgItem->_rectIteract,Qt::AlignCenter,  paintStr);
+					}
 
 					if (rgItem->_sizeTail > 0) {
 						pointStart.setX(rgItem->_rectEndPos);
@@ -645,10 +664,15 @@ void uoReportCtrl::drawHeaderControl(QPainter& painter){
 	rptSize paintCntTagr = rptSizeNull; // Текущая величина отрисовки.
 	rptSize curSize = rptSizeNull; // Текущая величина отрисовки.
 
-	int nmLine = 0;
+	int nmLine = 0, counter = 0;
 	uoRptHeaderType hdrType;
-	QRectF curRct;
+	QRectF curRct, curRctCpy; // копия, для извращений...
+	QPointF posStart, posEnd;
 	zeroQRect(&curRct);
+
+	painter.drawRect(*_rectDataRegion);
+
+	QPen oldPen;
 	if (_showRuler) {
 		/* рисуем сначала вертикалку.
 			| 10 |
@@ -667,7 +691,7 @@ void uoReportCtrl::drawHeaderControl(QPainter& painter){
 			paintEndTagr = _rectRulerV->bottom();
 			paintCntTagr = _rectRulerV->top() - _shift_RowTop + 1 * _scaleFactorO;
 			curRct.setTop(paintCntTagr);
-
+			counter = 0;
 			nmLine = _firstVisible_ColLeft-1;
 			do {
 				nmLine = nmLine + 1;
@@ -677,13 +701,44 @@ void uoReportCtrl::drawHeaderControl(QPainter& painter){
 				if ((curSize = doc->getScaleSize(hdrType, nmLine)) == 0.0)
 					continue;
 
+				isSell = _selections->isRowSelect(nmLine);
+
 				paintCntTagr = paintCntTagr + curSize;
 				curRct.setBottom(paintCntTagr);
 				painter.drawRect(curRct);
+
+				if (isSell) {
+					painter.save();
+					painter.setPen(_penWhiteText);
+					painter.setBrush(_brushBlack);
+					curRctCpy = curRct;
+					curRctCpy.adjust(1,1,-1,-1);
+					painter.drawRect(curRctCpy);
+				}
+
 				paintStr.setNum(nmLine);
 				painter.drawText(curRct, Qt::AlignCenter,  paintStr);
 				curRct.setTop(paintCntTagr);
+				if (isSell)
+					painter.restore();
+				if (_showGrid) {
 
+					++counter;
+					if (counter == 1){
+						// первую, ту которую возможно сдвинули вниз мы миновали. Можно восстановить регион прорисовки.
+						painter.setClipRect(*_rectAll); // Устанавливаем область прорисовки. Будем рисовать только в ней.
+					}
+
+					//------Рисуем линию----------
+					oldPen = painter.pen();
+					painter.setPen(_penGrey);
+					posStart = curRct.bottomRight();
+					posStart.setX(_rectDataRegion->left() + 1);
+					posEnd = posStart;
+					posEnd.setX(_rectRulerH->right());
+					painter.drawLine(posStart, posEnd);
+					painter.setPen(oldPen);
+				}
 
 			} while(paintCntTagr < paintEndTagr);
 		}
@@ -701,7 +756,7 @@ void uoReportCtrl::drawHeaderControl(QPainter& painter){
 			paintCntTagr = _rectRulerH->left() - _shift_ColLeft + 1 * _scaleFactorO;
 
 			curRct.setLeft(paintCntTagr);
-
+			counter = 0;
 			nmLine = _firstVisible_RowTop - 1;
 			do {
 				nmLine = nmLine + 1;
@@ -713,13 +768,45 @@ void uoReportCtrl::drawHeaderControl(QPainter& painter){
 
 				paintCntTagr = paintCntTagr + curSize;
 
+				isSell = _selections->isColSelect(nmLine);
+
+
 				curRct.setRight(paintCntTagr);
 				painter.drawRect(curRct);
 				paintStr.setNum(nmLine);
+
+				if (isSell) {
+					painter.save();
+					painter.setPen(_penWhiteText);
+					painter.setBrush(_brushBlack);
+					curRctCpy = curRct;
+					curRctCpy.adjust(1,1,-1,-1);
+					painter.drawRect(curRctCpy);
+				}
+
 				painter.drawText(curRct, Qt::AlignCenter,  paintStr);
 				curRct.setLeft(paintCntTagr);
 
+				if (isSell)
+					painter.restore();
 
+				if (_showGrid) {
+					++counter;
+					if (counter == 1){
+						// первую, ту которую возможно сдвинули вниз мы миновали. Можно восстановить регион прорисовки.
+						painter.setClipRect(*_rectAll); // Устанавливаем область прорисовки. Будем рисовать только в ней.
+					}
+
+					//------Рисуем линию----------
+					oldPen = painter.pen();
+					painter.setPen(_penGrey);
+					posStart = curRct.bottomRight();
+					posStart.setY(_rectDataRegion->top() + 1);
+					posEnd = posStart;
+					posEnd.setY(_rectRulerV->bottom());
+					painter.drawLine(posStart, posEnd);
+					painter.setPen(oldPen);
+				}
 			} while(paintCntTagr < paintEndTagr);
 		}
 		painter.setClipRect(*_rectAll); // Устанавливаем область прорисовки. Будем рисовать только в ней.
@@ -753,10 +840,12 @@ void uoReportCtrl::drawWidget(QPainter& painter)
    	_brushWindow = palette_c.brush(QPalette::Window); //	brushWindow.setColor(palette_c.color(curColGrp, QPalette::Window));
 
    	_brushBase = palette_c.brush(QPalette::Base /*Qt::white*/); // QPalette::Base - типа белый для текста.
+   	_brushBlack = palette_c.brush(QPalette::WindowText /*Qt::white*/);
 
 	_penText.setColor(palette_c.color(curColGrp, QPalette::WindowText));
 	_penNoPen.setColor(palette_c.color(curColGrp, QPalette::Window));
 	_penWhiteText.setColor(palette_c.color(curColGrp, QPalette::Base));
+	_penGrey.setColor(palette_c.color(curColGrp, QPalette::Window));
 
 	drawHeaderControl(painter);
 	drawDataArea(painter);
@@ -779,28 +868,15 @@ void uoReportCtrl::paintEvent(QPaintEvent *event)
 	}
 }
 
-///Транслируется переданный point, результат в _pointScale
-void uoReportCtrl::scalePoint(const QPoint& point){
-	_pointScale.setX(point.x() * _scaleFactor);
-	_pointScale.setY(point.y() * _scaleFactor);
-}
-///Транслируется переданный rect, результат в _rectScale
-void uoReportCtrl::scaleRect(QRectF& rect){
-	_rectScale.setTop(rect.top() * _scaleFactor);
-	_rectScale.setBottom(rect.bottom() * _scaleFactor);
-	_rectScale.setLeft(rect.left() * _scaleFactor);
-	_rectScale.setRight(rect.right() * _scaleFactor);
-}
-
 
 /// Реакция на нажатие мышки-норушки на группах.
 bool uoReportCtrl::mousePressEventForGroup(QMouseEvent *event){
 	bool retVal = false;
 	if (event->button() != Qt::LeftButton)
 		return retVal;
-	int posX = 0, posY = 0;
-	posX = event->x();
-	posY = event->y();
+	qreal posX = event->x();
+	qreal posY = event->y();
+
 	if (_scaleFactor != 1.0){
 		posX = posX * _scaleFactorO;
 		posY = posY * _scaleFactorO;
@@ -843,17 +919,100 @@ bool uoReportCtrl::mousePressEventForGroup(QMouseEvent *event){
 	return retVal;
 }
 
+/// Поиск региона линейки по координатам с учетом масштаба.
+bool uoReportCtrl::findScaleLocation(qreal posX, qreal posY, int &scaleNo, uoRptHeaderType rht)
+{
+	bool retVal = false;
+	uoReportDoc* doc =  getDoc();
+	if (!doc)
+		return retVal;
+
+	int cntScale = 0;
+	qreal endPos = 0.0;
+	qreal stratPos = 0.0;
+	qreal scSize = 0.0;
+	qreal nmShift = 0.0;
+
+	if (rht == rhtVertical){
+		nmShift = _rectRulerV->top();
+		cntScale = _firstVisible_ColLeft;
+		endPos = posY;
+		stratPos = _shift_ColLeft;
+		_curMouseSparesRect.setLeft(_rectRulerV->left());
+		_curMouseSparesRect.setRight(_rectRulerV->right());
+	} else if (rht == rhtHorizontal) {
+		nmShift = _rectRulerH->left();
+		cntScale = _firstVisible_RowTop;
+		endPos = posX;
+		stratPos = _shift_RowTop;
+		_curMouseSparesRect.setTop(_rectRulerH->top());
+		_curMouseSparesRect.setBottom(_rectRulerH->bottom());
+	}
+
+	stratPos = stratPos + nmShift;
+	scaleNo = cntScale;
+	while (stratPos < endPos){
+		scSize = 0.0;
+		if (!doc->getScaleHide(rht, cntScale)) {
+			scSize = doc->getScaleSize(rht, cntScale);
+		}
+		if ((stratPos+scSize) >= endPos){
+			endPos = stratPos+scSize;
+			retVal = true;
+			break;
+		}
+		stratPos += scSize;
+		cntScale = cntScale + 1;
+	}
+
+	if (rht == rhtVertical){
+		_curMouseSparesRect.setTop(stratPos);
+		_curMouseSparesRect.setBottom(endPos);
+	} else {
+		_curMouseSparesRect.setLeft(stratPos);
+		_curMouseSparesRect.setRight(endPos);
+	}
+
+	scaleNo = cntScale;
+
+	return	retVal;
+}
+
+/// сбросить значения акселератора поиска по пространственным координатам.
+void uoReportCtrl::mouseSparesAcceleratorDrop()
+{
+	_curMouseSparesType = uoVst_Unknown;
+	_curMouseSparesNo	= -1;
+	_curMouseSparesRht  = rhtUnknown;
+	zeroQRect(&_curMouseSparesRect);
+}
+
+/// Запомнить значения акселератора поиска по пространственным координатам.
+void uoReportCtrl::mouseSparesAcceleratorSave(uoRptSparesType spar, int nom, uoRptHeaderType rht)
+{
+	_curMouseSparesType = spar;
+	_curMouseSparesNo	= nom;
+	_curMouseSparesRht  = rht;
+	// А рект вроде остается....
+}
+
 /// отработаем реакцию на нажатие мышки на линейке.
+///\todo реализовать логику выбора строк/столбцов.
 bool uoReportCtrl::mousePressEventForRuler(QMouseEvent *event)
 {
 	bool retVal = false;
 	if (event->button() != Qt::LeftButton)
 		return retVal;
-	int posX = event->x(), posY = event->y();
+	qreal posX = event->x(), posY = event->y();
 
 	if (_scaleFactor != 1.0){
 		posX = posX * _scaleFactorO;
 		posY = posY * _scaleFactorO;
+	}
+	if (_rectRuleCorner->contains(posX, posY)){
+		_selections->selectDocument();
+		emit update();
+		return true;
 	}
 	if (!(_rectRulerH->contains(posX, posY) || _rectRulerV->contains(posX, posY))) {
 		return retVal;
@@ -862,6 +1021,18 @@ bool uoReportCtrl::mousePressEventForRuler(QMouseEvent *event)
 	if (_rectRulerH->contains(posX, posY))
 		rhtCur = rhtHorizontal;
 
+	///\todo добавить акселерацию поиска по кооринатам.
+
+	int scaleNo = 0;
+	if (findScaleLocation(posX, posY, scaleNo, rhtCur)){
+		///_curMouseSparesRect.getRect()
+		if (rhtCur == rhtHorizontal){
+			_selections->selectCol(scaleNo);
+		} else {
+			_selections->selectRow(scaleNo);
+		}
+		emit update();
+	}
 
 	return retVal;
 }
@@ -875,6 +1046,7 @@ void uoReportCtrl::mousePressEvent(QMouseEvent *event)
 	if (_showRuler && mousePressEventForRuler(event)){
 		return;
 	}
+	///\todo добавить вычисление/отображение типа курсора в нужной позиции...
 }
 
 void uoReportCtrl::mouseReleaseEvent(QMouseEvent *event)

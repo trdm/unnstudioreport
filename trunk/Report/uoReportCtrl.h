@@ -21,6 +21,7 @@
 #include "uoReport.h"
 #include "uoReportDoc.h"
 #include "uoReportViewIteract.h"
+#include "uoReportSelection.h"
 
 
 namespace uoReport {
@@ -99,6 +100,16 @@ class uoReportCtrl : public QWidget
 		//-------------------------------------------------
 		bool mousePressEventForGroup(QMouseEvent *event);
 		bool mousePressEventForRuler(QMouseEvent *event);
+		bool findScaleLocation(qreal posX, qreal posY, int &scaleNo, uoRptHeaderType rht);
+
+		// Акселераторы для поиска запчасти под курсором.
+		uoRptSparesType _curMouseSparesType;
+		int 			_curMouseSparesNo;
+		uoRptHeaderType _curMouseSparesRht;
+		QRectF			_curMouseSparesRect;
+		void 			mouseSparesAcceleratorDrop();
+		void 			mouseSparesAcceleratorSave(uoRptSparesType spar, int nom, uoRptHeaderType rht);
+
 
     protected:
 		//-------- draw section ----------------
@@ -108,20 +119,17 @@ class uoReportCtrl : public QWidget
 		void drawDataArea(QPainter& painter);
 		QBrush _brushWindow;
 		QBrush _brushBase;
+		QBrush _brushBlack;
 		QPen _penText;
 		QPen _penNoPen;
 		QPen _penWhiteText;
+		QPen _penGrey;
 
 		rptSize _charWidthPlus; 	///< Опорная ширина символа "+" в текушем шрифте.
 		rptSize _charHeightPlus; 	///< Опорная высота символа "+" в текушем шрифте.
 
 		qreal _scaleFactor;			///< Положительный соэффициент масштаба виджета, если он > 0, тогда виджет крупнее, если меньше, виджет мельче.
 		qreal _scaleFactorO;		///< обратная величина фактора. для пересчетов смещений.
-
-		QPointF _pointScale;			///< Оттраслированный с пом. _scaleFactorO QPointF
-		QRectF  _rectScale;				///< Оттраслированный с пом. _scaleFactorO QRectF
-		void 	scalePoint(const QPoint& point); ///<Транслируется переданный point, результат в _pointScale
-		void 	scaleRect(QRectF& rect);	///<Транслируется переданный rect, результат в _rectScale
 
 	private:
 		void initControls(QWidget *parent);
@@ -156,6 +164,7 @@ class uoReportCtrl : public QWidget
 
 	private:
 		uoReportViewIteract* _iteractView;
+		uoReportSelection* _selections;
 
 
 	private slots:
@@ -182,7 +191,7 @@ class uoReportCtrl : public QWidget
 
 	private:
 		/// данные/ректы для областей....
-		///\todo Добавить наруральну линейку для точного расчета местоположения встраиваемых объектов!!! кул идейка!!!!
+		///\todo Добавить натуральную линейку для точного расчета местоположения встраиваемых объектов!!! кул идейка!!!!
 		QRectF* _rectGroupV;		///< Вертикальные группировки
 		QRectF* _rectGroupH;		///< Горизонтальные группировки
 		QRectF* _rectSectionV;		///< Вертикальные секции
