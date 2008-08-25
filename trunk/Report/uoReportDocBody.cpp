@@ -81,112 +81,35 @@ void uoHeaderScale::printToDebug()
 	}
 }
 
-
-/*====================================================================
-						uoReportDocBody
-тело документа  содержимое документа: строки, текст, картинки и т.п.
-
-====================================================================*/
-
-
-uoReportDocBody::uoReportDocBody()
-	: _headerV(new uoHeaderScale)
-	, _headerH(new uoHeaderScale)
+void uoHeaderScale::test()
 {
-	_headerV->setDefSize(UORPT_SCALE_SIZE_DEF_VERTICAL);
-	_headerH->setDefSize(UORPT_SCALE_SIZE_DEF_HORIZONTAL);
-	_rowCount = 0;
-	_columnCount = 0;
-	//ctor
-}
+	qDebug() << "uoHeaderScale::test";
+	setDefSize(200);
+	setSize(1, 0.0);
+	setSize(2, 0.0);
+	setSize(2, 120.5);
+	setSize(9, 120.5);
+	printToDebug();
+	getSize(4);
+	setHide(4, true);
+	printToDebug();
+	getSize(5);
+	setHide(5, true);
+	printToDebug();
+	clear();
+	qDebug() << "uoHeaderScale::test-2";
+	setSize(1, 0.0);
+	setSize(9, 120.5);
+	getSize(2);
+	setHide(2, true);
+	printToDebug();
 
-uoReportDocBody::~uoReportDocBody()
-{
-	delete _headerV;
-	delete _headerH;
-}
 
-rptSize uoReportDocBody::getScaleSize(uoRptHeaderType hType, int nom, bool isDef)
-{
-	if (hType == rhtVertical)
-		return _headerV->getSize(nom, isDef);
-	else
-		return _headerH->getSize(nom, isDef);
-}
-
-void uoReportDocBody::setScaleSize(uoRptHeaderType hType, int nom, rptSize size, bool isDef){
-	if (hType == rhtVertical)
-		_headerV->setSize(nom, size, isDef);
-	else
-		_headerH->setSize(nom, size, isDef);
-}
-
-/// Прячем/Показываем диапазон ячеек...
-void uoReportDocBody::setScalesHide(uoRptHeaderType hType, int nmStart, int cnt,  bool hide){
-	uoHeaderScale* header = NULL;
-	if (hType == rhtVertical)
-		header = _headerV;
-	else
-		header = _headerH;
-	for (int i = 0; i<cnt; i++)	{
-		header->setHide(nmStart + i, hide);
-	}
-}
-
-bool uoReportDocBody::getScaleHide(uoRptHeaderType hType, int nom){
-	if (hType == rhtVertical)
-		return _headerV->getHide(nom);
-	else
-		return _headerH->getHide(nom);
 }
 
 
-static void toDebugTest(bool resComp, int *testOkCnt, int *testAll, const char* str)
-{
-	if (resComp) {
-		// если тест прошел, зачем печатать?
-		++(*testOkCnt);  //qDebug()<<"success: "<<str;
-	} else {
-		qDebug()<<"failed: "<<str;
-	}
-	++(*testAll);
-}
-
-/// Тестирование класса.
-void uoReportDocBody::test(){
-
-    int nTestOk = 0, nTestAll = 0;
-    bool printAll = true;
-	bool printCurent = true;
-
-	rptSize sz = 17;
-
-    qDebug()<<"Start test class \"uoReportDocBody\"";
-    qDebug()<<"{";
-	if (false || printAll) {
-		setScaleSize(rhtVertical, 2, 15);
-		setScaleSize(rhtVertical, 4, 18); if (printCurent) _headerV->printToDebug();
-		setScaleSize(rhtVertical, 3, 19); if (printCurent) _headerV->printToDebug();
-		setScaleSize(rhtVertical, 5, 25); if (printCurent) _headerV->printToDebug();
-		setScaleSize(rhtVertical, 2, sz); if (printCurent) _headerV->printToDebug();
-		setScaleSize(rhtVertical, 1, sz); if (printCurent) _headerV->printToDebug();
-		setScaleSize(rhtVertical, 7, 11); if (printCurent) _headerV->printToDebug();
-
-		toDebugTest(getScaleSize(rhtVertical, 1) == sz, &nTestOk, &nTestAll, "getScaleSize(rhtVertical, 1) == sz");
-		toDebugTest(getScaleSize(rhtVertical, 2) == sz, &nTestOk, &nTestAll, "getScaleSize(rhtVertical, 2) == sz");
-		qDebug() << " size " << _headerV->getCountItem();
-		qDebug() << " _headerV->deleteItem(2,2); ";
-		_headerV->deleteItem(2,2);
-		qDebug() << " size " << _headerV->getCountItem();
-		_headerV->printToDebug();
-	}
 
 
-    qDebug()<<"Test all: "<<nTestAll<<" test OK: "<< nTestOk<<" test is: "<< (nTestOk==nTestAll);
-    qDebug()<<"End test class \"uoReportDocBody\"";
-    qDebug()<<"}";
-
-}
 
 
 } //namespace uoReport

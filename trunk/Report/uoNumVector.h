@@ -25,26 +25,36 @@ class uoNumVector
  	protected:
 		QLinkedList<T*>* _list;
 		typename QLinkedList<T*>::iterator _itSave;
-		bool _itSaveOnUse;
+		bool _itSaveOnUse; ///< итератор _itSave - используется.
+		int _maxNo, _minNo;
 		rptSize _def_size;
 
 	public:
 		uoNumVector()
-			: _itSaveOnUse(false)
-		{
+			: _itSaveOnUse(false)	{
 			_list = new QLinkedList<T*>;
 			_def_size = -1;
+			_maxNo = _minNo = 0;
 		};
-		~uoNumVector()
-		{
+		~uoNumVector()	{
 			_itSave = NULL;
 			if (_list->size() == 0)
 				return;
 			clear();
 		}
+		/// Определить Min и Max № после вставки итема в список.
+		void defineMinMax(int nom) {
+			if (_minNo == 0 && _maxNo == 0) {
+				_minNo = _maxNo = nom;
+			} else {
+				if (_minNo>nom)	_minNo = nom;
+				if (_maxNo<nom)	_maxNo = nom;
+			}
+		}
 
 		/// Очистка вектора
 		void clear() {
+			detachIter();
 			T* item = NULL;
 			typename QLinkedList<T*>::iterator it = _list->begin();
 			while (it != _list->end() ) {
@@ -90,10 +100,15 @@ class uoNumVector
 			*/
 
 			typename QLinkedList<T*>::iterator it = _list->begin();
+			item = *it;
+			_minNo = item->number();
 			while (it != _list->end() ) {
 				item = *it;
-				if (item->number() > lastNo)
-					item->setNumber(item->number() - cnt);
+				_maxNo = item->number();
+				if (_maxNo > lastNo) {
+					_maxNo = _maxNo - cnt;
+					item->setNumber(_maxNo);
+				}
 				it++;
 			}
 		}
@@ -119,19 +134,23 @@ class uoNumVector
 			return item;
 		}
 
-
+		///\todo отработать вставку/поиск до нормального уровня.
 		/// Поиск итема по номеру в списке. При необходимости происходит создание итема. \n Просто позиционируемся на нужном итераторе
 		bool findItem(int nom, bool needCreate = false)
 		{
 			T* item = NULL;
-			if (_list->isEmpty() && !needCreate)
+			if (_list->isEmpty()){
+				if (needCreate) {
+					item = createItem(nom);
+					_list->append(item);
+					_itSave = _list->begin();
+					_itSaveOnUse = true;
+					defineMinMax(nom);
+					return true;
+				}
 				return false;
-
-			if (_list->isEmpty() && needCreate) {
-				item = createItem(nom);
-				_itSaveOnUse = false;
-				_list->append(item);
 			}
+
 
 			int reserchCnt = 0;
 
@@ -145,32 +164,38 @@ class uoNumVector
 				_itSaveOnUse = true;
 			}
 
-			uoSearchDirection srchDirection = toUp;
-			int lastInemNom = 0;
-
 			item = *_itSave;
-			if (item->number() == nom)
+
+			uoSearchDirection srchDirection = toUp;
+			int lastItemNo = 0;
+			int itemNo = item->number();
+
+			if (itemNo == nom)
 				return true;
-			else if (item->number()>nom) {
+			else if (itemNo > nom) {
+				srchDirection = toUp;
+				_itSaveOnUse = false;
 				while (_itSave != _list->begin()){
 					item = *_itSave;
-					lastInemNom = item->number();
-					if (lastInemNom == nom)
+					lastItemNo = item->number();
+					if (lastItemNo == nom)
 						return true;
-					else if (lastInemNom < nom)
+					else if (lastItemNo < nom) {
+						// Поймали позицию итератора, после которой можно вставить итем.
+						_itSaveOnUse = true;
 						break;
+					}
 					_itSave--;
 				}
-				_itSaveOnUse = false;
-			} else if (item->number()<nom) {
+			} else if (itemNo < nom) {
 				srchDirection = toDown;
 				_itSaveOnUse = false;
 				while (_itSave != _list->end() ){
 					item = *_itSave;
-					lastInemNom = item->number();
-					if (lastInemNom == nom)
+					lastItemNo = item->number();
+					if (lastItemNo == nom)
 						return true;
-					else if (lastInemNom > nom) {
+					else if (lastItemNo > nom) {
 						_itSaveOnUse = true;
 						break;
 					}
@@ -178,38 +203,51 @@ class uoNumVector
 				}
 			}
 
+			// Сюда доходим если не найшли итем.
 			if (needCreate) {
 				item = createItem(nom);
-
-				if (srchDirection == toDown) {
-					if (!_itSaveOnUse){
-						_list->append(item);
-						_itSave = _list->end();
-					}	else if (lastInemNom > nom){
-						_itSave = _list->insert(_itSave, item);
-					}
-				} else if (srchDirection == toUp) {
-					if (!_itSaveOnUse){
-						_list->prepend(item);
-						_itSave = _list->begin();
-					}	else if (lastInemNom < nom){
-						_itSave++;
-						if (_itSave == _list->end()) {
-							_list->append(item);
-							_itSave = _list->end();
-						} else {
-							_itSave = _list->insert(_itSave, item);
-						}
-					}
+				if (addItem(item)) {
+					defineMinMax(nom);
+					_itSaveOnUse = false;
+					goto reserch;
+				} else {
+					return false;
 				}
 				_itSaveOnUse = false;
 				goto reserch;
 			}
 			return false;
 		}
+
+		/// Добавим итем в список, для надежности прийдется пробежаться по нему
+		bool addItem(T* psItem){
+			int itemNo = psItem->number();
+			if ( itemNo < _minNo && _minNo>0) {
+				_list->prepend(psItem);
+				return true;
+			} else if (itemNo > _maxNo && _maxNo > 0) {
+				_list->append(psItem);
+				return true;
+			} else {
+				int itemNo2 = psItem->number();
+				T* item = NULL;
+				typename QLinkedList<T*>::iterator it = _list->begin();
+				while (it != _list->end() ) {
+					item = *it;
+					itemNo2 = item->number();
+					if (itemNo2 > itemNo) {
+						item->setNumber(_maxNo);
+						it = _list->insert(it, psItem);
+						return true;
+					}
+					it++;
+				}
+			}
+			return false;
+		}
 	public:
  		/// Получить размер итема, а если итем не существует, тогда его дефолтный размер..
-		rptSize getSize(int nom, bool isDef = true){
+		rptSize getSize(int nom, bool isDef = false){
 			if (findItem(nom)) {
 				T* item = *_itSave;
 				if (item)
@@ -219,7 +257,7 @@ class uoNumVector
 		}
 
 		/// Установить размер итема, а если итем не существует, создать и установить
-		bool	setSize(int nom, rptSize size, bool isDef = true){
+		bool	setSize(int nom, rptSize size, bool isDef = false){
 			if (!findItem(nom, true)){
 				return false;
 			} else {
@@ -234,9 +272,10 @@ class uoNumVector
 
 
 		/// Установить дефолтный размер итема
-		void setDefSize(rptSize size) {
-			_def_size = size;
-		}
+		void setDefSize(rptSize size) {		_def_size = size;	}
+		/// Получить дефолтный размер итема.
+		rptSize getDefSizeItem() {	return _def_size;	}
+
 
 };
 

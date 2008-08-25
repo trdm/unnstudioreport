@@ -14,17 +14,29 @@ namespace uoReport {
 
 
 uoReportDoc::uoReportDoc()
-	:uoReportDocBody()
-	, _spanTreeGrH(new uoSpanTree)
+//	:uoReportDocBody()
+	: _spanTreeGrH(new uoSpanTree)
 	, _spanTreeGrV(new uoSpanTree)
 	, _spanTreeSctH(new uoSpanTree)
 	, _spanTreeSctV(new uoSpanTree)
-
+	, _headerV(new uoHeaderScale)
+	, _headerH(new uoHeaderScale)
 {
 	_maxLevelSpanFoldingH = _maxLevelSpanSectionsH = 0;   /// Группировки
 	_spanTreeSctH->setCanOnlyOne(true);
 	_spanTreeSctV->setCanOnlyOne(true);
 	_storeFormat = uoRsf_Unknown;
+
+	_headerV->setDefSize(UORPT_SCALE_SIZE_DEF_VERTICAL);
+	_headerH->setDefSize(UORPT_SCALE_SIZE_DEF_HORIZONTAL);
+
+	_rowCount_visible = _rowCount 	= 0;
+	_colCount_visible = _colCount 	= 0;
+
+	_sizeV_visible = _sizeV = 0.0;	///< Размер документа по вертикали
+	_sizeH_visible = _sizeH = 0.0;	///< Размер документа по горизонтали
+	_freezEvent = 0;
+	_refCounter = 0;
 }
 
 uoReportDoc::~uoReportDoc()
@@ -34,6 +46,9 @@ uoReportDoc::~uoReportDoc()
 	delete _spanTreeGrV;
 	delete _spanTreeSctH;
 	delete _spanTreeSctV;
+	delete _headerV;
+	delete _headerH;
+
 }
 
 /// Очистка секций.
@@ -43,6 +58,13 @@ void uoReportDoc::clear()
 	_spanTreeGrV->clear();
 	_spanTreeSctH->clear();
 	_spanTreeSctV->clear();
+
+	_rowCount_visible = _rowCount 	= 0;
+	_colCount_visible = _colCount 	= 0;
+
+	_sizeV_visible = _sizeV = 0.0;	///< Размер документа по вертикали
+	_sizeH_visible = _sizeH = 0.0;	///< Размер документа по горизонтали
+
 }
 
 /// проверка возможности сформировать/вставить группу в документ.
@@ -59,10 +81,13 @@ bool uoReportDoc::addGroup(int start, int end, uoRptHeaderType ht)
 	bool retVal = false;
 	uoSpanTree* treeGrp = NULL;
 
-	if(ht == rhtVertical)
+	if(ht == rhtVertical) {
 		treeGrp = _spanTreeGrV;
-	else
+		beforeAddRowOrCol(end - _rowCount, ht);
+	} else if (ht == rhtHorizontal) {
 		treeGrp = _spanTreeGrH;
+		beforeAddRowOrCol(end - _colCount, ht);
+	}
 	retVal = treeGrp->addSpan(start, end);
 
 	return retVal;
@@ -91,7 +116,7 @@ void uoReportDoc::doGroupFold(int idGrop, uoRptHeaderType rht, bool fold){
 	uoSpanTree* treeGrp = NULL;
 	if(rht == rhtVertical)	treeGrp = _spanTreeGrV;
 	else					treeGrp = _spanTreeGrH;
-
+	++_freezEvent;
 	QList<int>* lineList= treeGrp->onGroupFold(idGrop, fold);
 	if (!lineList)
 		return;
@@ -99,9 +124,10 @@ void uoReportDoc::doGroupFold(int idGrop, uoRptHeaderType rht, bool fold){
 		int lineNo = 0;
 		for (int i = 0; i<lineList->size(); i++){
 			lineNo = lineList->at(i);
-			uoReportDocBody::setScalesHide(rht, lineNo, 1, fold);
+			setScalesHide(rht, lineNo, 1, fold);
 		}
 	}
+	--_freezEvent;
 	delete lineList;
 }
 
@@ -307,6 +333,293 @@ bool uoReportDoc::save(){
 		return saveToFile(_docFilePath, _storeFormat);
 	}
 	return false;
+}
+
+/// Возвращаем дефолтный размер строки или колонки
+qreal  	uoReportDoc::getDefScaleSize(uoRptHeaderType rht)
+{
+	if (rht == rhtVertical){
+		return _headerV->getDefSizeItem();
+	} else if (rht == rhtHorizontal) {
+		return _headerH->getDefSizeItem();
+	}
+	return 0.0;
+}
+
+/// Возвращаем высоту документа полную (по умолчанию) или видимую.
+qreal  	uoReportDoc::getVSize(bool visible){
+	if (visible)
+		return _sizeV_visible;
+	else
+		return _sizeV;
+}
+
+/// Возвращаем длину документа полную (по умолчанию) или видимую.
+qreal  	uoReportDoc::getHSize(bool visible){
+	if (visible)
+		return _sizeH_visible;
+	else
+		return _sizeH;
+}
+
+/// Возвращаем количество строк
+int 	uoReportDoc::getRowCount(){	return _rowCount;}
+
+/// Возвращаем количество столбцов
+int 	uoReportDoc::getColCount(){	return _colCount;}
+
+
+/// перед добавлением строк или столбцов. Необходимо что-бы посчитать длину/ширину дока.
+void uoReportDoc::beforeAddRowOrCol(int count, uoRptHeaderType rht, int noLn)
+{
+	if (count <= 0)
+		return;
+	qreal oldSize = 0.0;
+	qreal newSize = 0.0;
+
+	int oldCnt = 0;
+
+	uoHeaderScale* header = NULL;
+	if (rht == rhtVertical) {
+		header = _headerV;
+		oldCnt = _rowCount;
+	} else {
+		header = _headerH;
+		oldCnt = _colCount;
+	}
+	qreal itemSize 	 = 0.0;
+	qreal addSize 	 = 0.0;
+	qreal addSizeVis = 0.0;
+	for (int i = 1; i<=count; i++){
+		itemSize = header->getSize(oldCnt + i);
+		addSize = addSize + itemSize;
+		if (!header->getHide(oldCnt + i)){
+			addSizeVis = addSizeVis + itemSize;
+		}
+	}
+
+
+	if (rht == rhtVertical) {
+		_rowCount 		= _rowCount + count;
+		_sizeV 			= _sizeV + addSize;
+		_sizeV_visible 	= _sizeV_visible + addSizeVis;
+	} else {
+		_colCount 		= _colCount + count;
+		_sizeH 			= _sizeH + addSize;
+		_sizeH_visible 	= _sizeH_visible + addSizeVis;
+	}
+	///\todo 1 А вот тут нужен сигнал на изменение размеров документа....
+	emit onSizeChange(_rowCount, _colCount, _sizeV, _sizeH);
+}
+
+/// Изменить количество строк в документе
+void uoReportDoc::doRowCountChange(int count, int pos)
+{
+	if (count == 0)
+		return;
+	qreal oldSize = _sizeV;
+	qreal oldSizeVis = _sizeV_visible;
+
+	int oldCnt = _rowCount;
+	_rowCount = _rowCount + count;
+	int newCnt = _rowCount;
+	_sizeV = oldSize + count * getDefScaleSize(rhtVertical);
+	_sizeV_visible = oldSizeVis + count * getDefScaleSize(rhtVertical);
+	emit onSizeVisibleChangeV(_sizeV_visible, _rowCount, oldSizeVis, oldCnt, pos);
+}
+
+/// Изменить количество столбцов в документе
+void uoReportDoc::doColCountChange(int count, int pos )
+{
+	if (count == 0)
+		return;
+	qreal oldSize = _sizeH;
+	qreal oldSizeVis = _sizeH_visible;
+
+	int oldCnt = _colCount;
+	_colCount = _colCount + count;
+	int newCnt = _colCount;
+	_sizeH = oldSize + count * getDefScaleSize(rhtHorizontal);
+	_sizeH_visible = oldSizeVis + count * getDefScaleSize(rhtHorizontal);
+	emit onSizeVisibleChangeH(_sizeH_visible, _colCount, oldSizeVis, oldCnt, pos);
+}
+
+
+/// При доступе к строке или ячейке на запись. Служит для определения длины/ширины документа.
+void uoReportDoc::onAccessRowOrCol(int nom, uoRptHeaderType rht)
+{
+	int cnt = 0;
+	if (rht == rhtHorizontal) // Колонка
+	{
+		if (_colCount < nom) {
+			cnt = nom - _colCount;
+			doColCountChange(cnt, _colCount+1);
+		}
+	} else if (rht == rhtVertical) {		// строка
+		if (_rowCount < nom) {
+			cnt = nom - _rowCount;
+			doRowCountChange(cnt, _rowCount+1);
+		}
+	}
+}
+
+rptSize uoReportDoc::getScaleSize(uoRptHeaderType hType, int nom, bool isDef)
+{
+	if (hType == rhtVertical)
+		return _headerV->getSize(nom, isDef);
+	else
+		return _headerH->getSize(nom, isDef);
+}
+
+void uoReportDoc::setScaleSize(uoRptHeaderType hType, int nom, rptSize size, bool isDef){
+	bool scVisible = true;
+	rptSize oldSizeItem = 0.0, oldSize = 0.0;
+	if (hType == rhtVertical) {
+		oldSizeItem = _headerV->getSize(nom, isDef);
+		scVisible = _headerV->getHide(nom);
+		_headerV->setSize(nom, size, isDef);
+		_sizeV = _sizeV - oldSizeItem + size;
+		if (!scVisible) {
+			oldSize = _sizeV_visible;
+			_sizeV_visible = _sizeV_visible - oldSizeItem + size;
+			if (nom <= _rowCount)
+				emit onSizeVisibleChangeV(_sizeV_visible, _rowCount, oldSize, _rowCount, nom);
+		}
+	}
+	else {
+		oldSizeItem= _headerH->getSize(nom, isDef);
+		_headerH->setSize(nom, size, isDef);
+		_sizeH = _sizeH - oldSizeItem + size;
+		scVisible = _headerH->getHide(nom);
+		if (!scVisible) {
+			oldSize = _sizeH_visible;
+			_sizeH_visible = _sizeH_visible - oldSizeItem + size;
+			if (nom <= _colCount)
+				emit onSizeVisibleChangeH(_sizeH_visible, _colCount, oldSize, _colCount, nom);
+		}
+	}
+	onAccessRowOrCol(nom-1, hType); // последнюю ячейку не трогаем, т.к. её размер устанавливается...
+}
+
+/// Прячем/Показываем диапазон ячеек...
+void uoReportDoc::setScalesHide(uoRptHeaderType hType, int nmStart, int cnt,  bool hide){
+	uoHeaderScale* header = NULL;
+	if (hType == rhtVertical) {
+		header = _headerV;
+	} else {
+		header = _headerH;
+	}
+	qreal szAdd = 0.0;
+	for (int i = 0; i<cnt; i++)	{
+		szAdd = szAdd + header->getSize(nmStart + i);
+		header->setHide(nmStart + i, hide);
+	}
+	qreal oldSize = 0.0;
+	szAdd = szAdd * ( hide ? -1 : 1);
+	if (hType == rhtVertical){
+		oldSize = _sizeV_visible;
+		_sizeV_visible = _sizeV_visible + szAdd;
+		emit onSizeVisibleChangeV(_sizeV_visible, _rowCount, oldSize, _rowCount);
+	} else {
+		oldSize = _sizeH_visible;
+		_sizeH_visible = _sizeH_visible + szAdd;
+		emit onSizeVisibleChangeH(_sizeH_visible, _colCount, oldSize, _colCount);
+	}
+
+	onAccessRowOrCol(nmStart + cnt - 1, hType);
+}
+
+bool uoReportDoc::getScaleHide(uoRptHeaderType hType, int nom){
+	if (hType == rhtVertical)
+		return _headerV->getHide(nom);
+	else
+		return _headerH->getHide(nom);
+}
+
+/// присоединим вьюв..
+void uoReportDoc::attachView(uoReportCtrl* rCtrl, bool autoConnect){
+	bool found = false;
+	if (!_atachedView.isEmpty()) {
+		 found = _atachedView.contains(rCtrl);
+	}
+	if (!found) {
+		++_refCounter;
+		_atachedView.append(rCtrl);
+		/// надо его законнектить к сигналам. Тока сигналы до ума довести.....
+		if (autoConnect) {
+	//		connect(
+		}
+
+	}
+}
+
+/// Отсоединяемся от вьюва.
+void uoReportDoc::detachedView(uoReportCtrl* rCtrl)
+{
+	if (!_atachedView.isEmpty()) {
+		if (_atachedView.contains(rCtrl)) {
+			int pos = 0; _atachedView.indexOf(rCtrl);
+			while((pos = _atachedView.indexOf(rCtrl))>0){
+				_atachedView.removeAt(pos);
+			}
+			--_refCounter;
+		}
+	}
+}
+
+/// Объект используется/не используется. Если используется, удалять нельзя...
+bool uoReportDoc::isObjectAttached()
+{
+	if (_refCounter > 0 || !_atachedView.isEmpty() || !_atachedObj.isEmpty())
+		return true;
+	return false;
+}
+
+static void toDebugTest(bool resComp, int *testOkCnt, int *testAll, const char* str)
+{
+	if (resComp) {
+		// если тест прошел, зачем печатать?
+		++(*testOkCnt);  //qDebug()<<"success: "<<str;
+	} else {
+		qDebug()<<"failed: "<<str;
+	}
+	++(*testAll);
+}
+
+/// Тестирование класса.
+void uoReportDoc::test(){
+
+    int nTestOk = 0, nTestAll = 0;
+    bool printAll = true;
+	bool printCurent = true;
+
+	rptSize sz = 17;
+
+    qDebug()<<"Start test class \"uoReportDocBody\"";
+    qDebug()<<"{";
+	if (false || printAll) {
+		setScaleSize(rhtVertical, 2, 15);
+		setScaleSize(rhtVertical, 4, 18); if (printCurent) _headerV->printToDebug();
+		setScaleSize(rhtVertical, 3, 19); if (printCurent) _headerV->printToDebug();
+		setScaleSize(rhtVertical, 5, 25); if (printCurent) _headerV->printToDebug();
+		setScaleSize(rhtVertical, 2, sz); if (printCurent) _headerV->printToDebug();
+		setScaleSize(rhtVertical, 1, sz); if (printCurent) _headerV->printToDebug();
+		setScaleSize(rhtVertical, 7, 11); if (printCurent) _headerV->printToDebug();
+
+		toDebugTest(getScaleSize(rhtVertical, 1) == sz, &nTestOk, &nTestAll, "getScaleSize(rhtVertical, 1) == sz");
+		toDebugTest(getScaleSize(rhtVertical, 2) == sz, &nTestOk, &nTestAll, "getScaleSize(rhtVertical, 2) == sz");
+		qDebug() << " size " << _headerV->getCountItem();
+		qDebug() << " _headerV->deleteItem(2,2); ";
+		_headerV->deleteItem(2,2);
+		qDebug() << " size " << _headerV->getCountItem();
+		_headerV->printToDebug();
+	}
+
+
+    qDebug()<<"Test all: "<<nTestAll<<" test OK: "<< nTestOk<<" test is: "<< (nTestOk==nTestAll);
+    qDebug()<<"End test class \"uoReportDocBody\"";
+    qDebug()<<"}";
+
 }
 
 } // namespace uoReport

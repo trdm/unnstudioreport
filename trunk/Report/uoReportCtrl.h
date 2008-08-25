@@ -26,19 +26,6 @@
 
 namespace uoReport {
 
-///\enum uoReportUseMode - режим работы с отчетом разработка или использование
-enum uoReportUseMode {
-	rmDevelMode = 0
-	, rmUsingMode
-};
-
-///\enum uoReportStateMode - режим взаимодействия с пользователем
-/// Например: редактирование ячейки, выделение групп ячеек, и т.п.
-enum uoReportStateMode {
-	rmsNone = 0
-	, rmsResizeRule_Top
-	, rmsResizeRule_Left
-};
 
 //QAbstractScrollArea
 ///\struct uoRptGroupItem
@@ -87,7 +74,12 @@ class uoReportCtrl : public QWidget
     public:
         uoReportCtrl(QWidget *parent = 0);
         virtual ~uoReportCtrl();
+
+		void setDoc(uoReportDoc* rptDoc);
         void clear();
+
+		///\todo Нужно на всякий пожарный так же добавить определение private конструктора копирования и оператора копирующего
+		/// присваивания, чтобы невозможно было случайно контрол скопировать.
     protected:
 
         void paintEvent(QPaintEvent *event);
@@ -101,6 +93,7 @@ class uoReportCtrl : public QWidget
 		bool mousePressEventForGroup(QMouseEvent *event);
 		bool mousePressEventForRuler(QMouseEvent *event);
 		bool findScaleLocation(qreal posX, qreal posY, int &scaleNo, uoRptHeaderType rht);
+		uoBorderLocType  scaleLocationInBorder(qreal pos, QRectF rect, uoRptHeaderType rht);
 
 		// Акселераторы для поиска запчасти под курсором.
 		uoRptSparesType _curMouseSparesType;
@@ -110,13 +103,18 @@ class uoReportCtrl : public QWidget
 		void 			mouseSparesAcceleratorDrop();
 		void 			mouseSparesAcceleratorSave(uoRptSparesType spar, int nom, uoRptHeaderType rht);
 
+		QPoint 	_curentCell; ///< Текущая ячейка вьюва. есть всегда. Даже когда работаем с картинками.
+		void	setCurentCell(int x, int y, bool ensureVisible = false);
 
     protected:
+
 		//-------- draw section ----------------
 		void drawWidget(QPainter& painter);
+		void drawHeaderControlContour(QPainter& painter);
+		void drawHeaderControlGroup(QPainter& painter);
 		void drawHeaderControl(QPainter& painter);
-//		void drawHeaderControlGroup(QPainter& painter, uoRptHeaderType rhdrType);
 		void drawDataArea(QPainter& painter);
+
 		QBrush _brushWindow;
 		QBrush _brushBase;
 		QBrush _brushBlack;
@@ -136,7 +134,7 @@ class uoReportCtrl : public QWidget
 		QScrollBar  *_vScrollCtrl, *_hScrollCtrl;
 		QWidget* _cornerWidget; //, _cornerWidget(parent)
 	public:
-		uoReportDoc* getDoc() {return _repoDoc;}
+		uoReportDoc* getDoc() {return _rptDoc;}
 		bool saveDoc();
 		bool saveDocAs();
 		void optionShow(bool shGrid, bool shGroup, bool shSection, bool shRuler);
@@ -155,7 +153,7 @@ class uoReportCtrl : public QWidget
 		uoRptGroupItem* getGropItemFromCache();
 
 	private:
-		uoReportDoc* _repoDoc;
+		uoReportDoc* _rptDoc;
 
 	private:
 		/// режимы взаимодействия с пользователем.
@@ -191,7 +189,6 @@ class uoReportCtrl : public QWidget
 
 	private:
 		/// данные/ректы для областей....
-		///\todo Добавить натуральную линейку для точного расчета местоположения встраиваемых объектов!!! кул идейка!!!!
 		QRectF* _rectGroupV;		///< Вертикальные группировки
 		QRectF* _rectGroupH;		///< Горизонтальные группировки
 		QRectF* _rectSectionV;		///< Вертикальные секции
@@ -211,13 +208,19 @@ class uoReportCtrl : public QWidget
 		bool _showGrid;
 		bool _showFrame;
 
-		int _firstVisible_RowTop; 	///< Первая верхняя видимая строка
-		int _firstVisible_ColLeft; 	///< Первая левая видимая колонка
+		//------- группа контролирующая положение вьюва и во вьюве.
 		rptSize _shift_RowTop;		///< Смещение первой видимой строки вверх (грубо - размер невидимой/скрытой их части)
 		rptSize _shift_ColLeft;		///< Смещение первой видимой колонки влево (грубо - размер невидимой/скрытой их части)
 
+		int _firstVisible_RowTop; 	///< Первая верхняя видимая строка
+		int _firstVisible_ColLeft; 	///< Первая левая видимая колонка
+
 		int _lastVisibleRow; 	///< Первая верхняя видимая строка
 		int _lastVisibleCol; 	///< Первая левая видимая колонка
+
+		qreal _sizeVvirt;	///< Виртуальный размер документа по вертикали
+		qreal _sizeHvirt;	///< Виртуальный Размер документа по горизонтали
+
 
 		rptGroupItemList* _groupListCache;	///< кешь для экземпляров uoRptGroupItem
 		rptGroupItemList* _groupListV;		///< список ректов группировок столбцов
@@ -225,6 +228,9 @@ class uoReportCtrl : public QWidget
 
 		rptScalePositionMap _scaleStartPositionMapH; 	///< Координаты х() ячеек горизонтальной линейки (видимой части)
 		rptScalePositionMap _scaleStartPositionMapV;	///< Координаты y() ячеек вертикальной линейки (видимой части)
+
+	public slots:
+		void setDocSize(int row, int col, qreal sizeV, qreal sizeH);
 
 };
 

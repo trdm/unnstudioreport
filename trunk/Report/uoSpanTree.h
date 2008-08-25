@@ -271,11 +271,6 @@ class uoSTScan_FoldPerId : public uoSpanTreeScan
 				_bFound = true;
 				curSpan->_folded = _bExpand;
 				_foundLevel = curSpan->getLevel();
-				if (curSpan->getChildCount() == 0) {
-					addToList(curSpan->getStart()+1, curSpan->getSizeSpan()-1);
-					_bBreak = true;
-					return retVal;
-				}
 			}
 
 			if (_bFound)

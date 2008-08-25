@@ -30,11 +30,11 @@ struct uoRptNumLine {
 	void 	setNumber(int nm) {_line = nm;}
 	int  	number() {return _line;}
 
-	void 	setSize(rptSize sz, bool isDef = true) {
+	void 	setSize(rptSize sz, bool isDef = false) {
 		if (isDef)	_sizeDef = sz;
 		else 		_size = sz;
 	}
-	rptSize size(bool isDef = true) {return isDef?_sizeDef:_size;}
+	rptSize size(bool isDef = false) {return isDef?_sizeDef:_size;}
 
 	bool 	hiden() {return _hiden;}
 	void 	setHiden(bool hd) {_hiden = hd;}
@@ -77,34 +77,10 @@ class uoHeaderScale
 	bool getHide(int nom );
 	void setHide(int nom, bool hide);
 	bool onStoreItems(uoReportLoader* loader);
+	void test();
 
 };
 
-///\class uoReportDocBody - тело документа
-///\brief содержимое документа: строки, текст, картинки и т.п.
-class uoReportDocBody
-{
-	public:
-		uoReportDocBody();
-		virtual ~uoReportDocBody();
-	protected:
-
-	public:
-		void test();
-		rptSize getScaleSize(uoRptHeaderType hType, int nom, bool isDef = true);
-		void 	setScaleSize(uoRptHeaderType hType, int nom, rptSize size, bool isDef = true);
-		void 	setScalesHide(uoRptHeaderType hType, int nmStart, int cnt = 1,  bool hide = true);
-		bool 	getScaleHide(uoRptHeaderType hType, int nom);
-
-
-	protected:
-		uoHeaderScale* _headerV; ///< Вертикальный заголовок
-		uoHeaderScale* _headerH; ///< Горизонтальный заголовок
-
-	private:
-		int _rowCount;
-		int _columnCount;
-};
 
 
 } // namespace uoReport

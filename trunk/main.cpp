@@ -24,6 +24,9 @@ int main(int argc, char *argv[])
 
     QApplication app(argc, argv);
     InstallMsgHandler("debug_log.txt");
+//    uoReport::uoRunTest(); /// теперь можно тестировать...
+//    return -1;
+
     QGridLayout* gridLayout = new QGridLayout();
 
     QDialog m_Dlg;
@@ -52,12 +55,11 @@ int main(int argc, char *argv[])
     doc->addSection(2,3, uoReport::rhtHorizontal);
     doc->setScaleSize(uoReport::rhtHorizontal, 1, 0.0);
     doc->setScaleSize(uoReport::rhtHorizontal, 2, 120.5);
-    doc->setScaleSize(uoReport::rhtHorizontal, 9, 0.0);
+//    doc->setScaleSize(uoReport::rhtHorizontal, 9, 0.0);
     doc->setScaleSize(uoReport::rhtVertical, 9, 3.0);
     doc->setScaleSize(uoReport::rhtVertical, 1, 45.3);
 
     m_GR.getControl()->optionShow(true, true, false, true);
-    uoReport::uoRunTest();
 
     return app.exec();
 }

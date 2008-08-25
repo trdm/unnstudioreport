@@ -21,6 +21,13 @@ namespace uoReport {
 #define rptSize qreal
 #define rptSizeNull 0.0
 
+/**
+	Размер крайней области объекта в которой курсор принимает
+	вид "перетаскивателя" и при клике в которой начинается
+	перетаскивание или изменение размера.
+*/
+#define UORPT_DRAG_AREA_SIZE 2.0
+
 #define rptRect QRectF
 
 /*
@@ -102,7 +109,7 @@ typedef enum uoRptSparesType {
 	, uoVst_SectionV 	///< Вертикальная секция.
 	, uoVst_SectionH 	///< Горизонтальная секция.
 	, uoVst_Cell	 	///< Ячейка таблицы или объединение.
-};	// Dst - (DocSparesType)
+};	// Vst - (ViewSparesType)
 
 ///\enum uoRptSelectionType типы выделения во вьюве.
 typedef enum uoRptSelectionType {
@@ -116,6 +123,43 @@ typedef enum uoRptSelectionType {
 	, uoRst_Cells			///< Выделены ячейки
 	, uoRst_Mixed			///< Миксированное выделение.
 };
+
+///\enum uoBorderLocType - расположения бордюра
+typedef enum uoBorderLocType
+{
+	uoBlt_Unknown = 0 // Отсчет по часовой.
+	, uoBlt_Top  = 1 ///< верхний бордер
+	, uoBlt_Right	 ///< правый бордер
+	, uoBlt_Bottom	 ///< нижний бордер
+	, uoBlt_Left  	 ///< левый бордер
+};
+
+///\enum uoReportUseMode - режим работы с отчетом разработка или использование
+enum uoReportUseMode {
+	/**
+		Режим разработки.
+		По умолчанию включает видимости секций, линейки, сетки.
+		Все остальное отключено. Не испускаетют сигналы "приКликеНаЯчейке"
+	*/
+	rmDevelMode = 0
+	/**
+		Режим отображения.
+		По умолчанию включает видимости группировок. Все остальное отключено.
+		Сигналы "приКликеНаЯчейке" испускаются со значением расшифровки.
+	*/
+	, rmUsingMode = 1
+};
+
+///\enum uoReportStateMode - режим взаимодействия с пользователем
+/// Например: редактирование ячейки, выделение групп ячеек, и т.п.
+enum uoReportStateMode {
+	rmsNone = 0 			///< Обычный режим. Серфинг с пом. КПК по вьюву.
+	, rmsResizeRule_Top  	///< Изменение размера вертикальной ячейки линейки.
+	, rmsResizeRule_Left 	///< Изменение размера ГОРИЗОНТАЛЬНОЙ ячейки линейки.
+	, rmsSelectionRule_Top  ///< Групповое выделения ячеек вертикальной линейки.
+	, rmsSelectionRule_Left ///< Групповое выделения ячеек ГОРИЗОНТАЛЬНОЙ линейки.
+};
+
 
 /// Запуск тестов для элементов отчета...
 extern void uoRunTest();

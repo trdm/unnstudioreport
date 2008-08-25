@@ -19,11 +19,10 @@
 namespace uoReport {
 
 
-///\class uoReportDoc - обслуживает данные таблицы отчета
-///\brief обслуживает данные таблицы отчета.
+///\class uoReportDoc - обслуживает данные таблицы отчета, тело документа
+///\brief обслуживает данные таблицы отчета: строки, текст, картинки и т.п.
 class uoReportDoc
 	: public QObject
-	, public uoReportDocBody
 {
     Q_OBJECT
 	public:
@@ -55,10 +54,46 @@ class uoReportDoc
 		QString 			getStorePathFile();///< Возвращает установленное имя файла.
 		void 				setStoreOptions(QString  filePath, uoRptStoreFormat stFormat); ///< установим опции сохранения
 
-	protected:
-	private:
+	public:
+		void test();
+		rptSize getScaleSize(uoRptHeaderType hType, int nom, bool isDef = false);
+		void 	setScaleSize(uoRptHeaderType hType, int nom, rptSize size, bool isDef = false);
+		void 	setScalesHide(uoRptHeaderType hType, int nmStart, int cnt = 1,  bool hide = true);
+		bool 	getScaleHide(uoRptHeaderType hType, int nom);
 
 	protected:
+
+	private:
+		void onAccessRowOrCol(int nom, uoRptHeaderType rht);
+		void doRowCountChange(int count, int pos = 0 );
+		void doColCountChange(int count, int pos = 0 );
+		void beforeAddRowOrCol(int count, uoRptHeaderType rht, int noLn = 0);
+
+	public:
+		///\todo Сделать получение и калькуляцию размеров документа.
+		qreal  	getDefScaleSize(uoRptHeaderType rht);
+		qreal  	getVSize(bool visible = false);
+		qreal  	getHSize(bool visible = false);
+
+		int 	getRowCount();
+		int 	getColCount();
+
+	signals:
+		void onSizeChange(int row, int col, qreal sizeV, qreal sizeH);
+		void onSizeVisibleChangeV(qreal newSize, int newCount, qreal oldSize, int oldCnt, int pos = 0);
+		void onSizeVisibleChangeH(qreal newSize, int newCount, qreal oldSize, int oldCnt, int pos = 0);
+
+	protected:
+
+		qreal _sizeV, _sizeV_visible;		///< Размер документа по вертикали полный и видимый.
+		qreal _sizeH, _sizeH_visible;		///< Размер документа по горизонтали полный и видимый.
+		/// "Видимый" - не вьювпорт, а размеры не скрытых секций
+
+		int _rowCount, _rowCount_visible;
+		int _colCount, _colCount_visible;
+
+		int _freezEvent;	/// заморозить посылку сообщений на перерисовку
+
 		int _maxLevelSpanFoldingH;   	///< Группировки
 		int _maxLevelSpanSectionsH;		///< секции.
 
@@ -69,6 +104,22 @@ class uoReportDoc
 		uoSpanTree* _spanTreeGrV;
 		uoSpanTree* _spanTreeSctH;
 		uoSpanTree* _spanTreeSctV;
+
+		uoHeaderScale* _headerV; ///< Вертикальный заголовок
+		uoHeaderScale* _headerH; ///< Горизонтальный заголовок
+
+	protected:
+		QList<uoReportCtrl*> _atachedView; 	///< Приватаченные вьювы
+		QList<QObject*> 	 _atachedObj;	///< Приватаченные объекты. Документ может использоваться без вьюва, наример для заполнения его в модуле.
+		long _refCounter;
+	public:
+		void attachView(uoReportCtrl* rCtrl, bool autoConnect = true);
+		void detachedView(uoReportCtrl* rCtrl);
+
+		void atacheObject(QObject* rObj);
+		void detachedObject(QObject* rObj);
+
+		bool isObjectAttached();
 };
 
 } // namespace uoReport

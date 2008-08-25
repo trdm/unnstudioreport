@@ -32,8 +32,7 @@ uoReportCtrl::uoReportCtrl(QWidget *parent)
 	setFocusPolicy(Qt::StrongFocus);
 	setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
 
-
-	_repoDoc = new uoReportDoc();
+	_rptDoc = NULL;
 	_useMode = rmDevelMode;
 	_stateMode = rmsNone;
 
@@ -70,6 +69,9 @@ uoReportCtrl::uoReportCtrl(QWidget *parent)
 	_groupListV = new rptGroupItemList;		///< список ректов группировок столбцов
 	_groupListH = new rptGroupItemList;		///< список ректов группировок строк
 
+	_curentCell.setX(1);
+	_curentCell.setY(1);
+
 
 
 	initControls(parent);
@@ -83,7 +85,9 @@ uoReportCtrl::uoReportCtrl(QWidget *parent)
 
 	_selections = new uoReportSelection(this);
 
-
+	_sizeVvirt = 0.0;	///< Виртуальный размер документа по вертикали
+	_sizeHvirt = 0.0;	///< Виртуальный Размер документа по горизонтали
+	setDoc(new uoReportDoc());
 }
 
 /// Инициализация контролов поля отчета.
@@ -135,6 +139,19 @@ void uoReportCtrl::clear(){
 	while (!_groupListCache->isEmpty())    delete _groupListCache->takeFirst();
 	_scaleStartPositionMapH.clear();
 	_scaleStartPositionMapV.clear();
+}
+/// Установить документа для вьюва.
+void uoReportCtrl::setDoc(uoReportDoc* rptDoc)
+{
+	if (_rptDoc){
+		_rptDoc->detachedView(this);
+		if (!_rptDoc->isObjectAttached()) {
+			delete _rptDoc;
+			_rptDoc = NULL;
+		}
+	}
+	_rptDoc = rptDoc;
+	_rptDoc->attachView(this);
 
 }
 
@@ -313,7 +330,7 @@ rptSize uoReportCtrl::getLengthOfScale(uoRptHeaderType rht, int start, int stop)
 
 
 ///Перекалькуляция размеров линеек, регионов секций и т.п.
-///\todo Перекалькуляция размеров РЕГИОНОВ СЕКЦИЙ
+///\todo 2 Перекалькуляция размеров РЕГИОНОВ СЕКЦИЙ
 void uoReportCtrl::recalcGroupSectionRects(uoRptHeaderType rht){
 
 	// Нужно просчитать последнюю показываемую ячейку
@@ -529,69 +546,63 @@ void uoReportCtrl::debugRects()
 	qDebug() << "uoReportCtrl::debugRects() }";
 }
 
-
-/// Отрисовка нерабочей области отчета: Группировки, секции, линейки, общий фрайм.
-void uoReportCtrl::drawHeaderControl(QPainter& painter){
-
-
-	if (_showFrame) {
-		painter.drawRect(*_rectAll);
-	}
-
-	uoReportDoc* doc =  getDoc();
-	if (!doc)
-		return;
+/// Тестовая отрисовка контура контрола, для визуального контроля и отладки.
+void uoReportCtrl::drawHeaderControlContour(QPainter& painter)
+{
 	rptSize noLen = 2;
 	bool drawSelfRects = false;
-	int cntr = 0;
-	uoRptGroupItem* rgItem;
 	painter.save();
-	Qt::PenStyle oldStyle = _penText.style();
 	_penText.setStyle(Qt::DotLine);
 	painter.setPen(_penText);
-
-	QString paintStr = "";
-
 	// Рисуем контуры пространств, чисто для визуального контроля...
-	{
-		if (_showGroup) {
-			if (_rectGroupV->width()>noLen)	{
-				if (drawSelfRects)
-					painter.drawRect(*_rectGroupV);
-			}
-			if (_rectGroupH->height()>noLen)		{
-				if (drawSelfRects)
-					painter.drawRect(*_rectGroupH);
-			}
+	if (_showGroup) {
+		if (_rectGroupV->width()>noLen)	{
+			if (drawSelfRects)
+				painter.drawRect(*_rectGroupV);
 		}
-		if (_showSection) {
-			if (_rectSectionV->width()>noLen) {
-				if (drawSelfRects)
-					painter.drawRect(*_rectSectionV);
-			}
-			if (_rectSectionH->height()>noLen) {
-				if (drawSelfRects)
-						painter.drawRect(*_rectSectionH);
-			}
-		}
-		if (_showRuler) {
-			if (_rectRulerV->width()>noLen) {
-				if (drawSelfRects)
-					painter.drawRect(*_rectRulerV);
-			}
-			if (_rectRulerH->height()>noLen) {
-				if (drawSelfRects)
-					painter.drawRect(*_rectRulerH);
-			}
+		if (_rectGroupH->height()>noLen)		{
+			if (drawSelfRects)
+				painter.drawRect(*_rectGroupH);
 		}
 	}
+	if (_showSection) {
+		if (_rectSectionV->width()>noLen) {
+			if (drawSelfRects)
+				painter.drawRect(*_rectSectionV);
+		}
+		if (_rectSectionH->height()>noLen) {
+			if (drawSelfRects)
+					painter.drawRect(*_rectSectionH);
+		}
+	}
+	if (_showRuler) {
+		if (_rectRulerV->width()>noLen) {
+			if (drawSelfRects)
+				painter.drawRect(*_rectRulerV);
+		}
+		if (_rectRulerH->height()>noLen) {
+			if (drawSelfRects)
+				painter.drawRect(*_rectRulerH);
+		}
+	}
+
+	painter.restore();
+}
+
+
+/// Отрисовка групп в HeaderControl.
+void uoReportCtrl::drawHeaderControlGroup(QPainter& painter)
+{
+	int cntr = 0;
+	uoRptGroupItem* rgItem;
+	rptSize noLen = 2;
+	qreal minDrawSize = 2.5;
+	QString paintStr = "";
+	QPointF pointStart, pointEnd;
+
 
 	_penText.setStyle(Qt::SolidLine);
 	painter.setPen(_penText);
-	QPointF pointStart, pointEnd;
-
-	qreal minDrawSize = 2.5;
-	bool isSell = false;
 
 	// Рисуем шапку, как она сама есть...
 	if (_showGroup) {
@@ -648,10 +659,31 @@ void uoReportCtrl::drawHeaderControl(QPainter& painter){
 			}
 		}
 	}
+}
 
+
+/// Отрисовка нерабочей области отчета: Группировки, секции, линейки, общий фрайм.
+void uoReportCtrl::drawHeaderControl(QPainter& painter){
+
+
+	if (_showFrame) {
+		painter.drawRect(*_rectAll);
+	}
+
+	uoReportDoc* doc =  getDoc();
+	if (!doc)
+		return;
+//	painter.save();
+	QString paintStr = "";
+
+	_penText.setStyle(Qt::SolidLine);
+	painter.setPen(_penText);
+
+	bool isSell = false;
+	// нарисуем рамку области данных, т.к. потом будем рисовать линии на ней в этой процедурине.
 	painter.drawRect(*_rectDataRegion);
 	painter.fillRect(*_rectDataRegion, _brushBase);
-	painter.restore();
+//	painter.restore();
 
 	/*
 		попробуем порисовать линейку...
@@ -818,13 +850,13 @@ void uoReportCtrl::drawHeaderControl(QPainter& painter){
 		вот тут нужен такой фокус, необходимо научиться рисовать
 		отсеченные части ректов и прочих фигур.
 	*/
-
-	_penText.setStyle(oldStyle);
-
 }
 
 /// Отрисовка поля данных.
-void uoReportCtrl::drawDataArea(QPainter& painter){
+void uoReportCtrl::drawDataArea(QPainter& painter)
+{
+//	painter.drawRect(*_rectDataRegion);
+//	painter.fillRect(*_rectDataRegion, _brushBase);
 }
 
 
@@ -847,12 +879,14 @@ void uoReportCtrl::drawWidget(QPainter& painter)
 	_penWhiteText.setColor(palette_c.color(curColGrp, QPalette::Base));
 	_penGrey.setColor(palette_c.color(curColGrp, QPalette::Window));
 
+	drawHeaderControlContour(painter);
+	drawHeaderControlGroup(painter);
 	drawHeaderControl(painter);
 	drawDataArea(painter);
 
 
 }
-///\todo Распланировать отрисовку так, что-бы был не единый модуль, а легко управляемые логические участки.
+///\todo 1 Распланировать отрисовку так, что-бы был не единый модуль, а легко управляемые логические участки и рисовать не только на паинтере,но и на пиксмепе или принтере.
 void uoReportCtrl::paintEvent(QPaintEvent *event)
 {
     QPainter painter(this);
@@ -965,15 +999,17 @@ bool uoReportCtrl::findScaleLocation(qreal posX, qreal posY, int &scaleNo, uoRpt
 		cntScale = cntScale + 1;
 	}
 
+	scaleNo = cntScale;
+
 	if (rht == rhtVertical){
 		_curMouseSparesRect.setTop(stratPos);
 		_curMouseSparesRect.setBottom(endPos);
+		mouseSparesAcceleratorSave(uoVst_ScaleV, scaleNo, rht);
 	} else {
 		_curMouseSparesRect.setLeft(stratPos);
 		_curMouseSparesRect.setRight(endPos);
+		mouseSparesAcceleratorSave(uoVst_ScaleH, scaleNo, rht);
 	}
-
-	scaleNo = cntScale;
 
 	return	retVal;
 }
@@ -996,8 +1032,43 @@ void uoReportCtrl::mouseSparesAcceleratorSave(uoRptSparesType spar, int nom, uoR
 	// А рект вроде остается....
 }
 
+/// Оценка точки pos в rect, определение того, что точка находится в зоне изменения размеров.
+uoBorderLocType uoReportCtrl::scaleLocationInBorder(qreal pos, QRectF rect, uoRptHeaderType rht)
+{
+	uoBorderLocType locType = uoBlt_Unknown;
+	// UORPT_DRAG_AREA_SIZE
+	// надо еще величину границы захвата определить.
+	qreal posStart, posEnd;
+	if (rht == rhtVertical || rht == rhtUnknown) {
+
+		posStart 	= rect.top() - UORPT_DRAG_AREA_SIZE;
+		posEnd 		= rect.top() + UORPT_DRAG_AREA_SIZE;
+		if (posStart<=pos && pos<= posEnd)
+			return uoBlt_Top;
+
+		posStart 	= rect.bottom() - UORPT_DRAG_AREA_SIZE;
+		posEnd 		= rect.bottom() + UORPT_DRAG_AREA_SIZE;
+		if (posStart<=pos && pos<= posEnd)
+			return uoBlt_Bottom;
+
+	} else if (rht == rhtHorizontal || rht == rhtUnknown) {
+
+		posStart 	= rect.left() - UORPT_DRAG_AREA_SIZE;
+		posEnd 		= rect.left() + UORPT_DRAG_AREA_SIZE;
+		if (posStart<=pos && pos<= posEnd)
+			return uoBlt_Left;
+
+		posStart 	= rect.right() - UORPT_DRAG_AREA_SIZE;
+		posEnd 		= rect.right() + UORPT_DRAG_AREA_SIZE;
+		if (posStart<=pos && pos<= posEnd)
+			return uoBlt_Right;
+	}
+	return locType;
+}
+
+
 /// отработаем реакцию на нажатие мышки на линейке.
-///\todo реализовать логику выбора строк/столбцов.
+///\todo 1 реализовать логику выбора строк/столбцов.
 bool uoReportCtrl::mousePressEventForRuler(QMouseEvent *event)
 {
 	bool retVal = false;
@@ -1021,15 +1092,22 @@ bool uoReportCtrl::mousePressEventForRuler(QMouseEvent *event)
 	if (_rectRulerH->contains(posX, posY))
 		rhtCur = rhtHorizontal;
 
-	///\todo добавить акселерацию поиска по кооринатам.
-
 	int scaleNo = 0;
 	if (findScaleLocation(posX, posY, scaleNo, rhtCur)){
-		///_curMouseSparesRect.getRect()
+		// Я должен убедиться, что позиция мыши не у края ячейки, что-бы начать изменения размера
+		uoBorderLocType locType = uoBlt_Unknown;
 		if (rhtCur == rhtHorizontal){
-			_selections->selectCol(scaleNo);
+			locType = scaleLocationInBorder(posX, _curMouseSparesRect, rhtCur);
+			if (locType == uoBlt_Unknown) {
+				_selections->selectCol(scaleNo);
+			} else {
+			}
 		} else {
-			_selections->selectRow(scaleNo);
+			locType = scaleLocationInBorder(posY, _curMouseSparesRect, rhtCur);
+			if (locType == uoBlt_Unknown) {
+				_selections->selectRow(scaleNo);
+			} else {
+			}
 		}
 		emit update();
 	}
@@ -1046,7 +1124,7 @@ void uoReportCtrl::mousePressEvent(QMouseEvent *event)
 	if (_showRuler && mousePressEventForRuler(event)){
 		return;
 	}
-	///\todo добавить вычисление/отображение типа курсора в нужной позиции...
+	///\todo 1 добавить вычисление/отображение типа курсора в нужной позиции...
 }
 
 void uoReportCtrl::mouseReleaseEvent(QMouseEvent *event)
@@ -1196,6 +1274,24 @@ void uoReportCtrl::onSave(){
 void uoReportCtrl::onSaveAs(){
 	saveDocAs();
 }
+
+/// Установить текушую ячейку с/без гарантии видимости
+void uoReportCtrl::setCurentCell(int x, int y, bool ensureVisible)
+{
+	if (x<=0 || y <=0)
+		return;
+	if (ensureVisible){
+		///\todo 2 гарантировать видимость ячейки. у-у-у-у!!!
+	}
+}
+
+/// Сигнал установки новых размеров документа.
+void uoReportCtrl::setDocSize(int row, int col, qreal sizeV, qreal sizeH)
+{
+//	qreal _sizeVvirt;	///< Виртуальный размер документа по вертикали
+//	qreal _sizeHvirt;	///< Виртуальный Размер документа по горизонтали
+}
+
 
 /// Скрываем/показываем сетку.
 void uoReportCtrl::onGridShow(){	if (!_showGrid) {_showGrid = true;		recalcHeadersRects();	emit update();}}
