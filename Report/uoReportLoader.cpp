@@ -8,6 +8,7 @@
 #include "uoReport.h"
 #include "uoReportLoader.h"
 #include "uoSpanTree.h"
+#include "uoReportDoc.h"
 #include "uoReportDocBody.h"
 #include <QFile>
 
@@ -115,6 +116,19 @@ bool uoReportLoaderXML::saveDocStart(uoReportDoc* doc){
 	_textStream << outStr;
 	_textStream << QString("<Doc type = \"%1\" version = \"%2\">\n").arg(UORPT_XMLTYPEDOC).arg(uoReportVersion);
 	_textStream << QString("<!-- Scales and Group types \"%1\"=Vertical  \"%2\"=Horizontal -->\n").arg(rhtVertical).arg(rhtHorizontal);
+	_textStream << QString("<DocSize>\n");
+	_textStream << QString("\t<Sizes row = \"%1\" col = \"%2\" sizeV = \"%3\" sizeH = \"%4\" />\n")
+		.arg(doc->getRowCount())
+		.arg(doc->getColCount())
+		.arg(doc->getVSize())
+		.arg(doc->getHSize());
+	_textStream << QString("\t<SizesV sizeV = \"%3\" sizeH = \"%4\" />\n")
+		.arg(doc->getVSize(true))
+		.arg(doc->getHSize(true));
+	_textStream << QString("\t<DefSizes row = \"%1\" col = \"%2\"/>\n")
+		.arg(doc->getDefScaleSize(rhtVertical))
+		.arg(doc->getDefScaleSize(rhtHorizontal));
+	_textStream << QString("</DocSize>\n");
 
 
 	return true;
@@ -127,7 +141,7 @@ bool uoReportLoaderXML::saveGroupsHeaderStart(int count, uoRptHeaderType rht){
 }
 
 bool uoReportLoaderXML::saveGroupsItem(uoLineSpan* peSpn){
-	_textStream << QString("<Group start = \"%1\" end = \"%2\" folded=\"%3\"/>\n")
+	_textStream << QString("\t<Group start = \"%1\" end = \"%2\" folded=\"%3\"/>\n")
 	.arg(peSpn->getStart()).arg(peSpn->getEnd()).arg(peSpn->getFolded());
 	return true;
 }
@@ -141,7 +155,7 @@ bool uoReportLoaderXML::saveSectionHeaderStart(int count, uoRptHeaderType rht){
 	return true;
 }
 bool uoReportLoaderXML::saveSectionItem(uoLineSpan* peSpn){
-	_textStream << QString("<Section start = \"%1\" end = \"%2\" name=\"%3\"/>\n")
+	_textStream << QString("\t<Section start = \"%1\" end = \"%2\" name=\"%3\"/>\n")
 	.arg(peSpn->getStart()).arg(peSpn->getEnd()).arg(peSpn->_name);
 	return true;
 }
@@ -155,7 +169,7 @@ bool uoReportLoaderXML::saveScaleHeaderStart(int count, uoRptHeaderType rht){
 	return true;
 }
 bool uoReportLoaderXML::saveScaleItem(uoRptNumLine* rLine){
-	_textStream << QString("<Scale no = \"%1\" hide = \"%2\" size=\"%3\"/>\n")
+	_textStream << QString("\t<Scale no = \"%1\" hide = \"%2\" size=\"%3\"/>\n")
 	.arg(rLine->number()).arg(rLine->hiden()).arg(rLine->size());
 	return true;
 }
