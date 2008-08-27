@@ -134,7 +134,6 @@ class uoNumVector
 			return item;
 		}
 
-		///\todo отработать вставку/поиск до нормального уровня.
 		/// Поиск итема по номеру в списке. При необходимости происходит создание итема. \n Просто позиционируемся на нужном итераторе
 		bool findItem(int nom, bool needCreate = false)
 		{
@@ -187,6 +186,13 @@ class uoNumVector
 					}
 					_itSave--;
 				}
+				if (_itSave == _list->begin()){
+					item = *_itSave;
+					lastItemNo = item->number();
+					if (lastItemNo == nom)
+						return true;
+				}
+
 			} else if (itemNo < nom) {
 				srchDirection = toDown;
 				_itSaveOnUse = false;
@@ -221,13 +227,14 @@ class uoNumVector
 
 		/// Добавим итем в список, для надежности прийдется пробежаться по нему
 		bool addItem(T* psItem){
+			bool resVal = false;
 			int itemNo = psItem->number();
 			if ( itemNo < _minNo && _minNo>0) {
 				_list->prepend(psItem);
-				return true;
+				resVal = true;
 			} else if (itemNo > _maxNo && _maxNo > 0) {
 				_list->append(psItem);
-				return true;
+				resVal = true;
 			} else {
 				int itemNo2 = psItem->number();
 				T* item = NULL;
@@ -236,12 +243,18 @@ class uoNumVector
 					item = *it;
 					itemNo2 = item->number();
 					if (itemNo2 > itemNo) {
-						item->setNumber(_maxNo);
 						it = _list->insert(it, psItem);
-						return true;
+						resVal = true;
+						break;
 					}
 					it++;
 				}
+			}
+			defineMinMax(itemNo);
+			if (resVal) {
+				/// иначе была фигня с поиском....
+				detachIter();
+				return resVal;
 			}
 			return false;
 		}
