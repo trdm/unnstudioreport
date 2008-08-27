@@ -6,8 +6,11 @@
 *
 ***************************************/
 #include "uoReportViewIteract.h"
-namespace uoReport {
+#include <QFileDialog>
+#include <QMessageBox>
 
+
+namespace uoReport {
 
 uoReportViewIteract::uoReportViewIteract(QObject* parent)
 	: QObject(parent)
@@ -122,8 +125,41 @@ void uoReportViewIteract::setCheckedState(qreal scaleFactor){
 	else if (scaleFactor == 2.0) 	{		m_actScope200->setChecked(true);	}
 	else if (scaleFactor == 2.5) 	{		m_actScope250->setChecked(true);	}
 	else if (scaleFactor == 3.0) 	{		m_actScope300->setChecked(true);	}
-
 }
+
+/// Выбрать имя файла и формат
+bool uoReportViewIteract::chooseSaveFilePathAndFormat(QString& filePath, uoRptStoreFormat& frmt, QWidget* wi )
+{
+	bool retVal = false;
+
+	if (filePath.isEmpty()){
+		filePath = "report.xml";
+	}
+
+	QFileDialog::Options options;
+
+	QString selectedFilter;
+	QString fileName = QFileDialog::getSaveFileName(wi,
+						 tr("Save report.."),
+						 filePath,
+						 tr("XML Files (*.xml);*.xml"),
+						 &selectedFilter,
+						 options);
+	if (!fileName.isEmpty()){
+		frmt = uoRsf_Unknown;
+		if (fileName.endsWith(QString(".xml"), Qt::CaseInsensitive)){
+			frmt = uoRsf_XML;
+		} else {
+			QMessageBox::information(wi, tr("Attention"), tr("Not correct file name"));
+			return false;
+		}
+		// Пока остальные оставим.
+		filePath = fileName;
+		return true;
+	}
+	return false;
+}
+
 
 void uoReportViewIteract::onScale25(){	emit onScaleChange(0.25);}
 void uoReportViewIteract::onScale50(){	emit onScaleChange(0.5);}

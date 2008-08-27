@@ -77,7 +77,9 @@ class uoReportViewIteract : public QObject
 		QAction* m_actSaveAs;
 		QAction* m_actLoad;
 
+
 		void setCheckedState(qreal scaleFactor);
+		bool chooseSaveFilePathAndFormat(QString& filePath, uoRptStoreFormat& frmt, QWidget* wi);
 
 	signals:
 		void onScaleChange(const qreal scaleFact);

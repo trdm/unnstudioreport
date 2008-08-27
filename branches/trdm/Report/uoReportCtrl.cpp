@@ -45,6 +45,7 @@ uoReportCtrl::uoReportCtrl(QWidget *parent)
 	_rectRuleCorner	= new QRectF(0,0,0,0);
 	_rectAll		= new QRectF(0,0,0,0);
 	_rectDataRegion	= new QRectF(0,0,0,0);
+	_rectDataRegionFrame = new QRectF(0,0,0,0);
 
 
 	_charWidthPlus = 3;
@@ -129,6 +130,7 @@ uoReportCtrl::~uoReportCtrl()
 	delete _rectRuleCorner;
 	delete _rectAll;
 	delete _rectDataRegion;
+	delete _rectDataRegionFrame;
 	delete _iteractView;
 	clear();
 }
@@ -275,7 +277,6 @@ void uoReportCtrl::calcGroupItemPosition(uoRptGroupItem* grItem, uoRptHeaderType
 
 
 	} else if (rht == rhtVertical) {
-//		yPos0 = yPos = _rectGroupV->top();
 		if (_scaleStartPositionMapV.contains(grItem->_start))
 			yPos0 = yPos = _scaleStartPositionMapV[grItem->_start];
 
@@ -427,7 +428,7 @@ void uoReportCtrl::recalcHeadersRects()
 	zeroQRect(_rectGroupH);  zeroQRect(_rectSectionH);	zeroQRect(_rectRulerH);
 	zeroQRect(_rectRuleCorner);
 	zeroQRect(_rectAll);
-	zeroQRect(_rectDataRegion);
+	zeroQRect(_rectDataRegion);	zeroQRect(_rectDataRegionFrame);
 
 	_rectAll->setTopLeft(QPoint(1,1));
 	_rectAll->setBottom(wHeight);			_rectAll->setRight(wWidth);
@@ -494,6 +495,10 @@ void uoReportCtrl::recalcHeadersRects()
 		_rectRuleCorner->setRight(_rectRulerV->right());
 	}
 	_rectDataRegion->setLeft(curOffset);
+	_rectDataRegionFrame->setTop(_rectDataRegion->top());
+	_rectDataRegionFrame->setBottom(_rectDataRegion->bottom());
+	_rectDataRegionFrame->setLeft(_rectDataRegion->left());
+	_rectDataRegionFrame->setRight(_rectDataRegion->right());
 	_rectDataRegion->adjust(1, 1, -1, -1);
 
 	_rectGroupH->setLeft(curOffset);		_rectSectionH->setLeft(curOffset); 	_rectRulerH->setLeft(curOffset);
@@ -676,18 +681,12 @@ void uoReportCtrl::drawHeaderControl(QPainter& painter){
 	uoReportDoc* doc =  getDoc();
 	if (!doc)
 		return;
-//	painter.save();
 	QString paintStr = "";
 
 	_penText.setStyle(Qt::SolidLine);
 	painter.setPen(_penText);
 
 	bool isSell = false;
-	// нарисуем рамку области данных, т.к. потом будем рисовать линии на ней в этой процедурине.
-	painter.drawRect(*_rectDataRegion);
-	painter.fillRect(*_rectDataRegion, _brushBase);
-//	painter.restore();
-
 	/*
 		попробуем порисовать линейку...
 		вот тут нужен такой фокус, необходимо научиться рисовать
@@ -699,7 +698,7 @@ void uoReportCtrl::drawHeaderControl(QPainter& painter){
 	rptSize paintCntTagr = rptSizeNull; // Текущая величина отрисовки.
 	rptSize curSize = rptSizeNull; // Текущая величина отрисовки.
 
-	int nmLine = 0, counter = 0;
+	int nmLine = 0;
 	uoRptHeaderType hdrType;
 	QRectF curRct, curRctCpy; // копия, для извращений...
 	QPointF posStart, posEnd;
@@ -726,7 +725,6 @@ void uoReportCtrl::drawHeaderControl(QPainter& painter){
 			paintEndTagr = _rectRulerV->bottom();
 			paintCntTagr = _rectRulerV->top() - _shift_RowTop + 1 * _scaleFactorO;
 			curRct.setTop(paintCntTagr);
-			counter = 0;
 			nmLine = _firstVisible_ColLeft-1;
 			do {
 				nmLine = nmLine + 1;
@@ -756,25 +754,6 @@ void uoReportCtrl::drawHeaderControl(QPainter& painter){
 				curRct.setTop(paintCntTagr);
 				if (isSell)
 					painter.restore();
-				if (_showGrid) {
-
-					++counter;
-					if (counter == 1){
-						// первую, ту которую возможно сдвинули вниз мы миновали. Можно восстановить регион прорисовки.
-						painter.setClipRect(*_rectAll); // Устанавливаем область прорисовки. Будем рисовать только в ней.
-					}
-
-					//------Рисуем линию----------
-					oldPen = painter.pen();
-					painter.setPen(_penGrey);
-					posStart = curRct.bottomRight();
-					posStart.setX(_rectDataRegion->left() + 1);
-					posEnd = posStart;
-					posEnd.setX(_rectRulerH->right());
-					painter.drawLine(posStart, posEnd);
-					painter.setPen(oldPen);
-				}
-
 			} while(paintCntTagr < paintEndTagr);
 		}
 		painter.setClipRect(*_rectAll); // Устанавливаем область прорисовки. Будем рисовать только в ней.
@@ -791,7 +770,6 @@ void uoReportCtrl::drawHeaderControl(QPainter& painter){
 			paintCntTagr = _rectRulerH->left() - _shift_ColLeft + 1 * _scaleFactorO;
 
 			curRct.setLeft(paintCntTagr);
-			counter = 0;
 			nmLine = _firstVisible_RowTop - 1;
 			do {
 				nmLine = nmLine + 1;
@@ -825,27 +803,9 @@ void uoReportCtrl::drawHeaderControl(QPainter& painter){
 				if (isSell)
 					painter.restore();
 
-				if (_showGrid) {
-					++counter;
-					if (counter == 1){
-						// первую, ту которую возможно сдвинули вниз мы миновали. Можно восстановить регион прорисовки.
-						painter.setClipRect(*_rectAll); // Устанавливаем область прорисовки. Будем рисовать только в ней.
-					}
-
-					//------Рисуем линию----------
-					oldPen = painter.pen();
-					painter.setPen(_penGrey);
-					posStart = curRct.bottomRight();
-					posStart.setY(_rectDataRegion->top() + 1);
-					posEnd = posStart;
-					posEnd.setY(_rectRulerV->bottom());
-					painter.drawLine(posStart, posEnd);
-					painter.setPen(oldPen);
-				}
 			} while(paintCntTagr < paintEndTagr);
 		}
 		painter.setClipRect(*_rectAll); // Устанавливаем область прорисовки. Будем рисовать только в ней.
-
 	}
 
 }
@@ -858,8 +818,92 @@ void uoReportCtrl::drawDataArea(QPainter& painter)
 		вот тут нужен такой фокус, необходимо научиться рисовать
 		отсеченные части ректов и прочих фигур.
 	*/
-//	painter.drawRect(*_rectDataRegion);
-//	painter.fillRect(*_rectDataRegion, _brushBase);
+	uoReportDoc* doc =  getDoc();
+	if (!doc)
+		return;
+
+	_penText.setStyle(Qt::SolidLine);
+	painter.setPen(_penText);
+
+	QRectF rectCell;
+	QRectF rectCellCur; // ячейка на которой курсор стоит...
+	zeroQRect(&rectCell);
+
+	bool isSell = false;
+	bool isHide = false;
+	bool isCurent = false;
+	// нарисуем рамку области данных, т.к. потом будем рисовать линии на ней в этой процедурине.
+	painter.drawRect(*_rectDataRegionFrame);
+	painter.fillRect(*_rectDataRegion, _brushBase);
+	painter.setClipRect(*_rectDataRegion); // Устанавливаем область прорисовки. Будем рисовать только в ней.
+	QPen oldPen = painter.pen();
+	painter.setPen(_penGrey);
+
+	int rowCur = _firstVisible_RowTop;
+	int colCur = _firstVisible_ColLeft;
+	qreal rowsLenCur = _rectDataRegion->top() - _shift_RowTop; // + 1 * _scaleFactorO;
+	qreal rowsLensPage = _rectDataRegion->bottom();
+
+	qreal colsLenCur = _rectDataRegion->left() - _shift_ColLeft;
+	qreal colsLensPage = _rectDataRegion->right();
+	rectCell.setTop(rowsLenCur);
+	rectCell.setLeft(_rectDataRegion->left() - _shift_ColLeft);
+	qreal sz = 0.0;
+	do {	// строки, строки, строки и строки =============
+		while((isHide = doc->getScaleHide(rhtVertical, rowCur))){
+			++rowCur;
+		}
+		sz = doc->getScaleSize(rhtVertical, rowCur);
+		if (sz == 0.0) {
+			++rowCur;
+			continue;
+		}
+		rowsLenCur = rowsLenCur + sz;
+		rectCell.setBottom(rowsLenCur);
+
+		colCur = _firstVisible_ColLeft;
+		do {	// столбцы ||||||||||||||||||||||||||||||||||||
+			if (colCur == _firstVisible_ColLeft) {
+				colsLenCur = _rectDataRegion->left() - _shift_ColLeft;
+				rectCell.setLeft(colsLenCur);
+			}
+
+			while((isHide = doc->getScaleHide(rhtHorizontal, colCur))){
+				++colCur;
+			}
+			sz = doc->getScaleSize(rhtHorizontal, colCur);
+			if (sz == 0.0){
+				++colCur;
+				continue;
+			}
+			colsLenCur += sz;
+			rectCell.setRight(colsLenCur);
+			/// draw,  draw,  draw,  draw,  aw, aw, aw, aw, aw, wu-u-u-u-u-u
+			if (_showGrid){
+				/// а вот если ячейка - текущая?
+				if (_curentCell.x() == colCur && _curentCell.y() == rowCur){
+					rectCellCur = rectCell;				/// у бля....
+				}
+				painter.drawRect(rectCell);
+
+			}
+
+			rectCell.setLeft(rectCell.right());
+			colCur = colCur + 1;
+		} while(colsLenCur < colsLensPage);
+		rectCell.setTop(rectCell.bottom());
+		rowCur = rowCur + 1;
+	} while(rowsLenCur < rowsLensPage);
+
+	if (!rectCellCur.isEmpty()){
+		int wp = _penText.width();
+		_penText.setWidth(2);
+		painter.setPen(_penText);
+		painter.drawRect(rectCellCur);
+		_penText.setWidth(wp);
+	}
+
+	painter.setPen(oldPen);
 }
 
 
@@ -1138,9 +1182,104 @@ void uoReportCtrl::mouseMoveEvent(QMouseEvent *event)
 void uoReportCtrl::showEvent( QShowEvent* event){
 	recalcHeadersRects();
 }
+
+/// Обработка клавиатурных клавишь перемещения курсора....
+void uoReportCtrl::keyPressEventMoveCursor ( QKeyEvent * event )
+{
+	int key = event->key();
+	event->accept();
+
+	bool needUpdate = true;
+	switch (key)	{
+		case Qt::Key_Down:	{
+			_curentCell.setY(_curentCell.y()+1);
+			break;
+		}
+		case Qt::Key_Up: {
+			if (_curentCell.y() > 1) {
+				_curentCell.setY(_curentCell.y()-1);
+			} else {
+				needUpdate = false;
+			}
+			break;
+		}
+		case Qt::Key_Left:	{
+			if (_curentCell.x() > 1) {
+				_curentCell.setX(_curentCell.x()-1);
+			} else {
+				needUpdate = false;
+			}
+			break;
+		}
+		case Qt::Key_Right: {
+			_curentCell.setX(_curentCell.x()+1);
+			break;
+		}
+		default: {
+			event->ignore();
+			break;
+		}
+	}
+	if (needUpdate)
+		emit update();
+}
+
+/// Обработка реакции клавиатуры..
+void uoReportCtrl::keyPressEvent( QKeyEvent * event ){
+	int key = event->key();
+	event->accept();
+	bool needUpdate = false;
+	switch (key)
+	{
+		case Qt::Key_Down:
+		case Qt::Key_Up:
+		case Qt::Key_Left:
+		case Qt::Key_Right:
+		{
+			keyPressEventMoveCursor ( event );
+			break;
+		}
+//		case Qt::Key_PageUp:
+//		{
+//			m_StartScaleV -= m_pageSizeV;
+//			break;
+//		}
+//		case Qt::Key_PageDown:
+//		{
+//			m_StartScaleV += m_pageSizeV;
+//			break;
+//		}
+//		case Qt::Key_Home:
+//		{
+//			m_StartScaleV = 1;
+//			break;
+//		}
+//		case Qt::Key_End:
+//		{
+//			m_StartScaleV = m_VLengthDoc_virt;
+//			break;
+//		}
+		default:
+		{
+			/// остальные пусть папочка отрабатывает... QPrintTable
+			event->ignore();
+			break;
+		}
+	}
+	if (needUpdate)
+		emit update();
+
+}
+
 void uoReportCtrl::resizeEvent( QResizeEvent * event ){
 
 	QWidget::resizeEvent(event);
+
+	const QSize oldSizeW =  event->oldSize();
+	const QSize sizeW =  event->size();
+	_sizeVvirt = _sizeVvirt - oldSizeW.height() + sizeW.height();
+	_sizeHvirt = _sizeHvirt - oldSizeW.width() + sizeW.width();
+
 	recalcHeadersRects();
 	recalcScrollBars();
 }
@@ -1191,6 +1330,7 @@ void uoReportCtrl::onSetScaleFactor(const qreal sFactor){
 	    _scaleFactorO = 1 / _scaleFactor;
 
 		recalcHeadersRects();
+		recalcScrollBars();
 		emit update();
 	}
 }
@@ -1237,6 +1377,7 @@ bool uoReportCtrl::saveDoc(){
 
 }
 
+/// Выбор имени файла для сохранения файла..
 bool uoReportCtrl::saveDocAs(){
 	uoReportDoc* doc =  getDoc();
 	if (!doc)
@@ -1244,38 +1385,19 @@ bool uoReportCtrl::saveDocAs(){
 	QString 		 docFilePath = doc->getStorePathFile();
 	uoRptStoreFormat storeFormat = doc->getStoreFormat();
 
-	if (docFilePath.isEmpty()){
-		docFilePath = "report.xml";
-	}
-
-	QFileDialog::Options options;
-
-	QString selectedFilter;
-	QString fileName = QFileDialog::getSaveFileName(this,
-						 tr("Save report.."),
-						 docFilePath,
-						 tr("XML Files (*.xml);*.xml"),
-						 &selectedFilter,
-						 options);
-	if (!fileName.isEmpty()){
-		docFilePath = fileName;
-		storeFormat = uoRsf_Unknown;
-		if (fileName.endsWith(QString(".xml"), Qt::CaseInsensitive)){
-			storeFormat = uoRsf_XML;
-		} else {
-			QMessageBox::information(this, tr("Attention"), tr("Not correct file name"));
-			return false;
-		}
-		// Пока остальные оставим.
+	if (_iteractView->chooseSaveFilePathAndFormat(docFilePath, storeFormat, this)){
 		doc->setStoreOptions(docFilePath, storeFormat);
 		return doc->save();
+	} else {
+		return false;
 	}
-	return false;
 }
 
+/// сигнал на запись документа
 void uoReportCtrl::onSave(){
 	saveDoc();
 }
+/// сигнал на запись документа с выбором файла..
 void uoReportCtrl::onSaveAs(){
 	saveDocAs();
 }
@@ -1306,29 +1428,58 @@ void uoReportCtrl::recalcScrollBars()
 	uoReportDoc* doc =  getDoc();
 	if (!doc)
 		return;
-//	int widthW 	= getWidhtWidget(); // / doc->getDefScaleSize(rhtHorizontal);
-	///\todo вроде пролучается, но еще не закончил страдания...
+	int scalesCnt = 0;
+	int pages  = 1;
+	{
+		// Вертикальный скролл.
+		// вроде пролучается, но какой-то деревянный скролл...
+		// Пока отработаем с горизонтальным....
 
-	int oldScrVValue 	= _vScrollCtrl->value();
-	int oldScrVMax 		= _vScrollCtrl->maximum();
+		int heightV = getHeightWidget();
+		qreal scaleSizeV = doc->getDefScaleSize(rhtVertical) * _scaleFactorO;
+		int scalesCnt = (int)(heightV / scaleSizeV);
 
-	int heightV = getHeightWidget();
-	qreal scaleSizeV = doc->getDefScaleSize(rhtVertical);
-	int scalesCnt = heightV / scaleSizeV;
-	int pagesV  = 1;
-	if (_sizeVvirt < heightV) {
-		_sizeVvirt = heightV * 1.25;
+
+		pages  = 1;
+		if (_sizeVvirt < heightV) {
+			_sizeVvirt = heightV;
+		}
+		if (_sizeVvirt < _sizeVDoc){
+			_sizeVvirt = _sizeVDoc;
+		}
+		if (heightV>0)
+			pages  = _sizeVvirt / heightV;
+		_vScrollCtrl->setMaximum(pages*scalesCnt);
+		_vScrollCtrl->setPageStep(scalesCnt);
+
+
+		qDebug()
+		<< "_sizeVvirt: " 	<< _sizeVvirt
+		<< "_sizeVDoc: "	<< _sizeVDoc
+		<< "heightV: "		<< heightV
+		<< "VScroll: min: " << _vScrollCtrl->minimum()
+		<< "max: " 			<< _vScrollCtrl->maximum()
+		<< "val: "			<< _vScrollCtrl->value();
 	}
-	if (_sizeVvirt < _sizeVDoc){
-		_sizeVvirt = _sizeVDoc + heightV / 2;
+	{
+		int widthW 	= getWidhtWidget(); // / doc->getDefScaleSize(rhtHorizontal);
+		qreal scaleSizeH = doc->getDefScaleSize(rhtHorizontal) * _scaleFactorO;
+		int scalesCnt = (int)(widthW / scaleSizeH);
+
+
+		pages = 1;
+		if (_sizeHvirt < widthW) {
+			_sizeHvirt = widthW;
+		}
+		if (_sizeHvirt < _sizeVDoc){
+			_sizeHvirt = _sizeVDoc;
+		}
+		if (widthW>0)
+			pages  = _sizeHvirt / widthW;
+		_hScrollCtrl->setMaximum(pages  * scalesCnt);
+		_hScrollCtrl->setPageStep(scalesCnt);
+
 	}
-	pagesV  = _sizeVvirt / heightV + 1;
-	_vScrollCtrl->setMaximum(pagesV*scalesCnt);
-	_vScrollCtrl->setPageStep(scalesCnt);
-
-
-	qDebug() << "VScroll: _sizeVvirt: " << _sizeVvirt << " _sizeVDoc: " << _sizeVDoc<< " heightV: "<< heightV;
-	qDebug() << "VScroll: min: " << _vScrollCtrl->minimum() << " max: " << _vScrollCtrl->maximum()<< "val: "<< _vScrollCtrl->value();
 
 }
 
