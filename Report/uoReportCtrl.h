@@ -89,11 +89,13 @@ class uoReportCtrl : public QWidget
         void contextMenuEvent(QContextMenuEvent *event);
 		void showEvent( QShowEvent* event );
 		void resizeEvent ( QResizeEvent * event );
+		void keyPressEvent ( QKeyEvent * event );
 		//-------------------------------------------------
 		bool mousePressEventForGroup(QMouseEvent *event);
 		bool mousePressEventForRuler(QMouseEvent *event);
 		bool findScaleLocation(qreal posX, qreal posY, int &scaleNo, uoRptHeaderType rht);
 		uoBorderLocType  scaleLocationInBorder(qreal pos, QRectF rect, uoRptHeaderType rht);
+		void keyPressEventMoveCursor ( QKeyEvent * event );
 
 		// Акселераторы для поиска запчасти под курсором.
 		uoRptSparesType _curMouseSparesType;
@@ -130,10 +132,11 @@ class uoReportCtrl : public QWidget
 		qreal _scaleFactorO;		///< обратная величина фактора. для пересчетов смещений.
 
 	private:
-		void initControls(QWidget *parent);
-		QScrollBar  *_vScrollCtrl, *_hScrollCtrl;
-		QWidget* _cornerWidget; //, _cornerWidget(parent)
-		void recalcScrollBars();
+		void 		initControls(QWidget *parent);
+		QScrollBar  *_vScrollCtrl;
+		QScrollBar  *_hScrollCtrl;
+		QWidget* 	_cornerWidget; //, _cornerWidget(parent)
+		void 		recalcScrollBars();
 	public:
 		uoReportDoc* getDoc() {return _rptDoc;}
 		bool saveDoc();
@@ -198,7 +201,8 @@ class uoReportCtrl : public QWidget
 		QRectF* _rectRulerH;		///< Горизонтальная линейка
 		QRectF* _rectRuleCorner;	///< Верхний корнер-виджет слева от горизонтальной и сверху от вертикальной линейки
 		QRectF* _rectAll;			///< Полный регион
-		QRectF* _rectDataRegion;	///< Регион данных.
+		QRectF* _rectDataRegion;		///< Регион данных.
+		QRectF* _rectDataRegionFrame;	///< Рамка региона данных. А то что-то тоскливо выглядит...
 
 
 		int  _maxVisibleLineNumberCnt; ///< Количество символов в максимальной видимой строке таблицы. Это нужно для вычисления ширины вертикальной линейки.
