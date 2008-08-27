@@ -133,6 +133,7 @@ class uoReportCtrl : public QWidget
 		void initControls(QWidget *parent);
 		QScrollBar  *_vScrollCtrl, *_hScrollCtrl;
 		QWidget* _cornerWidget; //, _cornerWidget(parent)
+		void recalcScrollBars();
 	public:
 		uoReportDoc* getDoc() {return _rptDoc;}
 		bool saveDoc();
@@ -218,9 +219,6 @@ class uoReportCtrl : public QWidget
 		int _lastVisibleRow; 	///< Первая верхняя видимая строка
 		int _lastVisibleCol; 	///< Первая левая видимая колонка
 
-		qreal _sizeVvirt;	///< Виртуальный размер документа по вертикали
-		qreal _sizeHvirt;	///< Виртуальный Размер документа по горизонтали
-
 
 		rptGroupItemList* _groupListCache;	///< кешь для экземпляров uoRptGroupItem
 		rptGroupItemList* _groupListV;		///< список ректов группировок столбцов
@@ -229,8 +227,15 @@ class uoReportCtrl : public QWidget
 		rptScalePositionMap _scaleStartPositionMapH; 	///< Координаты х() ячеек горизонтальной линейки (видимой части)
 		rptScalePositionMap _scaleStartPositionMapV;	///< Координаты y() ячеек вертикальной линейки (видимой части)
 
+		int _sizeVvirt;	///< Виртуальный размер документа по вертикали. Виртуальный потому что может увеличиваться скролом.
+		int _sizeHvirt;	///< Виртуальный Размер документа по горизонтали
+		int _sizeVDoc;	///< Реальный размер документа.
+		int _sizeHDoc;	///< Реальный размер документа.
+		int _pageWidth;		///< Ширина страницы в столбцах стандартного размера
+		int _pageHeight;	///< Высота страницы в строках стандартного размера
+
 	public slots:
-		void setDocSize(int row, int col, qreal sizeV, qreal sizeH);
+		void changeDocSize(qreal sizeV, qreal sizeH);
 
 };
 

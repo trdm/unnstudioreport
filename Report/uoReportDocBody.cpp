@@ -12,9 +12,6 @@
 namespace uoReport {
 
 
-
-
-
 uoHeaderScale::uoHeaderScale()
 	: uoNumVector<uoRptNumLine>()
 {}
@@ -104,6 +101,19 @@ void uoHeaderScale::test()
 	setHide(2, true);
 	printToDebug();
 
+	clear();
+	qDebug() << "uoHeaderScale::test-3";
+	setSize(9, 3.0);
+	setSize(1, 45.3);
+	printToDebug();
+	int i = 0;
+	for (i = 9; i<=20; i++){
+		getSize(i);
+		setHide(i, true);
+	}
+	printToDebug();
+	setHide(2, true);
+	printToDebug();
 
 }
 

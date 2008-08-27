@@ -72,10 +72,12 @@ uoReportCtrl::uoReportCtrl(QWidget *parent)
 	_curentCell.setX(1);
 	_curentCell.setY(1);
 
-
+	_pageWidth 	= 0;
+	_pageHeight = 0;
+	_sizeVDoc 	= _sizeHDoc = 0;
+	_sizeVvirt 	= _sizeHvirt = 0;
 
 	initControls(parent);
-
 
 	_iteractView = new uoReportViewIteract();
 	_iteractView->createActions();
@@ -84,9 +86,6 @@ uoReportCtrl::uoReportCtrl(QWidget *parent)
 	connect(_iteractView, SIGNAL(onScaleChange(qreal)), this, SLOT(onSetScaleFactor(qreal)));
 
 	_selections = new uoReportSelection(this);
-
-	_sizeVvirt = 0.0;	///< Виртуальный размер документа по вертикали
-	_sizeHvirt = 0.0;	///< Виртуальный Размер документа по горизонтали
 	setDoc(new uoReportDoc());
 }
 
@@ -97,14 +96,15 @@ void uoReportCtrl::initControls(QWidget *parent){
 	QGridLayout* layout = new  QGridLayout(parent);
 	layout->setMargin(0);	/// нулевой отступ...
 	layout->setSpacing(0);
-	QScrollBar* _hScrollCtrl = new QScrollBar(Qt::Horizontal, parent);
-
-	_vScrollCtrl = new QScrollBar(Qt::Vertical, this);
+	_hScrollCtrl = new QScrollBar(Qt::Horizontal, parent);
+	_vScrollCtrl = new QScrollBar(Qt::Vertical, parent);
 	_vScrollCtrl->setLayoutDirection(Qt::RightToLeft);
 	_vScrollCtrl->setFocusPolicy(Qt::StrongFocus);
-	_vScrollCtrl->setPageStep(32);
-	_vScrollCtrl->setMaximum(50);
-	_vScrollCtrl->setMinimum(1);
+
+	_hScrollCtrl->setRange(1,3);
+	_hScrollCtrl->setValue(1);
+	_vScrollCtrl->setRange(1,3);
+	_vScrollCtrl->setValue(1);
 
     layout->addWidget(_cornerWidget,1,1);
 	layout->addWidget( this, 0, 0 );
@@ -152,6 +152,8 @@ void uoReportCtrl::setDoc(uoReportDoc* rptDoc)
 	}
 	_rptDoc = rptDoc;
 	_rptDoc->attachView(this);
+	connect(_rptDoc, SIGNAL(onSizeChange(qreal,qreal)), this, SLOT(changeDocSize(qreal, qreal)));
+
 
 }
 
@@ -273,6 +275,7 @@ void uoReportCtrl::calcGroupItemPosition(uoRptGroupItem* grItem, uoRptHeaderType
 
 
 	} else if (rht == rhtVertical) {
+//		yPos0 = yPos = _rectGroupV->top();
 		if (_scaleStartPositionMapV.contains(grItem->_start))
 			yPos0 = yPos = _scaleStartPositionMapV[grItem->_start];
 
@@ -845,16 +848,16 @@ void uoReportCtrl::drawHeaderControl(QPainter& painter){
 
 	}
 
-	/*
-		попробуем порисовать основное поле с данными...
-		вот тут нужен такой фокус, необходимо научиться рисовать
-		отсеченные части ректов и прочих фигур.
-	*/
 }
 
 /// Отрисовка поля данных.
 void uoReportCtrl::drawDataArea(QPainter& painter)
 {
+	/*
+		попробуем порисовать основное поле с данными...
+		вот тут нужен такой фокус, необходимо научиться рисовать
+		отсеченные части ректов и прочих фигур.
+	*/
 //	painter.drawRect(*_rectDataRegion);
 //	painter.fillRect(*_rectDataRegion, _brushBase);
 }
@@ -1136,8 +1139,10 @@ void uoReportCtrl::showEvent( QShowEvent* event){
 	recalcHeadersRects();
 }
 void uoReportCtrl::resizeEvent( QResizeEvent * event ){
+
 	QWidget::resizeEvent(event);
 	recalcHeadersRects();
+	recalcScrollBars();
 }
 
 
@@ -1285,11 +1290,64 @@ void uoReportCtrl::setCurentCell(int x, int y, bool ensureVisible)
 	}
 }
 
-/// Сигнал установки новых размеров документа.
-void uoReportCtrl::setDocSize(int row, int col, qreal sizeV, qreal sizeH)
+
+/// Перекалькуляция размеров и положения ползунка скролов
+void uoReportCtrl::recalcScrollBars()
 {
-//	qreal _sizeVvirt;	///< Виртуальный размер документа по вертикали
-//	qreal _sizeHvirt;	///< Виртуальный Размер документа по горизонтали
+	// Чё есть?
+	//	int _sizeVvirt;	///< Виртуальный размер документа по вертикали. Виртуальный потому что может увеличиваться скролом.
+	//	int _sizeHvirt;	///< Виртуальный Размер документа по горизонтали
+	//	int _sizeVDoc;	///< Реальный размер документа.
+	//	int _sizeHDoc;	///< Реальный размер документа.
+	//	int _pageWidth;		///< Ширина страницы в столбцах стандартного размера
+	//	int _pageHeight;	///< Высота страницы в строках стандартного размера
+	//  как считать?
+
+	uoReportDoc* doc =  getDoc();
+	if (!doc)
+		return;
+//	int widthW 	= getWidhtWidget(); // / doc->getDefScaleSize(rhtHorizontal);
+	///\todo вроде пролучается, но еще не закончил страдания...
+
+	int oldScrVValue 	= _vScrollCtrl->value();
+	int oldScrVMax 		= _vScrollCtrl->maximum();
+
+	int heightV = getHeightWidget();
+	qreal scaleSizeV = doc->getDefScaleSize(rhtVertical);
+	int scalesCnt = heightV / scaleSizeV;
+	int pagesV  = 1;
+	if (_sizeVvirt < heightV) {
+		_sizeVvirt = heightV * 1.25;
+	}
+	if (_sizeVvirt < _sizeVDoc){
+		_sizeVvirt = _sizeVDoc + heightV / 2;
+	}
+	pagesV  = _sizeVvirt / heightV + 1;
+	_vScrollCtrl->setMaximum(pagesV*scalesCnt);
+	_vScrollCtrl->setPageStep(scalesCnt);
+
+
+	qDebug() << "VScroll: _sizeVvirt: " << _sizeVvirt << " _sizeVDoc: " << _sizeVDoc<< " heightV: "<< heightV;
+	qDebug() << "VScroll: min: " << _vScrollCtrl->minimum() << " max: " << _vScrollCtrl->maximum()<< "val: "<< _vScrollCtrl->value();
+
+}
+
+/// Сигнал установки новых размеров документа.
+void uoReportCtrl::changeDocSize(qreal sizeV, qreal sizeH)
+{
+	uoReportDoc* doc = getDoc();
+	if (!doc)
+		return;
+
+	int newSizeV = (int)sizeV;
+	int newSizeH = (int)sizeH;
+	if (newSizeV != _sizeVDoc || _sizeHDoc != newSizeH){
+		_sizeVvirt = _sizeVvirt + newSizeV - _sizeVDoc;
+		_sizeHvirt = _sizeHvirt + newSizeH - _sizeHDoc;
+		_sizeVDoc = newSizeV;
+		_sizeHDoc = newSizeH;
+		recalcScrollBars();
+	}
 }
 
 
