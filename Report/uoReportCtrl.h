@@ -96,6 +96,8 @@ class uoReportCtrl : public QWidget
 		bool findScaleLocation(qreal posX, qreal posY, int &scaleNo, uoRptHeaderType rht);
 		uoBorderLocType  scaleLocationInBorder(qreal pos, QRectF rect, uoRptHeaderType rht);
 		void keyPressEventMoveCursor ( QKeyEvent * event );
+		void updateThis();
+		int _freezUpdate;	/// заморозить посылку сообщений на перерисовку
 
 		// Акселераторы для поиска запчасти под курсором.
 		uoRptSparesType _curMouseSparesType;
@@ -144,8 +146,8 @@ class uoReportCtrl : public QWidget
 		void optionShow(bool shGrid, bool shGroup, bool shSection, bool shRuler);
 
 	protected:
-		qreal getWidhtWidget() {return width() * (1/_scaleFactor);}; 	///< Ширина с учетом масштаба
-		qreal getHeightWidget(){return height() * (1/_scaleFactor);};	///< Высота с учетом масштаба
+		qreal getWidhtWidget(); 	///< Ширина с учетом масштаба
+		qreal getHeightWidget();	///< Высота с учетом масштаба
 
 		void recalcHeadersRects();
 		void recalcGroupSectionRects(uoRptHeaderType rht = rhtUnknown);
@@ -193,16 +195,16 @@ class uoReportCtrl : public QWidget
 
 	private:
 		/// данные/ректы для областей....
-		QRectF* _rectGroupV;		///< Вертикальные группировки
-		QRectF* _rectGroupH;		///< Горизонтальные группировки
-		QRectF* _rectSectionV;		///< Вертикальные секции
-		QRectF* _rectSectionH;		///< Горизонтальные секции
-		QRectF* _rectRulerV;		///< Вертикальная линейка
-		QRectF* _rectRulerH;		///< Горизонтальная линейка
-		QRectF* _rectRuleCorner;	///< Верхний корнер-виджет слева от горизонтальной и сверху от вертикальной линейки
-		QRectF* _rectAll;			///< Полный регион
-		QRectF* _rectDataRegion;		///< Регион данных.
-		QRectF* _rectDataRegionFrame;	///< Рамка региона данных. А то что-то тоскливо выглядит...
+		QRectF _rectGroupV;		///< Вертикальные группировки
+		QRectF _rectGroupH;		///< Горизонтальные группировки
+		QRectF _rectSectionV;		///< Вертикальные секции
+		QRectF _rectSectionH;		///< Горизонтальные секции
+		QRectF _rectRulerV;		///< Вертикальная линейка
+		QRectF _rectRulerH;		///< Горизонтальная линейка
+		QRectF _rectRuleCorner;	///< Верхний корнер-виджет слева от горизонтальной и сверху от вертикальной линейки
+		QRectF _rectAll;			///< Полный регион
+		QRectF _rectDataRegion;		///< Регион данных.
+		QRectF _rectDataRegionFrame;	///< Рамка региона данных. А то что-то тоскливо выглядит...
 
 
 		int  _maxVisibleLineNumberCnt; ///< Количество символов в максимальной видимой строке таблицы. Это нужно для вычисления ширины вертикальной линейки.
@@ -220,8 +222,10 @@ class uoReportCtrl : public QWidget
 		int _firstVisible_RowTop; 	///< Первая верхняя видимая строка
 		int _firstVisible_ColLeft; 	///< Первая левая видимая колонка
 
-		int _lastVisibleRow; 	///< Первая верхняя видимая строка
-		int _lastVisibleCol; 	///< Первая левая видимая колонка
+		int _lastVisibleRow; 	///< Последняя верхняя видимая строка
+		int _lastVisibleCol; 	///< Последняя левая видимая колонка
+//		int _lastFullVisibleRow; 	///< Последняя полностью верхняя видимая строка
+//		int _lastFullVisibleCol; 	///< Последняя полностью левая видимая колонка
 
 
 		rptGroupItemList* _groupListCache;	///< кешь для экземпляров uoRptGroupItem
@@ -237,6 +241,11 @@ class uoReportCtrl : public QWidget
 		int _sizeHDoc;	///< Реальный размер документа.
 		int _pageWidth;		///< Ширина страницы в столбцах стандартного размера
 		int _pageHeight;	///< Высота страницы в строках стандартного размера
+		void onAccessRowOrCol(int nom, uoRptHeaderType rht); ///< при доступе к строке или столбцу вьюва...
+		int _rowCountVirt;	///< виртуальные строки вьюва
+		int _colCountVirt;	///< виртуальные колонки вьюва
+
+
 
 	public slots:
 		void changeDocSize(qreal sizeV, qreal sizeH);
