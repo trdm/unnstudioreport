@@ -104,8 +104,13 @@ void uoReportCtrl::initControls(QWidget *parent){
 	_vScrollCtrl->setMinimum(1);
 	_vScrollCtrl->setValue(1);
 	connect(_vScrollCtrl, SIGNAL(valueChanged(int)), this, SLOT(onSetVScrolPos(int)));
-
 	connect(_vScrollCtrl, SIGNAL(actionTriggered(int)), this, SLOT(onScrollActionV(int)));
+
+//	connect(this, SIGNAL(wheelEvent(QWheelEvent*)), _vScrollCtrl, SLOT(wheelEvent(QWheelEvent*))); /// не получается...
+
+	connect(_hScrollCtrl, SIGNAL(actionTriggered(int)), this, SLOT(onScrollActionH(int)));
+
+
 
 //	onSetHScrolPos(int x)
 
@@ -516,7 +521,7 @@ void uoReportCtrl::recalcHeadersRects()
 	if (_showRuler) {
 		curOffset += UORPT_OFFSET_LINE;
 		_rectRulerV.setLeft(curOffset);
-		curOffset += _charWidthPlus * _maxVisibleLineNumberCnt+3;
+		curOffset += _charWidthPlus * _maxVisibleLineNumberCnt+5;
 		curOffset += UORPT_OFFSET_LINE;
 		_rectRulerV.setRight(curOffset);
 		curOffset += UORPT_OFFSET_LINE;
@@ -540,8 +545,8 @@ void uoReportCtrl::recalcHeadersRects()
 	if (!_showSection) 	{zeroQRect(_rectSectionV); 	zeroQRect(_rectSectionH);	}
 	if (!_showRuler) 	{zeroQRect(_rectRulerV); 	zeroQRect(_rectRulerH);	zeroQRect(_rectRuleCorner);}
 
-	_rowsInPage = _rectDataRegion.height() / doc->getDefScaleSize(rhtVertical); 		///< строк на страницу
-	_colsInPage = _rectDataRegion.width() / doc->getDefScaleSize(rhtHorizontal); 		///< столбцов на страницу
+	_rowsInPage = (int) (_rectDataRegion.height() / doc->getDefScaleSize(rhtVertical)); 		///< строк на страницу
+	_colsInPage = (int) (_rectDataRegion.width() / doc->getDefScaleSize(rhtHorizontal)); 		///< столбцов на страницу
 
 
 	recalcGroupSectionRects();
@@ -810,11 +815,13 @@ void uoReportCtrl::drawHeaderControl(QPainter& painter){
 				}
 
 				paintStr.setNum(nmLine);
+				_maxVisibleLineNumberCnt = qMax(3, paintStr.length());
 				painter.drawText(curRct, Qt::AlignCenter,  paintStr);
 				curRct.setTop(paintCntTagr);
 				if (isSell)
 					painter.restore();
 			} while(paintCntTagr < paintEndTagr);
+			_maxVisibleLineNumberCnt = qMax(3, paintStr.length());
 		}
 		painter.setClipRect(_rectAll); // Устанавливаем область прорисовки. Будем рисовать только в ней.
 
@@ -889,7 +896,7 @@ void uoReportCtrl::drawDataArea(QPainter& painter)
 	QRectF rectCellCur; // ячейка на которой курсор стоит...
 	zeroQRect(rectCell);
 
-	bool isSell = false;
+//	bool isSell = false;
 	bool isHide = false;
 	// нарисуем рамку области данных, т.к. потом будем рисовать линии на ней в этой процедурине.
 	painter.drawRect(_rectDataRegionFrame);
@@ -1258,6 +1265,10 @@ void uoReportCtrl::keyPressEventMoveCursor ( QKeyEvent * event )
 	if (!doc)
 		return;
 
+	Qt::KeyboardModifiers  kbrdMod = qApp->keyboardModifiers();
+	bool ctrlPresed = (kbrdMod & Qt::ControlModifier) ? true : false;
+
+
 	bool itemHiden = false;
 
 	//	научим курсор прыгать через скрытые ячейки.... но ни через границу поля...
@@ -1300,6 +1311,67 @@ void uoReportCtrl::keyPressEventMoveCursor ( QKeyEvent * event )
 				posX = _curentCell.x();
 			break;
 		}
+		case Qt::Key_Home:{
+			// В начало строки....
+			if (!ctrlPresed) {
+				posX = 1;
+			} else {
+				posY = 1;
+			}
+			break;
+		}
+		case Qt::Key_End:{
+			if (!ctrlPresed) {
+				posX = _colCountDoc + 1;
+			} else {
+				posY = _rowCountDoc + 1;
+			}
+			break;
+		}
+		case Qt::Key_PageUp:
+		case Qt::Key_PageDown:{
+			/*
+				необходимо промотать страницу вниз или вверх...
+				начнем с простейших случаев:
+			*/
+			if(key == Qt::Key_PageUp && _firstVisible_RowTop == 1) {
+				posY = 1;
+			} else if (key == Qt::Key_PageDown && _firstVisible_RowTop == 1 && posY < _lastVisibleRow) {
+				posY = _lastVisibleRow;
+			} else {
+				/*
+					тут все смешнее. попробуем...
+				*/
+				if (!curentCellVisible())
+					return;
+				bool rowHiden = false;
+				int modif = 1, curRow = _curentCell.y();
+				if (key == Qt::Key_PageUp) {
+					modif = -1;
+				}
+
+				qreal pageHeight = _rowsInPage * doc->getDefScaleSize(rhtVertical);
+				do {
+					curRow = curRow + modif;
+					if (curRow == 0) {
+						curRow = 1;
+						break;
+					}
+					rowHiden = doc->getScaleHide(rhtVertical, curRow);
+					if (rowHiden)
+						continue;
+					pageHeight = pageHeight - doc->getScaleSize(rhtVertical, curRow);
+					if (pageHeight < 0.0)
+						break;
+				} while(true);
+				if (curRow <= 0)
+					curRow = 1;
+				posY = curRow;
+
+			}
+//			int rowCounter = _rowsInPage;
+			break;
+		}
 		default: {
 			break;
 		}
@@ -1311,18 +1383,37 @@ void uoReportCtrl::keyPressEventMoveCursor ( QKeyEvent * event )
 	}
 }
 
+/// Поскролимся чуток...
+void uoReportCtrl::wheelEvent ( QWheelEvent * event ){
+     int numDegrees = event->delta() / 8;
+     int numSteps = numDegrees / 15;
+     // пока нафиг...
+//     _vScrollCtrl->s
+//     if (event->orientation() == Qt::Horizontal) {
+//         scrollHorizontally(numSteps);
+//     } else {
+//         scrollVertically(numSteps);
+//     }
+     event->accept();
+
+}
+
+
 /// Обработка реакции клавиатуры..
 void uoReportCtrl::keyPressEvent( QKeyEvent * event ){
 	int key = event->key();
 	--_freezUpdate;
 	event->accept();
-	bool needUpdate = false;
 	switch (key)
 	{
 		case Qt::Key_Down:
 		case Qt::Key_Up:
 		case Qt::Key_Left:
 		case Qt::Key_Right:
+		case Qt::Key_Home:
+		case Qt::Key_End:
+		case Qt::Key_PageUp:
+		case Qt::Key_PageDown:
 		{
 			keyPressEventMoveCursor ( event );
 			break;
@@ -1504,6 +1595,7 @@ void uoReportCtrl::onSaveAs(){
 void uoReportCtrl::onSetVScrolPos(int y){
 	if (y == _curentCell.y())
 		return;
+	/// нафига они вообще нужны? onSetVScrolPos и onSetHScrolPos
 }
 
 /// Сигнал на изменение позиции горизонтального скрола
@@ -1513,8 +1605,13 @@ void uoReportCtrl::onSetHScrolPos(int x){
 }
 
 /// попробуем поймать скрол вертикального слайдера..
-void uoReportCtrl::onScrollActionV(int act){
-	int newAct = 0;
+void uoReportCtrl::onScrollActionV(int act){	doScrollAction(act, rhtVertical);}
+
+/// попробуем поймать скрол горизонтального слайдера..
+void uoReportCtrl::onScrollActionH(int act){	doScrollAction(act, rhtHorizontal);}
+
+void uoReportCtrl::doScrollAction(int act, uoRptHeaderType rht)
+{
 
 	/*
 		Тут обрабатывается все другим путем: скрол без изменения
@@ -1524,41 +1621,66 @@ void uoReportCtrl::onScrollActionV(int act){
 		int _colsInPage; 		///< столбцов на страницу
 
 	*/
+	int toX = 0, toY = 0;
 
-	bool rowVisible = false;
 	switch(act) {
 		case QAbstractSlider::SliderSingleStepAdd:	{
-			scrollView(0, 1);
+			if (rht == rhtVertical) {
+				toY = 1;
+			} else {
+				toX = 1;
+			}
 			break;
 		}
 		case QAbstractSlider::SliderSingleStepSub:	{
-			scrollView(0, -1);
+			if (rht == rhtVertical) {
+				toY = -1;
+			} else {
+				toX = -1;
+			}
 			break;
 		}
 		case QAbstractSlider::SliderPageStepAdd:	{
-			scrollView(0, 1 * _rowsInPage);
+			if (rht == rhtVertical) {
+				toY = 1 * _rowsInPage;
+			} else {
+				toX = 1 * _colsInPage;
+			}
 			break;
 		}
 		case QAbstractSlider::SliderPageStepSub:	{
-			scrollView(0, -1 * _rowsInPage);
+			if (rht == rhtVertical) {
+				toY = -1 * _rowsInPage;
+			} else {
+				toX = -1 * _colsInPage;
+			}
 			break;
 		}
 		case QAbstractSlider::SliderMove:	{
-			_firstVisible_RowTop = _vScrollCtrl->value();
-			_shift_RowTop = 0.0;
+			if (rht == rhtVertical) {
+				_firstVisible_RowTop = _vScrollCtrl->value();
+				_shift_RowTop = 0.0;
+			} else {
+				_firstVisible_ColLeft = _hScrollCtrl->value();
+				_shift_ColLeft = 0.0;
+			}
+
 			recalcHeadersRects();
 			updateThis();
 			break;
 		}
 
-
 		default:
 		{
-			newAct = act;
 			break;
 		}
 	}
+	if (toX != 0 || toY != 0)
+		scrollView(toX, toY);
+
+
 }
+
 
 /**
 	Скролим вьюв на dx - в горизонтальном или dy в вертикальном направлении.
@@ -1581,12 +1703,28 @@ void uoReportCtrl::scrollView(int dx, int dy)
 		// горизонтальный.
 		if (dx > 0) {
 			pos = _firstVisible_ColLeft + dx;
-			while(itemHiden = doc->getScaleHide(rhtHorizontal, pos++)){}
+			while(itemHiden = doc->getScaleHide(rhtHorizontal, pos)){
+				++pos;
+			}
 			_firstVisible_ColLeft = pos;
 			_shift_ColLeft = 0.0;
-		} else {
+		} else if (dx < 0){
+			pos = _firstVisible_ColLeft + dx;
+			if (pos > 0) {
+				while(itemHiden = doc->getScaleHide(rhtHorizontal, pos) && (pos > 1)){
+					--pos;
+				}
+			} else {
+				pos = 1;
+			}
 
+			_firstVisible_ColLeft = pos;
+			_shift_ColLeft = 0.0;
 		}
+		onAccessRowOrCol(_firstVisible_ColLeft/* + _rowsInPage*/, rhtHorizontal);
+		pos = _hScrollCtrl->value() + dx;
+		if (pos>0)
+			_hScrollCtrl->setValue(pos);
 	}
 
 	if (dy != 0) {
@@ -1620,7 +1758,19 @@ void uoReportCtrl::scrollView(int dx, int dy)
 	updateThis();
 }
 
-
+/// проверка на видимость ячейки под курсором.
+bool uoReportCtrl::curentCellVisible() {
+	if (
+	_curentCell.x() < _firstVisible_ColLeft ||
+	_curentCell.x() > _lastVisibleCol ||
+	_curentCell.y() < _firstVisible_RowTop ||
+	_curentCell.y() > _lastVisibleRow
+	) {
+		return false;
+	} else {
+		return true;
+	}
+}
 
 /// Установить текушую ячейку с/без гарантии видимости
 /// Перемещаем курсор на ячейку, если ячейка не видима, делаем её видимой.
@@ -1645,10 +1795,11 @@ void uoReportCtrl::setCurentCell(int x, int y, bool ensureVisible)
 				_firstVisible_RowTop = y;
 				_shift_RowTop = 0;
 			}
-			else if (moveTo == uost_Bottom && ( _lastVisibleRow-1) <= y)	{
+			else if (moveTo == uost_Bottom && ( _lastVisibleRow) <= y)	{
 				// Надо высчитать _firstVisible_RowTop и _shift_RowTop
 				qreal sizeVAll = _rectDataRegionFrame.height();
 				qreal sizeItem = 0.0;
+				_shift_RowTop = 0.0;
 				int scaleNo = y;
 				do {
 					_firstVisible_RowTop = scaleNo;
@@ -1668,16 +1819,20 @@ void uoReportCtrl::setCurentCell(int x, int y, bool ensureVisible)
 					if (scaleNo<=0)
 						break;
 				} while(true);
-			} if (_firstVisible_RowTop > y || _lastVisibleRow < y) {
+			}
+			else if (_firstVisible_RowTop > y || _lastVisibleRow < y) {
 				if (_firstVisible_RowTop > y) {
-					scrollView(0, _firstVisible_RowTop - y);
+					// Текшая ячейка находится вверху относительно видимой области
+					_firstVisible_RowTop = y;
+					_shift_RowTop = 0.0;
 				} else if (_lastVisibleRow < y) {
-					scrollView(0, y - _lastVisibleRow);
+					_lastVisibleRow = y;
+					_firstVisible_RowTop = recalcVisibleScales(rhtVertical);
 				}
 			}
-			recalcHeadersRects();
-			_vScrollCtrl->setValue(_curentCell.y());
 		}
+		recalcHeadersRects();
+		_vScrollCtrl->setValue(_curentCell.y());
 		onAccessRowOrCol(_curentCell.y(), rhtVertical);
 
 	}
@@ -1691,13 +1846,12 @@ void uoReportCtrl::setCurentCell(int x, int y, bool ensureVisible)
 			if (moveTo == uost_Left && _firstVisible_ColLeft >= x){
 				_firstVisible_ColLeft = x;
 				_shift_ColLeft = 0;
-//				recalcVisibleScales(rhtHorizontal);
-				recalcHeadersRects();
 			}
 			else if (moveTo == uost_Right && ( _lastVisibleCol-1) <= x)	{
 				// Надо высчитать _firstVisible_ColLeft и _shift_ColLeft
 				qreal sizeVAll = _rectDataRegionFrame.width();
 				qreal sizeItem = 0.0;
+				_shift_ColLeft = 0.0;
 				int scaleNo = x;
 				do {
 					_firstVisible_ColLeft = scaleNo;
@@ -1717,9 +1871,20 @@ void uoReportCtrl::setCurentCell(int x, int y, bool ensureVisible)
 					if (scaleNo<=0)
 						break;
 				} while(true);
-				recalcHeadersRects();
+			}
+			else if (_firstVisible_ColLeft > x || _lastVisibleCol < x) {
+				if (_firstVisible_ColLeft > x) {
+					// Текшая ячейка находится вверху относительно видимой области
+					_firstVisible_ColLeft = x;
+					_shift_ColLeft = 0.0;
+				} else if (_lastVisibleCol < x) {
+					_lastVisibleCol = x;
+					_firstVisible_ColLeft = recalcVisibleScales(rhtHorizontal);
+				}
 			}
 		}
+		recalcHeadersRects();
+		_hScrollCtrl->setValue(_curentCell.x());
 		onAccessRowOrCol(_curentCell.x(), rhtHorizontal);
 
 	}
@@ -1742,40 +1907,25 @@ void uoReportCtrl::recalcScrollBars()
 	uoReportDoc* doc =  getDoc();
 	if (!doc)
 		return;
-	int pos = 0;
-	int pages  = 1;
 	{
 		// Вертикальный скролл.
 		// вроде пролучается, но какой-то деревянный скролл...
 		// Пока отработаем с горизонтальным....
 
 		int heightV = (int) _rectDataRegion.height();
-//		int heightV = (int)getHeightWidget();
-		qreal scaleSizeV = doc->getDefScaleSize(rhtVertical) * _scaleFactorO;
-		pos = _vScrollCtrl->value();
-
-
-		pages  = 1;
 		if (_sizeVvirt < heightV) {
 			_sizeVvirt = heightV;
 		}
 		if (_sizeVvirt < _sizeVDoc){
 			_sizeVvirt = _sizeVDoc;
 		}
-		if (heightV>0)
-			pages  = _sizeVvirt / heightV;
 		_vScrollCtrl->setMinimum(1);
-		_vScrollCtrl->setMaximum(_rowCountVirt - _rowsInPage/2);
-		//_vScrollCtrl->setValue(_curentCell.y());
+		_vScrollCtrl->setMaximum(qMax(_rowCountVirt, _rowCountDoc));
 
 	}
 	{
 		int widthW 	= (int)getWidhtWidget(); // / doc->getDefScaleSize(rhtHorizontal);
-		qreal scaleSizeH = doc->getDefScaleSize(rhtHorizontal) * _scaleFactorO;
-		int scalesCnt = (int)(widthW / scaleSizeH);
 
-
-		pages = 1;
 		if (_sizeHvirt < (int)widthW) {
 			_sizeHvirt = widthW;
 		}
@@ -1783,10 +1933,7 @@ void uoReportCtrl::recalcScrollBars()
 			_sizeHvirt = _sizeHDoc;
 		}
 		_hScrollCtrl->setMinimum(1);
-		_hScrollCtrl->setMaximum(_colCountVirt);
-		_hScrollCtrl->setValue(_curentCell.x());
-
-
+		_hScrollCtrl->setMaximum(qMax(_colCountVirt, _colCountDoc));
 	}
 }
 ///< обработать смену виртуального размера. Надо пересчитать вирт. длину и скролы
@@ -1795,6 +1942,7 @@ void uoReportCtrl::doChangeVirtualSize(uoRptHeaderType rht, int changeCnt)
 	uoReportDoc* doc =  getDoc();
 	if (!doc)
 		return;
+	/// а нафига оно нужно?
 	int lineCount; // line тут абстракция - строка или толбец.
 	if (rht == rhtVertical) {
 		lineCount = doc->getRowCount();
@@ -1808,11 +1956,8 @@ void uoReportCtrl::doChangeVirtualSize(uoRptHeaderType rht, int changeCnt)
 		}
 	}
 	recalcScrollBars();
-
-//	int _rowCountVirt;	///< виртуальные строки вьюва
-//	int _colCountVirt;	///< виртуальные колонки вьюва
-
 }
+
 /// при доступе к строке или столбцу вьюва, если
 void uoReportCtrl::onAccessRowOrCol(int nom, uoRptHeaderType rht)
 {
@@ -1821,11 +1966,11 @@ void uoReportCtrl::onAccessRowOrCol(int nom, uoRptHeaderType rht)
 	{
 		if (_colCountVirt < nom) {
 			cnt = nom - _colCountVirt;
-			_colCountVirt = nom;
+			_colCountVirt = qMax(nom,_colCountDoc);
 			doChangeVirtualSize(rht, cnt);
 		} else if (_lastVisibleCol<_colCountVirt){
 			cnt = _colCountVirt - _lastVisibleCol;
-			_colCountVirt = _lastVisibleCol;
+			_colCountVirt = qMax(_lastVisibleCol,_colCountDoc);
 			doChangeVirtualSize(rht, cnt);
 		}
 	} else if (rht == rhtVertical) {		// строка
