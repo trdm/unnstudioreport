@@ -40,6 +40,7 @@ struct uoRptGroupItem {
 		,_rectEndPos(0)
 		,_rectMidlePos(0)
 		,_sizeTail(0)
+		,_tailPosIsAbs(false)
 		{}
 	QRectF 	_rectIteract; 	///< область "кнопки" свертки/развертки структуры.
 	bool _folded; 			///< уровень группировки.
@@ -50,6 +51,7 @@ struct uoRptGroupItem {
 	qreal	_rectEndPos; 	///< Координаты правой|нижней стороны ректа. для расчета длины линии группировки.
 	qreal	_rectMidlePos; 	///< Координаты середины правой|нижней стороны ректа для вычерчивания горизонтальной линии группировки.
 	rptSize _sizeTail;		///< Размер "хвоста" группировки.
+	bool 	_tailPosIsAbs;	///< Размер "хвоста" указан относительно левой или верхней сторони ректа группировок
 
 	/// копируем данные из uoLineSpan
 	void copyFrom(uoLineSpan* spn){
@@ -60,6 +62,21 @@ struct uoRptGroupItem {
 		_level	= spn->getLevel();
 
 		_id 	= spn->getId();
+	}
+	/// чистка итема....
+	void clear(){
+		_folded = false;
+		_level = -1;
+		_start = -1;
+		_end = -1;
+		_id = -1;
+		_rectEndPos = 0.0;
+		_rectMidlePos = 0.0;
+		_sizeTail = 0.0;
+		_rectIteract.setTop(0.0);
+		_rectIteract.setRight(0.0);
+		_rectIteract.setBottom(0.0);
+		_rectIteract.setLeft(0.0);
 	}
 };
 
@@ -109,6 +126,12 @@ class uoReportCtrl : public QWidget
 
 		QPoint 	_curentCell; ///< Текущая ячейка вьюва. есть всегда. Даже когда работаем с картинками.
 		void	setCurentCell(int x, int y, bool ensureVisible = false);
+
+	public slots:
+		void	onSetVScrolPos(int y);
+		void	onSetHScrolPos(int x);
+		void	onScrollActionV(int act);
+		void 	scrollView(int dx, int dy);
 
     protected:
 
@@ -224,9 +247,8 @@ class uoReportCtrl : public QWidget
 
 		int _lastVisibleRow; 	///< Последняя верхняя видимая строка
 		int _lastVisibleCol; 	///< Последняя левая видимая колонка
-//		int _lastFullVisibleRow; 	///< Последняя полностью верхняя видимая строка
-//		int _lastFullVisibleCol; 	///< Последняя полностью левая видимая колонка
-
+		int _rowsInPage; 		///< строк на страницу
+		int _colsInPage; 		///< столбцов на страницу
 
 		rptGroupItemList* _groupListCache;	///< кешь для экземпляров uoRptGroupItem
 		rptGroupItemList* _groupListV;		///< список ректов группировок столбцов
@@ -242,8 +264,11 @@ class uoReportCtrl : public QWidget
 		int _pageWidth;		///< Ширина страницы в столбцах стандартного размера
 		int _pageHeight;	///< Высота страницы в строках стандартного размера
 		void onAccessRowOrCol(int nom, uoRptHeaderType rht); ///< при доступе к строке или столбцу вьюва...
+		void doChangeVirtualSize(uoRptHeaderType rht, int changeCnt); ///< обработать смену виртуального размера
 		int _rowCountVirt;	///< виртуальные строки вьюва
 		int _colCountVirt;	///< виртуальные колонки вьюва
+		int _rowCountDoc;	///< строки дока (просто кеш)
+		int _colCountDoc;	///< колонки дока (просто кеш)
 
 
 

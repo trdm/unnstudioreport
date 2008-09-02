@@ -36,17 +36,7 @@ uoReportCtrl::uoReportCtrl(QWidget *parent)
 	_useMode 		= rmDevelMode;
 	_stateMode 		= rmsNone;
 	_freezUpdate 	= 0;
-
-//	_rectGroupV		= new QRectF(0,0,0,0);
-//	_rectGroupH		= new QRectF(0,0,0,0);
-//	_rectSectionV	= new QRectF(0,0,0,0);
-//	_rectSectionH	= new QRectF(0,0,0,0);
-//	_rectRulerV		= new QRectF(0,0,0,0);
-//	_rectRulerH		= new QRectF(0,0,0,0);
-//	_rectRuleCorner	= new QRectF(0,0,0,0);
-//	_rectAll		= new QRectF(0,0,0,0);
-//	_rectDataRegion	= new QRectF(0,0,0,0);
-//	_rectDataRegionFrame = new QRectF(0,0,0,0);
+	_rowCountDoc = _colCountDoc = 0;
 
 
 	_charWidthPlus 	= 3;
@@ -79,6 +69,9 @@ uoReportCtrl::uoReportCtrl(QWidget *parent)
 	_pageHeight = 0;
 	_sizeVDoc 	= _sizeHDoc = 0;
 	_sizeVvirt 	= _sizeHvirt = 0;
+	_rowCountVirt = 0;
+	_colCountVirt = 0;
+	_rowsInPage = _colsInPage = 1;
 
 	initControls(parent);
 
@@ -104,10 +97,17 @@ void uoReportCtrl::initControls(QWidget *parent){
 	_vScrollCtrl->setLayoutDirection(Qt::RightToLeft);
 	_vScrollCtrl->setFocusPolicy(Qt::StrongFocus);
 
-	_hScrollCtrl->setRange(1,3);
+	//_hScrollCtrl->setRange(1,3);
 	_hScrollCtrl->setValue(1);
-	_vScrollCtrl->setRange(1,3);
+	_hScrollCtrl->setMinimum(1);
+
+	_vScrollCtrl->setMinimum(1);
 	_vScrollCtrl->setValue(1);
+	connect(_vScrollCtrl, SIGNAL(valueChanged(int)), this, SLOT(onSetVScrolPos(int)));
+
+	connect(_vScrollCtrl, SIGNAL(actionTriggered(int)), this, SLOT(onScrollActionV(int)));
+
+//	onSetHScrolPos(int x)
 
     layout->addWidget(_cornerWidget,1,1);
 	layout->addWidget( this, 0, 0 );
@@ -117,22 +117,13 @@ void uoReportCtrl::initControls(QWidget *parent){
 	layout->setColumnStretch(1,0);
     layout->setRowStretch(0,1);
     layout->setRowStretch(1,0);
+
 }
 
 
 uoReportCtrl::~uoReportCtrl()
 {
 	//delete _repoDoc; //НЕТ!! нужно смотреть не подсоединен ли этот док к еще одному вьюву или к переменной!!!
-//	delete _rectGroupV;
-//	delete _rectGroupH;
-//	delete _rectSectionV;
-//	delete _rectSectionH;
-//	delete _rectRulerV;
-//	delete _rectRulerH;
-//	delete _rectRuleCorner;
-//	delete _rectAll;
-//	delete _rectDataRegion;
-//	delete _rectDataRegionFrame;
 
 	delete _iteractView;
 	clear();
@@ -171,26 +162,28 @@ int uoReportCtrl::recalcVisibleScales(uoRptHeaderType rht){
 	uoReportDoc* doc =  getDoc();
 	if (!doc)
 		return -1;
-	int numScale = 1, lastVisScale = -1;
+	int numScale = 1;
 	rptSize sizeVisibleScl = 0;
 	rptSize sizeScale = 0;
 	bool isHiden = false;
-//	qreal widgetSize = (rht==rhtHorizontal) ? getWidhtWidget() : getHeightWidget();
-	qreal widgetSize = (rht==rhtHorizontal) ? _rectDataRegionFrame.width() : _rectDataRegionFrame.height();
-
+	qreal widgetSize = (rht==rhtHorizontal) ? _rectDataRegionFrame.right() : _rectDataRegionFrame.bottom();
+	qreal shiftSize = 0.0;
 	if (rht == rhtHorizontal) {
 		_scaleStartPositionMapH.clear();
 		numScale 		= _firstVisible_ColLeft;
-		sizeVisibleScl 	= _rectGroupH.left() - _shift_ColLeft;
-		_scaleStartPositionMapH[numScale] = sizeVisibleScl;
+		shiftSize 	= _rectGroupH.left() - _shift_ColLeft;
+		widgetSize = widgetSize - _shift_ColLeft;
+		_scaleStartPositionMapH[numScale] = shiftSize;
 	} else if (rht == rhtVertical){
 		_scaleStartPositionMapV.clear();
 		numScale 		= _firstVisible_RowTop;
-		sizeVisibleScl 	= _rectGroupV.top() - _shift_RowTop;
-		_scaleStartPositionMapV[numScale] = sizeVisibleScl;
+		shiftSize 	= _rectGroupV.top() - _shift_RowTop;
+		_scaleStartPositionMapV[numScale] = shiftSize;
+		widgetSize = widgetSize - _shift_RowTop;
 	} else {
 		return -1;
 	}
+	sizeVisibleScl = shiftSize;
 
 	sizeScale 	= 0;
 	do
@@ -210,20 +203,22 @@ int uoReportCtrl::recalcVisibleScales(uoRptHeaderType rht){
 
 	}
 	while(sizeVisibleScl < widgetSize);
-	lastVisScale = numScale;
-
-	return lastVisScale;
+	return numScale;
 }
 
 void uoReportCtrl::dropGropItemToCache()
 {
+	uoRptGroupItem* item = NULL;
 	while (!_groupListV->isEmpty()) {
-		 _groupListCache->append(_groupListV->takeFirst());
+		item = _groupListV->takeFirst();
+		item->clear();
+		_groupListCache->append(item);
 	}
 	while (!_groupListH->isEmpty()) {
-		 _groupListCache->append(_groupListH->takeFirst());
+		item = _groupListH->takeFirst();
+		item->clear();
+		_groupListCache->append(item);
 	}
-
 }
 
 /// Взять uoRptGroupItem из кеша, если кеш пуст, то создать.
@@ -246,6 +241,7 @@ void uoReportCtrl::calcGroupItemPosition(uoRptGroupItem* grItem, uoRptHeaderType
 	grItem->_rectMidlePos = 0.0;
 	grItem->_rectEndPos = 0.0;
 	grItem->_sizeTail = 0.0;
+	grItem->_tailPosIsAbs = false;
 
 
 	rptSize xPos = -10,yPos = -10, yPos0 = -10, xSize = 0, xSize0 = 0, ySize = 0, ySize0 = 0;
@@ -280,6 +276,7 @@ void uoReportCtrl::calcGroupItemPosition(uoRptGroupItem* grItem, uoRptHeaderType
 			xPos = xPos + xSize;
 			grItem->_rectIteract.setRight(xPos);
 		}
+		grItem->_rectIteract.adjust(0.0, 1.0, 0.0, -1.0);
 		grItem->_rectEndPos = xPos;
 		grItem->_sizeTail = grItem->_sizeTail - xPos; // Координаты конца ячейки.
 
@@ -313,6 +310,8 @@ void uoReportCtrl::calcGroupItemPosition(uoRptGroupItem* grItem, uoRptHeaderType
 			grItem->_rectIteract.setTop(yPos0 + 1);
 			grItem->_rectIteract.setBottom(yPos0 + ySize0 - 2);
 		}
+		grItem->_rectIteract.adjust(1.0, 0.0, -1.0,0.0);
+
 		grItem->_rectEndPos = grItem->_rectIteract.bottom();
 		grItem->_sizeTail = grItem->_sizeTail - grItem->_rectEndPos; // Координаты конца ячейки.
 
@@ -382,12 +381,22 @@ void uoReportCtrl::recalcGroupSectionRects(uoRptHeaderType rht){
 						grItem->copyFrom(spn);
 						grItem->_sizeTail = rptSizeNull;
 						zeroQRect(grItem->_rectIteract);
+						grItem->_tailPosIsAbs = false;
 
 						rSize = rptSizeNull;
 						calcGroupItemPosition(grItem, rhtCur);
 						// посчитаем длину линии группировки.
 						// хвост есть, нужно вычислить только толщину последующих ячеек и добавить его к хвосту.
-						grItem->_sizeTail = grItem->_sizeTail + getLengthOfScale(rhtCur, grItem->_start + 1, grItem->_end);
+						if (grItem->_start >= _firstVisible_ColLeft){
+							// это если рект группировки нормально отображается, а если нет?
+							grItem->_sizeTail = grItem->_sizeTail + getLengthOfScale(rhtCur, grItem->_start + 1, grItem->_end);
+						} else {
+							grItem->_sizeTail = 0.0;
+							if (_firstVisible_ColLeft <= grItem->_end) {
+								grItem->_tailPosIsAbs = true;
+								grItem->_sizeTail = getLengthOfScale(rhtCur, _firstVisible_ColLeft, grItem->_end) - _shift_ColLeft;
+							}
+						}
 						_groupListH->append(grItem);
 					}
 				}
@@ -408,8 +417,21 @@ void uoReportCtrl::recalcGroupSectionRects(uoRptHeaderType rht){
 						grItem->copyFrom(spn);
 
 						zeroQRect(grItem->_rectIteract);
+						grItem->_tailPosIsAbs = false;
 						calcGroupItemPosition(grItem, rhtCur);
-						grItem->_sizeTail = grItem->_sizeTail + getLengthOfScale(rhtCur, grItem->_start + 1, grItem->_end);
+
+
+						if (grItem->_start >= _firstVisible_RowTop){
+							// это если рект группировки нормально отображается, а если нет?
+							grItem->_sizeTail = grItem->_sizeTail + getLengthOfScale(rhtCur, grItem->_start + 1, grItem->_end);
+						} else {
+							grItem->_sizeTail = 0.0;
+							if (_firstVisible_RowTop <= grItem->_end) {
+								grItem->_tailPosIsAbs = true;
+								grItem->_sizeTail = getLengthOfScale(rhtCur, _firstVisible_RowTop, grItem->_end) - _shift_RowTop;
+							}
+						}
+
 						_groupListV->append(grItem);
 					}
 				}
@@ -432,6 +454,7 @@ void uoReportCtrl::recalcHeadersRects()
     _charHeightPlus = fm.height();
     qreal wWidth = getWidhtWidget(); //-2 -_vScrollCtrl->width();
     qreal wHeight = getHeightWidget(); //-2-_hScrollCtrl->height();
+
 
 	zeroQRect(_rectGroupV);  zeroQRect(_rectSectionV);	zeroQRect(_rectRulerV);
 	zeroQRect(_rectGroupH);  zeroQRect(_rectSectionH);	zeroQRect(_rectRulerH);
@@ -516,6 +539,10 @@ void uoReportCtrl::recalcHeadersRects()
 	if (!_showGroup)	{zeroQRect(_rectGroupV);  	zeroQRect(_rectGroupH);		}
 	if (!_showSection) 	{zeroQRect(_rectSectionV); 	zeroQRect(_rectSectionH);	}
 	if (!_showRuler) 	{zeroQRect(_rectRulerV); 	zeroQRect(_rectRulerH);	zeroQRect(_rectRuleCorner);}
+
+	_rowsInPage = _rectDataRegion.height() / doc->getDefScaleSize(rhtVertical); 		///< строк на страницу
+	_colsInPage = _rectDataRegion.width() / doc->getDefScaleSize(rhtHorizontal); 		///< столбцов на страницу
+
 
 	recalcGroupSectionRects();
 }
@@ -620,11 +647,12 @@ void uoReportCtrl::drawHeaderControlContour(QPainter& painter)
 void uoReportCtrl::drawHeaderControlGroup(QPainter& painter)
 {
 	int cntr = 0;
-	uoRptGroupItem* rgItem;
+	uoRptGroupItem* grItem;
 	rptSize noLen = 2;
 	qreal minDrawSize = 2.5;
 	QString paintStr = "";
 	QPointF pointStart, pointEnd;
+	qreal pos = 0.0;
 
 
 	_penText.setStyle(Qt::SolidLine);
@@ -634,23 +662,29 @@ void uoReportCtrl::drawHeaderControlGroup(QPainter& painter)
 	if (_showGroup) {
 		if (_rectGroupV.width()>noLen)	{
 			if (!_groupListV->isEmpty()) {
+				painter.setClipRect(_rectGroupV); // Устанавливаем область прорисовки. Будем рисовать только в ней.
 				for (cntr = 0; cntr<_groupListV->size(); cntr++) {
-					rgItem = _groupListV->at(cntr);
+					grItem = _groupListV->at(cntr);
 
-					if (rgItem->_rectIteract.height() > minDrawSize) {
-						painter.drawRect(rgItem->_rectIteract);
+					if (grItem->_rectIteract.height() > minDrawSize) {
+						painter.drawRect(grItem->_rectIteract);
 						paintStr = "-";
-						if (rgItem->_folded)
+						if (grItem->_folded)
 							paintStr = "+";
-						painter.drawText(rgItem->_rectIteract,Qt::AlignCenter,  paintStr);
+						painter.drawText(grItem->_rectIteract,Qt::AlignCenter,  paintStr);
 					}
-					if (rgItem->_sizeTail > 0) {
-						pointStart.setY(rgItem->_rectEndPos);
-						pointStart.setX(rgItem->_rectMidlePos);
-						pointEnd.setY(rgItem->_rectEndPos + rgItem->_sizeTail);
-						pointEnd.setX(rgItem->_rectMidlePos);
-						painter.drawLine(pointStart, pointEnd );
+					if (grItem->_sizeTail > 0) {
+						pointStart.setX(grItem->_rectMidlePos);
+						pointEnd.setX(grItem->_rectMidlePos);
 
+						pos = grItem->_rectEndPos;
+						if (grItem->_tailPosIsAbs) {
+							pos = _rectGroupV.top(); //grItem->_rectEndPos;
+						}
+						pointStart.setY(pos);
+						pointEnd.setY(pos + grItem->_sizeTail);
+
+						painter.drawLine(pointStart, pointEnd );
 						pointStart =  pointEnd;
 						pointStart.setX(pointStart.x()+3);
 						painter.drawLine(pointEnd, pointStart);
@@ -661,21 +695,27 @@ void uoReportCtrl::drawHeaderControlGroup(QPainter& painter)
 		}
 		if (_rectGroupH.height()>noLen)		{
 			if (!_groupListH->isEmpty()) {
+				painter.setClipRect(_rectGroupH); // Устанавливаем область прорисовки. Будем рисовать только в ней.
 				for (cntr = 0; cntr<_groupListH->size(); cntr++) {
-					rgItem = _groupListH->at(cntr);
-					if (rgItem->_rectIteract.width() > minDrawSize) {
-						painter.drawRect(rgItem->_rectIteract);
+					grItem = _groupListH->at(cntr);
+					if (grItem->_rectIteract.width() > minDrawSize) {
+						painter.drawRect(grItem->_rectIteract);
 						paintStr = "-";
-						if (rgItem->_folded)
+						if (grItem->_folded)
 							paintStr = "+";
-						painter.drawText(rgItem->_rectIteract,Qt::AlignCenter,  paintStr);
+						painter.drawText(grItem->_rectIteract,Qt::AlignCenter,  paintStr);
 					}
+					if (grItem->_sizeTail > 0) {
+						pointStart.setY(grItem->_rectMidlePos);
+						pointEnd.setY(grItem->_rectMidlePos);
+						pos = grItem->_rectEndPos;
 
-					if (rgItem->_sizeTail > 0) {
-						pointStart.setX(rgItem->_rectEndPos);
-						pointStart.setY(rgItem->_rectMidlePos);
-						pointEnd.setX(rgItem->_rectEndPos + rgItem->_sizeTail);
-						pointEnd.setY(rgItem->_rectMidlePos);
+						if (grItem->_tailPosIsAbs) {
+							pos = _rectGroupH.left();
+						}
+						pointStart.setX(pos);
+						pointEnd.setX(pos + grItem->_sizeTail);
+
 						painter.drawLine(pointStart, pointEnd );
 						pointStart =  pointEnd;
 						pointStart.setY(pointStart.y()+3);
@@ -685,6 +725,8 @@ void uoReportCtrl::drawHeaderControlGroup(QPainter& painter)
 			}
 		}
 	}
+	painter.setClipRect(_rectAll); // Устанавливаем область прорисовки. Будем рисовать только в ней.
+
 }
 
 
@@ -1458,6 +1500,128 @@ void uoReportCtrl::onSaveAs(){
 	saveDocAs();
 }
 
+/// Сигнал на изменение позиции вертикального скрола
+void uoReportCtrl::onSetVScrolPos(int y){
+	if (y == _curentCell.y())
+		return;
+}
+
+/// Сигнал на изменение позиции горизонтального скрола
+void uoReportCtrl::onSetHScrolPos(int x){
+	if (x == _curentCell.x())
+		return;
+}
+
+/// попробуем поймать скрол вертикального слайдера..
+void uoReportCtrl::onScrollActionV(int act){
+	int newAct = 0;
+
+	/*
+		Тут обрабатывается все другим путем: скрол без изменения
+		позиции текущей ячейки. Меняем смещение самого вьюва, а не
+		позиции курсора во вьюве..
+		int _rowsInPage; 		///< строк на страницу
+		int _colsInPage; 		///< столбцов на страницу
+
+	*/
+
+	bool rowVisible = false;
+	switch(act) {
+		case QAbstractSlider::SliderSingleStepAdd:	{
+			scrollView(0, 1);
+			break;
+		}
+		case QAbstractSlider::SliderSingleStepSub:	{
+			scrollView(0, -1);
+			break;
+		}
+		case QAbstractSlider::SliderPageStepAdd:	{
+			scrollView(0, 1 * _rowsInPage);
+			break;
+		}
+		case QAbstractSlider::SliderPageStepSub:	{
+			scrollView(0, -1 * _rowsInPage);
+			break;
+		}
+		case QAbstractSlider::SliderMove:	{
+			_firstVisible_RowTop = _vScrollCtrl->value();
+			_shift_RowTop = 0.0;
+			recalcHeadersRects();
+			updateThis();
+			break;
+		}
+
+
+		default:
+		{
+			newAct = act;
+			break;
+		}
+	}
+}
+
+/**
+	Скролим вьюв на dx - в горизонтальном или dy в вертикальном направлении.
+	dx и dy могут быть: положительными, отрицательными или нулевыми.
+	если они отрицательные, нужно проследить, что-бы мы не скроли вьюв так,
+	что-бы он показывал отрицательные колонки или столбцы...
+*/
+void uoReportCtrl::scrollView(int dx, int dy)
+{
+	if (dx ==0 && dy == 0)
+		return;
+	int pos = 0;
+
+	uoReportDoc* doc =  getDoc();
+	if (!doc)
+		return;
+
+	bool itemHiden = false;
+	if (dx != 0) {
+		// горизонтальный.
+		if (dx > 0) {
+			pos = _firstVisible_ColLeft + dx;
+			while(itemHiden = doc->getScaleHide(rhtHorizontal, pos++)){}
+			_firstVisible_ColLeft = pos;
+			_shift_ColLeft = 0.0;
+		} else {
+
+		}
+	}
+
+	if (dy != 0) {
+		if (dy > 0) {
+			pos = _firstVisible_RowTop + dy;
+			while(itemHiden = doc->getScaleHide(rhtVertical, pos)){
+				++pos;
+			}
+			_firstVisible_RowTop = pos;
+			_shift_RowTop = 0.0;
+		} else if (dy < 0){
+			pos = _firstVisible_RowTop + dy;
+			if (pos > 0) {
+				while(itemHiden = doc->getScaleHide(rhtVertical, pos) && (pos > 1)){
+					--pos;
+				}
+			} else {
+				pos = 1;
+			}
+
+			_firstVisible_RowTop = pos;
+			_shift_RowTop = 0.0;
+		}
+		onAccessRowOrCol(_firstVisible_RowTop/* + _rowsInPage*/, rhtVertical);
+		pos = _vScrollCtrl->value() + dy;
+		if (pos>0)
+			_vScrollCtrl->setValue(pos);
+
+	}
+	recalcHeadersRects();
+	updateThis();
+}
+
+
+
 /// Установить текушую ячейку с/без гарантии видимости
 /// Перемещаем курсор на ячейку, если ячейка не видима, делаем её видимой.
 void uoReportCtrl::setCurentCell(int x, int y, bool ensureVisible)
@@ -1480,8 +1644,6 @@ void uoReportCtrl::setCurentCell(int x, int y, bool ensureVisible)
 			if (moveTo == uost_Top && _firstVisible_RowTop >= y){
 				_firstVisible_RowTop = y;
 				_shift_RowTop = 0;
-				recalcVisibleScales(rhtVertical);
-				recalcHeadersRects();
 			}
 			else if (moveTo == uost_Bottom && ( _lastVisibleRow-1) <= y)	{
 				// Надо высчитать _firstVisible_RowTop и _shift_RowTop
@@ -1506,9 +1668,18 @@ void uoReportCtrl::setCurentCell(int x, int y, bool ensureVisible)
 					if (scaleNo<=0)
 						break;
 				} while(true);
-				recalcHeadersRects();
+			} if (_firstVisible_RowTop > y || _lastVisibleRow < y) {
+				if (_firstVisible_RowTop > y) {
+					scrollView(0, _firstVisible_RowTop - y);
+				} else if (_lastVisibleRow < y) {
+					scrollView(0, y - _lastVisibleRow);
+				}
 			}
+			recalcHeadersRects();
+			_vScrollCtrl->setValue(_curentCell.y());
 		}
+		onAccessRowOrCol(_curentCell.y(), rhtVertical);
+
 	}
 	if (_curentCell.x() != x){
 		_curentCell.setX(x);
@@ -1520,7 +1691,7 @@ void uoReportCtrl::setCurentCell(int x, int y, bool ensureVisible)
 			if (moveTo == uost_Left && _firstVisible_ColLeft >= x){
 				_firstVisible_ColLeft = x;
 				_shift_ColLeft = 0;
-				recalcVisibleScales(rhtHorizontal);
+//				recalcVisibleScales(rhtHorizontal);
 				recalcHeadersRects();
 			}
 			else if (moveTo == uost_Right && ( _lastVisibleCol-1) <= x)	{
@@ -1549,7 +1720,10 @@ void uoReportCtrl::setCurentCell(int x, int y, bool ensureVisible)
 				recalcHeadersRects();
 			}
 		}
+		onAccessRowOrCol(_curentCell.x(), rhtHorizontal);
+
 	}
+	recalcScrollBars();
 }
 
 
@@ -1568,16 +1742,17 @@ void uoReportCtrl::recalcScrollBars()
 	uoReportDoc* doc =  getDoc();
 	if (!doc)
 		return;
-//	int scalesCnt = 0;
+	int pos = 0;
 	int pages  = 1;
 	{
 		// Вертикальный скролл.
 		// вроде пролучается, но какой-то деревянный скролл...
 		// Пока отработаем с горизонтальным....
 
-		int heightV = (int)getHeightWidget();
+		int heightV = (int) _rectDataRegion.height();
+//		int heightV = (int)getHeightWidget();
 		qreal scaleSizeV = doc->getDefScaleSize(rhtVertical) * _scaleFactorO;
-		int scalesCnt = (int)(heightV / scaleSizeV);
+		pos = _vScrollCtrl->value();
 
 
 		pages  = 1;
@@ -1589,17 +1764,10 @@ void uoReportCtrl::recalcScrollBars()
 		}
 		if (heightV>0)
 			pages  = _sizeVvirt / heightV;
-		_vScrollCtrl->setMaximum(pages*scalesCnt);
-		_vScrollCtrl->setPageStep(scalesCnt);
+		_vScrollCtrl->setMinimum(1);
+		_vScrollCtrl->setMaximum(_rowCountVirt - _rowsInPage/2);
+		//_vScrollCtrl->setValue(_curentCell.y());
 
-
-		qDebug()
-		<< "_sizeVvirt: " 	<< _sizeVvirt
-		<< "_sizeVDoc: "	<< _sizeVDoc
-		<< "heightV: "		<< heightV
-		<< "VScroll: min: " << _vScrollCtrl->minimum()
-		<< "max: " 			<< _vScrollCtrl->maximum()
-		<< "val: "			<< _vScrollCtrl->value();
 	}
 	{
 		int widthW 	= (int)getWidhtWidget(); // / doc->getDefScaleSize(rhtHorizontal);
@@ -1611,20 +1779,68 @@ void uoReportCtrl::recalcScrollBars()
 		if (_sizeHvirt < (int)widthW) {
 			_sizeHvirt = widthW;
 		}
-		if (_sizeHvirt < _sizeVDoc){
-			_sizeHvirt = _sizeVDoc;
+		if (_sizeHvirt < _sizeHDoc){
+			_sizeHvirt = _sizeHDoc;
 		}
-		if (widthW>0)
-			pages  = _sizeHvirt / widthW;
-		_hScrollCtrl->setMaximum(pages  * scalesCnt);
-		_hScrollCtrl->setPageStep(scalesCnt);
+		_hScrollCtrl->setMinimum(1);
+		_hScrollCtrl->setMaximum(_colCountVirt);
+		_hScrollCtrl->setValue(_curentCell.x());
+
 
 	}
+}
+///< обработать смену виртуального размера. Надо пересчитать вирт. длину и скролы
+void uoReportCtrl::doChangeVirtualSize(uoRptHeaderType rht, int changeCnt)
+{
+	uoReportDoc* doc =  getDoc();
+	if (!doc)
+		return;
+	int lineCount; // line тут абстракция - строка или толбец.
+	if (rht == rhtVertical) {
+		lineCount = doc->getRowCount();
+		if (lineCount<_rowCountVirt){
+			_sizeVvirt = doc->getVSize() + (_rowCountVirt - lineCount) * doc->getDefScaleSize(rht);
+		}
+	} else if (rht == rhtHorizontal){
+		lineCount = doc->getColCount();
+		if (lineCount<_colCountVirt){
+			_sizeHvirt = doc->getHSize() + (_colCountVirt - lineCount) * doc->getDefScaleSize(rht);
+		}
+	}
+	recalcScrollBars();
+
+//	int _rowCountVirt;	///< виртуальные строки вьюва
+//	int _colCountVirt;	///< виртуальные колонки вьюва
 
 }
 /// при доступе к строке или столбцу вьюва, если
 void uoReportCtrl::onAccessRowOrCol(int nom, uoRptHeaderType rht)
 {
+	int cnt = 0;
+	if (rht == rhtHorizontal) // Колонка
+	{
+		if (_colCountVirt < nom) {
+			cnt = nom - _colCountVirt;
+			_colCountVirt = nom;
+			doChangeVirtualSize(rht, cnt);
+		} else if (_lastVisibleCol<_colCountVirt){
+			cnt = _colCountVirt - _lastVisibleCol;
+			_colCountVirt = _lastVisibleCol;
+			doChangeVirtualSize(rht, cnt);
+		}
+	} else if (rht == rhtVertical) {		// строка
+		if (_rowCountVirt < nom) {
+			cnt = nom - _rowCountVirt;
+			_rowCountVirt = nom;
+			doChangeVirtualSize(rht, cnt);
+		} else if (_lastVisibleRow<_rowCountVirt){
+			if (_curentCell.y()<_rowCountVirt && _rowCountVirt > _rowCountDoc) {
+				cnt = _rowCountVirt - _lastVisibleRow;
+				_rowCountVirt = _lastVisibleRow;
+				doChangeVirtualSize(rht, cnt);
+			}
+		}
+	}
 }
 
 /// Сигнал установки новых размеров документа.
@@ -1633,6 +1849,11 @@ void uoReportCtrl::changeDocSize(qreal sizeV, qreal sizeH)
 	uoReportDoc* doc = getDoc();
 	if (!doc)
 		return;
+	if (_rowCountVirt<doc->getRowCount())
+		_rowCountVirt = doc->getRowCount();
+	if (_colCountVirt<doc->getColCount())
+		_colCountVirt = doc->getColCount();
+
 
 	int newSizeV = (int)sizeV;
 	int newSizeH = (int)sizeH;
@@ -1641,6 +1862,9 @@ void uoReportCtrl::changeDocSize(qreal sizeV, qreal sizeH)
 		_sizeHvirt = _sizeHvirt + newSizeH - _sizeHDoc;
 		_sizeVDoc = newSizeV;
 		_sizeHDoc = newSizeH;
+		_rowCountDoc = doc->getRowCount();	///< виртуальные строки вьюва
+		_colCountDoc = doc->getColCount();	///< виртуальные колонки вьюва
+
 		recalcScrollBars();
 	}
 }
