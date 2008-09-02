@@ -107,6 +107,8 @@ class uoReportCtrl : public QWidget
 		void showEvent( QShowEvent* event );
 		void resizeEvent ( QResizeEvent * event );
 		void keyPressEvent ( QKeyEvent * event );
+		void wheelEvent ( QWheelEvent * event );
+
 		//-------------------------------------------------
 		bool mousePressEventForGroup(QMouseEvent *event);
 		bool mousePressEventForRuler(QMouseEvent *event);
@@ -126,11 +128,14 @@ class uoReportCtrl : public QWidget
 
 		QPoint 	_curentCell; ///< Текущая ячейка вьюва. есть всегда. Даже когда работаем с картинками.
 		void	setCurentCell(int x, int y, bool ensureVisible = false);
+		bool 	curentCellVisible();
 
 	public slots:
 		void	onSetVScrolPos(int y);
 		void	onSetHScrolPos(int x);
 		void	onScrollActionV(int act);
+		void	onScrollActionH(int act);
+		void	doScrollAction(int act, uoRptHeaderType rht);
 		void 	scrollView(int dx, int dy);
 
     protected:
@@ -247,9 +252,18 @@ class uoReportCtrl : public QWidget
 
 		int _lastVisibleRow; 	///< Последняя верхняя видимая строка
 		int _lastVisibleCol; 	///< Последняя левая видимая колонка
+
 		int _rowsInPage; 		///< строк на страницу
 		int _colsInPage; 		///< столбцов на страницу
 
+		int _rowCountVirt;	///< виртуальные строки вьюва
+		int _colCountVirt;	///< виртуальные колонки вьюва
+
+		int _rowCountDoc;	///< строки дока (просто кеш)
+		int _colCountDoc;	///< колонки дока (просто кеш)
+
+		void onAccessRowOrCol(int nom, uoRptHeaderType rht); ///< при доступе к строке или столбцу вьюва...
+		void doChangeVirtualSize(uoRptHeaderType rht, int changeCnt); ///< обработать смену виртуального размера
 		rptGroupItemList* _groupListCache;	///< кешь для экземпляров uoRptGroupItem
 		rptGroupItemList* _groupListV;		///< список ректов группировок столбцов
 		rptGroupItemList* _groupListH;		///< список ректов группировок строк
@@ -263,12 +277,7 @@ class uoReportCtrl : public QWidget
 		int _sizeHDoc;	///< Реальный размер документа.
 		int _pageWidth;		///< Ширина страницы в столбцах стандартного размера
 		int _pageHeight;	///< Высота страницы в строках стандартного размера
-		void onAccessRowOrCol(int nom, uoRptHeaderType rht); ///< при доступе к строке или столбцу вьюва...
-		void doChangeVirtualSize(uoRptHeaderType rht, int changeCnt); ///< обработать смену виртуального размера
-		int _rowCountVirt;	///< виртуальные строки вьюва
-		int _colCountVirt;	///< виртуальные колонки вьюва
-		int _rowCountDoc;	///< строки дока (просто кеш)
-		int _colCountDoc;	///< колонки дока (просто кеш)
+
 
 
 
