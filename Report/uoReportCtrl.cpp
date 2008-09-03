@@ -1832,8 +1832,8 @@ void uoReportCtrl::setCurentCell(int x, int y, bool ensureVisible)
 			}
 		}
 		recalcHeadersRects();
-		_vScrollCtrl->setValue(_curentCell.y());
 		onAccessRowOrCol(_curentCell.y(), rhtVertical);
+		_vScrollCtrl->setValue(_curentCell.y());
 
 	}
 	if (_curentCell.x() != x){
@@ -1884,8 +1884,8 @@ void uoReportCtrl::setCurentCell(int x, int y, bool ensureVisible)
 			}
 		}
 		recalcHeadersRects();
-		_hScrollCtrl->setValue(_curentCell.x());
 		onAccessRowOrCol(_curentCell.x(), rhtHorizontal);
+		_hScrollCtrl->setValue(_curentCell.x());
 
 	}
 	recalcScrollBars();
