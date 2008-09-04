@@ -20,7 +20,8 @@ namespace uoReport{
 uoReportSelection::uoReportSelection(QObject* parent)
 	:QObject(parent)
 {
-	_selRows = new QList<int>;
+	_selRows 	= new QList<int>;
+	_selRowsTmp = new QList<int>;
 	_selCols = new QList<int>;
 	_selSpans 		= new QList<QRect*>;
 	_selSpansCache 	= new QList<QRect*>;
@@ -35,6 +36,7 @@ uoReportSelection::uoReportSelection(QObject* parent)
 uoReportSelection::~uoReportSelection()
 {
 	delete _selRows;
+	delete _selRowsTmp;
 	delete _selCols;
 	while (!_selSpans->isEmpty())		delete _selSpans->takeFirst();
 	while (!_selSpansCache->isEmpty())	delete _selSpansCache->takeFirst();
@@ -45,7 +47,10 @@ uoReportSelection::~uoReportSelection()
 /// Очистка всех даных по выделениям
 void uoReportSelection::clearSelections(uoRptSelectionType exclude)
 {
-	if (exclude != uoRst_Rows) 		_selRows->clear();
+	if (exclude != uoRst_Rows) {
+		_selRows->clear();
+		_selRowsTmp->clear();
+	}
 	if (exclude != uoRst_Columns)	_selCols->clear();
 	_selMode		= uoRst_Unknown;
 	_startSelMode	= uoRst_Unknown;
@@ -77,8 +82,16 @@ bool uoReportSelection::isRowSelect(int nmRow)
 	bool retVal = false;
 	if (retVal = isDocumSelect()){
 		return retVal;
-	} else if (!_selRows->isEmpty()) {
+	}
+	if (!_selRows->isEmpty()) {
 		retVal = _selRows->contains(nmRow);
+		if (retVal)
+			return true;
+	}
+	if (!_selRowsTmp->isEmpty()){
+		retVal = _selRowsTmp->contains(nmRow);
+		if (retVal)
+			return true;
 	}
 	return retVal;
 }
@@ -182,8 +195,55 @@ uoRptSelectionType uoReportSelection::getSelectionType(){
 
 /// сигнал о начале выделения строк.
 void uoReportSelection::startRowSelected(int nmRow){
-
+	if (!isCtrlPress()){
+		clearSelections();
+		selectRow(nmRow);
+	}
+	_strartColRow = nmRow;
+	_selMode = uoRst_Row;
 }
+
+/**
+	Используется для фиксации выделения в том случае когда
+	пользователь работает в режиме выделения но
+	еще не отпустил клавишу мыши.
+*/
+void uoReportSelection::midleRowSelected(int nmRow)
+{
+	if (_strartColRow<=0)
+		return;
+	_selRowsTmp->clear();
+
+	int yStart 	= qMin(_strartColRow, nmRow);
+	int yEnd 	= qMax(_strartColRow, nmRow);
+
+	if (yStart <= 0 || yEnd <= 0)
+		return;
+	for (int i = yStart; i<= yEnd; i++)	{
+		_selRowsTmp->append(i);
+	}
+}
+
+
+/// окончание выделения строк. пользователь отпустил мышку..
+void uoReportSelection::endRowSelected(int nmRow)
+{
+	if (_strartColRow<=0)
+		return;
+	_selRowsTmp->clear();
+
+	int yStart 	= qMin(_strartColRow, nmRow);
+	int yEnd 	= qMax(_strartColRow, nmRow);
+
+	if (yStart <= 0 || yEnd <= 0)
+		return;
+	for (int i = yStart; i<= yEnd; i++)	{
+		if (!_selRows->contains(i))
+			_selRows->append(i);
+	}
+	_strartColRow = 0;
+}
+
 
 /// сигнал о начале выделения колонок
 void uoReportSelection::startColSelected(int nmCol){

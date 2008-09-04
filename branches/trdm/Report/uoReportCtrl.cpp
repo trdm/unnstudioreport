@@ -1077,30 +1077,27 @@ bool uoReportCtrl::findScaleLocation(qreal posX, qreal posY, int &scaleNo, uoRpt
 	qreal endPos = 0.0;
 	qreal stratPos = 0.0;
 	qreal scSize = 0.0;
-	qreal nmShift = 0.0;
 
 	if (rht == rhtVertical){
-		nmShift = _rectRulerV.top();
 		cntScale = _firstVisible_RowTop;
 		endPos = posY;
-		stratPos = _shift_RowTop;
+		stratPos = _rectDataRegion.top() - _shift_RowTop;
 		_curMouseSparesRect.setLeft(_rectRulerV.left());
 		_curMouseSparesRect.setRight(_rectRulerV.right());
 	} else if (rht == rhtHorizontal) {
-		nmShift = _rectRulerH.left();
 		cntScale = _firstVisible_ColLeft;
 		endPos = posX;
-		stratPos = _shift_ColLeft;
+		stratPos = _rectDataRegion.left() - _shift_ColLeft;
 		_curMouseSparesRect.setTop(_rectRulerH.top());
 		_curMouseSparesRect.setBottom(_rectRulerH.bottom());
 	}
 
-	stratPos = stratPos + nmShift;
 	scaleNo = cntScale;
+	stratPos = stratPos * _scaleFactorO;
 	while (stratPos < endPos){
 		scSize = 0.0;
 		if (!doc->getScaleHide(rht, cntScale)) {
-			scSize = doc->getScaleSize(rht, cntScale);
+			scSize = doc->getScaleSize(rht, cntScale)  * _scaleFactorO;
 		}
 		if ((stratPos+scSize) >= endPos){
 			endPos = stratPos+scSize;
@@ -1181,6 +1178,7 @@ uoBorderLocType uoReportCtrl::scaleLocationInBorder(qreal pos, QRectF rect, uoRp
 
 /// отработаем реакцию на нажатие мышки на линейке.
 ///\todo 1 реализовать логику выбора строк/столбцов.
+///\todo 1 масштаб глючит, поработать над масштабом.
 bool uoReportCtrl::mousePressEventForRuler(QMouseEvent *event)
 {
 	bool retVal = false;
@@ -1218,6 +1216,9 @@ bool uoReportCtrl::mousePressEventForRuler(QMouseEvent *event)
 			locType = scaleLocationInBorder(posY, _curMouseSparesRect, rhtCur);
 			if (locType == uoBlt_Unknown) {
 				_selections->selectRow(scaleNo);
+				_selections->startRowSelected(scaleNo);
+				_stateMode = rmsSelectionRule_Left;
+
 			} else {
 			}
 		}
@@ -1246,7 +1247,24 @@ void uoReportCtrl::mousePressEvent(QMouseEvent *event)
 }
 
 void uoReportCtrl::mouseReleaseEvent(QMouseEvent *event)
-{}
+{
+	QRectF rct;
+	int line = 0;
+	bool needUpdate = false;
+	if (_showRuler && _stateMode == rmsSelectionRule_Left){
+		_stateMode = rmsNone;
+		if (_curMouseSparesRect.contains(event->pos())){
+			/// мыша отрелейзилась там же где и была нажата...
+			return;
+		}
+		if (findScaleLocation(event->x(), event->y(), line,rhtVertical)) {
+			_selections->endRowSelected(line);
+			needUpdate = true;
+		}
+	}
+	if (needUpdate)
+		updateThis();
+}
 void uoReportCtrl::mouseMoveEvent(QMouseEvent *event)
 {}
 
@@ -1415,6 +1433,7 @@ void uoReportCtrl::keyPressEvent( QKeyEvent * event ){
 		case Qt::Key_PageUp:
 		case Qt::Key_PageDown:
 		{
+			_selections->clearSelections();
 			keyPressEventMoveCursor ( event );
 			break;
 		}
