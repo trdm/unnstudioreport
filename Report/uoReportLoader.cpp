@@ -177,7 +177,32 @@ bool uoReportLoaderXML::saveScaleHeaderEnd(uoRptHeaderType rht){
 	_textStream << QString("</Scales>\n");
 	return true;
 }
-		/// Запись подвальной части
+
+/// Запись картинки
+bool uoReportLoaderXML::saveImageStart(QImage* imagedoc, qreal left, qreal top){
+    _textStream << QString("<Image left = \"%1\" top = \"%2\" width = \"%3\" height = \"%4\">\n").arg(left).arg(top).arg(imagedoc->width()).arg(imagedoc->height());
+    return true;
+}
+
+/// Запись происходит с использованием base64
+/// чтение необходимо осуществлять с помощью функции:
+///     fromBase64 (const QByteArray & base64 )
+bool uoReportLoaderXML::saveImageItem(QImage* imagedoc){
+    // Сохраняем все в формате PNG (оптимальное сжатие + оптимальное качество)
+    QByteArray ba;
+    QBuffer buffer(&ba);
+    buffer.open(QIODevice::WriteOnly);
+    imagedoc->save(&buffer, "PNG");
+    _textStream << ba.toBase64();
+    return true;
+}
+
+bool uoReportLoaderXML::saveImageEnd(QImage* imagedoc){
+    _textStream << QString("\n</Image>\n");
+    return true;
+}
+
+/// Запись подвальной части
 bool uoReportLoaderXML::saveDocEnd(uoReportDoc* doc){
 	_textStream << QString("</Doc>\n");
 

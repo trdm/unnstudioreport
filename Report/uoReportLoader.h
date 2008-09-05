@@ -14,6 +14,7 @@
 #include <QTextStream>
 #include <QDataStream>
 #include <QFile>
+#include <QImage>
 
 
 namespace uoReport {
@@ -63,6 +64,10 @@ class uoReportLoader
 		/// Запись подвальной части
 		virtual bool saveDocEnd(uoReportDoc* doc) = 0;
 
+        /// Запись картинки
+        virtual bool saveImageStart(QImage* imagedoc, qreal left, qreal top) = 0;
+        virtual bool saveImageItem(QImage* imagedoc) = 0;
+        virtual bool saveImageEnd(QImage* imagedoc) = 0;
 
 	private:
 		QString 		 _lastError;	///< Имя файла
@@ -92,6 +97,12 @@ class uoReportLoaderXML : public uoReportLoader {
 		virtual bool saveScaleHeaderStart(int count, uoRptHeaderType rht);
 		virtual bool saveScaleItem(uoRptNumLine* rLine);
 		virtual bool saveScaleHeaderEnd(uoRptHeaderType rht);
+
+        /// Запись картинки
+        virtual bool saveImageStart(QImage* imagedoc, qreal left, qreal top);
+        virtual bool saveImageItem(QImage* imagedoc);
+        virtual bool saveImageEnd(QImage* imagedoc);
+
 		/// Запись подвальной части
 		virtual bool saveDocEnd(uoReportDoc* doc);
 

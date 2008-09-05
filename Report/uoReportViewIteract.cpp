@@ -6,8 +6,12 @@
 *
 ***************************************/
 #include "uoReportViewIteract.h"
-namespace uoReport {
+#include <QFileDialog>
+#include <QMessageBox>
+#include "uoReportSubstrateImageDlg.h"
 
+
+namespace uoReport {
 
 uoReportViewIteract::uoReportViewIteract(QObject* parent)
 	: QObject(parent)
@@ -17,7 +21,6 @@ uoReportViewIteract::uoReportViewIteract(QObject* parent)
 
 uoReportViewIteract::~uoReportViewIteract()
 {
-	//dtor
 }
 
 /// Создаем акции для uoReportCtrl.
@@ -65,7 +68,7 @@ void uoReportViewIteract::createActions()
 	m_actSaveAs = new QAction(QString::fromUtf8("Сохранить как.."),this);
 	m_actLoad 	= new QAction(QString::fromUtf8("Открыть"),this);
 
-	m_actLoadBkImage = new QAction(QString::fromUtf8("Загрузить подложку"),this);
+	m_actLoadSubstrate 	= new QAction(QString::fromUtf8("Управление подложкой..."),this);
 
 
 	m_actProperty	= new QAction(QString::fromUtf8("Свойства"),this);
@@ -99,7 +102,7 @@ void uoReportViewIteract::connectActions(uoReportCtrl* rCtrl)
 	connect(m_actSave, 	SIGNAL(triggered()), rCtrl, SLOT(onSave()));
 	connect(m_actSaveAs, 	SIGNAL(triggered()), rCtrl, SLOT(onSaveAs()));
 
-	connect(m_actLoadBkImage, 	SIGNAL(triggered()), rCtrl, SLOT(onLoadBkImage()));
+	connect(m_actLoadSubstrate, 	SIGNAL(triggered()), rCtrl, SLOT(onLoadSubstrate()));
 
 	connect(m_actOutToDebug, 	SIGNAL(triggered()), rCtrl, SLOT(debugRects()));
 
@@ -126,8 +129,41 @@ void uoReportViewIteract::setCheckedState(qreal scaleFactor){
 	else if (scaleFactor == 2.0) 	{		m_actScope200->setChecked(true);	}
 	else if (scaleFactor == 2.5) 	{		m_actScope250->setChecked(true);	}
 	else if (scaleFactor == 3.0) 	{		m_actScope300->setChecked(true);	}
-
 }
+
+/// Выбрать имя файла и формат
+bool uoReportViewIteract::chooseSaveFilePathAndFormat(QString& filePath, uoRptStoreFormat& frmt, QWidget* wi )
+{
+	bool retVal = false;
+
+	if (filePath.isEmpty()){
+		filePath = "report.xml";
+	}
+
+	QFileDialog::Options options;
+
+	QString selectedFilter;
+	QString fileName = QFileDialog::getSaveFileName(wi,
+						 tr("Save report.."),
+						 filePath,
+						 tr("XML Files (*.xml);*.xml"),
+						 &selectedFilter,
+						 options);
+	if (!fileName.isEmpty()){
+		frmt = uoRsf_Unknown;
+		if (fileName.endsWith(QString(".xml"), Qt::CaseInsensitive)){
+			frmt = uoRsf_XML;
+		} else {
+			QMessageBox::information(wi, tr("Attention"), tr("Not correct file name"));
+			return false;
+		}
+		// Пока остальные оставим.
+		filePath = fileName;
+		return true;
+	}
+	return false;
+}
+
 
 void uoReportViewIteract::onScale25(){	emit onScaleChange(0.25);}
 void uoReportViewIteract::onScale50(){	emit onScaleChange(0.5);}
@@ -139,5 +175,24 @@ void uoReportViewIteract::onScale200(){	emit onScaleChange(2);}
 void uoReportViewIteract::onScale250(){	emit onScaleChange(2.5);}
 void uoReportViewIteract::onScale300(){	emit onScaleChange(3.0);}
 
+bool uoReportViewIteract::chooseSubstrateImage(uoReportDoc* doc, qreal scaleFactor, QWidget* wi)
+{
+    uoReportSubstrateImageDlg* _dlg;
+
+    if (doc->substrateImage->isEmpty()) {
+        _dlg = new uoReportSubstrateImageDlg(wi);
+    } else {
+        _dlg->fileName->setText(doc->substrateImage->imageFileName);
+        _dlg->offsetX->setValue(doc->substrateImage->startPoint.x());
+        _dlg->offsetY->setValue(doc->substrateImage->startPoint.y());
+    }
+
+    _dlg->doc = doc;
+    _dlg->scaleFactor = scaleFactor;
+    _dlg->setModal(true);
+    _dlg->show();
+
+    return true;
+}
 
 } //namespace uoReport

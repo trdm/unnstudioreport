@@ -27,6 +27,7 @@ uoReportTest::~uoReportTest(){
 void uoRunTest(){
     uoSpanTree pST;
     pST.testClass();
+
     uoHeaderScale header;
     header.test();
 

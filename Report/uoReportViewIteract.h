@@ -11,6 +11,7 @@
 #include <QAction>
 #include "uoReport.h"
 #include "uoReportCtrl.h"
+#include "uoReportSubstrateImageDlg.h"
 
 namespace uoReport {
 
@@ -76,9 +77,11 @@ class uoReportViewIteract : public QObject
 		QAction* m_actSave;
 		QAction* m_actSaveAs;
 		QAction* m_actLoad;
-		QAction* m_actLoadBkImage;
+		QAction* m_actLoadSubstrate;
 
 		void setCheckedState(qreal scaleFactor);
+		bool chooseSaveFilePathAndFormat(QString& filePath, uoRptStoreFormat& frmt, QWidget* wi);
+		bool chooseSubstrateImage(uoReportDoc* doc, qreal scaleFactor, QWidget* wi);
 
 	signals:
 		void onScaleChange(const qreal scaleFact);
@@ -93,7 +96,6 @@ class uoReportViewIteract : public QObject
 		void onScale200();
 		void onScale250();
 		void onScale300();
-
 };
 
 } //namespace uoReport
