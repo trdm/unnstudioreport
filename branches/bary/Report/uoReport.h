@@ -71,10 +71,19 @@ typedef enum uoRptHeaderType {
 };
 
 typedef enum uoSearchDirection {
-	toUp,	///< направление поиска вверх
-	toDown	///< направление поиска ВНИЗ
+	toUp		///< направление поиска вверх
+	,toDown		///< направление поиска ВНИЗ
 };
 
+/// Тип направления...
+typedef enum uoSideType{
+	uost_Unknown 	= 0
+	, uost_Top 		= 1
+	, uost_Right 	= 2
+	, uost_Bottom 	= 3
+	, uost_Left 	= 4
+
+};
 typedef enum uoScaleSizePolicy
 {
 	uoSSP_fixed = 0 ///< расширения не происходит

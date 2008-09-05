@@ -29,7 +29,7 @@ namespace uoReport {
 
 //QAbstractScrollArea
 ///\struct uoRptGroupItem
-///\brief Координатное описание группировки строк/столбцов
+///\brief РљРѕРѕСЂРґРёРЅР°С‚РЅРѕРµ РѕРїРёСЃР°РЅРёРµ РіСЂСѓРїРїРёСЂРѕРІРєРё СЃС‚СЂРѕРє/СЃС‚РѕР»Р±С†РѕРІ
 struct uoRptGroupItem {
 	uoRptGroupItem()
 		: _folded(false)
@@ -40,18 +40,20 @@ struct uoRptGroupItem {
 		,_rectEndPos(0)
 		,_rectMidlePos(0)
 		,_sizeTail(0)
+		,_tailPosIsAbs(false)
 		{}
-	QRectF 	_rectIteract; 	///< область "кнопки" свертки/развертки структуры.
-	bool _folded; 			///< уровень группировки.
-	int _level; 			///< уровень группировки.
-	int _start; 			///< Начало диапазона.
-	int _end;				///< Конец диапазона.
-	int _id;				///< Идентификатор гроуп итема.
-	qreal	_rectEndPos; 	///< Координаты правой|нижней стороны ректа. для расчета длины линии группировки.
-	qreal	_rectMidlePos; 	///< Координаты середины правой|нижней стороны ректа для вычерчивания горизонтальной линии группировки.
-	rptSize _sizeTail;		///< Размер "хвоста" группировки.
+	QRectF 	_rectIteract; 	///< РѕР±Р»Р°СЃС‚СЊ "РєРЅРѕРїРєРё" СЃРІРµСЂС‚РєРё/СЂР°Р·РІРµСЂС‚РєРё СЃС‚СЂСѓРєС‚СѓСЂС‹.
+	bool _folded; 			///< СѓСЂРѕРІРµРЅСЊ РіСЂСѓРїРїРёСЂРѕРІРєРё.
+	int _level; 			///< СѓСЂРѕРІРµРЅСЊ РіСЂСѓРїРїРёСЂРѕРІРєРё.
+	int _start; 			///< РќР°С‡Р°Р»Рѕ РґРёР°РїР°Р·РѕРЅР°.
+	int _end;				///< РљРѕРЅРµС† РґРёР°РїР°Р·РѕРЅР°.
+	int _id;				///< РРґРµРЅС‚РёС„РёРєР°С‚РѕСЂ РіСЂРѕСѓРї РёС‚РµРјР°.
+	qreal	_rectEndPos; 	///< РљРѕРѕСЂРґРёРЅР°С‚С‹ РїСЂР°РІРѕР№|РЅРёР¶РЅРµР№ СЃС‚РѕСЂРѕРЅС‹ СЂРµРєС‚Р°. РґР»СЏ СЂР°СЃС‡РµС‚Р° РґР»РёРЅС‹ Р»РёРЅРёРё РіСЂСѓРїРїРёСЂРѕРІРєРё.
+	qreal	_rectMidlePos; 	///< РљРѕРѕСЂРґРёРЅР°С‚С‹ СЃРµСЂРµРґРёРЅС‹ РїСЂР°РІРѕР№|РЅРёР¶РЅРµР№ СЃС‚РѕСЂРѕРЅС‹ СЂРµРєС‚Р° РґР»СЏ РІС‹С‡РµСЂС‡РёРІР°РЅРёСЏ РіРѕСЂРёР·РѕРЅС‚Р°Р»СЊРЅРѕР№ Р»РёРЅРёРё РіСЂСѓРїРїРёСЂРѕРІРєРё.
+	rptSize _sizeTail;		///< Р Р°Р·РјРµСЂ "С…РІРѕСЃС‚Р°" РіСЂСѓРїРїРёСЂРѕРІРєРё.
+	bool 	_tailPosIsAbs;	///< Р Р°Р·РјРµСЂ "С…РІРѕСЃС‚Р°" СѓРєР°Р·Р°РЅ РѕС‚РЅРѕСЃРёС‚РµР»СЊРЅРѕ Р»РµРІРѕР№ РёР»Рё РІРµСЂС…РЅРµР№ СЃС‚РѕСЂРѕРЅРё СЂРµРєС‚Р° РіСЂСѓРїРїРёСЂРѕРІРѕРє
 
-	/// копируем данные из uoLineSpan
+	/// РєРѕРїРёСЂСѓРµРј РґР°РЅРЅС‹Рµ РёР· uoLineSpan
 	void copyFrom(uoLineSpan* spn){
 		_start 	= spn->getStart();
 		_end 	= spn->getEnd();
@@ -61,13 +63,28 @@ struct uoRptGroupItem {
 
 		_id 	= spn->getId();
 	}
+	/// С‡РёСЃС‚РєР° РёС‚РµРјР°....
+	void clear(){
+		_folded = false;
+		_level = -1;
+		_start = -1;
+		_end = -1;
+		_id = -1;
+		_rectEndPos = 0.0;
+		_rectMidlePos = 0.0;
+		_sizeTail = 0.0;
+		_rectIteract.setTop(0.0);
+		_rectIteract.setRight(0.0);
+		_rectIteract.setBottom(0.0);
+		_rectIteract.setLeft(0.0);
+	}
 };
 
 typedef QList<uoRptGroupItem*> rptGroupItemList;
-typedef QMap<int, qreal> rptScalePositionMap; ///< словарь смещений ячеек линеек.
+typedef QMap<int, qreal> rptScalePositionMap; ///< СЃР»РѕРІР°СЂСЊ СЃРјРµС‰РµРЅРёР№ СЏС‡РµРµРє Р»РёРЅРµРµРє.
 
-///\class uoReportCtrl виджет, обслуживающий отрисовку отчета в режиме разработки или использования печатной формы.
-///\brief инструмент для рендринга отчета, его корректировки.
+///\class uoReportCtrl РІРёРґР¶РµС‚, РѕР±СЃР»СѓР¶РёРІР°СЋС‰РёР№ РѕС‚СЂРёСЃРѕРІРєСѓ РѕС‚С‡РµС‚Р° РІ СЂРµР¶РёРјРµ СЂР°Р·СЂР°Р±РѕС‚РєРё РёР»Рё РёСЃРїРѕР»СЊР·РѕРІР°РЅРёСЏ РїРµС‡Р°С‚РЅРѕР№ С„РѕСЂРјС‹.
+///\brief РёРЅСЃС‚СЂСѓРјРµРЅС‚ РґР»СЏ СЂРµРЅРґСЂРёРЅРіР° РѕС‚С‡РµС‚Р°, РµРіРѕ РєРѕСЂСЂРµРєС‚РёСЂРѕРІРєРё.
 class uoReportCtrl : public QWidget
 {
     Q_OBJECT
@@ -78,8 +95,8 @@ class uoReportCtrl : public QWidget
 		void setDoc(uoReportDoc* rptDoc);
         void clear();
 
-		///\todo Нужно на всякий пожарный так же добавить определение private конструктора копирования и оператора копирующего
-		/// присваивания, чтобы невозможно было случайно контрол скопировать.
+		///\todo РќСѓР¶РЅРѕ РЅР° РІСЃСЏРєРёР№ РїРѕР¶Р°СЂРЅС‹Р№ С‚Р°Рє Р¶Рµ РґРѕР±Р°РІРёС‚СЊ РѕРїСЂРµРґРµР»РµРЅРёРµ private РєРѕРЅСЃС‚СЂСѓРєС‚РѕСЂР° РєРѕРїРёСЂРѕРІР°РЅРёСЏ Рё РѕРїРµСЂР°С‚РѕСЂР° РєРѕРїРёСЂСѓСЋС‰РµРіРѕ
+		/// РїСЂРёСЃРІР°РёРІР°РЅРёСЏ, С‡С‚РѕР±С‹ РЅРµРІРѕР·РјРѕР¶РЅРѕ Р±С‹Р»Рѕ СЃР»СѓС‡Р°Р№РЅРѕ РєРѕРЅС‚СЂРѕР» СЃРєРѕРїРёСЂРѕРІР°С‚СЊ.
     protected:
 
         void paintEvent(QPaintEvent *event);
@@ -89,13 +106,19 @@ class uoReportCtrl : public QWidget
         void contextMenuEvent(QContextMenuEvent *event);
 		void showEvent( QShowEvent* event );
 		void resizeEvent ( QResizeEvent * event );
+		void keyPressEvent ( QKeyEvent * event );
+		void wheelEvent ( QWheelEvent * event );
+
 		//-------------------------------------------------
 		bool mousePressEventForGroup(QMouseEvent *event);
 		bool mousePressEventForRuler(QMouseEvent *event);
 		bool findScaleLocation(qreal posX, qreal posY, int &scaleNo, uoRptHeaderType rht);
 		uoBorderLocType  scaleLocationInBorder(qreal pos, QRectF rect, uoRptHeaderType rht);
+		void keyPressEventMoveCursor ( QKeyEvent * event );
+		void updateThis();
+		int _freezUpdate;	/// Р·Р°РјРѕСЂРѕР·РёС‚СЊ РїРѕСЃС‹Р»РєСѓ СЃРѕРѕР±С‰РµРЅРёР№ РЅР° РїРµСЂРµСЂРёСЃРѕРІРєСѓ
 
-		// Акселераторы для поиска запчасти под курсором.
+		// РђРєСЃРµР»РµСЂР°С‚РѕСЂС‹ РґР»СЏ РїРѕРёСЃРєР° Р·Р°РїС‡Р°СЃС‚Рё РїРѕРґ РєСѓСЂСЃРѕСЂРѕРј.
 		uoRptSparesType _curMouseSparesType;
 		int 			_curMouseSparesNo;
 		uoRptHeaderType _curMouseSparesRht;
@@ -103,8 +126,17 @@ class uoReportCtrl : public QWidget
 		void 			mouseSparesAcceleratorDrop();
 		void 			mouseSparesAcceleratorSave(uoRptSparesType spar, int nom, uoRptHeaderType rht);
 
-		QPoint 	_curentCell; ///< Текущая ячейка вьюва. есть всегда. Даже когда работаем с картинками.
+		QPoint 	_curentCell; ///< РўРµРєСѓС‰Р°СЏ СЏС‡РµР№РєР° РІСЊСЋРІР°. РµСЃС‚СЊ РІСЃРµРіРґР°. Р”Р°Р¶Рµ РєРѕРіРґР° СЂР°Р±РѕС‚Р°РµРј СЃ РєР°СЂС‚РёРЅРєР°РјРё.
 		void	setCurentCell(int x, int y, bool ensureVisible = false);
+		bool 	curentCellVisible();
+
+	public slots:
+		void	onSetVScrolPos(int y);
+		void	onSetHScrolPos(int x);
+		void	onScrollActionV(int act);
+		void	onScrollActionH(int act);
+		void	doScrollAction(int act, uoRptHeaderType rht);
+		void 	scrollView(int dx, int dy);
 
     protected:
 
@@ -114,8 +146,12 @@ class uoReportCtrl : public QWidget
 		void drawHeaderControlGroup(QPainter& painter);
 		void drawHeaderControl(QPainter& painter);
 		void drawDataArea(QPainter& painter);
+
 		// BaryVetaL
-		void drawBkImage(QPainter& painter);
+		// РўСѓС‚ Р±РѕРЅСѓСЃ 3D РѕС‚СЂРёСЃРѕРІРєР° РїР»СЋСЃР° Рё РјРёРЅСѓСЃР°
+		// СЃРґРµР»Р°РЅРѕ РїРѕ РјРѕС‚РёРІР°Рј 1РЎ V8
+		void drawPlus(QPainter& painter, int x, int y, int sizex, int sizey);
+		void drawMinus(QPainter& painter, int x, int y, int sizex, int sizey);
 
 		QBrush _brushWindow;
 		QBrush _brushBase;
@@ -125,20 +161,18 @@ class uoReportCtrl : public QWidget
 		QPen _penWhiteText;
 		QPen _penGrey;
 
-		// BaryVetaL
-		QImage* _bkImage;
-		QImage* _bkImageOriginal;
+		rptSize _charWidthPlus; 	///< РћРїРѕСЂРЅР°СЏ С€РёСЂРёРЅР° СЃРёРјРІРѕР»Р° "+" РІ С‚РµРєСѓС€РµРј С€СЂРёС„С‚Рµ.
+		rptSize _charHeightPlus; 	///< РћРїРѕСЂРЅР°СЏ РІС‹СЃРѕС‚Р° СЃРёРјРІРѕР»Р° "+" РІ С‚РµРєСѓС€РµРј С€СЂРёС„С‚Рµ.
 
-		rptSize _charWidthPlus; 	///< Опорная ширина символа "+" в текушем шрифте.
-		rptSize _charHeightPlus; 	///< Опорная высота символа "+" в текушем шрифте.
-
-		qreal _scaleFactor;			///< Положительный соэффициент масштаба виджета, если он > 0, тогда виджет крупнее, если меньше, виджет мельче.
-		qreal _scaleFactorO;		///< обратная величина фактора. для пересчетов смещений.
+		qreal _scaleFactor;			///< РџРѕР»РѕР¶РёС‚РµР»СЊРЅС‹Р№ СЃРѕСЌС„С„РёС†РёРµРЅС‚ РјР°СЃС€С‚Р°Р±Р° РІРёРґР¶РµС‚Р°, РµСЃР»Рё РѕРЅ > 0, С‚РѕРіРґР° РІРёРґР¶РµС‚ РєСЂСѓРїРЅРµРµ, РµСЃР»Рё РјРµРЅСЊС€Рµ, РІРёРґР¶РµС‚ РјРµР»СЊС‡Рµ.
+		qreal _scaleFactorO;		///< РѕР±СЂР°С‚РЅР°СЏ РІРµР»РёС‡РёРЅР° С„Р°РєС‚РѕСЂР°. РґР»СЏ РїРµСЂРµСЃС‡РµС‚РѕРІ СЃРјРµС‰РµРЅРёР№.
 
 	private:
-		void initControls(QWidget *parent);
-		QScrollBar  *_vScrollCtrl, *_hScrollCtrl;
-		QWidget* _cornerWidget; //, _cornerWidget(parent)
+		void 		initControls(QWidget *parent);
+		QScrollBar  *_vScrollCtrl;
+		QScrollBar  *_hScrollCtrl;
+		QWidget* 	_cornerWidget; //, _cornerWidget(parent)
+		void 		recalcScrollBars();
 	public:
 		uoReportDoc* getDoc() {return _rptDoc;}
 		bool saveDoc();
@@ -146,13 +180,11 @@ class uoReportCtrl : public QWidget
 		void optionShow(bool shGrid, bool shGroup, bool shSection, bool shRuler);
 
 	protected:
-		qreal getWidhtWidget() {return width() * (1/_scaleFactor);}; 	///< Ширина с учетом масштаба
-		qreal getHeightWidget(){return height() * (1/_scaleFactor);};	///< Высота с учетом масштаба
+		qreal getWidhtWidget(); 	///< РЁРёСЂРёРЅР° СЃ СѓС‡РµС‚РѕРј РјР°СЃС€С‚Р°Р±Р°
+		qreal getHeightWidget();	///< Р’С‹СЃРѕС‚Р° СЃ СѓС‡РµС‚РѕРј РјР°СЃС€С‚Р°Р±Р°
 
 		void recalcHeadersRects();
 		void recalcGroupSectionRects(uoRptHeaderType rht = rhtUnknown);
-		// BaryVetaL
-		void recalcbkImage();
 		rptSize getLengthOfScale(uoRptHeaderType rht, int start, int stop);
 		int  recalcVisibleScales(uoRptHeaderType rht);
 		void calcGroupItemPosition(uoRptGroupItem* grItem, uoRptHeaderType rht);
@@ -164,7 +196,7 @@ class uoReportCtrl : public QWidget
 		uoReportDoc* _rptDoc;
 
 	private:
-		/// режимы взаимодействия с пользователем.
+		/// СЂРµР¶РёРјС‹ РІР·Р°РёРјРѕРґРµР№СЃС‚РІРёСЏ СЃ РїРѕР»СЊР·РѕРІР°С‚РµР»РµРј.
 		uoReportUseMode 	_useMode;
 		uoReportStateMode 	_stateMode;
 
@@ -180,6 +212,8 @@ class uoReportCtrl : public QWidget
 		void onGridShow();
 		void onGridHide();
 
+		void onLoadSubstrate();
+
 		void onFrameShow();
 		void onFrameHide();
 
@@ -191,26 +225,25 @@ class uoReportCtrl : public QWidget
 
 		void onGroupShow();
 		void onGroupHide();
-        // BaryVetaL
-		void onLoadBkImage();
 
 		void onOutToDebug();
 		void onSetScaleFactor(const qreal sFactor);
 
 	private:
-		/// данные/ректы для областей....
-		QRectF* _rectGroupV;		///< Вертикальные группировки
-		QRectF* _rectGroupH;		///< Горизонтальные группировки
-		QRectF* _rectSectionV;		///< Вертикальные секции
-		QRectF* _rectSectionH;		///< Горизонтальные секции
-		QRectF* _rectRulerV;		///< Вертикальная линейка
-		QRectF* _rectRulerH;		///< Горизонтальная линейка
-		QRectF* _rectRuleCorner;	///< Верхний корнер-виджет слева от горизонтальной и сверху от вертикальной линейки
-		QRectF* _rectAll;			///< Полный регион
-		QRectF* _rectDataRegion;	///< Регион данных.
+		/// РґР°РЅРЅС‹Рµ/СЂРµРєС‚С‹ РґР»СЏ РѕР±Р»Р°СЃС‚РµР№....
+		QRectF _rectGroupV;		///< Р’РµСЂС‚РёРєР°Р»СЊРЅС‹Рµ РіСЂСѓРїРїРёСЂРѕРІРєРё
+		QRectF _rectGroupH;		///< Р“РѕСЂРёР·РѕРЅС‚Р°Р»СЊРЅС‹Рµ РіСЂСѓРїРїРёСЂРѕРІРєРё
+		QRectF _rectSectionV;		///< Р’РµСЂС‚РёРєР°Р»СЊРЅС‹Рµ СЃРµРєС†РёРё
+		QRectF _rectSectionH;		///< Р“РѕСЂРёР·РѕРЅС‚Р°Р»СЊРЅС‹Рµ СЃРµРєС†РёРё
+		QRectF _rectRulerV;		///< Р’РµСЂС‚РёРєР°Р»СЊРЅР°СЏ Р»РёРЅРµР№РєР°
+		QRectF _rectRulerH;		///< Р“РѕСЂРёР·РѕРЅС‚Р°Р»СЊРЅР°СЏ Р»РёРЅРµР№РєР°
+		QRectF _rectRuleCorner;	///< Р’РµСЂС…РЅРёР№ РєРѕСЂРЅРµСЂ-РІРёРґР¶РµС‚ СЃР»РµРІР° РѕС‚ РіРѕСЂРёР·РѕРЅС‚Р°Р»СЊРЅРѕР№ Рё СЃРІРµСЂС…Сѓ РѕС‚ РІРµСЂС‚РёРєР°Р»СЊРЅРѕР№ Р»РёРЅРµР№РєРё
+		QRectF _rectAll;			///< РџРѕР»РЅС‹Р№ СЂРµРіРёРѕРЅ
+		QRectF _rectDataRegion;		///< Р РµРіРёРѕРЅ РґР°РЅРЅС‹С….
+		QRectF _rectDataRegionFrame;	///< Р Р°РјРєР° СЂРµРіРёРѕРЅР° РґР°РЅРЅС‹С…. Рђ С‚Рѕ С‡С‚Рѕ-С‚Рѕ С‚РѕСЃРєР»РёРІРѕ РІС‹РіР»СЏРґРёС‚...
 
 
-		int  _maxVisibleLineNumberCnt; ///< Количество символов в максимальной видимой строке таблицы. Это нужно для вычисления ширины вертикальной линейки.
+		int  _maxVisibleLineNumberCnt; ///< РљРѕР»РёС‡РµСЃС‚РІРѕ СЃРёРјРІРѕР»РѕРІ РІ РјР°РєСЃРёРјР°Р»СЊРЅРѕР№ РІРёРґРёРјРѕР№ СЃС‚СЂРѕРєРµ С‚Р°Р±Р»РёС†С‹. Р­С‚Рѕ РЅСѓР¶РЅРѕ РґР»СЏ РІС‹С‡РёСЃР»РµРЅРёСЏ С€РёСЂРёРЅС‹ РІРµСЂС‚РёРєР°Р»СЊРЅРѕР№ Р»РёРЅРµР№РєРё.
 
 		bool _showGroup;
 		bool _showSection;
@@ -218,29 +251,46 @@ class uoReportCtrl : public QWidget
 		bool _showGrid;
 		bool _showFrame;
 
-		//------- группа контролирующая положение вьюва и во вьюве.
-		rptSize _shift_RowTop;		///< Смещение первой видимой строки вверх (грубо - размер невидимой/скрытой их части)
-		rptSize _shift_ColLeft;		///< Смещение первой видимой колонки влево (грубо - размер невидимой/скрытой их части)
+		//------- РіСЂСѓРїРїР° РєРѕРЅС‚СЂРѕР»РёСЂСѓСЋС‰Р°СЏ РїРѕР»РѕР¶РµРЅРёРµ РІСЊСЋРІР° Рё РІРѕ РІСЊСЋРІРµ.
+		rptSize _shift_RowTop;		///< РЎРјРµС‰РµРЅРёРµ РїРµСЂРІРѕР№ РІРёРґРёРјРѕР№ СЃС‚СЂРѕРєРё РІРІРµСЂС… (РіСЂСѓР±Рѕ - СЂР°Р·РјРµСЂ РЅРµРІРёРґРёРјРѕР№/СЃРєСЂС‹С‚РѕР№ РёС… С‡Р°СЃС‚Рё)
+		rptSize _shift_ColLeft;		///< РЎРјРµС‰РµРЅРёРµ РїРµСЂРІРѕР№ РІРёРґРёРјРѕР№ РєРѕР»РѕРЅРєРё РІР»РµРІРѕ (РіСЂСѓР±Рѕ - СЂР°Р·РјРµСЂ РЅРµРІРёРґРёРјРѕР№/СЃРєСЂС‹С‚РѕР№ РёС… С‡Р°СЃС‚Рё)
 
-		int _firstVisible_RowTop; 	///< Первая верхняя видимая строка
-		int _firstVisible_ColLeft; 	///< Первая левая видимая колонка
+		int _firstVisible_RowTop; 	///< РџРµСЂРІР°СЏ РІРµСЂС…РЅСЏСЏ РІРёРґРёРјР°СЏ СЃС‚СЂРѕРєР°
+		int _firstVisible_ColLeft; 	///< РџРµСЂРІР°СЏ Р»РµРІР°СЏ РІРёРґРёРјР°СЏ РєРѕР»РѕРЅРєР°
 
-		int _lastVisibleRow; 	///< Первая верхняя видимая строка
-		int _lastVisibleCol; 	///< Первая левая видимая колонка
+		int _lastVisibleRow; 	///< РџРѕСЃР»РµРґРЅСЏСЏ РІРµСЂС…РЅСЏСЏ РІРёРґРёРјР°СЏ СЃС‚СЂРѕРєР°
+		int _lastVisibleCol; 	///< РџРѕСЃР»РµРґРЅСЏСЏ Р»РµРІР°СЏ РІРёРґРёРјР°СЏ РєРѕР»РѕРЅРєР°
 
-		qreal _sizeVvirt;	///< Виртуальный размер документа по вертикали
-		qreal _sizeHvirt;	///< Виртуальный Размер документа по горизонтали
+		int _rowsInPage; 		///< СЃС‚СЂРѕРє РЅР° СЃС‚СЂР°РЅРёС†Сѓ
+		int _colsInPage; 		///< СЃС‚РѕР»Р±С†РѕРІ РЅР° СЃС‚СЂР°РЅРёС†Сѓ
+
+		int _rowCountVirt;	///< РІРёСЂС‚СѓР°Р»СЊРЅС‹Рµ СЃС‚СЂРѕРєРё РІСЊСЋРІР°
+		int _colCountVirt;	///< РІРёСЂС‚СѓР°Р»СЊРЅС‹Рµ РєРѕР»РѕРЅРєРё РІСЊСЋРІР°
+
+		int _rowCountDoc;	///< СЃС‚СЂРѕРєРё РґРѕРєР° (РїСЂРѕСЃС‚Рѕ РєРµС€)
+		int _colCountDoc;	///< РєРѕР»РѕРЅРєРё РґРѕРєР° (РїСЂРѕСЃС‚Рѕ РєРµС€)
+
+		void onAccessRowOrCol(int nom, uoRptHeaderType rht); ///< РїСЂРё РґРѕСЃС‚СѓРїРµ Рє СЃС‚СЂРѕРєРµ РёР»Рё СЃС‚РѕР»Р±С†Сѓ РІСЊСЋРІР°...
+		void doChangeVirtualSize(uoRptHeaderType rht, int changeCnt); ///< РѕР±СЂР°Р±РѕС‚Р°С‚СЊ СЃРјРµРЅСѓ РІРёСЂС‚СѓР°Р»СЊРЅРѕРіРѕ СЂР°Р·РјРµСЂР°
+		rptGroupItemList* _groupListCache;	///< РєРµС€СЊ РґР»СЏ СЌРєР·РµРјРїР»СЏСЂРѕРІ uoRptGroupItem
+		rptGroupItemList* _groupListV;		///< СЃРїРёСЃРѕРє СЂРµРєС‚РѕРІ РіСЂСѓРїРїРёСЂРѕРІРѕРє СЃС‚РѕР»Р±С†РѕРІ
+		rptGroupItemList* _groupListH;		///< СЃРїРёСЃРѕРє СЂРµРєС‚РѕРІ РіСЂСѓРїРїРёСЂРѕРІРѕРє СЃС‚СЂРѕРє
+
+		rptScalePositionMap _scaleStartPositionMapH; 	///< РљРѕРѕСЂРґРёРЅР°С‚С‹ С…() СЏС‡РµРµРє РіРѕСЂРёР·РѕРЅС‚Р°Р»СЊРЅРѕР№ Р»РёРЅРµР№РєРё (РІРёРґРёРјРѕР№ С‡Р°СЃС‚Рё)
+		rptScalePositionMap _scaleStartPositionMapV;	///< РљРѕРѕСЂРґРёРЅР°С‚С‹ y() СЏС‡РµРµРє РІРµСЂС‚РёРєР°Р»СЊРЅРѕР№ Р»РёРЅРµР№РєРё (РІРёРґРёРјРѕР№ С‡Р°СЃС‚Рё)
+
+		int _sizeVvirt;	///< Р’РёСЂС‚СѓР°Р»СЊРЅС‹Р№ СЂР°Р·РјРµСЂ РґРѕРєСѓРјРµРЅС‚Р° РїРѕ РІРµСЂС‚РёРєР°Р»Рё. Р’РёСЂС‚СѓР°Р»СЊРЅС‹Р№ РїРѕС‚РѕРјСѓ С‡С‚Рѕ РјРѕР¶РµС‚ СѓРІРµР»РёС‡РёРІР°С‚СЊСЃСЏ СЃРєСЂРѕР»РѕРј.
+		int _sizeHvirt;	///< Р’РёСЂС‚СѓР°Р»СЊРЅС‹Р№ Р Р°Р·РјРµСЂ РґРѕРєСѓРјРµРЅС‚Р° РїРѕ РіРѕСЂРёР·РѕРЅС‚Р°Р»Рё
+		int _sizeVDoc;	///< Р РµР°Р»СЊРЅС‹Р№ СЂР°Р·РјРµСЂ РґРѕРєСѓРјРµРЅС‚Р°.
+		int _sizeHDoc;	///< Р РµР°Р»СЊРЅС‹Р№ СЂР°Р·РјРµСЂ РґРѕРєСѓРјРµРЅС‚Р°.
+		int _pageWidth;		///< РЁРёСЂРёРЅР° СЃС‚СЂР°РЅРёС†С‹ РІ СЃС‚РѕР»Р±С†Р°С… СЃС‚Р°РЅРґР°СЂС‚РЅРѕРіРѕ СЂР°Р·РјРµСЂР°
+		int _pageHeight;	///< Р’С‹СЃРѕС‚Р° СЃС‚СЂР°РЅРёС†С‹ РІ СЃС‚СЂРѕРєР°С… СЃС‚Р°РЅРґР°СЂС‚РЅРѕРіРѕ СЂР°Р·РјРµСЂР°
 
 
-		rptGroupItemList* _groupListCache;	///< кешь для экземпляров uoRptGroupItem
-		rptGroupItemList* _groupListV;		///< список ректов группировок столбцов
-		rptGroupItemList* _groupListH;		///< список ректов группировок строк
 
-		rptScalePositionMap _scaleStartPositionMapH; 	///< Координаты х() ячеек горизонтальной линейки (видимой части)
-		rptScalePositionMap _scaleStartPositionMapV;	///< Координаты y() ячеек вертикальной линейки (видимой части)
 
 	public slots:
-		void setDocSize(int row, int col, qreal sizeV, qreal sizeH);
+		void changeDocSize(qreal sizeV, qreal sizeH);
 
 };
 

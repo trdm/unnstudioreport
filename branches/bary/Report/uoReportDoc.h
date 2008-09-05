@@ -14,6 +14,7 @@
 #include "uoReport.h"
 #include "uoSpanTree.h"
 #include "uoReportDocBody.h"
+#include "uoReportSubstrateImage.h"
 
 
 namespace uoReport {
@@ -75,11 +76,14 @@ class uoReportDoc
 		qreal  	getVSize(bool visible = false);
 		qreal  	getHSize(bool visible = false);
 
+		uoReportSubstrateImage* substrateImage;///< Подложка
+
 		int 	getRowCount();
 		int 	getColCount();
 
 	signals:
-		void onSizeChange(int row, int col, qreal sizeV, qreal sizeH);
+//		void onSizeChange(qreal sizeV, qreal sizeH, int row, int col);
+		void onSizeChange(qreal sizeV, qreal sizeH);
 		void onSizeVisibleChangeV(qreal newSize, int newCount, qreal oldSize, int oldCnt, int pos = 0);
 		void onSizeVisibleChangeH(qreal newSize, int newCount, qreal oldSize, int oldCnt, int pos = 0);
 

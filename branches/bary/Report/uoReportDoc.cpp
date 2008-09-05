@@ -21,6 +21,7 @@ uoReportDoc::uoReportDoc()
 	, _spanTreeSctV(new uoSpanTree)
 	, _headerV(new uoHeaderScale)
 	, _headerH(new uoHeaderScale)
+	, substrateImage(new uoReportSubstrateImage)
 {
 	_maxLevelSpanFoldingH = _maxLevelSpanSectionsH = 0;   /// Группировки
 	_spanTreeSctH->setCanOnlyOne(true);
@@ -48,6 +49,7 @@ uoReportDoc::~uoReportDoc()
 	delete _spanTreeSctV;
 	delete _headerV;
 	delete _headerH;
+    delete substrateImage;
 }
 
 /// Очистка секций.
@@ -63,6 +65,8 @@ void uoReportDoc::clear()
 
 	_sizeV_visible = _sizeV = 0.0;	///< Размер документа по вертикали
 	_sizeH_visible = _sizeH = 0.0;	///< Размер документа по горизонтали
+
+	substrateImage->clear();
 
 }
 
@@ -128,6 +132,8 @@ void uoReportDoc::doGroupFold(int idGrop, uoRptHeaderType rht, bool fold){
 	}
 	--_freezEvent;
 	delete lineList;
+	if (_freezEvent == 0)
+		emit onSizeChange(_sizeV_visible, _sizeH_visible);
 }
 
 /// Возвращает установленный формат сохранения
@@ -408,7 +414,8 @@ void uoReportDoc::beforeAddRowOrCol(int count, uoRptHeaderType rht, int noLn)
 		_sizeH_visible 	= _sizeH_visible + addSizeVis;
 	}
 	///\todo 1 А вот тут нужен сигнал на изменение размеров документа....
-	emit onSizeChange(_rowCount, _colCount, _sizeV, _sizeH);
+	if (_freezEvent == 0)
+		emit onSizeChange(_sizeV_visible, _sizeH_visible);
 }
 
 /// Изменить количество строк в документе
@@ -424,7 +431,8 @@ void uoReportDoc::doRowCountChange(int count, int pos)
 	int newCnt = _rowCount;
 	_sizeV = oldSize + count * getDefScaleSize(rhtVertical);
 	_sizeV_visible = oldSizeVis + count * getDefScaleSize(rhtVertical);
-	emit onSizeVisibleChangeV(_sizeV_visible, _rowCount, oldSizeVis, oldCnt, pos);
+	if (_freezEvent == 0)
+		emit onSizeChange(_sizeV_visible, _sizeH_visible);
 }
 
 /// Изменить количество столбцов в документе
@@ -440,7 +448,9 @@ void uoReportDoc::doColCountChange(int count, int pos )
 	int newCnt = _colCount;
 	_sizeH = oldSize + count * getDefScaleSize(rhtHorizontal);
 	_sizeH_visible = oldSizeVis + count * getDefScaleSize(rhtHorizontal);
-	emit onSizeVisibleChangeH(_sizeH_visible, _colCount, oldSizeVis, oldCnt, pos);
+	if (_freezEvent == 0)
+		emit onSizeChange(_sizeV_visible, _sizeH_visible);
+
 }
 
 
@@ -518,11 +528,13 @@ void uoReportDoc::setScalesHide(uoRptHeaderType hType, int nmStart, int cnt,  bo
 	if (hType == rhtVertical){
 		oldSize = _sizeV_visible;
 		_sizeV_visible = _sizeV_visible + szAdd;
-		emit onSizeVisibleChangeV(_sizeV_visible, _rowCount, oldSize, _rowCount);
+		if (_freezEvent == 0)
+			emit onSizeChange(_sizeV_visible, _sizeH_visible);
 	} else {
 		oldSize = _sizeH_visible;
 		_sizeH_visible = _sizeH_visible + szAdd;
-		emit onSizeVisibleChangeH(_sizeH_visible, _colCount, oldSize, _colCount);
+		if (_freezEvent == 0)
+			emit onSizeChange(_sizeV_visible, _sizeH_visible);
 	}
 
 	onAccessRowOrCol(nmStart + cnt - 1, hType);
