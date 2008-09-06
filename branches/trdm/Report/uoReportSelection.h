@@ -38,6 +38,8 @@ class uoReportSelection : public QObject
 		void endRowSelected(int nmRow);
 
 		void startColSelected(int nmCol);
+		void endColSelected(int nmCol);
+
 		void startCellSelected(int nmCol, int nmRow);
 		void selectDocument();
 		void selectRow(int nmRow);
@@ -53,10 +55,10 @@ class uoReportSelection : public QObject
 			интервал. и он нажимает на ячейку линейки и тащит мышку не отпуская.
 			в это время он может перекрыть уже выделенные строки, но потом вернуться
 			обратно, покинув их. выделение должно сохраниться.
-			поэтому я работаю не с _selRows а с _selRowsTmp.
+			поэтому я работаю не с _selRows а с _selRowsColsTmp.
 		*/
 		QList<int>* 	_selRows; 		///< Список выделенных строк
-		QList<int>* 	_selRowsTmp; 	///< Список временных выделенных строк
+		QList<int>* 	_selRowsColsTmp; 	///< Список временных выделенных строк
 		QList<int>* 	_selCols;		///< Список выделенных колонок
 		QList<QRect*>* _selSpans;		///< Список выделенных областей/спанов
 		QList<QRect*>* _selSpansCache;	///< Кешь выделенных областей/спанов

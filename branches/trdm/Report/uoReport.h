@@ -136,11 +136,13 @@ typedef enum uoRptSelectionType {
 ///\enum uoBorderLocType - расположения бордюра
 typedef enum uoBorderLocType
 {
-	uoBlt_Unknown = 0 // Отсчет по часовой.
+	uoBlt_Unknown = 0 /// неопознаный %)
 	, uoBlt_Top  = 1 ///< верхний бордер
 	, uoBlt_Right	 ///< правый бордер
 	, uoBlt_Bottom	 ///< нижний бордер
 	, uoBlt_Left  	 ///< левый бордер
+	///Отсчет по часовой.
+
 };
 
 ///\enum uoReportUseMode - режим работы с отчетом разработка или использование

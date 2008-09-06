@@ -21,7 +21,7 @@ uoReportSelection::uoReportSelection(QObject* parent)
 	:QObject(parent)
 {
 	_selRows 	= new QList<int>;
-	_selRowsTmp = new QList<int>;
+	_selRowsColsTmp = new QList<int>;
 	_selCols = new QList<int>;
 	_selSpans 		= new QList<QRect*>;
 	_selSpansCache 	= new QList<QRect*>;
@@ -36,7 +36,7 @@ uoReportSelection::uoReportSelection(QObject* parent)
 uoReportSelection::~uoReportSelection()
 {
 	delete _selRows;
-	delete _selRowsTmp;
+	delete _selRowsColsTmp;
 	delete _selCols;
 	while (!_selSpans->isEmpty())		delete _selSpans->takeFirst();
 	while (!_selSpansCache->isEmpty())	delete _selSpansCache->takeFirst();
@@ -49,7 +49,7 @@ void uoReportSelection::clearSelections(uoRptSelectionType exclude)
 {
 	if (exclude != uoRst_Rows) {
 		_selRows->clear();
-		_selRowsTmp->clear();
+		_selRowsColsTmp->clear();
 	}
 	if (exclude != uoRst_Columns)	_selCols->clear();
 	_selMode		= uoRst_Unknown;
@@ -88,8 +88,8 @@ bool uoReportSelection::isRowSelect(int nmRow)
 		if (retVal)
 			return true;
 	}
-	if (!_selRowsTmp->isEmpty()){
-		retVal = _selRowsTmp->contains(nmRow);
+	if (!_selRowsColsTmp->isEmpty()){
+		retVal = _selRowsColsTmp->contains(nmRow);
 		if (retVal)
 			return true;
 	}
@@ -212,7 +212,7 @@ void uoReportSelection::midleRowSelected(int nmRow)
 {
 	if (_strartColRow<=0)
 		return;
-	_selRowsTmp->clear();
+	_selRowsColsTmp->clear();
 
 	int yStart 	= qMin(_strartColRow, nmRow);
 	int yEnd 	= qMax(_strartColRow, nmRow);
@@ -220,7 +220,7 @@ void uoReportSelection::midleRowSelected(int nmRow)
 	if (yStart <= 0 || yEnd <= 0)
 		return;
 	for (int i = yStart; i<= yEnd; i++)	{
-		_selRowsTmp->append(i);
+		_selRowsColsTmp->append(i);
 	}
 }
 
@@ -230,7 +230,7 @@ void uoReportSelection::endRowSelected(int nmRow)
 {
 	if (_strartColRow<=0)
 		return;
-	_selRowsTmp->clear();
+	_selRowsColsTmp->clear();
 
 	int yStart 	= qMin(_strartColRow, nmRow);
 	int yEnd 	= qMax(_strartColRow, nmRow);
@@ -247,7 +247,33 @@ void uoReportSelection::endRowSelected(int nmRow)
 
 /// сигнал о начале выделения колонок
 void uoReportSelection::startColSelected(int nmCol){
+	if (!isCtrlPress()){
+		clearSelections();
+		selectCol(nmCol);
+	}
+	_strartColRow = nmCol;
+	_selMode = uoRst_Column;
 }
+
+void uoReportSelection::endColSelected(int nmCol)
+{
+	if (_strartColRow<=0)
+		return;
+	_selRowsColsTmp->clear();
+
+	int yStart 	= qMin(_strartColRow, nmCol);
+	int yEnd 	= qMax(_strartColRow, nmCol);
+
+	if (yStart <= 0 || yEnd <= 0)
+		return;
+	for (int i = yStart; i<= yEnd; i++)	{
+		if (!_selCols->contains(i))
+			_selCols->append(i);
+	}
+	_strartColRow = 0;
+
+}
+
 
 /// сигнал о начале выделения диапазона ячеек.
 void uoReportSelection::startCellSelected(int nmCol, int nmRow){

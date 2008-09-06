@@ -34,7 +34,7 @@ uoReportCtrl::uoReportCtrl(QWidget *parent)
 
 	_rptDoc 		= NULL;
 	_useMode 		= rmDevelMode;
-	_stateMode 		= rmsNone;
+	_resizeLine		= 0;
 	_freezUpdate 	= 0;
 	_rowCountDoc = _colCountDoc = 0;
 
@@ -73,6 +73,8 @@ uoReportCtrl::uoReportCtrl(QWidget *parent)
 	_colCountVirt = 0;
 	_rowsInPage = _colsInPage = 1;
 
+	setStateMode(rmsNone);
+
 	initControls(parent);
 
 	_iteractView = new uoReportViewIteract();
@@ -109,10 +111,6 @@ void uoReportCtrl::initControls(QWidget *parent){
 //	connect(this, SIGNAL(wheelEvent(QWheelEvent*)), _vScrollCtrl, SLOT(wheelEvent(QWheelEvent*))); /// не получается...
 
 	connect(_hScrollCtrl, SIGNAL(actionTriggered(int)), this, SLOT(onScrollActionH(int)));
-
-
-
-//	onSetHScrolPos(int x)
 
     layout->addWidget(_cornerWidget,1,1);
 	layout->addWidget( this, 0, 0 );
@@ -167,47 +165,47 @@ int uoReportCtrl::recalcVisibleScales(uoRptHeaderType rht){
 	uoReportDoc* doc =  getDoc();
 	if (!doc)
 		return -1;
+	// так бля. начинаю рефакторинг. буду ломать.. (((((
 	int numScale = 1;
-	rptSize sizeVisibleScl = 0;
+	rptSize curetnSize = 0;
+
 	rptSize sizeScale = 0;
 	bool isHiden = false;
-	qreal widgetSize = (rht==rhtHorizontal) ? _rectDataRegionFrame.right() : _rectDataRegionFrame.bottom();
+	qreal targetSize = (rht==rhtHorizontal) ? _rectDataRegionFrame.right() : _rectDataRegionFrame.bottom();
 	qreal shiftSize = 0.0;
 	if (rht == rhtHorizontal) {
 		_scaleStartPositionMapH.clear();
 		numScale 		= _firstVisible_ColLeft;
-		shiftSize 	= _rectGroupH.left() - _shift_ColLeft;
-		widgetSize = widgetSize - _shift_ColLeft;
-		_scaleStartPositionMapH[numScale] = shiftSize;
+		shiftSize 	= _rectGroupH.left();
+		curetnSize =  shiftSize - _shift_ColLeft;
+		_scaleStartPositionMapH[numScale] = curetnSize;
 	} else if (rht == rhtVertical){
 		_scaleStartPositionMapV.clear();
 		numScale 		= _firstVisible_RowTop;
-		shiftSize 	= _rectGroupV.top() - _shift_RowTop;
-		_scaleStartPositionMapV[numScale] = shiftSize;
-		widgetSize = widgetSize - _shift_RowTop;
+		shiftSize 	= _rectGroupV.top();
+		curetnSize = shiftSize - _shift_RowTop;
+		_scaleStartPositionMapV[numScale] = curetnSize;
 	} else {
 		return -1;
 	}
-	sizeVisibleScl = shiftSize;
-
 	sizeScale 	= 0;
 	do
 	{
 		isHiden = doc->getScaleHide(rht, numScale);
 		if (!isHiden) {
 			sizeScale = doc->getScaleSize(rht, numScale);
-			sizeVisibleScl = sizeVisibleScl + sizeScale;
+			curetnSize = curetnSize + sizeScale;
 		}
 		++numScale;
 		if (rht == rhtHorizontal){
-			_scaleStartPositionMapH[numScale] = sizeVisibleScl;
+			_scaleStartPositionMapH[numScale] = curetnSize;
 		}
 		else {
-			_scaleStartPositionMapV[numScale] = sizeVisibleScl;
+			_scaleStartPositionMapV[numScale] = curetnSize;
 		}
 
 	}
-	while(sizeVisibleScl < widgetSize);
+	while(curetnSize < targetSize);
 	return numScale;
 }
 
@@ -247,6 +245,7 @@ void uoReportCtrl::calcGroupItemPosition(uoRptGroupItem* grItem, uoRptHeaderType
 	grItem->_rectEndPos = 0.0;
 	grItem->_sizeTail = 0.0;
 	grItem->_tailPosIsAbs = false;
+	bool posFind = false;
 
 
 	rptSize xPos = -10,yPos = -10, yPos0 = -10, xSize = 0, xSize0 = 0, ySize = 0, ySize0 = 0;
@@ -287,8 +286,10 @@ void uoReportCtrl::calcGroupItemPosition(uoRptGroupItem* grItem, uoRptHeaderType
 
 
 	} else if (rht == rhtVertical) {
-		if (_scaleStartPositionMapV.contains(grItem->_start))
+		if (_scaleStartPositionMapV.contains(grItem->_start)) {
 			yPos0 = yPos = _scaleStartPositionMapV[grItem->_start];
+			posFind = true;
+		}
 
 		grItem->_sizeTail = yPos;
 
@@ -557,16 +558,16 @@ void uoReportCtrl::recalcHeadersRects()
 /// Вывод отладочной информации по размерам ректов.
 void uoReportCtrl::debugRects()
 {
-//	qDebug() << "-----------------------------------";
-//	qDebug() << "uoReportCtrl::debugRects() {";
-//	qDebug() << "_rectAll" << 			*_rectAll;
-//	qDebug() << "_rectGroupV" << 		*_rectGroupV;
-//	qDebug() << "_rectSectionV" << 		*_rectSectionV;
-//	qDebug() << "_rectRulerV" << 		*_rectRulerV;
-//	qDebug() << "_rectGroupH" << 		*_rectGroupH;
-//	qDebug() << "_rectSectionH" << 		*_rectSectionH;
-//	qDebug() << "_rectRulerH" << 		*_rectRulerH;
-//	qDebug() << "_rectDataRegion" << 	*_rectDataRegion;
+	qDebug() << "-----------------------------------";
+	qDebug() << "uoReportCtrl::debugRects() {";
+//	qDebug() << "_rectAll" << 			_rectAll;
+//	qDebug() << "_rectGroupV" << 		_rectGroupV;
+//	qDebug() << "_rectSectionV" << 		_rectSectionV;
+//	qDebug() << "_rectRulerV" << 		_rectRulerV;
+//	qDebug() << "_rectGroupH" << 		_rectGroupH;
+//	qDebug() << "_rectSectionH" << 		_rectSectionH;
+//	qDebug() << "_rectRulerH" << 		_rectRulerH;
+//	qDebug() << "_rectDataRegion" << 	_rectDataRegion;
 
 //	if (_showFrame) qDebug() << "_showFrame";
 //	if (_showRuler) qDebug() << "_showRuler";
@@ -575,11 +576,12 @@ void uoReportCtrl::debugRects()
 //	if (_showGrid) qDebug() << "_showGrid";
 
 	qDebug() << "_shift_RowTop" << _shift_RowTop;
-	qDebug() << "_shift_ColLeft" << _shift_ColLeft;
 	qDebug() << "_firstVisible_RowTop" << _firstVisible_RowTop;
-	qDebug() << "_firstVisible_ColLeft" << _firstVisible_ColLeft;
 	qDebug() << "_lastVisibleRow" << _lastVisibleRow;
-	qDebug() << "_lastVisibleCol" << _lastVisibleCol;
+
+//	qDebug() << "_shift_ColLeft" << _shift_ColLeft;
+//	qDebug() << "_firstVisible_ColLeft" << _firstVisible_ColLeft;
+//	qDebug() << "_lastVisibleCol" << _lastVisibleCol;
 
 
 //	int cntr;
@@ -778,7 +780,8 @@ void uoReportCtrl::drawHeaderControl(QPainter& painter){
 			| 11 |
 			| 12 |
 		*/
-		painter.drawRect(_rectRuleCorner); /// Верхний корнер-виджет слева от горизонтальной и сверху от вертикальной линейки
+		// Верхний корнер-виджет слева от горизонтальной и сверху от вертикальной линейки
+		painter.drawRoundRect(_rectRuleCorner);  //	painter.drawRect(_rectRuleCorner);
 		hdrType = rhtVertical;
 		if (_rectRulerV.width() > 0) {
 
@@ -1093,11 +1096,11 @@ bool uoReportCtrl::findScaleLocation(qreal posX, qreal posY, int &scaleNo, uoRpt
 	}
 
 	scaleNo = cntScale;
-	stratPos = stratPos * _scaleFactorO;
+	stratPos = stratPos; // * _scaleFactorO;
 	while (stratPos < endPos){
 		scSize = 0.0;
 		if (!doc->getScaleHide(rht, cntScale)) {
-			scSize = doc->getScaleSize(rht, cntScale)  * _scaleFactorO;
+			scSize = doc->getScaleSize(rht, cntScale); // * _scaleFactorO;
 		}
 		if ((stratPos+scSize) >= endPos){
 			endPos = stratPos+scSize;
@@ -1145,22 +1148,24 @@ void uoReportCtrl::mouseSparesAcceleratorSave(uoRptSparesType spar, int nom, uoR
 uoBorderLocType uoReportCtrl::scaleLocationInBorder(qreal pos, QRectF rect, uoRptHeaderType rht)
 {
 	uoBorderLocType locType = uoBlt_Unknown;
-	// UORPT_DRAG_AREA_SIZE
+	qreal dragSize = UORPT_DRAG_AREA_SIZE;
 	// надо еще величину границы захвата определить.
-	qreal posStart, posEnd;
+	qreal posStart, posEnd, interVal = dragSize * 2;
+
 	if (rht == rhtVertical || rht == rhtUnknown) {
 
-		posStart 	= rect.top() - UORPT_DRAG_AREA_SIZE;
-		posEnd 		= rect.top() + UORPT_DRAG_AREA_SIZE;
+		posStart 	= rect.top() - dragSize;
+		posEnd 		= posStart + interVal;
 		if (posStart<=pos && pos<= posEnd)
 			return uoBlt_Top;
 
-		posStart 	= rect.bottom() - UORPT_DRAG_AREA_SIZE;
-		posEnd 		= rect.bottom() + UORPT_DRAG_AREA_SIZE;
+		posStart 	= rect.bottom() - dragSize;
+		posEnd 		= posStart + interVal;
 		if (posStart<=pos && pos<= posEnd)
 			return uoBlt_Bottom;
 
-	} else if (rht == rhtHorizontal || rht == rhtUnknown) {
+	}
+	if (rht == rhtHorizontal || rht == rhtUnknown) {
 
 		posStart 	= rect.left() - UORPT_DRAG_AREA_SIZE;
 		posEnd 		= rect.left() + UORPT_DRAG_AREA_SIZE;
@@ -1178,13 +1183,19 @@ uoBorderLocType uoReportCtrl::scaleLocationInBorder(qreal pos, QRectF rect, uoRp
 
 /// отработаем реакцию на нажатие мышки на линейке.
 ///\todo 1 реализовать логику выбора строк/столбцов.
-///\todo 1 масштаб глючит, поработать над масштабом.
 bool uoReportCtrl::mousePressEventForRuler(QMouseEvent *event)
 {
 	bool retVal = false;
+	uoReportDoc* doc =  getDoc();
+	if (!doc)
+		return retVal;
+
 	if (event->button() != Qt::LeftButton)
 		return retVal;
 	qreal posX = event->x(), posY = event->y();
+	_curMouseLastPos.setX(event->x());
+	_curMouseLastPos.setY(event->y());
+
 
 	if (_scaleFactor != 1.0){
 		posX = posX * _scaleFactorO;
@@ -1203,23 +1214,97 @@ bool uoReportCtrl::mousePressEventForRuler(QMouseEvent *event)
 		rhtCur = rhtHorizontal;
 
 	int scaleNo = 0;
+	bool scHide = true;
+	qreal scSize = 0.0;
+
 	if (findScaleLocation(posX, posY, scaleNo, rhtCur)){
-		// Я должен убедиться, что позиция мыши не у края ячейки, что-бы начать изменения размера
+
+		/*
+			Я должен убедиться, что позиция мыши не у края ячейки,
+			что-бы начать изменения размера или выделение ячейки.
+		*/
+		/*
+			Интересная ситуевинка....
+			Если мы хватаем за нижний край,
+			и пытаемся изменить зазмер, тут все просто:
+			- если это первая ячейка то просто выходим из процедуры.
+			- если номер ячейки > 0, то размер можно менять.
+			 А если это верхняя область?
+			 Значит надо найти первую не скрытую верхнюю ячейку с номером > 0
+			 и уже с ней работать...
+			 Вроде все ясно?
+		*/
+
 		uoBorderLocType locType = uoBlt_Unknown;
 		if (rhtCur == rhtHorizontal){
 			locType = scaleLocationInBorder(posX, _curMouseSparesRect, rhtCur);
 			if (locType == uoBlt_Unknown) {
 				_selections->selectCol(scaleNo);
-			} else {
+				_selections->startColSelected(scaleNo);
+				setStateMode(rmsSelectionRule_Top);
+			} else
+			if (locType == uoBlt_Left || locType == uoBlt_Right)
+			{
+				if (locType == uoBlt_Left && scaleNo == 1) {
+					return retVal;
+				}
+				if (locType == uoBlt_Left){
+					// ишем первую видимую ячейку. пс. не забыть бы потом пересчитать _curMouseSparesRect
+					while(scaleNo>1 && scHide) {
+						--scaleNo;
+						scHide = doc->getScaleHide(rhtCur, scaleNo);
+						if (!scHide)
+							break;
+					}
+					if (scaleNo<=0)
+						return retVal;
+					// А вот интересно, если ячейка не скрыта, но размер нулевой? вроде пофиг....
+					qreal topRct = 0.0;
+
+					scSize = doc->getScaleSize(rhtCur, scaleNo);
+					topRct = _curMouseSparesRect.left();
+					_curMouseSparesRect.setLeft(topRct - scSize);
+					_curMouseSparesRect.setRight(topRct);
+				}
+				setStateMode(rmsResizeRule_Top);
+				_resizeLine = scaleNo;
 			}
-		} else {
+
+		} else
+		if (rhtCur == rhtVertical)
+		{
 			locType = scaleLocationInBorder(posY, _curMouseSparesRect, rhtCur);
 			if (locType == uoBlt_Unknown) {
 				_selections->selectRow(scaleNo);
 				_selections->startRowSelected(scaleNo);
-				_stateMode = rmsSelectionRule_Left;
+				setStateMode(rmsSelectionRule_Left);
+			} else
+			if (locType == uoBlt_Bottom || locType == uoBlt_Top)
+			{
+				if (locType == uoBlt_Top && scaleNo == 1) {
+					return retVal;
+				}
+				if (locType == uoBlt_Top){
+					// ишем первую видимую ячейку. пс. не забыть бы потом пересчитать _curMouseSparesRect
+					while(scaleNo>1 && scHide) {
+						--scaleNo;
+						scHide = doc->getScaleHide(rhtCur, scaleNo);
+						if (!scHide)
+							break;
+					}
+					if (scaleNo<=0)
+						return retVal;
+					// А вот интересно, если ячейка не скрыта, но размер нулевой? вроде пофиг....
+					qreal topRct = 0.0;
 
-			} else {
+					scSize = doc->getScaleSize(rhtCur, scaleNo);
+					topRct = _curMouseSparesRect.top();
+					_curMouseSparesRect.setTop(topRct - scSize);
+					_curMouseSparesRect.setBottom(topRct);
+				}
+				setStateMode(rmsResizeRule_Left);
+				_resizeLine = scaleNo;
+
 			}
 		}
 		emit update();
@@ -1251,22 +1336,154 @@ void uoReportCtrl::mouseReleaseEvent(QMouseEvent *event)
 	QRectF rct;
 	int line = 0;
 	bool needUpdate = false;
-	if (_showRuler && _stateMode == rmsSelectionRule_Left){
-		_stateMode = rmsNone;
-		if (_curMouseSparesRect.contains(event->pos())){
-			/// мыша отрелейзилась там же где и была нажата...
-			return;
-		}
-		if (findScaleLocation(event->x(), event->y(), line,rhtVertical)) {
-			_selections->endRowSelected(line);
-			needUpdate = true;
+
+	uoReportDoc* doc =  getDoc();
+	if (!doc)
+		return;
+
+
+	qreal posX = 0,posY = 0;
+	posX = event->x();
+	posY = event->y();
+
+	if (_scaleFactor != 0.0) {
+		posX = posX * _scaleFactorO;
+		posY = posY * _scaleFactorO;
+	}
+	if (_showRuler) {
+		if (_stateMode == rmsSelectionRule_Left || _stateMode == rmsSelectionRule_Top){
+			if (_curMouseSparesRect.contains(event->pos())){
+				/// мыша отрелейзилась там же где и была нажата...
+				setStateMode(rmsNone);
+				return;
+			}
+			if (findScaleLocation(posX, posY, line,rhtVertical)) {
+				_selections->endRowSelected(line);
+				needUpdate = true;
+			} else if (findScaleLocation(posX, posY, line,rhtHorizontal)) {
+				_selections->endColSelected(line);
+				needUpdate = true;
+			}
+		} else if (_stateMode == rmsResizeRule_Left || _stateMode == rmsResizeRule_Top) {
+
+			int distance = (_curMouseLastPos - event->pos()).manhattanLength();
+			if (distance > QApplication::startDragDistance()) {
+				///\todo !!! Закончить ресайзинг, перенести наработки на горизонтальную линейку, начать ундо фраймверк...
+				qreal delta = 0;
+				uoRptHeaderType rht = (_stateMode == rmsResizeRule_Left) ? rhtVertical : rhtHorizontal;
+				if (_stateMode == rmsResizeRule_Left) {
+					delta = posY - _curMouseSparesRect.bottom();
+				} else {
+					delta = posX - _curMouseSparesRect.right();
+				}
+				qreal newSize = doc->getScaleSize(rht, _resizeLine);
+				newSize = newSize + delta;
+				newSize = qMax(0.0, newSize);
+				doc->setScaleSize(rht, _resizeLine,newSize);
+				recalcHeadersRects();
+				needUpdate = true;
+			}
+
+
 		}
 	}
+	setStateMode(rmsNone);
+
 	if (needUpdate)
 		updateThis();
 }
 void uoReportCtrl::mouseMoveEvent(QMouseEvent *event)
-{}
+{
+	QCursor cur = cursor();
+	bool needAnalysisPos = false, findArea = false;
+
+	Qt::CursorShape need_shape = Qt::ArrowCursor, cur_shape = cur.shape();
+	switch(_stateMode) {
+		case rmsNone:{
+			need_shape = Qt::ArrowCursor;
+			needAnalysisPos = true;
+			break;
+		}
+		case rmsSelectionRule_Top:
+		case rmsSelectionRule_Left:	{
+			need_shape = Qt::PointingHandCursor;
+			break;
+		}
+
+		case rmsResizeRule_Top:	{
+			need_shape = Qt::SizeHorCursor;
+			break;
+		}
+		case rmsResizeRule_Left:		{
+			need_shape = Qt::SizeVerCursor;
+			break;
+		}
+		default:	{
+			need_shape = Qt::ArrowCursor;
+			needAnalysisPos = true;
+			break;
+		}
+	}
+	if (needAnalysisPos) {
+		// необходим анализ позиции курсора....
+		QPointF pos;
+		bool vertLoc = false;
+		uoRptHeaderType rhdType = rhtUnknown;
+		qreal posX = event->x(), posY = event->y();
+
+		if (_scaleFactor != 0.0) {
+			posX = posX * _scaleFactorO;
+			posY = posY * _scaleFactorO;
+		}
+		pos.setX(posX);
+		pos.setY(posY);
+
+		int lineNo = 0;
+
+		if (_showRuler) {
+			if (_rectRuleCorner.contains(pos)) {
+				need_shape = Qt::PointingHandCursor;
+				findArea = true;
+			}
+			if (!findArea){
+				if (_rectRulerH.contains(pos) || (vertLoc = _rectRulerV.contains(pos))){
+
+					rhdType = vertLoc ? rhtVertical : rhtHorizontal;
+					uoBorderLocType locType = uoBlt_Unknown;
+
+					need_shape = Qt::PointingHandCursor;
+					findArea = true; //  типа нашли позицию и не хрю...
+					// далее проанализируем точную позицию.
+					findArea = findScaleLocation(posX, posY, lineNo, rhdType);
+					if (!findArea)
+						return;
+					if (rhdType == rhtVertical) {
+						locType = scaleLocationInBorder(posY, _curMouseSparesRect, rhdType);
+						if (locType == uoBlt_Bottom || locType == uoBlt_Top){
+							if (locType == uoBlt_Top && lineNo == 1) {
+								// какой смысл двигать верх 1-й строки или левый край 1-го столбца? О_о
+							} else {
+								need_shape = Qt::SizeVerCursor;
+							}
+						}
+					} else {
+						locType = scaleLocationInBorder(posX, _curMouseSparesRect, rhdType);
+						if (locType == uoBlt_Left || locType == uoBlt_Right) {
+							if (locType == uoBlt_Left && lineNo == 1) {
+							} else {
+								need_shape = Qt::SizeHorCursor;
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+
+	if (need_shape != cur_shape)
+		setCursor(need_shape);
+
+}
 
 void uoReportCtrl::showEvent( QShowEvent* event){
 	recalcHeadersRects();
@@ -1542,6 +1759,14 @@ qreal uoReportCtrl::getHeightWidget(){
 	return (height()-_hScrollCtrl->height()) * _scaleFactorO;
 }
 
+/// установка режима работы с отчетом.
+void uoReportCtrl::setStateMode(uoReportStateMode stMode){
+	_stateMode = stMode;
+	_resizeLine = 0;
+
+}
+
+
 
 /// Регулирование показа сетки, групп, секций, линейки.
 void uoReportCtrl::optionShow(bool shGrid, bool shGroup, bool shSection, bool shRuler)
@@ -1813,6 +2038,8 @@ void uoReportCtrl::setCurentCell(int x, int y, bool ensureVisible)
 			if (moveTo == uost_Top && _firstVisible_RowTop >= y){
 				_firstVisible_RowTop = y;
 				_shift_RowTop = 0;
+				_lastVisibleRow = recalcVisibleScales(rhtVertical);
+
 			}
 			else if (moveTo == uost_Bottom && ( _lastVisibleRow) <= y)	{
 				// Надо высчитать _firstVisible_RowTop и _shift_RowTop
@@ -1838,6 +2065,7 @@ void uoReportCtrl::setCurentCell(int x, int y, bool ensureVisible)
 					if (scaleNo<=0)
 						break;
 				} while(true);
+				_lastVisibleRow = y;
 			}
 			else if (_firstVisible_RowTop > y || _lastVisibleRow < y) {
 				if (_firstVisible_RowTop > y) {
