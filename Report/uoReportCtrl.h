@@ -123,6 +123,13 @@ class uoReportCtrl : public QWidget
 		int 			_curMouseSparesNo;
 		uoRptHeaderType _curMouseSparesRht;
 		QRectF			_curMouseSparesRect;
+		/**
+			последняя позиция мышки в которой было иницировано действие нажатием левой клавишы.
+			Например иницировано начало выделения или изменения размера ячейки.
+			если пользователь тут же отпускает мышку, но рука дергается возникает нежелательный
+			еффект перетаскивания. Это надо исключить. и исключим с пом. этой _curMouseLastPos.
+		*/
+		QPoint			_curMouseLastPos;
 		void 			mouseSparesAcceleratorDrop();
 		void 			mouseSparesAcceleratorSave(uoRptSparesType spar, int nom, uoRptHeaderType rht);
 
@@ -193,6 +200,8 @@ class uoReportCtrl : public QWidget
 		/// режимы взаимодействия с пользователем.
 		uoReportUseMode 	_useMode;
 		uoReportStateMode 	_stateMode;
+		int _resizeLine;	///< строка или колонка которая ресайзится.
+		void setStateMode(uoReportStateMode stMode);
 
 	private:
 		uoReportViewIteract* _iteractView;
