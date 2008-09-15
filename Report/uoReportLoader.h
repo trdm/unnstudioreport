@@ -12,6 +12,7 @@
 
 #include <QString>
 #include <QTextStream>
+#include <QTextDocument>
 #include <QDataStream>
 #include <QFile>
 
@@ -60,6 +61,14 @@ class uoReportLoader
 		virtual bool saveScaleHeaderStart(int count, uoRptHeaderType rht) = 0;
 		virtual bool saveScaleItem(uoRptNumLine* rLine) = 0;
 		virtual bool saveScaleHeaderEnd(uoRptHeaderType rht) = 0;
+
+		virtual void saveRowsStart(int rowCount) = 0;
+		virtual void saveRowItemStart(int rowNumb, int cellCount) = 0;
+		virtual void saveCell(uoCell* cellItem) = 0;
+
+		virtual void saveRowItemEnd() = 0;
+		virtual void saveRowsEnd() = 0;
+
 		/// Запись подвальной части
 		virtual bool saveDocEnd(uoReportDoc* doc) = 0;
 
@@ -92,6 +101,13 @@ class uoReportLoaderXML : public uoReportLoader {
 		virtual bool saveScaleHeaderStart(int count, uoRptHeaderType rht);
 		virtual bool saveScaleItem(uoRptNumLine* rLine);
 		virtual bool saveScaleHeaderEnd(uoRptHeaderType rht);
+
+		virtual void saveRowsStart(int rowCount);
+		virtual void saveRowItemStart(int rowNumb, int cellCount);
+		virtual void saveCell(uoCell* cellItem);
+		virtual void saveRowItemEnd();
+		virtual void saveRowsEnd();
+
 		/// Запись подвальной части
 		virtual bool saveDocEnd(uoReportDoc* doc);
 

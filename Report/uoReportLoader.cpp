@@ -11,6 +11,8 @@
 #include "uoReportDoc.h"
 #include "uoReportDocBody.h"
 #include <QFile>
+#include <QtCore>
+
 
 namespace uoReport {
 /**
@@ -79,7 +81,8 @@ uoReportLoader* uoReportLoader::getLoader(uoRptStoreFormat stFormat)
 /**
 	\class uoReportLoaderXML - сериализация uoReportDoc в XML
 	\brief Класс сериализации документа uoReportDoc в XML.
-	Структура выгрузки в XML
+	Структура выгрузки в XML.
+
 
 */
 uoReportLoaderXML::uoReportLoaderXML(){
@@ -177,6 +180,30 @@ bool uoReportLoaderXML::saveScaleHeaderEnd(uoRptHeaderType rht){
 	_textStream << QString("</Scales>\n");
 	return true;
 }
+
+void uoReportLoaderXML::saveRowsStart(int rowCount){
+	_textStream << QString("<Rows count = \"%1\">\n").arg(rowCount);
+}
+
+void uoReportLoaderXML::saveRowItemStart(int rowNumb, int cellCount){
+	_textStream << QString("\t<RowItem no = \"%1\" cellCnt = \"%2\">\n").arg(rowNumb).arg(cellCount);
+}
+
+void uoReportLoaderXML::saveCell(uoCell* cellItem){
+	QString text = Qt::escape(cellItem->_text);
+	_textStream << QString("\t\t<Cell no = \"%1\" >\n").arg(cellItem->number());
+	_textStream << QString("\t\t\t%1\n").arg(text);
+	_textStream << QString("\t\t</Cell>\n");
+}
+
+void uoReportLoaderXML::saveRowItemEnd(){
+	_textStream << QString("\t</RowItem>\n");
+}
+
+void uoReportLoaderXML::saveRowsEnd(){
+	_textStream << QString("</Rows>\n");
+}
+
 		/// Запись подвальной части
 bool uoReportLoaderXML::saveDocEnd(uoReportDoc* doc){
 	_textStream << QString("</Doc>\n");
