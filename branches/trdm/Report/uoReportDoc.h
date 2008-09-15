@@ -19,8 +19,8 @@
 namespace uoReport {
 
 
-///\class uoReportDoc - обслуживает данные таблицы отчета, тело документа
-///\brief обслуживает данные таблицы отчета: строки, текст, картинки и т.п.
+///\class uoReportDoc - содержит данные отчета.
+///\brief содержит и обслуживает данные таблицы отчета: строки, текст, картинки и т.п.
 class uoReportDoc
 	: public QObject
 {
@@ -56,8 +56,8 @@ class uoReportDoc
 
 	public:
 		void test();
-		rptSize getScaleSize(uoRptHeaderType hType, int nom, bool isDef = false);
-		void 	setScaleSize(uoRptHeaderType hType, int nom, rptSize size, bool isDef = false);
+		qreal getScaleSize(uoRptHeaderType hType, int nom, bool isDef = false);
+		void 	setScaleSize(uoRptHeaderType hType, int nom, qreal size, bool isDef = false);
 		void 	setScalesHide(uoRptHeaderType hType, int nmStart, int cnt = 1,  bool hide = true);
 		bool 	getScaleHide(uoRptHeaderType hType, int nom);
 
@@ -95,9 +95,6 @@ class uoReportDoc
 
 		int _freezEvent;	/// заморозить посылку сообщений на перерисовку
 
-		int _maxLevelSpanFoldingH;   	///< Группировки
-		int _maxLevelSpanSectionsH;		///< секции.
-
 		QString 		 _docFilePath;		///< Имя файла
 		uoRptStoreFormat _storeFormat;	///< Формат хранения файла отчета.
 
@@ -110,8 +107,17 @@ class uoReportDoc
 		uoHeaderScale* _headerH; ///< Горизонтальный заголовок
 
 	protected:
+		// Содержимое строк документа
+		uoRowsDoc* 	_rows;		 ///< Значимое содержимое документа, содержимое ячеек документа.
+	public:
+		void 	setCellText(const int posY, const int posX, const QString text);
+		QString getCellText(const int posY, const int posX);
+		uoCell* getCell(const int posY, const int posX, bool needCreate = false);
+
+	protected:
 		QList<uoReportCtrl*> _atachedView; 	///< Приватаченные вьювы
 		QList<QObject*> 	 _atachedObj;	///< Приватаченные объекты. Документ может использоваться без вьюва, наример для заполнения его в модуле.
+
 		long _refCounter;
 	public:
 		void attachView(uoReportCtrl* rCtrl, bool autoConnect = true);

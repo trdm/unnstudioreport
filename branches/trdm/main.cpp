@@ -20,6 +20,7 @@ int main(int argc, char *argv[])
 {
     setlocale(LC_ALL, "rus");
     InitCodecs();
+    QChar qChar;
 
 
     QApplication app(argc, argv);
@@ -35,7 +36,7 @@ int main(int argc, char *argv[])
     gridLayout->setHorizontalSpacing(0);
     gridLayout->setContentsMargins(0, 0, 0, 0);
 
-    m_Dlg.resize(500,500);
+    m_Dlg.resize(400,300);
     m_Dlg.show();
 
 	// немножко протестируем....
@@ -49,15 +50,17 @@ int main(int argc, char *argv[])
     doc->addGroup(9,12, uoReport::rhtHorizontal);
     doc->addGroup(1,3, uoReport::rhtVertical);
     doc->addGroup(1,2, uoReport::rhtVertical);
-    doc->addGroup(8,22, uoReport::rhtVertical);
+    doc->addGroup(8,80, uoReport::rhtVertical);
     doc->addGroup(9,20, uoReport::rhtVertical);
     doc->addSection(1,4, uoReport::rhtHorizontal);
     doc->addSection(2,3, uoReport::rhtHorizontal);
-    doc->setScaleSize(uoReport::rhtHorizontal, 1, 0.0);
+//    doc->setScaleSize(uoReport::rhtHorizontal, 1, 0.0);
     doc->setScaleSize(uoReport::rhtHorizontal, 2, 120.5);
     doc->setScaleSize(uoReport::rhtHorizontal, 9, 0.0);
     doc->setScaleSize(uoReport::rhtVertical, 9, 3.0);
     doc->setScaleSize(uoReport::rhtVertical, 1, 45.3);
+    doc->setScaleSize(uoReport::rhtVertical, 35, 45.3);
+    doc->setCellText(2,2,"Hello \nworld!");
 
     m_GR.getControl()->optionShow(true, true, false, true);
 

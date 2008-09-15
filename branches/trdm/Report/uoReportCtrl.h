@@ -27,9 +27,8 @@
 namespace uoReport {
 
 
-//QAbstractScrollArea
 ///\struct uoRptGroupItem
-///\brief Координатное описание группировки строк/столбцов
+///\brief Координатное описание группировки строк/столбцов, подготовленное для рендринга.
 struct uoRptGroupItem {
 	uoRptGroupItem()
 		: _folded(false)
@@ -50,7 +49,7 @@ struct uoRptGroupItem {
 	int _id;				///< Идентификатор гроуп итема.
 	qreal	_rectEndPos; 	///< Координаты правой|нижней стороны ректа. для расчета длины линии группировки.
 	qreal	_rectMidlePos; 	///< Координаты середины правой|нижней стороны ректа для вычерчивания горизонтальной линии группировки.
-	rptSize _sizeTail;		///< Размер "хвоста" группировки.
+	qreal _sizeTail;		///< Размер "хвоста" группировки.
 	bool 	_tailPosIsAbs;	///< Размер "хвоста" указан относительно левой или верхней сторони ректа группировок
 
 	/// копируем данные из uoLineSpan
@@ -153,6 +152,7 @@ class uoReportCtrl : public QWidget
 		void drawHeaderControlGroup(QPainter& painter);
 		void drawHeaderControl(QPainter& painter);
 		void drawDataArea(QPainter& painter);
+		void drawCell(QPainter& painter, uoCell* cell, int row, int col, QRectF& rectCell);
 
 		QBrush _brushWindow;
 		QBrush _brushBase;
@@ -162,8 +162,8 @@ class uoReportCtrl : public QWidget
 		QPen _penWhiteText;
 		QPen _penGrey;
 
-		rptSize _charWidthPlus; 	///< Опорная ширина символа "+" в текушем шрифте.
-		rptSize _charHeightPlus; 	///< Опорная высота символа "+" в текушем шрифте.
+		qreal _charWidthPlus; 	///< Опорная ширина символа "+" в текушем шрифте.
+		qreal _charHeightPlus; 	///< Опорная высота символа "+" в текушем шрифте.
 
 		qreal _scaleFactor;			///< Положительный соэффициент масштаба виджета, если он > 0, тогда виджет крупнее, если меньше, виджет мельче.
 		qreal _scaleFactorO;		///< обратная величина фактора. для пересчетов смещений.
@@ -181,16 +181,19 @@ class uoReportCtrl : public QWidget
 		void optionShow(bool shGrid, bool shGroup, bool shSection, bool shRuler);
 
 	protected:
-		qreal getWidhtWidget(); 	///< Ширина с учетом масштаба
-		qreal getHeightWidget();	///< Высота с учетом масштаба
+		qreal 	getWidhtWidget(); 	///< Ширина с учетом масштаба
+		qreal 	getHeightWidget();	///< Высота с учетом масштаба
 
-		void recalcHeadersRects();
-		void recalcGroupSectionRects(uoRptHeaderType rht = rhtUnknown);
-		rptSize getLengthOfScale(uoRptHeaderType rht, int start, int stop);
-		int  recalcVisibleScales(uoRptHeaderType rht);
-		void calcGroupItemPosition(uoRptGroupItem* grItem, uoRptHeaderType rht);
+		bool 	rowVisible(int nmRow) const;
+		bool 	colVisible(int nmCol) const;
 
-		void dropGropItemToCache();
+		void 	recalcHeadersRects();
+		void 	recalcGroupSectionRects(uoRptHeaderType rht = rhtUnknown);
+		qreal getLengthOfScale(uoRptHeaderType rht, int start, int stop);
+		int  	recalcVisibleScales(uoRptHeaderType rht);
+		void 	calcGroupItemPosition(uoRptGroupItem* grItem, uoRptHeaderType rht);
+
+		void 	dropGropItemToCache();
 		uoRptGroupItem* getGropItemFromCache();
 
 	private:
@@ -253,8 +256,8 @@ class uoReportCtrl : public QWidget
 		bool _showFrame;
 
 		//------- группа контролирующая положение вьюва и во вьюве.
-		rptSize _shift_RowTop;		///< Смещение первой видимой строки вверх (грубо - размер невидимой/скрытой их части)
-		rptSize _shift_ColLeft;		///< Смещение первой видимой колонки влево (грубо - размер невидимой/скрытой их части)
+		qreal _shift_RowTop;		///< Смещение первой видимой строки вверх (грубо - размер невидимой/скрытой их части)
+		qreal _shift_ColLeft;		///< Смещение первой видимой колонки влево (грубо - размер невидимой/скрытой их части)
 
 		int _firstVisible_RowTop; 	///< Первая верхняя видимая строка
 		int _firstVisible_ColLeft; 	///< Первая левая видимая колонка

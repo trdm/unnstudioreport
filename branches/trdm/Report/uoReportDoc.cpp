@@ -21,8 +21,8 @@ uoReportDoc::uoReportDoc()
 	, _spanTreeSctV(new uoSpanTree)
 	, _headerV(new uoHeaderScale)
 	, _headerH(new uoHeaderScale)
+	, _rows(new uoRowsDoc)
 {
-	_maxLevelSpanFoldingH = _maxLevelSpanSectionsH = 0;   /// Группировки
 	_spanTreeSctH->setCanOnlyOne(true);
 	_spanTreeSctV->setCanOnlyOne(true);
 	_storeFormat = uoRsf_Unknown;
@@ -290,6 +290,15 @@ bool uoReportDoc::flush(uoReportLoader* loader){
 			if (!retVal) break;
 		}
 	}
+
+	//--------- выгрузка содержания строк -------------------
+	int rowCount = _rows->getCountItem();
+	if (rowCount>0) {
+		loader->saveRowsStart(rowCount);
+		_rows->saveItems(loader);
+		loader->saveRowsEnd();
+	}
+
 	if (!retVal) return false;
 	retVal = loader->saveDocEnd(this);
 	return retVal;
@@ -376,9 +385,6 @@ void uoReportDoc::beforeAddRowOrCol(int count, uoRptHeaderType rht, int noLn)
 {
 	if (count <= 0)
 		return;
-	qreal oldSize = 0.0;
-	qreal newSize = 0.0;
-
 	int oldCnt = 0;
 
 	uoHeaderScale* header = NULL;
@@ -423,9 +429,7 @@ void uoReportDoc::doRowCountChange(int count, int pos)
 	qreal oldSize = _sizeV;
 	qreal oldSizeVis = _sizeV_visible;
 
-	int oldCnt = _rowCount;
 	_rowCount = _rowCount + count;
-	int newCnt = _rowCount;
 	_sizeV = oldSize + count * getDefScaleSize(rhtVertical);
 	_sizeV_visible = oldSizeVis + count * getDefScaleSize(rhtVertical);
 	if (_freezEvent == 0)
@@ -440,9 +444,7 @@ void uoReportDoc::doColCountChange(int count, int pos )
 	qreal oldSize = _sizeH;
 	qreal oldSizeVis = _sizeH_visible;
 
-	int oldCnt = _colCount;
 	_colCount = _colCount + count;
-	int newCnt = _colCount;
 	_sizeH = oldSize + count * getDefScaleSize(rhtHorizontal);
 	_sizeH_visible = oldSizeVis + count * getDefScaleSize(rhtHorizontal);
 	if (_freezEvent == 0)
@@ -469,7 +471,7 @@ void uoReportDoc::onAccessRowOrCol(int nom, uoRptHeaderType rht)
 	}
 }
 
-rptSize uoReportDoc::getScaleSize(uoRptHeaderType hType, int nom, bool isDef)
+qreal uoReportDoc::getScaleSize(uoRptHeaderType hType, int nom, bool isDef)
 {
 	if (hType == rhtVertical)
 		return _headerV->getSize(nom, isDef);
@@ -477,9 +479,9 @@ rptSize uoReportDoc::getScaleSize(uoRptHeaderType hType, int nom, bool isDef)
 		return _headerH->getSize(nom, isDef);
 }
 
-void uoReportDoc::setScaleSize(uoRptHeaderType hType, int nom, rptSize size, bool isDef){
+void uoReportDoc::setScaleSize(uoRptHeaderType hType, int nom, qreal size, bool isDef){
 	bool scVisible = true;
-	rptSize oldSizeItem = 0.0, oldSize = 0.0;
+	qreal oldSizeItem = 0.0, oldSize = 0.0;
 	if (hType == rhtVertical) {
 		oldSizeItem = _headerV->getSize(nom, isDef);
 		scVisible = _headerV->getHide(nom);
@@ -536,6 +538,19 @@ void uoReportDoc::setScalesHide(uoRptHeaderType hType, int nmStart, int cnt,  bo
 
 	onAccessRowOrCol(nmStart + cnt - 1, hType);
 }
+
+void uoReportDoc::setCellText(const int posY, const int posX, const QString text)
+{
+	_rows->setText(posY, posX, text);
+}
+QString uoReportDoc::getCellText(const int posY, const int posX){
+	return 	_rows->getText(posY, posX);
+}
+
+uoCell* uoReportDoc::getCell(const int posY, const int posX, bool needCreate){
+	return _rows->getCell(posY, posX, needCreate);
+}
+
 
 bool uoReportDoc::getScaleHide(uoRptHeaderType hType, int nom){
 	if (hType == rhtVertical)
@@ -601,7 +616,7 @@ void uoReportDoc::test(){
     bool printAll = true;
 	bool printCurent = true;
 
-	rptSize sz = 17;
+	qreal sz = 17;
 
     qDebug()<<"Start test class \"uoReportDocBody\"";
     qDebug()<<"{";

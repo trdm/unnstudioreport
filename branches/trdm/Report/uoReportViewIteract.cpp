@@ -130,7 +130,6 @@ void uoReportViewIteract::setCheckedState(qreal scaleFactor){
 /// Выбрать имя файла и формат
 bool uoReportViewIteract::chooseSaveFilePathAndFormat(QString& filePath, uoRptStoreFormat& frmt, QWidget* wi )
 {
-	bool retVal = false;
 
 	if (filePath.isEmpty()){
 		filePath = "report.xml";

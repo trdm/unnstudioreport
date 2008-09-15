@@ -37,7 +37,7 @@ namespace uoReport {
 */
 
 
-
+struct uoEnumeratedItem;
 struct uoLineSpan;
 struct uoRptNumLine;
 class uoSpanTree;
@@ -50,6 +50,8 @@ template <typename T> class uoNumVector;
 class uoReportLoader;
 class uoReportLoaderXML;
 class uoReportSelection;
+struct uoCell;
+class uoRow;
 
 
 ///\enum uoIntersectMode - варианты перечения отрезков
@@ -170,6 +172,76 @@ enum uoReportStateMode {
 	, rmsSelectionRule_Top  ///< Групповое выделения ячеек вертикальной линейки.
 	, rmsSelectionRule_Left ///< Групповое выделения ячеек ГОРИЗОНТАЛЬНОЙ линейки.
 };
+
+
+
+///\enum uoVertAlignment - типы вертикального выравнивания
+enum uoVertAlignment {
+	uoVA_Unknovn = 0
+	, uoVA_Top 		///< Выравнивание по верхнему краю
+	, uoVA_Center 	///< Выравнивание по центру
+	, uoVA_Bottom 	///< Выравнивание по нижнему краю
+};
+
+///\enum uoHorAlignment - типы горизонтального выравнивания
+enum uoHorAlignment {
+	uoHA_Unknovn = 0
+	, uoHA_Left 	///< Выравнивание по левому краю
+	, uoHA_Center 	///< Выравнивание по центру
+	, uoHA_Right 	///< Выравнивание по правому краю
+};
+
+/**
+	\enum uoCellTextType - типы текста в ячейке
+	Типы текста в ячейке: текст, выражение, шаблон.
+	С "текстом" все просто, его надо просто вывести
+	"Выражение", достаточно просто, например "PrnPrice", просто
+	ищем в списке выражений в документе и заменяем на значения
+	Шаблон, это просто текст, который надо распарсить. Образец:
+	"Общая сумма: [ВсегоСумма] руб.".
+	Извлекаются части:
+	- "Общая сумма: "
+	- "[ВсегоСумма]"
+	- " руб."
+	"[ВсегоСумма]" - заменяется по принцыпу как и с "Выражением."
+	Потом склеивается.
+*/
+enum uoCellTextType {
+	uoCTT_Text = 0	///< Простой текст, не интерпретируемый
+	, uoCTT_Expr 	///< Выражение, должно быть взято из хранилищая выражения
+	, uoCTT_Templ 	///< Шаблон. должен быть разобран и интерпретирован.
+};
+
+///\enum uoCellBorderType - тип линии бордюра, просто повторение Qt::PenStyle
+enum uoCellBorderType {
+	  uoCBT_SolidLine = 0
+	, uoCBT_DashLine
+	, uoCBT_DotLine
+	, uoCBT_DashDotLine
+	, uoCBT_DashDotDotLine
+	//, uoCBT_CustomDashLine - оно мне надо? :)
+};
+
+/**
+	\enum uoCellTextBehavior - поведение текста при привышении его размера ширины ячейки.
+
+	uoCTB_Auto - Текст будет печататься в сторону его выравнивания, пока не встретит
+		либо границу документа, либо первую заполненную ячейку. Т.е. фактически текст
+		может печататься поверх нескольких ячеек, если это ему нужно....
+	uoCTB_Cut - встретив границу ячейки, текст просто обрежется.
+	uoCTB_Obstruct - встретив границу ячейки, литеры текста поменяется на "@"
+	uoCTB_Transfer - если текст не помещается в отведенную ему область, он будет
+		перенесен и ячейка должна проинформировать строку, что её размер должен быть
+		расширен.
+*/
+enum uoCellTextBehavior {
+	uoCTB_Auto = 0
+	, uoCTB_Cut
+	, uoCTB_Obstruct
+	, uoCTB_Transfer
+};
+///\todo определить оптимальные дефолтные настройки для ячейки.
+
 
 
 /// Запуск тестов для элементов отчета...
