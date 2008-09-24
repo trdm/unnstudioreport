@@ -14,6 +14,7 @@
 #include "uoReport.h"
 #include "uoNumVector.h"
 #include "uoReportLoader.h"
+#include "uoReportDoc.h"
 
 
 
@@ -32,7 +33,7 @@ struct uoRptNumLine : public uoEnumeratedItem{
 	public:
 
 		uoRptNumLine(int ln)
-			: _line(ln), _size(-1), _hiden(false), _sellected(false)
+			: _line(ln), _size(-1), _hiden(false)
 			{}
 		virtual ~uoRptNumLine(){};
 
@@ -48,20 +49,20 @@ struct uoRptNumLine : public uoEnumeratedItem{
 	bool 	hiden() {return _hiden;}
 	void 	setHiden(bool hd) {_hiden = hd;}
 
-	bool 	selected() {return _sellected;}
-	void 	setSelected(bool sl) {_sellected = sl;}
-
 	private:
 		int _line;
 		/**
 			некоторые пояснения. есть 2 размера: _size и _sizeDef
-			_sizeDef - размер ячейки, как он задан в процессе конфигурирования отчета. например как дефолтная высота.
-			_size    - размер ячейки, который она примет когда будет заполнена данными на этапе вывода.
+			_sizeDef - высота строки, вычисленный из максимального шрифта, который есть в строке. Для колонки смысла не имеет.
+			_size    - высота строки, который она примет когда будет заполнена данными на этапе вывода.
 			так называемый "динамический" размер. Естественно для пространственных расчетов принимается _size,
 			но когда ячейка пуста, размер возвращается из _sizeDef.
+			_size   - ЭТО ТАКЖЕ  ширина столбца
 		*/
-		qreal _size, _sizeDef;///< Дефолтный размер, устанновленный в конструкторе, к которому будет возвращаться размер.
-		bool _hiden, _sellected;
+		qreal _size;
+		qreal _sizeDef;
+		bool _hiden;
+//		bool _sellected;
 };
 
 // по typename:
@@ -99,6 +100,32 @@ class uoHeaderScale	: public uoNumVector<uoRptNumLine>
 
 	void test();
 };
+
+/**
+	\class uoReportDocFontColl - коллекция шрифтов документа.
+	\brief коллекция шрифтов документа, абсорбирована для удобства выгрузок/загрузок подстановок и т.п.
+
+	Идея вобщем-то проста. Вместо указания всех характеристик шрифтов в ячейке \n
+	там просто будет торчать индекс фонта из этой коллекции и все. \n
+	Думаю это позволит в будующем достаточно эффективно манипулировать со шрифтами в документах. \n
+
+*/
+class uoReportDocFontColl {
+	public:
+		uoReportDocFontColl();
+		~uoReportDocFontColl();
+	public:
+		QFont* getFont(int nmFont);
+		int getFontId(QString fontName);
+		int addFont(QString fontName);
+		int findFont(QString fontName);
+		int countFonts();
+
+	private:
+		QList<QFont*> _fontList;
+};
+
+
 /*
 	Есть определенная проблема:
 	Вычисление переносов текста в ячейках таблицы при изменении некоторых
@@ -114,7 +141,7 @@ class uoHeaderScale	: public uoNumVector<uoRptNumLine>
 		- отступы справа и слева.
 		Начать перебор символов в строке и определение ширины каждого символа и каждого слова.
 		если ширины столбца не хватает для слова, рубить его тоже.
-		ест
+		для этой операции необходимо хорошенько изучить информацию о шрифтах.
 */
 
 
@@ -122,15 +149,42 @@ class uoHeaderScale	: public uoNumVector<uoRptNumLine>
 struct uoTextTrPoint
 {
 	public:
-		uoTextTrPoint()
-			: _textTp(0),_point(-1){};
+		uoTextTrPoint()	: _textTp(0),_point(-1){};
 		~uoTextTrPoint();
 
 		uoTextTrPoint* _textTp;
 		int _point;
 };
 
+struct uoCellTextProps {
+	public:
+	uoCellTextProps()
+	:_textTp(0)
+	{
+		_textType 		= uoCTT_Text;
+		_vertAlignment  = uoVA_Top;
+		_horAlignment	= uoHA_Left;
+		_behavior		= uoCTB_Auto;
+		_fontSize		= 10;
+	}
 
+	QString 	_text; 	///< Текст содержащийся в ячейке.
+	int 		_fontID;
+	int 		_fontColID;
+	int 		_fontSize;
+
+	uoCellTextType  	_textType;		///< Тип текста ячейки
+	uoVertAlignment 	_vertAlignment;	///< Тип вертикального выравнивания текста.
+	uoHorAlignment		_horAlignment;	///< Тип горизонтального выравнивания текста.
+	uoCellTextBehavior 	_behavior;		///< Тип текста при превышении его длинны размера ячейки.
+	uoTextTrPoint* 		_textTp;		///< структура содержащая переносы текста.
+
+};
+
+struct uoCellBordProps {
+	uoCellBorderType 	_bordType[4];	///< Тип рисунка бордюра.
+	int					_bordColor;		///< Цвеет бордюра.
+};
 
 /**
 	\struct uoCell - содержание и форматирование ячейки таблицы.
@@ -143,36 +197,27 @@ struct uoTextTrPoint
 */
 struct uoCell : public uoEnumeratedItem{
 	uoCell(int nom)
-		:_x(nom)
-		,_oldSizeCol(0)
-		,_textTp(0)
+		: _x(nom)
+		, _textProp(0)
+		, _bordProp(0)
 	{}
 	~uoCell()
 	{}
 
-	virtual void setNumber(int nm){
-		_x = nm;
-	}
-	virtual int  number() {
-		return _x;
-	}
+	virtual void setNumber(int nm){		_x = nm;	}
+	virtual int  number() {		return _x;	}
 
-	/// Номер колонки, к которой ячейка принадлежит.
-	int _x;
+	QString getText();
+	void 	setText(QString text, uoReportDoc* doc);
 
-	/// старая ширина ячейки, до форматирования...
-	qreal 		_oldSizeCol;
+	QFont*   getFont(uoReportDoc* doc);
+	const QColor*  getFontColor(uoReportDoc* doc);
 
-	/// Текст содержащийся в ячейке.
-	QString 		_text;
+	int 		_x;		///< Номер колонки, к которой ячейка принадлежит.
+	int 		_bgColorID;
 
-	uoCellTextType  	_textType;		///< Тип текста ячейки
-	uoVertAlignment 	_vertAlignment;	///< Тип вертикального выравнивания текста.
-	uoHorAlignment		_horAlignment;	///< Тип горизонтального выравнивания текста.
-	uoCellTextBehavior 	_behavior;	///< Тип текста при превышении его длинны размера ячейки.
-	uoCellBorderType 	_bordType;		///< Тип рисунка бордюра.
-	uoTextTrPoint* 		_textTp;			///< структура содержащая переносы текста.
-
+	uoCellTextProps* _textProp;
+	uoCellBordProps* _bordProp;
 };
 
 
@@ -190,6 +235,7 @@ class uoRow : public uoEnumeratedItem, public uoNumVector<uoCell>
 	virtual void onDeleteItem(uoCell* delItem);
 	virtual void onCreateItem(uoCell* crItem);
 	void saveItems(uoReportLoader* loader);
+	QList<int> getItemNumList();
 
 
 	private:
@@ -206,12 +252,15 @@ class uoRowsDoc : public uoNumVector<uoRow>
 		virtual void onDeleteItem(uoRow* delItem);
 		virtual void onCreateItem(uoRow* crItem);
 
+		void setDoc(uoReportDoc* doc){_doc = doc;};
+		uoRow* getRow(int nmRow, bool needCreate = false);
+
 		uoCell* getCell(const int posY, const int posX, const bool needCreate = false);
 		QString getText(const int posY, const int posX);
 		void saveItems(uoReportLoader* loader);
 
-
 		bool setText(const int posY, const int posX, QString text);
+		uoReportDoc* _doc;
 };
 
 

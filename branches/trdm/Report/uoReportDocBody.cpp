@@ -158,6 +158,132 @@ void uoHeaderScale::onDeleteItem(uoRptNumLine* delItem)
 {
 }
 
+
+///=====================================================
+///==============uoReportDocFontColl====================
+uoReportDocFontColl::uoReportDocFontColl()
+{
+}
+
+uoReportDocFontColl::~uoReportDocFontColl()
+{
+	QFont* font = NULL;
+	while (!_fontList.isEmpty()) {
+		font = _fontList.takeFirst();
+		delete font;
+	}
+
+}
+
+/// Получить фонт для отрисовки
+QFont* uoReportDocFontColl::getFont(int nmFont)
+{
+	if (_fontList.isEmpty())
+		return NULL;
+	if (_fontList.size() < (nmFont-1))
+		return NULL;
+	return _fontList.at(nmFont);
+}
+
+/// чиста поиск.
+int uoReportDocFontColl::findFont(QString fontName)
+{
+	int retVal = -1;
+	if (!_fontList.isEmpty()){
+		QFont* font = NULL;
+		for (int i = 0; i<_fontList.size(); i++){
+			font = _fontList.at(i);
+			if (font->family() == fontName){
+				return i;
+			}
+		}
+	}
+	return retVal;
+}
+
+/// Добавим фонт.
+int uoReportDocFontColl::addFont(QString fontName)
+{
+	int retVal = findFont(fontName);
+	if (retVal == -1){
+		// есть возможность поработать с фонтом на свое усмотрение.
+		QFont* font = new QFont(fontName);
+		_fontList.append(font);
+		retVal = _fontList.size()-1;
+	}
+
+
+	return retVal;
+}
+
+/// Получить ID фонта. Именно тут "Заводятся" новые фонты
+int uoReportDocFontColl::getFontId(QString fontName)
+{
+	int retVal = findFont(fontName);
+	if (retVal == -1){
+		retVal = addFont(fontName);
+	}
+
+	return retVal;
+}
+
+/// количество зарегистрированный шрифтов.
+int uoReportDocFontColl::countFonts()
+{
+	if (_fontList.isEmpty())
+		return 0;
+	return _fontList.count();
+}
+
+
+
+
+///==============uoReportDocFontColl====================
+///=====================================================
+
+/// Взять текст.
+QString uoCell::getText()
+{
+	if (_textProp){
+		return _textProp->_text;
+	}
+	return QString("");
+}
+
+/// Установить текст. Надо гарантировать наличие структуры _textProp;
+void uoCell::setText(QString text, uoReportDoc* doc)
+{
+	if (!doc)
+		return;
+	if (!_textProp)
+		_textProp = doc->getNewTextProp();
+	if (_textProp)
+		_textProp->_text = text;
+
+
+//	uoCellTextProps* _textProp
+}
+
+/// Отдаем фонт сразус размером
+QFont* uoCell::getFont(uoReportDoc* doc)
+{
+	if (!doc || !_textProp)
+		return NULL;
+	QFont* font = doc->getFontByID(_textProp->_fontID);
+	if (font){
+		font->setPointSize(_textProp->_fontSize);
+	}
+	return font;
+}
+
+const QColor*  uoCell::getFontColor(uoReportDoc* doc)
+{
+	if (!doc || !_textProp)
+		return NULL;
+	return doc->getColorByID(_textProp->_fontColID);
+}
+
+
 ///============================================
 /// uoRow uoRow uoRow uoRow uoRow uoRow
 
@@ -195,9 +321,24 @@ void uoRow::saveItems(uoReportLoader* loader){
 	}
 }
 
+/// Получить перечень номеров ячеек строки.
+QList<int> uoRow::getItemNumList()
+{
+	QList<int> listNo;
+	if (_list->isEmpty())
+		return listNo;
+	uoCell* item = NULL;
+	QLinkedList<uoCell*>::iterator itLst = _list->begin();
+	while(itLst != _list->end()) {
+		item = *itLst;
+		listNo.append(item->number());
+		itLst++;
+	}
+	return listNo;
+}
+
 /// uoRowsDoc==========================================
 uoRowsDoc::uoRowsDoc(): uoNumVector<uoRow>()
-
 {
 }
 uoRowsDoc::~uoRowsDoc(){
@@ -225,7 +366,7 @@ QString uoRowsDoc::getText(int posY, int posX){
 
 	uoCell* cell = getCell(posY, posX, false);
 	if (cell){
-		retVal = cell->_text;
+		retVal = cell->getText();
 	}
 	return retVal;
 }
@@ -236,7 +377,7 @@ bool uoRowsDoc::setText(const int posY, const int posX, QString text){
 
 	uoCell* cell = getCell(posY, posX, true);
 	if (cell){
-		cell->_text = text;
+		cell->setText(text, _doc);
 		isFind = true;
 	}
 	return isFind;
@@ -258,6 +399,12 @@ void uoRowsDoc::saveItems(uoReportLoader* loader)
 		loader->saveRowItemEnd();
 		itLst++;
 	}
+}
+
+/// Получить строку по номеру.
+uoRow* uoRowsDoc::getRow(int nmRow, bool needCreate)
+{
+	return getItem(nmRow, needCreate);
 }
 
 

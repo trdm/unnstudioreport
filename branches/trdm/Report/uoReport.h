@@ -40,6 +40,8 @@ namespace uoReport {
 struct uoEnumeratedItem;
 struct uoLineSpan;
 struct uoRptNumLine;
+class uoHeaderScale;
+class uoReportDocFontColl;
 class uoSpanTree;
 class uoReportDoc;
 class uoReportCtrl;
@@ -50,6 +52,11 @@ template <typename T> class uoNumVector;
 class uoReportLoader;
 class uoReportLoaderXML;
 class uoReportSelection;
+
+struct uoTextTrPoint;
+struct uoCellTextProps;
+struct uoCellBordProps;
+class uoRowsDoc;
 struct uoCell;
 class uoRow;
 

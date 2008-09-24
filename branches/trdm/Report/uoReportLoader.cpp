@@ -190,7 +190,7 @@ void uoReportLoaderXML::saveRowItemStart(int rowNumb, int cellCount){
 }
 
 void uoReportLoaderXML::saveCell(uoCell* cellItem){
-	QString text = Qt::escape(cellItem->_text);
+	QString text = Qt::escape(cellItem->getText());
 	_textStream << QString("\t\t<Cell no = \"%1\" >\n").arg(cellItem->number());
 	_textStream << QString("\t\t\t%1\n").arg(text);
 	_textStream << QString("\t\t</Cell>\n");

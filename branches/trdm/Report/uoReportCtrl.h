@@ -157,6 +157,7 @@ class uoReportCtrl : public QWidget
 		QBrush _brushWindow;
 		QBrush _brushBase;
 		QBrush _brushBlack;
+		QBrush _brushSelection;
 		QPen _penText;
 		QPen _penNoPen;
 		QPen _penWhiteText;
@@ -276,6 +277,7 @@ class uoReportCtrl : public QWidget
 
 		void onAccessRowOrCol(int nom, uoRptHeaderType rht); ///< при доступе к строке или столбцу вьюва...
 		void doChangeVirtualSize(uoRptHeaderType rht, int changeCnt); ///< обработать смену виртуального размера
+
 		rptGroupItemList* _groupListCache;	///< кешь для экземпляров uoRptGroupItem
 		rptGroupItemList* _groupListV;		///< список ректов группировок столбцов
 		rptGroupItemList* _groupListH;		///< список ректов группировок строк
