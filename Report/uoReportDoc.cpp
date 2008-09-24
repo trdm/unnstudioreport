@@ -7,8 +7,10 @@
 ***************************************/
 
 #include "QDebug"
+#include <QApplication>
 #include "uoReportDoc.h"
 #include "uoReportLoader.h"
+
 
 namespace uoReport {
 
@@ -26,6 +28,9 @@ uoReportDoc::uoReportDoc()
 	_spanTreeSctH->setCanOnlyOne(true);
 	_spanTreeSctV->setCanOnlyOne(true);
 	_storeFormat = uoRsf_Unknown;
+	_fontColl = new uoReportDocFontColl;
+	_rows->setDoc(this);
+
 
 	_headerV->setDefSize(UORPT_SCALE_SIZE_DEF_VERTICAL);
 	_headerH->setDefSize(UORPT_SCALE_SIZE_DEF_HORIZONTAL);
@@ -37,6 +42,7 @@ uoReportDoc::uoReportDoc()
 	_sizeH_visible = _sizeH = 0.0;	///< Размер документа по горизонтали
 	_freezEvent = 0;
 	_refCounter = 0;
+	_defaultFontId = 0;
 }
 
 uoReportDoc::~uoReportDoc()
@@ -48,6 +54,7 @@ uoReportDoc::~uoReportDoc()
 	delete _spanTreeSctV;
 	delete _headerV;
 	delete _headerH;
+	delete _fontColl;
 
 }
 
@@ -64,7 +71,12 @@ void uoReportDoc::clear()
 
 	_sizeV_visible = _sizeV = 0.0;	///< Размер документа по вертикали
 	_sizeH_visible = _sizeH = 0.0;	///< Размер документа по горизонтали
+}
 
+
+/// Установить дефолтный шрифт.
+void uoReportDoc::setDefaultFont(const QFont& defFont)
+{
 }
 
 /// проверка возможности сформировать/вставить группу в документ.
@@ -539,9 +551,44 @@ void uoReportDoc::setScalesHide(uoRptHeaderType hType, int nmStart, int cnt,  bo
 	onAccessRowOrCol(nmStart + cnt - 1, hType);
 }
 
+/// Форматирование строки: вычисление ВЫСОТЫ, переносов и т.п.
+void uoReportDoc::doFormatRow(int nmRow, int nmForCol)
+{
+	///\todo - перво-наперво форматирование.
+	/*
+		Задача по форматированию:
+		- вычисление максимальной высоты строки	если её размер не зафиксирован.
+		- вычисление переносов текста в ячейках.
+	*/
+
+	uoRow* row = _rows->getRow(nmRow, false);
+	if (!row)
+		return;
+	QList<int> cellsNumbers = row->getItemNumList();
+	if (cellsNumbers.isEmpty())	{
+		return;
+	}
+	uoCell* cell = NULL;
+	QString cellText;
+	QFont* font;
+	int cellNo = 0;
+	for (int i = 0; i<cellsNumbers.size(); i++){
+		cellNo = cellsNumbers.at(i);
+		cell = row->getItem(cellNo, false);
+		font = cell->getFont(this);
+		cellText = cell->getText();
+		/*
+			тааак... получили фонт, текст. вроде все что нужно для форматирования.
+			заняться что-ли на ночь глядя?
+		*/
+	}
+}
+
 void uoReportDoc::setCellText(const int posY, const int posX, const QString text)
 {
 	_rows->setText(posY, posX, text);
+	// форматирование? угу.
+	doFormatRow(posY, posX);
 }
 QString uoReportDoc::getCellText(const int posY, const int posX){
 	return 	_rows->getText(posY, posX);
@@ -597,6 +644,55 @@ bool uoReportDoc::isObjectAttached()
 		return true;
 	return false;
 }
+
+/// Получить шрифт по ID
+QFont*  uoReportDoc::getFontByID(const int idFont)
+{
+	if (idFont<0)
+		return NULL;
+
+	QFont* font = _fontColl->getFont(idFont);
+	if (!font) {
+		QFont fontApp = QApplication::font();
+	}
+	return font;
+
+}
+
+/// Вернуть цвет из коллекции
+QColor*  uoReportDoc::getColorByID(const int idColor)
+{
+	QColor* col = NULL;
+	return col;
+}
+
+
+/// создаем новую структуру uoCellTextProps для хранения атрибутов текста.
+/// теперь есть возможность вставить акселератор для считывания больших документов.
+uoCellTextProps* uoReportDoc::getNewTextProp()
+{
+	///\todo сбацать акселераторы под считывание документов
+	uoCellTextProps* prop = new uoCellTextProps();
+	prop->_fontID = 0;
+	if (_fontColl->countFonts() == 0)
+	{
+		QFont fontApp = QApplication::font();
+		prop->_fontID = _fontColl->addFont(fontApp.family());
+	}
+
+	return prop;
+}
+
+/// создаем новую структуру uoCellTextProps для хранения атрибутов текста.
+/// теперь есть возможность вставить акселератор для считывания больших документов.
+uoCellBordProps* uoReportDoc::getNewBordProp()
+{
+	///\todo сбацать акселераторы под считывание документов
+	uoCellBordProps* prop = new uoCellBordProps();
+	return prop;
+}
+
+
 
 static void toDebugTest(bool resComp, int *testOkCnt, int *testAll, const char* str)
 {

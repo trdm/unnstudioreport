@@ -171,7 +171,7 @@ int uoReportCtrl::recalcVisibleScales(uoRptHeaderType rht){
 
 	qreal sizeScale = 0;
 	bool isHiden = false;
-	qreal targetSize = (rht==rhtHorizontal) ? _rectDataRegionFrame.right() : _rectDataRegionFrame.bottom();
+	qreal targetSize = (rht==rhtHorizontal) ? _rectDataRegion.right() : _rectDataRegion.bottom();
 	qreal shiftSize = 0.0;
 	if (rht == rhtHorizontal) {
 		_scaleStartPositionMapH.clear();
@@ -182,12 +182,12 @@ int uoReportCtrl::recalcVisibleScales(uoRptHeaderType rht){
 	} else if (rht == rhtVertical){
 		_scaleStartPositionMapV.clear();
 		numScale 		= _firstVisible_RowTop;
-		shiftSize 	= _rectGroupV.top();
-		curetnSize = shiftSize - _shift_RowTop;
+		curetnSize = _rectDataRegion.top() - _shift_RowTop;
 		_scaleStartPositionMapV[numScale] = curetnSize;
 	} else {
 		return -1;
 	}
+	int fullVisscale = numScale;
 	sizeScale 	= 0;
 	do
 	{
@@ -196,17 +196,20 @@ int uoReportCtrl::recalcVisibleScales(uoRptHeaderType rht){
 			sizeScale = doc->getScaleSize(rht, numScale);
 			curetnSize = curetnSize + sizeScale;
 		}
-		++numScale;
+		numScale = numScale + 1;
 		if (rht == rhtHorizontal){
 			_scaleStartPositionMapH[numScale] = curetnSize;
 		}
 		else {
 			_scaleStartPositionMapV[numScale] = curetnSize;
 		}
+		if (curetnSize < targetSize) {
+			fullVisscale = numScale;
+		}
 
 	}
 	while(curetnSize < targetSize);
-	return numScale;
+	return fullVisscale;
 }
 
 void uoReportCtrl::dropGropItemToCache()
@@ -800,6 +803,15 @@ void uoReportCtrl::drawHeaderControl(QPainter& painter){
 		*/
 		// Верхний корнер-виджет слева от горизонтальной и сверху от вертикальной линейки
 		painter.drawRoundRect(_rectRuleCorner);  //	painter.drawRect(_rectRuleCorner);
+		if (_selections->isDocumSelect()){
+			curRctCpy = _rectRuleCorner;
+			curRctCpy.adjust(1,1,-1,-1);
+			painter.setPen(_penWhiteText);
+			painter.setBrush(_brushBlack);
+			painter.drawRoundRect(curRctCpy);
+			painter.setPen(_penText);
+
+		}
 		hdrType = rhtVertical;
 		if (_rectRulerV.width() > 0) {
 
@@ -902,8 +914,9 @@ void uoReportCtrl::drawCell(QPainter& painter, uoCell* cell, int row, int col, Q
 {
 	if (!cell)
 		return;
-	if (!cell->_text.isEmpty())
-		painter.drawText(rectCell,cell->_text);
+	QString text = cell->getText();
+	if (!text.isEmpty())
+		painter.drawText(rectCell,text);
 
 }
 
@@ -927,7 +940,7 @@ void uoReportCtrl::drawDataArea(QPainter& painter)
 	QRectF rectCellCur; // ячейка на которой курсор стоит...
 	zeroQRect(rectCell);
 
-//	bool isSell = false;
+	bool isSell = false;
 	bool isHide = false;
 	// нарисуем рамку области данных, т.к. потом будем рисовать линии на ней в этой процедурине.
 	painter.drawRect(_rectDataRegionFrame);
@@ -972,22 +985,31 @@ void uoReportCtrl::drawDataArea(QPainter& painter)
 				++colCur;
 			}
 			sz = doc->getScaleSize(rhtHorizontal, colCur);
-//			if (sz == 0.0){
-//				++colCur;		continue;
-//				ибо ячейки с 0-вой шириной надо отображать....
-//			}
+
 			colsLenCur += sz;
 			rectCell.setRight(colsLenCur);
 			// а вот если ячейка - текущая?
 			if (_curentCell.x() == colCur && _curentCell.y() == rowCur){
 				rectCellCur = rectCell;				/// у бля....
 			}
+			isSell = _selections->isCellSelect(rowCur,colCur);
+			if (isSell) {
+				rectCell.adjust(-1,-1,-1,-1);
+				painter.fillRect(rectCell, _brushSelection);
+				rectCell.adjust(1,1,1,1);
+			}
+
 			curCell = doc->getCell(rowCur,colCur,false);
 			if (curCell){
 				drawCell(painter, curCell, rowCur, colCur, rectCell);
 			}
 			if (_showGrid){
 				// draw,  draw,  draw,  draw,  aw, aw, aw, aw, aw, wu-u-u-u-u-u
+				if (isSell) {
+					painter.setPen(_penWhiteText);
+				} else {
+					painter.setPen(_penGrey);
+				}
 				painter.drawRect(rectCell);
 			}
 
@@ -1023,6 +1045,7 @@ void uoReportCtrl::drawWidget(QPainter& painter)
 
    	_brushBase = palette_c.brush(QPalette::Base /*Qt::white*/); // QPalette::Base - типа белый для текста.
    	_brushBlack = palette_c.brush(QPalette::WindowText /*Qt::white*/);
+   	_brushSelection = palette_c.brush(QPalette::Highlight /*Button*/ /*Qt::white*/);
 
 	_penText.setColor(palette_c.color(curColGrp, QPalette::WindowText));
 	_penNoPen.setColor(palette_c.color(curColGrp, QPalette::Window));
@@ -1606,7 +1629,7 @@ void uoReportCtrl::keyPressEventMoveCursor ( QKeyEvent * event )
 			*/
 			if(key == Qt::Key_PageUp && _firstVisible_RowTop == 1) {
 				posY = 1;
-			} else if (key == Qt::Key_PageDown && _firstVisible_RowTop == 1 && posY < _lastVisibleRow) {
+			} else if (key == Qt::Key_PageDown /*&& _firstVisible_RowTop == 1*/ && posY < _lastVisibleRow) {
 				posY = _lastVisibleRow;
 			} else {
 				/*
@@ -1656,7 +1679,7 @@ void uoReportCtrl::keyPressEventMoveCursor ( QKeyEvent * event )
 /// Поскролимся чуток...
 void uoReportCtrl::wheelEvent ( QWheelEvent * event ){
 	int numDegrees = event->delta() / 8;
-	int numSteps = numDegrees / 15;
+	int numSteps = numDegrees / 5;
 
 	scrollView(0, -numSteps);
 	event->accept();
@@ -2223,7 +2246,10 @@ void uoReportCtrl::recalcScrollBars()
 			_sizeVvirt = _sizeVDoc;
 		}
 		_vScrollCtrl->setMinimum(1);
+
+		_vScrollCtrl->blockSignals ( true ); //<< лечение от сбоя при PageUp в зоне "непокрытой" длинной документа..
 		_vScrollCtrl->setMaximum(qMax(_rowCountVirt, _rowCountDoc));
+		_vScrollCtrl->blockSignals ( false );
 
 	}
 	{

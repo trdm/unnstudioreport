@@ -113,12 +113,14 @@ class uoReportDoc
 		void 	setCellText(const int posY, const int posX, const QString text);
 		QString getCellText(const int posY, const int posX);
 		uoCell* getCell(const int posY, const int posX, bool needCreate = false);
+		void doFormatRow(int nmRow, int nmForCol);
 
 	protected:
 		QList<uoReportCtrl*> _atachedView; 	///< Приватаченные вьювы
 		QList<QObject*> 	 _atachedObj;	///< Приватаченные объекты. Документ может использоваться без вьюва, наример для заполнения его в модуле.
 
 		long _refCounter;
+
 	public:
 		void attachView(uoReportCtrl* rCtrl, bool autoConnect = true);
 		void detachedView(uoReportCtrl* rCtrl);
@@ -127,6 +129,19 @@ class uoReportDoc
 		void detachedObject(QObject* rObj);
 
 		bool isObjectAttached();
+	protected:
+		uoReportDocFontColl* _fontColl;
+		int _defaultFontId;
+
+	public:
+		void setDefaultFont(const QFont& defFont);
+		QFont*  getFontByID(const int idFont);
+		QColor*  getColorByID(const int idColor);
+
+		uoCellTextProps* getNewTextProp();
+		uoCellBordProps* getNewBordProp();
+
+
 };
 
 } // namespace uoReport
