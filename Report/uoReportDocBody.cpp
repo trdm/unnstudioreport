@@ -48,6 +48,36 @@ void uoHeaderScale::setHide(int nom, bool hide){
 	}
 	return;
 }
+
+/// Получение свойства фиксированности размера строки
+bool uoHeaderScale::getFixed(int nom )
+{
+	if (!findItem(nom)){
+		return false;
+	} else {
+		uoRptNumLine* item = *_itSave;
+		if (item) {
+			return item->fixed();
+		}
+	}
+	return false;
+
+}
+
+/// Установка/снятие свойства фиксированности
+void uoHeaderScale::setFixed(int nom, bool fix){
+	if (!findItem(nom, true)){
+		return;
+	} else {
+		uoRptNumLine* item = *_itSave;
+		if (item) {
+			item->setFixed(fix);
+			return;
+		}
+	}
+	return;
+}
+
 /// сохраняем итемы...
 bool uoHeaderScale::onStoreItems(uoReportLoader* loader){
 
@@ -259,10 +289,47 @@ void uoCell::setText(QString text, uoReportDoc* doc)
 		_textProp = doc->getNewTextProp();
 	if (_textProp)
 		_textProp->_text = text;
-
-
-//	uoCellTextProps* _textProp
 }
+
+/// установить выравнивание текста в ячейке
+void uoCell::setAlignment(const uoVertAlignment& va, const uoHorAlignment& ha, uoReportDoc* doc)
+{
+	if (!doc)
+		return;
+	if (!_textProp)
+		_textProp = doc->getNewTextProp();
+	if (_textProp) {
+		_textProp->_horAlignment = ha;
+		_textProp->_vertAlignment = va;
+	}
+}
+
+/// вернуть флаг выравнивания текста в ячейке для функции drawText, с флагами Qt
+int uoCell::getAlignment()
+{
+	int flags = 0;
+	if (_textProp) {
+		switch (_textProp->_vertAlignment){
+			case uoVA_Unknovn:
+			case uoVA_Top:{	flags |= Qt::AlignTop; break; }
+			case uoVA_Bottom:{	flags |= Qt::AlignBottom ; break; }
+			case uoVA_Center:{	flags |= Qt::AlignVCenter ; break; }
+			default:
+			break;
+		}
+		switch (_textProp->_horAlignment){
+			case uoHA_Unknovn:
+			case uoHA_Left:{	flags |= Qt::AlignLeft ; break; }
+			case uoHA_Right:{	flags |= Qt::AlignRight  ; break; }
+			case uoHA_Center:{	flags |= Qt::AlignHCenter ; break; }
+			default:
+			break;
+		}
+	}
+	return flags;
+}
+
+
 
 /// Отдаем фонт сразус размером
 QFont* uoCell::getFont(uoReportDoc* doc)
@@ -272,9 +339,20 @@ QFont* uoCell::getFont(uoReportDoc* doc)
 	QFont* font = doc->getFontByID(_textProp->_fontID);
 	if (font){
 		font->setPointSize(_textProp->_fontSize);
+		font->setBold(_textProp->_fontBold);
+		font->setItalic(_textProp->_fontItalic);
 	}
 	return font;
 }
+
+/// Получить размер шрифта..
+int	uoCell::getFontSize()
+{
+	if (!_textProp)
+		return 0;
+	return _textProp->_fontSize;
+}
+
 
 const QColor*  uoCell::getFontColor(uoReportDoc* doc)
 {
@@ -406,6 +484,17 @@ uoRow* uoRowsDoc::getRow(int nmRow, bool needCreate)
 {
 	return getItem(nmRow, needCreate);
 }
+
+///// Получить ячейку по строке/колонке.
+//uoCell* uoRowsDoc::getCell(int nmRow, int nmCol,bool needCreate)
+//{
+//	uoRow* row = getRow(nmRow, needCreate);
+//	if (!row)
+//		return NILL;
+//	return row->getCell(nmCol, needCreate);
+//
+//}
+
 
 
 

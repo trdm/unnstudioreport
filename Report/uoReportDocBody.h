@@ -33,7 +33,7 @@ struct uoRptNumLine : public uoEnumeratedItem{
 	public:
 
 		uoRptNumLine(int ln)
-			: _line(ln), _size(-1), _hiden(false)
+			: _line(ln), _size(-1), _hiden(false), _fixed(false)
 			{}
 		virtual ~uoRptNumLine(){};
 
@@ -48,6 +48,8 @@ struct uoRptNumLine : public uoEnumeratedItem{
 
 	bool 	hiden() {return _hiden;}
 	void 	setHiden(bool hd) {_hiden = hd;}
+	bool 	fixed() {return _fixed;}
+	void 	setFixed(bool fx) {_fixed = fx;}
 
 	private:
 		int _line;
@@ -62,7 +64,7 @@ struct uoRptNumLine : public uoEnumeratedItem{
 		qreal _size;
 		qreal _sizeDef;
 		bool _hiden;
-//		bool _sellected;
+		bool _fixed;
 };
 
 // по typename:
@@ -84,6 +86,9 @@ class uoHeaderScale	: public uoNumVector<uoRptNumLine>
 	void printToDebug();
 	bool getHide(int nom );
 	void setHide(int nom, bool hide);
+	bool getFixed(int nom );
+	void setFixed(int nom, bool fix);
+
 	bool onStoreItems(uoReportLoader* loader);
 	qreal getSize(int nom, bool isDef = false);
 	bool	setSize(int nom, qreal size, bool isDef = false);
@@ -166,12 +171,16 @@ struct uoCellTextProps {
 		_horAlignment	= uoHA_Left;
 		_behavior		= uoCTB_Auto;
 		_fontSize		= 10;
+		_fontBold		= false;
+		_fontItalic		= false;
 	}
 
 	QString 	_text; 	///< Текст содержащийся в ячейке.
 	int 		_fontID;
 	int 		_fontColID;
 	int 		_fontSize;
+	bool 		_fontBold;
+	bool		_fontItalic;
 
 	uoCellTextType  	_textType;		///< Тип текста ячейки
 	uoVertAlignment 	_vertAlignment;	///< Тип вертикального выравнивания текста.
@@ -209,8 +218,11 @@ struct uoCell : public uoEnumeratedItem{
 
 	QString getText();
 	void 	setText(QString text, uoReportDoc* doc);
+	void 	setAlignment(const uoVertAlignment& va, const uoHorAlignment& ha, uoReportDoc* doc);
+	int 	getAlignment();
 
 	QFont*   getFont(uoReportDoc* doc);
+	int		 getFontSize();
 	const QColor*  getFontColor(uoReportDoc* doc);
 
 	int 		_x;		///< Номер колонки, к которой ячейка принадлежит.
@@ -254,8 +266,9 @@ class uoRowsDoc : public uoNumVector<uoRow>
 
 		void setDoc(uoReportDoc* doc){_doc = doc;};
 		uoRow* getRow(int nmRow, bool needCreate = false);
+		uoCell* getCell(int nmRow, int nmCol,bool needCreate = false);
 
-		uoCell* getCell(const int posY, const int posX, const bool needCreate = false);
+//		uoCell* getCell(const int posY, const int posX, const bool needCreate = false);
 		QString getText(const int posY, const int posX);
 		void saveItems(uoReportLoader* loader);
 

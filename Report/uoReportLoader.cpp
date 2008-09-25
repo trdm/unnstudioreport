@@ -172,8 +172,8 @@ bool uoReportLoaderXML::saveScaleHeaderStart(int count, uoRptHeaderType rht){
 	return true;
 }
 bool uoReportLoaderXML::saveScaleItem(uoRptNumLine* rLine){
-	_textStream << QString("\t<Scale no = \"%1\" hide = \"%2\" size=\"%3\"/>\n")
-	.arg(rLine->number()).arg(rLine->hiden()).arg(rLine->size());
+	_textStream << QString("\t<Scale no = \"%1\" hide = \"%2\" size=\"%3\" fixed=\"%4\"/>\n")
+	.arg(rLine->number()).arg(rLine->hiden()).arg(rLine->size()).arg(rLine->fixed());
 	return true;
 }
 bool uoReportLoaderXML::saveScaleHeaderEnd(uoRptHeaderType rht){

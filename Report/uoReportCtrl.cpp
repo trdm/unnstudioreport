@@ -802,16 +802,17 @@ void uoReportCtrl::drawHeaderControl(QPainter& painter){
 			| 12 |
 		*/
 		// Верхний корнер-виджет слева от горизонтальной и сверху от вертикальной линейки
-		painter.drawRoundRect(_rectRuleCorner);  //	painter.drawRect(_rectRuleCorner);
+		curRctCpy = _rectRuleCorner;
+		curRctCpy.adjust(1,1,-1,-1);
+		painter.drawRect(curRctCpy);  //	painter.drawRect(_rectRuleCorner);
 		if (_selections->isDocumSelect()){
-			curRctCpy = _rectRuleCorner;
-			curRctCpy.adjust(1,1,-1,-1);
 			painter.setPen(_penWhiteText);
-			painter.setBrush(_brushBlack);
-			painter.drawRoundRect(curRctCpy);
+			painter.drawRect(curRctCpy);
+			curRctCpy.adjust(1,1,-1,-1);
+			painter.fillRect(curRctCpy, _brushBlack);
 			painter.setPen(_penText);
-
 		}
+
 		hdrType = rhtVertical;
 		if (_rectRulerV.width() > 0) {
 
@@ -915,8 +916,12 @@ void uoReportCtrl::drawCell(QPainter& painter, uoCell* cell, int row, int col, Q
 	if (!cell)
 		return;
 	QString text = cell->getText();
-	if (!text.isEmpty())
-		painter.drawText(rectCell,text);
+	if (!text.isEmpty()) {
+		QRectF rectCpyCell = rectCell;
+		rectCpyCell.adjust(2,2,-2,-2);
+		int flags = cell->getAlignment();
+		painter.drawText(rectCpyCell,flags,text);
+	}
 
 }
 
@@ -1415,12 +1420,17 @@ void uoReportCtrl::mouseReleaseEvent(QMouseEvent *event)
 				setStateMode(rmsNone);
 				return;
 			}
-			if (findScaleLocation(posX, posY, line,rhtVertical)) {
-				_selections->endRowSelected(line);
-				needUpdate = true;
-			} else if (findScaleLocation(posX, posY, line,rhtHorizontal)) {
-				_selections->endColSelected(line);
-				needUpdate = true;
+			if (rmsSelectionRule_Left == _stateMode) {
+				if (findScaleLocation(posX, posY, line,rhtVertical)) {
+					_selections->endRowSelected(line);
+					needUpdate = true;
+				}
+			}
+			if (rmsSelectionRule_Top == _stateMode) {
+				if (findScaleLocation(posX, posY, line,rhtHorizontal)) {
+					_selections->endColSelected(line);
+					needUpdate = true;
+				}
 			}
 		} else if (_stateMode == rmsResizeRule_Left || _stateMode == rmsResizeRule_Top) {
 
@@ -1438,6 +1448,7 @@ void uoReportCtrl::mouseReleaseEvent(QMouseEvent *event)
 				newSize = newSize + delta;
 				newSize = qMax(0.0, newSize);
 				doc->setScaleSize(rht, _resizeLine,newSize);
+				doc->setScaleFixedProp(rht, _resizeLine, true);
 				recalcHeadersRects();
 				needUpdate = true;
 			}
@@ -1980,10 +1991,10 @@ void uoReportCtrl::doScrollAction(int act, uoRptHeaderType rht)
 		}
 		case QAbstractSlider::SliderMove:	{
 			if (rht == rhtVertical) {
-				_firstVisible_RowTop = _vScrollCtrl->value();
+				_firstVisible_RowTop = _vScrollCtrl->sliderPosition();
 				_shift_RowTop = 0.0;
 			} else {
-				_firstVisible_ColLeft = _hScrollCtrl->value();
+				_firstVisible_ColLeft = _hScrollCtrl->sliderPosition();
 				_shift_ColLeft = 0.0;
 			}
 
