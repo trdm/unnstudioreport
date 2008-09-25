@@ -56,8 +56,11 @@ class uoReportDoc
 
 	public:
 		void test();
-		qreal getScaleSize(uoRptHeaderType hType, int nom, bool isDef = false);
+		qreal 	getScaleSize(uoRptHeaderType hType, int nom, bool isDef = false);
 		void 	setScaleSize(uoRptHeaderType hType, int nom, qreal size, bool isDef = false);
+		void 	setScaleFixedProp(uoRptHeaderType hType, int nom, bool isFixed = true);
+		bool 	getScaleFixedProp(uoRptHeaderType hType, int nom);
+
 		void 	setScalesHide(uoRptHeaderType hType, int nmStart, int cnt = 1,  bool hide = true);
 		bool 	getScaleHide(uoRptHeaderType hType, int nom);
 
@@ -111,9 +114,10 @@ class uoReportDoc
 		uoRowsDoc* 	_rows;		 ///< Значимое содержимое документа, содержимое ячеек документа.
 	public:
 		void 	setCellText(const int posY, const int posX, const QString text);
+		void 	setCellTextAlignment(const int posY, const int posX, uoVertAlignment va,  uoHorAlignment ha);
 		QString getCellText(const int posY, const int posX);
 		uoCell* getCell(const int posY, const int posX, bool needCreate = false);
-		void doFormatRow(int nmRow, int nmForCol);
+		void doFormatRow(int nmRow, int nmForCol = -1);
 
 	protected:
 		QList<uoReportCtrl*> _atachedView; 	///< Приватаченные вьювы

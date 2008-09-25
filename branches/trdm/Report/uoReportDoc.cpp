@@ -8,6 +8,7 @@
 
 #include "QDebug"
 #include <QApplication>
+#include <QFontMetrics>
 #include "uoReportDoc.h"
 #include "uoReportLoader.h"
 
@@ -521,6 +522,29 @@ void uoReportDoc::setScaleSize(uoRptHeaderType hType, int nom, qreal size, bool 
 	onAccessRowOrCol(nom-1, hType); // последнюю ячейку не трогаем, т.к. её размер устанавливается...
 }
 
+/**
+	Установка свойства, что строка иммет фиксированную высоту,
+	т.е. при изменении текста её размер не меняется
+	Примечание. бесполезно для столбцов, они не будут подгоняться
+	"под размер" текста. Ну по крайней мере пока...
+*/
+void uoReportDoc::setScaleFixedProp(uoRptHeaderType hType, int nom, bool isFixed)
+{
+	if (hType == rhtVertical) {
+		_headerV->setFixed(nom, isFixed);
+	}
+	/// для колонок собственно безсмысленно...
+}
+
+bool uoReportDoc::getScaleFixedProp(uoRptHeaderType hType, int nom)
+{
+	if (hType == rhtVertical) {
+		return _headerV->getFixed(nom);
+	}
+	return false;
+}
+
+
 /// Прячем/Показываем диапазон ячеек...
 void uoReportDoc::setScalesHide(uoRptHeaderType hType, int nmStart, int cnt,  bool hide){
 	uoHeaderScale* header = NULL;
@@ -571,25 +595,76 @@ void uoReportDoc::doFormatRow(int nmRow, int nmForCol)
 	uoCell* cell = NULL;
 	QString cellText;
 	QFont* font;
-	int cellNo = 0;
-	for (int i = 0; i<cellsNumbers.size(); i++){
-		cellNo = cellsNumbers.at(i);
-		cell = row->getItem(cellNo, false);
+	int cellPrevNo = -1;
+	int cellCurNo = -1;
+	int cellNextNo = -1;
+	int cellCounts = cellsNumbers.size();
+	qreal collSize = 0.0; //getScaleSize(rhtVertical
+	bool collHide = false; //getScaleSize(rhtVertical
+
+	qreal rowMinSize = _headerV->getDefSizeItem();
+	qreal rowRealSize = 0.0;
+	qreal tmpSize = 0.0;
+
+	for (int i = 0; i<cellCounts; i++){
+		cellCurNo = cellsNumbers.at(i);
+		if (nmForCol != -1 && nmForCol != cellCurNo) {
+			// нужно еще проверить ячейки на объединение...
+			continue;
+		}
+		cell = row->getItem(cellCurNo, false);
 		font = cell->getFont(this);
 		cellText = cell->getText();
+		if (font && !cellText.isEmpty()) {
+			// тут уже можно хотя бы посчитать минимальную высоту строки. что и делаем...
+			QFontMetrics fm(*font);
+			rowMinSize = qMax(rowMinSize, (qreal)fm.height());
+			// а тут можно переформатировать текст
+		}
+
+		collSize = getScaleSize(rhtVertical,cellCurNo);
+		collHide = getScaleHide(rhtVertical,cellCurNo);
+
+		cellNextNo = -1;
+		if (cellCounts>i+1){
+			cellNextNo = cellsNumbers.at(i+1);
+		}
 		/*
-			тааак... получили фонт, текст. вроде все что нужно для форматирования.
-			заняться что-ли на ночь глядя?
+			есть несколько вариантов выравнивания текста по горизонтали:
+			влево, [<=   ]
+			вправо, [   =>]
+			центр, [  <=>  ]
+			а так же признак "по выделенным столбцам". влево вправо или по центру.
+			[  <=  ][  =  ][  =  ][  =  ][  =>  ]
+			нужно вычислить как именно выравнивается текст и в какие рамки он может уместиться..
+			если он достаточно длинен, и имеет признак выравнивания авто,
+			то его можно напечатать и на соседних ячейках, не прорисовывая их..
+			ДЛЯ НАЧАЛА - попробуем пересчитать высоту строки при изменениии ширины столбца.
 		*/
+
+
+		cellPrevNo = cellCurNo; // должно быть вконце....
+	}
+	_headerV->setSize(nmRow,rowMinSize);
+}
+
+/// Установить текст в ячейку
+void uoReportDoc::setCellText(const int posY, const int posX, const QString text)
+{
+	_rows->setText(posY, posX, text);	// форматирование? угу.
+	doFormatRow(posY, posX);
+}
+
+/// Установить выравнивание текста в ячейке
+void uoReportDoc::setCellTextAlignment(const int posY, const int posX, uoVertAlignment va,  uoHorAlignment ha)
+{
+	uoCell* cell = _rows->getCell(posY, posX, true);
+	if (cell){
+		cell->setAlignment(va,  ha, this);
+		doFormatRow(posY, posX);
 	}
 }
 
-void uoReportDoc::setCellText(const int posY, const int posX, const QString text)
-{
-	_rows->setText(posY, posX, text);
-	// форматирование? угу.
-	doFormatRow(posY, posX);
-}
 QString uoReportDoc::getCellText(const int posY, const int posX){
 	return 	_rows->getText(posY, posX);
 }

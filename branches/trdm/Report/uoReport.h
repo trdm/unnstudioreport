@@ -183,7 +183,7 @@ enum uoReportStateMode {
 
 
 ///\enum uoVertAlignment - типы вертикального выравнивания
-enum uoVertAlignment {
+typedef enum uoVertAlignment {
 	uoVA_Unknovn = 0
 	, uoVA_Top 		///< Выравнивание по верхнему краю
 	, uoVA_Center 	///< Выравнивание по центру
@@ -191,7 +191,7 @@ enum uoVertAlignment {
 };
 
 ///\enum uoHorAlignment - типы горизонтального выравнивания
-enum uoHorAlignment {
+typedef enum uoHorAlignment {
 	uoHA_Unknovn = 0
 	, uoHA_Left 	///< Выравнивание по левому краю
 	, uoHA_Center 	///< Выравнивание по центру
