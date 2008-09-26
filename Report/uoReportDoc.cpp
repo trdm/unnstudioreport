@@ -646,6 +646,7 @@ void uoReportDoc::doFormatRow(int nmRow, int nmForCol)
 		cellPrevNo = cellCurNo; // должно быть вконце....
 	}
 	_headerV->setSize(nmRow,rowMinSize);
+	///\todo а вот тут надо гавкнуть, что-бы перещитали ректы, если документ подсоединен ко вьюву...
 }
 
 /// Установить текст в ячейку
@@ -656,11 +657,11 @@ void uoReportDoc::setCellText(const int posY, const int posX, const QString text
 }
 
 /// Установить выравнивание текста в ячейке
-void uoReportDoc::setCellTextAlignment(const int posY, const int posX, uoVertAlignment va,  uoHorAlignment ha)
+void uoReportDoc::setCellTextAlignment(const int posY, const int posX, uoVertAlignment va,  uoHorAlignment ha, uoCellTextBehavior tb)
 {
 	uoCell* cell = _rows->getCell(posY, posX, true);
 	if (cell){
-		cell->setAlignment(va,  ha, this);
+		cell->setAlignment(va,  ha, tb, this);
 		doFormatRow(posY, posX);
 	}
 }

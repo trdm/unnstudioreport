@@ -22,6 +22,48 @@
 
 namespace uoReport {
 
+uoReportCtrlMesFilter::uoReportCtrlMesFilter(QObject* pObj /* = 0*/)
+	:QObject(pObj)
+{
+	connect(this, SIGNAL(editComplete(bool)), pObj, SLOT(onCellEditTextEnd(bool)));
+}
+
+/*virtual*/
+bool uoReportCtrlMesFilter::eventFilter(QObject* pObj, QEvent* pEvent)
+{
+	if (pEvent->type() == QEvent::KeyPress) {
+		QKeyEvent* keyEvent = (QKeyEvent*)pEvent;
+		if (keyEvent){
+			switch(keyEvent->key()){
+				case Qt::Key_Escape:{
+					emit editComplete(false);
+					return true;
+				}
+				case Qt::Key_Enter: 	// цифровая клавиатура
+				case Qt::Key_Return:	// основная клавиатура
+				{
+					Qt::KeyboardModifiers  kbrdMod = qApp->keyboardModifiers();
+					if (kbrdMod & Qt::ControlModifier)
+						return false;
+
+					emit editComplete(true);
+					return true;
+				}
+				case Qt::Key_Tab:
+				{
+					emit editComplete(true);
+					return true;
+				}
+				default:{
+					break;
+				}
+			}
+		}
+	}
+	return false;
+}
+
+
 #define UORPT_OFFSET_LINE 2
 
 uoReportCtrl::uoReportCtrl(QWidget *parent)
@@ -90,6 +132,8 @@ uoReportCtrl::uoReportCtrl(QWidget *parent)
 /// Инициализация контролов поля отчета.
 void uoReportCtrl::initControls(QWidget *parent){
 
+	_textEdit = NULL; // создадим когда понадобится...
+
 	_cornerWidget = new QWidget(parent); //, _cornerWidget(parent)
 	QGridLayout* layout = new  QGridLayout(parent);
 	layout->setMargin(0);	/// нулевой отступ...
@@ -120,6 +164,8 @@ void uoReportCtrl::initControls(QWidget *parent){
 	layout->setColumnStretch(1,0);
     layout->setRowStretch(0,1);
     layout->setRowStretch(1,0);
+
+    _messageFilter = new uoReportCtrlMesFilter(this);
 
 }
 
@@ -187,7 +233,8 @@ int uoReportCtrl::recalcVisibleScales(uoRptHeaderType rht){
 	} else {
 		return -1;
 	}
-	int fullVisscale = numScale;
+	// fullVisScale = полностью видимая
+	int fullVisScale = numScale;
 	sizeScale 	= 0;
 	do
 	{
@@ -204,12 +251,12 @@ int uoReportCtrl::recalcVisibleScales(uoRptHeaderType rht){
 			_scaleStartPositionMapV[numScale] = curetnSize;
 		}
 		if (curetnSize < targetSize) {
-			fullVisscale = numScale;
+			fullVisScale = numScale;
 		}
 
 	}
 	while(curetnSize < targetSize);
-	return fullVisscale;
+	return fullVisScale;
 }
 
 void uoReportCtrl::dropGropItemToCache()
@@ -920,9 +967,11 @@ void uoReportCtrl::drawCell(QPainter& painter, uoCell* cell, int row, int col, Q
 		QRectF rectCpyCell = rectCell;
 		rectCpyCell.adjust(2,2,-2,-2);
 		int flags = cell->getAlignment();
+		QPen oldPen = painter.pen();
+		painter.setPen(_penText);
 		painter.drawText(rectCpyCell,flags,text);
+		painter.setPen(oldPen);
 	}
-
 }
 
 
@@ -1385,6 +1434,9 @@ void uoReportCtrl::updateThis(){
 /// Реакция на нажатие мышки-норушки...
 void uoReportCtrl::mousePressEvent(QMouseEvent *event)
 {
+	if (modeTextEditing())
+		onCellEditTextEnd(true);
+
 	if (_showGroup && mousePressEventForGroup(event)) {
 		return;
 	}
@@ -1688,7 +1740,9 @@ void uoReportCtrl::keyPressEventMoveCursor ( QKeyEvent * event )
 }
 
 /// Поскролимся чуток...
-void uoReportCtrl::wheelEvent ( QWheelEvent * event ){
+void uoReportCtrl::wheelEvent ( QWheelEvent * event )
+{
+	if (modeTextEditing())		return;
 	int numDegrees = event->delta() / 8;
 	int numSteps = numDegrees / 5;
 
@@ -1700,7 +1754,10 @@ void uoReportCtrl::wheelEvent ( QWheelEvent * event ){
 
 /// Обработка реакции клавиатуры..
 void uoReportCtrl::keyPressEvent( QKeyEvent * event ){
+	if (modeTextEditing())		return;
 	int key = event->key();
+	QString str;
+
 	--_freezUpdate;
 	event->accept();
 	switch (key)
@@ -1718,11 +1775,14 @@ void uoReportCtrl::keyPressEvent( QKeyEvent * event ){
 			keyPressEventMoveCursor ( event );
 			break;
 		}
-//		case Qt::Key_PageUp:
-//		{
-//			m_StartScaleV -= m_pageSizeV;
-//			break;
-//		}
+		case Qt::Key_Return:
+		case Qt::Key_Enter:
+		case Qt::Key_F2:
+		{
+			if (doCellEditTextStart(str))
+				setStateMode(rmsEditCell);
+			break;
+		}
 //		case Qt::Key_PageDown:
 //		{
 //			m_StartScaleV += m_pageSizeV;
@@ -1745,6 +1805,20 @@ void uoReportCtrl::keyPressEvent( QKeyEvent * event ){
 			break;
 		}
 	}
+	if (!event->isAccepted()){
+		str = event->text();
+		if (str.length() == 1) {
+			QChar hr = str[0];
+			if (hr.isDigit() || hr.isLetter()){
+				event->accept();
+				if (doCellEditTextStart(str))
+					setStateMode(rmsEditCell);
+
+			}
+			// типа буква или цЫфра?
+		}
+	}
+
 	++_freezUpdate;
 	updateThis();
 
@@ -1844,11 +1918,89 @@ qreal uoReportCtrl::getHeightWidget(){
 
 /// установка режима работы с отчетом.
 void uoReportCtrl::setStateMode(uoReportStateMode stMode){
-	_stateMode = stMode;
 	_resizeLine = 0;
-
+	_stateMode = stMode;
 }
 
+/// типа текст пока редактируется...
+bool uoReportCtrl::modeTextEditing() {
+	return (rmsEditCell == _stateMode) ? true : false;
+}
+
+
+/// Начинаем редактирование текста ячейки...
+bool uoReportCtrl::doCellEditTextStart(const QString& str)
+{
+	if (rmsEditCell == _stateMode){	/* О_о */}
+
+	if (curentCellVisible()){
+		if (!_textEdit){
+			_textEdit = new QTextEdit(this);
+			_textEdit->hide(); // а помоему оно создается невидимым.
+			_textEdit->setAcceptRichText(false);
+			_textEdit->installEventFilter(_messageFilter);
+			_textEdit->setTabStopWidth(_charWidthPlus*4);
+			_textEdit->setFrameShape(QFrame::NoFrame);
+		}
+		QRect rct = getCellRect(_curentCell.y(), _curentCell.x());
+		if (!rct.isEmpty()){
+			rct.adjust(1,1,0,0);
+			QString text;
+			if (!str.isEmpty()) {
+				text = str;
+			} else {
+				uoReportDoc* doc =  getDoc();
+				if (!doc)
+					return false;
+				text = doc->getCellText(_curentCell.y(), _curentCell.x());
+			}
+
+			if (text.contains(QChar('\n'))){
+//				_textEdit->setMu
+			}
+
+			_textEdit->setPlainText(text);
+			_textEdit->setGeometry(rct);
+			_textEdit->show();
+			_textEdit->activateWindow();
+			_textEdit->setFocus();
+			if (!str.isEmpty()){
+				// т.е. если вход в режим редактирования был иниццирован алфавитно-цыфирьнйо клавишей, курсорчик надо сдвинуть...
+				_textEdit->moveCursor(QTextCursor::End);
+			}
+
+			_vScrollCtrl->setDisabled(true);
+			_hScrollCtrl->setDisabled(true);
+			return true;
+		}
+		// так, вот тут надо получить координаты ячейки.
+	}
+	return false;
+}
+
+/**
+	Слот, принимающий сигнал об окончании редактирования текста ячейки
+	с приказом принять или отклонить результат редактирования..
+*/
+void uoReportCtrl::onCellEditTextEnd(bool accept)
+{
+	if (accept){
+		QString text = _textEdit->toPlainText();
+		uoReportDoc* doc =  getDoc();
+		if (!doc)
+			return;
+		doc->setCellText(_curentCell.y(), _curentCell.x(), text);
+	}
+	setFocus();
+	activateWindow();
+
+	_textEdit->hide(); // а помоему оно создается невидимым.
+	_vScrollCtrl->setDisabled(false);
+	_hScrollCtrl->setDisabled(false);
+	setStateMode(rmsNone);
+
+
+}
 
 
 /// Регулирование показа сетки, групп, секций, линейки.
@@ -2092,8 +2244,31 @@ void uoReportCtrl::scrollView(int dx, int dy)
 	updateThis();
 }
 
+/// получить рекст ячейки по строке/ячейке
+QRect uoReportCtrl::getCellRect(const int& posY, const int& posX)
+{
+	QRect rect;
+	uoReportDoc* doc =  getDoc();
+	if (!doc)
+		return rect;
+
+	if (_scaleStartPositionMapV.contains(posY) && _scaleStartPositionMapH.contains(posX)) {
+		rect.setTop((int)_scaleStartPositionMapV[posY]);
+		rect.setLeft((int)_scaleStartPositionMapH[posX]);
+		rect.setHeight((int)doc->getScaleSize(rhtVertical,posY));
+		rect.setWidth((int)doc->getScaleSize(rhtHorizontal,posX));
+	}
+
+
+	return rect;
+}
+
 /// проверка на видимость ячейки под курсором.
 bool uoReportCtrl::curentCellVisible() {
+	uoReportDoc* doc =  getDoc();
+	if (!doc)
+		return false;
+
 	if (
 	_curentCell.x() < _firstVisible_ColLeft ||
 	_curentCell.x() > _lastVisibleCol ||
@@ -2102,6 +2277,9 @@ bool uoReportCtrl::curentCellVisible() {
 	) {
 		return false;
 	} else {
+		///\todo надо еще проверить то, что строка или колонка не являются скрытими...
+		if (doc->getScaleHide(rhtVertical,_curentCell.y()) || doc->getScaleHide(rhtHorizontal,_curentCell.x()))
+			return false;
 		return true;
 	}
 }

@@ -114,7 +114,7 @@ class uoReportDoc
 		uoRowsDoc* 	_rows;		 ///< Значимое содержимое документа, содержимое ячеек документа.
 	public:
 		void 	setCellText(const int posY, const int posX, const QString text);
-		void 	setCellTextAlignment(const int posY, const int posX, uoVertAlignment va,  uoHorAlignment ha);
+		void 	setCellTextAlignment(const int posY, const int posX, uoVertAlignment va,  uoHorAlignment ha, uoCellTextBehavior tb = uoCTB_Auto);
 		QString getCellText(const int posY, const int posX);
 		uoCell* getCell(const int posY, const int posX, bool needCreate = false);
 		void doFormatRow(int nmRow, int nmForCol = -1);

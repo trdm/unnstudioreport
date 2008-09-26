@@ -11,6 +11,7 @@
 
 #include <QtGlobal>
 #include <QWidget>
+#include <QTextEdit>
 #include <QFrame>
 #include <QRect>
 #include <QRectF>
@@ -82,6 +83,24 @@ struct uoRptGroupItem {
 typedef QList<uoRptGroupItem*> rptGroupItemList;
 typedef QMap<int, qreal> rptScalePositionMap; ///< словарь смещений ячеек линеек.
 
+/**
+	\class uoReportCtrlMesFilter класс перехватчик некоторых событий.
+
+	Конкретно нужно что вот что: перехватить Ctrl+Enter и превратить его в Enter
+	А Enter отловить и поместить отредактированный текст обрабно документ и
+	закончить редактирование.
+*/
+class uoReportCtrlMesFilter : public QObject
+{
+    Q_OBJECT
+	public:
+		uoReportCtrlMesFilter(QObject* pObj = 0);
+	protected:
+		virtual bool eventFilter(QObject*, QEvent*);
+	signals:
+        void editComplete(bool accept); ///< сигнал о завершении обработки текста.
+};
+
 ///\class uoReportCtrl виджет, обслуживающий отрисовку отчета в режиме разработки или использования печатной формы.
 ///\brief инструмент для рендринга отчета, его корректировки.
 class uoReportCtrl : public QWidget
@@ -134,6 +153,7 @@ class uoReportCtrl : public QWidget
 
 		QPoint 	_curentCell; ///< Текущая ячейка вьюва. есть всегда. Даже когда работаем с картинками.
 		void	setCurentCell(int x, int y, bool ensureVisible = false);
+		QRect 	getCellRect(const int& posY, const int& posX);
 		bool 	curentCellVisible();
 
 	public slots:
@@ -175,6 +195,16 @@ class uoReportCtrl : public QWidget
 		QScrollBar  *_hScrollCtrl;
 		QWidget* 	_cornerWidget; //, _cornerWidget(parent)
 		void 		recalcScrollBars();
+
+		QTextEdit*	_textEdit;
+		uoReportCtrlMesFilter* _messageFilter;
+		bool doCellEditTextStart(const QString& str);
+		bool modeTextEditing();
+
+	private slots:
+		void onCellEditTextEnd(bool accept);
+
+
 	public:
 		uoReportDoc* getDoc() {return _rptDoc;}
 		bool saveDoc();
