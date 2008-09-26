@@ -292,7 +292,7 @@ void uoCell::setText(QString text, uoReportDoc* doc)
 }
 
 /// установить выравнивание текста в ячейке
-void uoCell::setAlignment(const uoVertAlignment& va, const uoHorAlignment& ha, uoReportDoc* doc)
+void uoCell::setAlignment(const uoVertAlignment& va, const uoHorAlignment& ha, const uoCellTextBehavior& tb, uoReportDoc* doc)
 {
 	if (!doc)
 		return;
@@ -301,6 +301,7 @@ void uoCell::setAlignment(const uoVertAlignment& va, const uoHorAlignment& ha, u
 	if (_textProp) {
 		_textProp->_horAlignment = ha;
 		_textProp->_vertAlignment = va;
+		_textProp->_behavior = tb;
 	}
 }
 
@@ -325,6 +326,17 @@ int uoCell::getAlignment()
 			default:
 			break;
 		}
+		switch (_textProp->_behavior){
+			case uoCTB_Transfer:{
+				flags |= Qt::TextWordWrap;
+				break;
+			}
+			default:	{
+				break;
+			}
+		}
+
+		//
 	}
 	return flags;
 }

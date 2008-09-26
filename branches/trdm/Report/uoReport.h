@@ -44,6 +44,7 @@ class uoHeaderScale;
 class uoReportDocFontColl;
 class uoSpanTree;
 class uoReportDoc;
+class uoReportCtrlMesFilter;
 class uoReportCtrl;
 class uoReportView;
 class uoReportViewIteract;
@@ -178,6 +179,7 @@ enum uoReportStateMode {
 	, rmsResizeRule_Left 	///< Изменение размера ГОРИЗОНТАЛЬНОЙ ячейки линейки.
 	, rmsSelectionRule_Top  ///< Групповое выделения ячеек вертикальной линейки.
 	, rmsSelectionRule_Left ///< Групповое выделения ячеек ГОРИЗОНТАЛЬНОЙ линейки.
+	, rmsEditCell 			///< Редактирование текста ячейки в режиме инлайн.
 };
 
 

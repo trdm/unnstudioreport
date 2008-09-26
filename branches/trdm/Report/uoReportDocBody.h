@@ -218,7 +218,7 @@ struct uoCell : public uoEnumeratedItem{
 
 	QString getText();
 	void 	setText(QString text, uoReportDoc* doc);
-	void 	setAlignment(const uoVertAlignment& va, const uoHorAlignment& ha, uoReportDoc* doc);
+	void 	setAlignment(const uoVertAlignment& va, const uoHorAlignment& ha, const uoCellTextBehavior& tb, uoReportDoc* doc);
 	int 	getAlignment();
 
 	QFont*   getFont(uoReportDoc* doc);
