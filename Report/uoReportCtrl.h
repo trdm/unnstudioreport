@@ -130,6 +130,7 @@ class uoReportCtrl : public QWidget
 		//-------------------------------------------------
 		bool mousePressEventForGroup(QMouseEvent *event);
 		bool mousePressEventForRuler(QMouseEvent *event);
+		bool mousePressEventForDataArea(QMouseEvent *event);
 		bool findScaleLocation(qreal posX, qreal posY, int &scaleNo, uoRptHeaderType rht);
 		uoBorderLocType  scaleLocationInBorder(qreal pos, QRectF rect, uoRptHeaderType rht);
 		void keyPressEventMoveCursor ( QKeyEvent * event );
@@ -154,6 +155,7 @@ class uoReportCtrl : public QWidget
 		QPoint 	_curentCell; ///< Текущая ячейка вьюва. есть всегда. Даже когда работаем с картинками.
 		void	setCurentCell(int x, int y, bool ensureVisible = false);
 		QRect 	getCellRect(const int& posY, const int& posX);
+		QPoint 	getCellFromPosition(const qreal& posY, const qreal& posX);
 		bool 	curentCellVisible();
 
 	public slots:

@@ -1292,6 +1292,36 @@ uoBorderLocType uoReportCtrl::scaleLocationInBorder(qreal pos, QRectF rect, uoRp
 	return locType;
 }
 
+/// Клик мышки-норушки по области с данными.
+bool uoReportCtrl::mousePressEventForDataArea(QMouseEvent *event)
+{
+	bool retVal = false;
+	if (event->button() != Qt::LeftButton)
+		return retVal;
+
+	if (!_rectDataRegion.contains(event->pos()))
+		return retVal;
+
+	_selections->clearSelections(uoRst_Cells);
+	uoReportDoc* doc =  getDoc();
+	if (!doc)
+		return retVal;
+	qreal posX = event->x(), posY = event->y();
+
+	QPoint pntCell = getCellFromPosition(posY, posX);
+	if (!pntCell.isNull()){
+		setCurentCell(pntCell.x(),pntCell.y(), true);
+		updateThis();
+		retVal = true;
+		_curMouseLastPos = event->pos();
+		_selections->cellSelectedStart(pntCell.x(),pntCell.y());
+		setStateMode(rmsSelectionCell);
+	}
+	// Надо определить
+	return retVal;
+}
+
+
 
 /// отработаем реакцию на нажатие мышки на линейке.
 ///\todo 1 реализовать логику выбора строк/столбцов.
@@ -1352,7 +1382,7 @@ bool uoReportCtrl::mousePressEventForRuler(QMouseEvent *event)
 			locType = scaleLocationInBorder(posX, _curMouseSparesRect, rhtCur);
 			if (locType == uoBlt_Unknown) {
 				_selections->selectCol(scaleNo);
-				_selections->startColSelected(scaleNo);
+				_selections->colSelectedStart(scaleNo);
 				setStateMode(rmsSelectionRule_Top);
 			} else
 			if (locType == uoBlt_Left || locType == uoBlt_Right)
@@ -1388,7 +1418,7 @@ bool uoReportCtrl::mousePressEventForRuler(QMouseEvent *event)
 			locType = scaleLocationInBorder(posY, _curMouseSparesRect, rhtCur);
 			if (locType == uoBlt_Unknown) {
 				_selections->selectRow(scaleNo);
-				_selections->startRowSelected(scaleNo);
+				_selections->rowSelectedStart(scaleNo);
 				setStateMode(rmsSelectionRule_Left);
 			} else
 			if (locType == uoBlt_Bottom || locType == uoBlt_Top)
@@ -1443,6 +1473,14 @@ void uoReportCtrl::mousePressEvent(QMouseEvent *event)
 	if (_showRuler && mousePressEventForRuler(event)){
 		return;
 	}
+	if (_showSection && false){
+		return;
+	}
+
+	if (mousePressEventForDataArea(event)) {
+		return;
+	}
+
 	///\todo 1 добавить вычисление/отображение типа курсора в нужной позиции...
 }
 
@@ -1474,13 +1512,13 @@ void uoReportCtrl::mouseReleaseEvent(QMouseEvent *event)
 			}
 			if (rmsSelectionRule_Left == _stateMode) {
 				if (findScaleLocation(posX, posY, line,rhtVertical)) {
-					_selections->endRowSelected(line);
+					_selections->rowSelectedEnd(line);
 					needUpdate = true;
 				}
 			}
 			if (rmsSelectionRule_Top == _stateMode) {
 				if (findScaleLocation(posX, posY, line,rhtHorizontal)) {
-					_selections->endColSelected(line);
+					_selections->colSelectedEnd(line);
 					needUpdate = true;
 				}
 			}
@@ -1488,7 +1526,7 @@ void uoReportCtrl::mouseReleaseEvent(QMouseEvent *event)
 
 			int distance = (_curMouseLastPos - event->pos()).manhattanLength();
 			if (distance > QApplication::startDragDistance()) {
-				///\todo !!! Закончить ресайзинг, перенести наработки на горизонтальную линейку, начать ундо фраймверк...
+
 				qreal delta = 0;
 				uoRptHeaderType rht = (_stateMode == rmsResizeRule_Left) ? rhtVertical : rhtHorizontal;
 				if (_stateMode == rmsResizeRule_Left) {
@@ -1508,6 +1546,26 @@ void uoReportCtrl::mouseReleaseEvent(QMouseEvent *event)
 
 		}
 	}
+	if (_stateMode == rmsSelectionCell){
+		int distance = (_curMouseLastPos - event->pos()).manhattanLength();
+		if (distance > QApplication::startDragDistance()) {
+			// Значит процесс пошел...
+			QPoint pntAdd = event->pos();
+			pntAdd.setY(qMax(pntAdd.y(), int(_rectDataRegion.top()-_shift_RowTop)));
+			pntAdd.setY(qMin(pntAdd.y(), int(_rectDataRegion.bottom())));
+
+			pntAdd.setX(qMax(pntAdd.x(), int(_rectDataRegion.left()-_shift_ColLeft)));
+			pntAdd.setX(qMin(pntAdd.x(), int(_rectDataRegion.right())));
+
+			QPoint pntCell = getCellFromPosition(pntAdd.y(), pntAdd.x());
+			if (!pntCell.isNull()){
+				_selections->cellSelectedEnd(pntCell.x(), pntCell.y());
+				needUpdate = true;
+			}
+
+		}
+	}
+
 	setStateMode(rmsNone);
 
 	if (needUpdate)
@@ -1623,7 +1681,10 @@ void uoReportCtrl::keyPressEventMoveCursor ( QKeyEvent * event )
 
 	Qt::KeyboardModifiers  kbrdMod = qApp->keyboardModifiers();
 	bool ctrlPresed = (kbrdMod & Qt::ControlModifier) ? true : false;
+	bool shiftPresed = (kbrdMod & Qt::ShiftModifier) ? true : false;
 
+	if (!shiftPresed)
+		_selections->clearSelections(); // под конкретным вопросом.
 
 	bool itemHiden = false;
 
@@ -1734,6 +1795,17 @@ void uoReportCtrl::keyPressEventMoveCursor ( QKeyEvent * event )
 	}
 
 	if (posX != _curentCell.x() || posY != _curentCell.y()){
+		/*
+			а вот тут можно начать/продолжить выделение, если у нас зажат шифт...
+			только пока непонятно как его закончить?
+		*/
+		if (shiftPresed) {
+			if (_selections->getStartSelectionType() != uoRst_Cells){
+				_selections->clearSelections(uoRst_Cells);
+				_selections->cellSelectedStart(_curentCell.x(), _curentCell.y());
+			}
+		}
+		_selections->cellSelectedMidle(posX, posY);
 		setCurentCell(posX, posY, true);
 		updateThis();
 	}
@@ -1771,7 +1843,6 @@ void uoReportCtrl::keyPressEvent( QKeyEvent * event ){
 		case Qt::Key_PageUp:
 		case Qt::Key_PageDown:
 		{
-			_selections->clearSelections();
 			keyPressEventMoveCursor ( event );
 			break;
 		}
@@ -1939,7 +2010,7 @@ bool uoReportCtrl::doCellEditTextStart(const QString& str)
 			_textEdit->hide(); // а помоему оно создается невидимым.
 			_textEdit->setAcceptRichText(false);
 			_textEdit->installEventFilter(_messageFilter);
-			_textEdit->setTabStopWidth(_charWidthPlus*4);
+			_textEdit->setTabStopWidth((int)(_charWidthPlus*4));
 			_textEdit->setFrameShape(QFrame::NoFrame);
 		}
 		QRect rct = getCellRect(_curentCell.y(), _curentCell.x());
@@ -2253,15 +2324,68 @@ QRect uoReportCtrl::getCellRect(const int& posY, const int& posX)
 		return rect;
 
 	if (_scaleStartPositionMapV.contains(posY) && _scaleStartPositionMapH.contains(posX)) {
-		rect.setTop((int)_scaleStartPositionMapV[posY]);
-		rect.setLeft((int)_scaleStartPositionMapH[posX]);
-		rect.setHeight((int)doc->getScaleSize(rhtVertical,posY));
-		rect.setWidth((int)doc->getScaleSize(rhtHorizontal,posX));
+		rect.setTop((int)(_scaleStartPositionMapV[posY] * _scaleFactor));
+		rect.setLeft((int)(_scaleStartPositionMapH[posX] * _scaleFactor));
+		rect.setHeight((int)(doc->getScaleSize(rhtVertical,posY) * _scaleFactor));
+		rect.setWidth((int)(doc->getScaleSize(rhtHorizontal,posX) * _scaleFactor));
 	}
-
-
 	return rect;
 }
+
+/// Получить ячейку по локальным экранным координатам.
+QPoint uoReportCtrl::getCellFromPosition(const qreal& posY, const qreal& posX)
+{
+	QPoint cell;
+	uoReportDoc* doc =  getDoc();
+	if (!doc)
+		return cell;
+
+	bool isHide = false;
+
+	int rowCur = _firstVisible_RowTop;
+	int colCur = _firstVisible_ColLeft;
+
+	qreal rowsLenCur = _rectDataRegion.top() - _shift_RowTop;
+	qreal colsLenCur = _rectDataRegion.left() - _shift_ColLeft;
+
+	qreal sz = 0.0;
+	do {	// строки, строки, строки и строки =============
+		while((isHide = doc->getScaleHide(rhtVertical, rowCur))){
+			++rowCur;
+		}
+		sz = doc->getScaleSize(rhtVertical, rowCur);
+		if (sz == 0.0) {
+			++rowCur;
+			continue;
+		}
+		if (posY>= rowsLenCur && posY <= (rowsLenCur + sz)) {
+			cell.setY(rowCur);
+			// тут поищем колонку.
+			do {
+
+				sz = doc->getScaleSize(rhtHorizontal, colCur);
+				if (sz == 0.0) {
+					++colCur;
+					continue;
+				}
+				if (posX>= colsLenCur && posX <= (colsLenCur + sz)) {
+					cell.setX(colCur);
+					break;
+				}
+				colsLenCur = colsLenCur + sz;
+				++colCur;
+			} while(cell.x() == 0);
+
+			break;
+		}
+		rowsLenCur = rowsLenCur + sz;
+		++rowCur;
+	} while(cell.y() == 0);
+
+
+	return cell;
+}
+
 
 /// проверка на видимость ячейки под курсором.
 bool uoReportCtrl::curentCellVisible() {

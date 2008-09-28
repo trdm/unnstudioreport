@@ -33,19 +33,27 @@ class uoReportSelection : public QObject
 		bool isCtrlPress();
 		bool isShiftPress();
 
-		void startRowSelected(int nmRow);
-		void midleRowSelected(int nmRow);
-		void endRowSelected(int nmRow);
+		void rowSelectedStart(int nmRow);
+		void rowSelectedMidle(int nmRow);
+		void rowSelectedEnd(int nmRow);
 
-		void startColSelected(int nmCol);
-		void endColSelected(int nmCol);
+		void colSelectedStart(int nmCol);
+		void colSelectedEnd(int nmCol);
 
-		void startCellSelected(int nmCol, int nmRow);
 		void selectDocument();
 		void selectRow(int nmRow);
 		void selectCol(int nmCol);
 
+		void cellSelectedStart(int nmCol, int nmRow);
+		void cellSelectedEnd(int nmCol, int nmRow);
+		void cellSelectedMidle(int nmCol, int nmRow);
+
+		QRect* getCellSpan();
+
 		uoRptSelectionType getSelectionType();
+		uoRptSelectionType getStartSelectionType();
+
+		bool calcRectFromPoints(QRect& rct, const QPoint& posStart, const QPoint& posEnd) const;
 
 	private:
 		/*
@@ -63,8 +71,8 @@ class uoReportSelection : public QObject
 		QList<QRect*>* _selSpans;		///< Список выделенных областей/спанов
 		QList<QRect*>* _selSpansCache;	///< Кешь выделенных областей/спанов
 
-		uoRptSelectionType _startSelMode; ///< Режим начала выделения диапазона.
-		uoRptSelectionType _selMode; ///< Режим начала выделения диапазона.
+		uoRptSelectionType _startSelMode; 	///< Режим начала выделения диапазона.
+		uoRptSelectionType _selMode; 		///< Режим начала выделения диапазона.
 
 		/*
 			Стартовые объекты для режима выделения.
@@ -75,8 +83,9 @@ class uoReportSelection : public QObject
 		int _strartColRow;	///< Стартовое значение строки/столбца..
 
 		// для режима начала выделения диапазона ячеек
-		int _strartSellX;	///< Стартовое значение столбца..
-		int _strartSellY;	///< Стартовое значение строки..
+		QPoint _cellStart; ///< Стартовое значение при начале выделения ячеек. x-колонка/y-строка.
+		QPoint _cellMidle; ///< Временное конечное значение ячейки при выделения ячеек с пом. КПК.
+		QRect _rectCellsMidle; ///< Временное конечное значение ячейки при выделения ячеек с пом. КПК.
 };
 
 } //namespace uoReport
