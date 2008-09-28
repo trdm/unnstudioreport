@@ -29,8 +29,10 @@ uoReportSelection::uoReportSelection(QObject* parent)
 	_startSelMode	= uoRst_Unknown;
 	_selMode		= uoRst_Unknown;
 	_strartColRow	= -1;
-	_strartSellX	= -1;
-	_strartSellY	= -1;
+	_cellStart.setX(0);
+	_cellStart.setY(0);
+	_cellMidle.setX(0);
+	_cellMidle.setY(0);
 }
 
 uoReportSelection::~uoReportSelection()
@@ -44,24 +46,60 @@ uoReportSelection::~uoReportSelection()
 	delete _selSpansCache;
 }
 
+/// Вычислить rct из 2-х точек.
+bool uoReportSelection::calcRectFromPoints(QRect& rct, const QPoint& posStart, const QPoint& posEnd) const
+{
+	if ((posStart.x() <= 0) ||
+		(posEnd.y() <= 0) ||
+		(posStart.x() <= 0) ||
+		(posEnd.y() <= 0) )
+	{
+		return false;
+	}
+	rct.setTop(qMin(posStart.y(),posEnd.y()));
+	rct.setLeft(qMin(posStart.x(),posEnd.x()));
+
+	rct.setBottom(qMax(posStart.y(),posEnd.y()));
+	rct.setRight(qMax(posStart.x(),posEnd.x()));
+
+	return true;
+}
+
 /// Очистка всех даных по выделениям
 void uoReportSelection::clearSelections(uoRptSelectionType exclude)
 {
-	if (exclude != uoRst_Rows) {
-		_selRows->clear();
-		_selRowsColsTmp->clear();
-	}
-	if (exclude != uoRst_Columns)	_selCols->clear();
 	_selMode		= uoRst_Unknown;
 	_startSelMode	= uoRst_Unknown;
 	_strartColRow	= -1;
-	_strartSellX	= -1;
-	_strartSellY	= -1;
-	if (exclude != uoRst_Cells) {
-		while (!_selSpans->isEmpty())
-			_selSpansCache->append(_selSpans->takeFirst());
+
+
+	if (exclude != uoRst_Rows) {
+		_selRows->clear();
+		_selRowsColsTmp->clear();
+	} else {
+		_selMode = uoRst_Rows;
+	}
+	if (exclude != uoRst_Columns) {
+		_selCols->clear();
+	} else {
+		_selMode = uoRst_Columns;
 	}
 
+	if (exclude != uoRst_Cells) {
+		_cellStart.setX(0);
+		_cellStart.setY(0);
+		_cellMidle.setX(0);
+		_cellMidle.setY(0);
+		_rectCellsMidle.setTop(0);
+		_rectCellsMidle.setLeft(0);
+		_rectCellsMidle.setBottom(0);
+		_rectCellsMidle.setRight(0);
+
+	while (!_selSpans->isEmpty())
+		_selSpansCache->append(_selSpans->takeFirst());
+	} else {
+		_selMode = uoRst_Cells;
+	}
 }
 
 /// Проверка на выделенность столбца
@@ -112,7 +150,13 @@ bool uoReportSelection::isCellSelect(int nmRow, int nmCol)
 	bool retVal = false;
 	if (isDocumSelect() || isColSelect(nmCol) ||  isRowSelect(nmRow)) {
 		return true;
+	} else if(!_rectCellsMidle.isEmpty()) {
+		if (_rectCellsMidle.contains(QPoint(nmCol,nmRow))){
+			return true;
+		}
 	}
+
+
 	if (_selSpans->isEmpty())
 		return false;
 
@@ -192,9 +236,14 @@ void uoReportSelection::selectCol(int nmCol)
 uoRptSelectionType uoReportSelection::getSelectionType(){
 	return _selMode;
 }
+/// Получить текуший тип старт-выделения.
+uoRptSelectionType uoReportSelection::getStartSelectionType(){
+	return _startSelMode;
+}
+
 
 /// сигнал о начале выделения строк.
-void uoReportSelection::startRowSelected(int nmRow){
+void uoReportSelection::rowSelectedStart(int nmRow){
 	if (!isCtrlPress()){
 		clearSelections();
 		selectRow(nmRow);
@@ -208,7 +257,7 @@ void uoReportSelection::startRowSelected(int nmRow){
 	пользователь работает в режиме выделения но
 	еще не отпустил клавишу мыши.
 */
-void uoReportSelection::midleRowSelected(int nmRow)
+void uoReportSelection::rowSelectedMidle(int nmRow)
 {
 	if (_strartColRow<=0)
 		return;
@@ -226,7 +275,7 @@ void uoReportSelection::midleRowSelected(int nmRow)
 
 
 /// окончание выделения строк. пользователь отпустил мышку..
-void uoReportSelection::endRowSelected(int nmRow)
+void uoReportSelection::rowSelectedEnd(int nmRow)
 {
 	if (_strartColRow<=0)
 		return;
@@ -246,7 +295,7 @@ void uoReportSelection::endRowSelected(int nmRow)
 
 
 /// сигнал о начале выделения колонок
-void uoReportSelection::startColSelected(int nmCol){
+void uoReportSelection::colSelectedStart(int nmCol){
 	if (!isCtrlPress()){
 		clearSelections();
 		selectCol(nmCol);
@@ -255,7 +304,7 @@ void uoReportSelection::startColSelected(int nmCol){
 	_selMode = uoRst_Column;
 }
 
-void uoReportSelection::endColSelected(int nmCol)
+void uoReportSelection::colSelectedEnd(int nmCol)
 {
 	if (_strartColRow<=0)
 		return;
@@ -276,8 +325,75 @@ void uoReportSelection::endColSelected(int nmCol)
 
 
 /// сигнал о начале выделения диапазона ячеек.
-void uoReportSelection::startCellSelected(int nmCol, int nmRow){
+void uoReportSelection::cellSelectedStart(int nmCol, int nmRow)
+{
+	if (isCtrlPress()){
+		clearSelections(uoRst_Cells);
+		if (!_cellMidle.isNull()){
+			QRect* rect = getCellSpan();
+			if (rect){
+				calcRectFromPoints((*rect), _cellMidle, _cellStart);
+				_selSpans->append(rect);
+			}
+			_cellMidle.setX(0);
+			_cellMidle.setY(0);
+			_rectCellsMidle.setTop(0);
+			_rectCellsMidle.setLeft(0);
+			_rectCellsMidle.setBottom(0);
+			_rectCellsMidle.setRight(0);
+		}
+	} else {
+		clearSelections();
+	}
+	if (nmCol>0 && nmRow > 0) {
+		_cellStart.setX(nmCol);
+		_cellStart.setY(nmRow);
+		_startSelMode = uoRst_Cells;
+	}
 }
+
+/// Выдать QRect* из резерва, или произвести на свет новый :)
+QRect* uoReportSelection::getCellSpan()
+{
+	QRect* rect = NULL;
+	if (!_selSpansCache->isEmpty()){
+		rect = _selSpansCache->takeFirst();
+	} else {
+		rect = new QRect(0,0,0,0);
+	}
+	return rect;
+}
+
+
+/// Окончание редактирования выделения ячеек.
+void uoReportSelection::cellSelectedEnd(int nmCol, int nmRow)
+{
+	if (_cellStart.isNull() || (_startSelMode != uoRst_Cells))	{
+		clearSelections();
+		return;
+	}
+	if ((_cellStart.x() == nmCol) && (_cellStart.y() == nmRow)){
+		return;
+	}
+	QRect* rect = getCellSpan();
+	if (rect){
+		calcRectFromPoints((*rect), QPoint(nmCol,nmRow), _cellStart);
+		_selSpans->append(rect);
+	}
+}
+
+/// промежуточное выделение между cellSelectedStart и cellSelectedEnd
+void uoReportSelection::cellSelectedMidle(int nmCol, int nmRow)
+{
+	if (_cellStart.isNull())
+		return;
+	_cellMidle.setX(nmCol);
+	_cellMidle.setY(nmRow);
+	calcRectFromPoints(_rectCellsMidle, _cellMidle, _cellStart);
+
+}
+
+
 
 /// сигнал о выделениИ документа
 void uoReportSelection::selectDocument(){
