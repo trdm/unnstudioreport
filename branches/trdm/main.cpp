@@ -36,7 +36,7 @@ int main(int argc, char *argv[])
     gridLayout->setHorizontalSpacing(0);
     gridLayout->setContentsMargins(0, 0, 0, 0);
 
-    m_Dlg.resize(400,300);
+    m_Dlg.resize(800,700);
     m_Dlg.show();
 
 	// немножко протестируем....
@@ -60,7 +60,14 @@ int main(int argc, char *argv[])
     doc->setScaleSize(uoReport::rhtVertical, 9, 3.0);
     doc->setScaleSize(uoReport::rhtVertical, 1, 45.3);
     doc->setScaleSize(uoReport::rhtVertical, 35, 45.3);
-    doc->setCellText(2,2,"Hello \nworld!");
+    doc->setCellText(2,2,"Hello world!");
+    doc->setCellTextAlignment(2,2,uoReport::uoVA_Center, uoReport::uoHA_Center);
+
+    doc->setCellText(3,3,"Hello world!");
+    doc->setCellTextAlignment(3,3,uoReport::uoVA_Top, uoReport::uoHA_Right);
+
+    doc->setCellText(4,4,"Hello world!");
+    doc->setCellTextAlignment(4,4,uoReport::uoVA_Bottom, uoReport::uoHA_Left);
 
     m_GR.getControl()->optionShow(true, true, false, true);
 
