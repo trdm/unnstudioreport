@@ -46,6 +46,9 @@ void uoReportViewIteract::createActions()
 	m_actGridShow	= new QAction(QString::fromUtf8("Показать сетку"),this);
 	m_actGridHide	= new QAction(QString::fromUtf8("Скрыть сетку"),this);
 
+	m_actInvCharShow  = new QAction(QString::fromUtf8("Показать не печ. симв."),this);
+	m_actInvCharHide = new QAction(QString::fromUtf8("Скрыть не печ. симв."),this);
+
 	m_actFrameShow 	= new QAction(QString::fromUtf8("Показать рамку"),this);
 	m_actFrameHide	= new QAction(QString::fromUtf8("Скрыть рамку"),this);
 
@@ -67,7 +70,6 @@ void uoReportViewIteract::createActions()
 	m_actSave 	= new QAction(QString::fromUtf8("Сохранить"),this);
 	m_actSaveAs = new QAction(QString::fromUtf8("Сохранить как.."),this);
 	m_actLoad 	= new QAction(QString::fromUtf8("Открыть"),this);
-
 
 	m_actProperty	= new QAction(QString::fromUtf8("Свойства"),this);
 
@@ -100,8 +102,12 @@ void uoReportViewIteract::connectActions(uoReportCtrl* rCtrl)
 	connect(m_actSave, 	SIGNAL(triggered()), rCtrl, SLOT(onSave()));
 	connect(m_actSaveAs, 	SIGNAL(triggered()), rCtrl, SLOT(onSaveAs()));
 
+	connect(m_actLoad, 	SIGNAL(triggered()), rCtrl, SLOT(onLoad()));
+
 	connect(m_actOutToDebug, 	SIGNAL(triggered()), rCtrl, SLOT(debugRects()));
 
+	connect(m_actInvCharHide, 	SIGNAL(triggered()), rCtrl, SLOT(onInvisibleCharHide()));
+	connect(m_actInvCharShow, 	SIGNAL(triggered()), rCtrl, SLOT(onInvisibleCharShow()));
 
 }
 
@@ -127,6 +133,33 @@ void uoReportViewIteract::setCheckedState(qreal scaleFactor){
 	else if (scaleFactor == 3.0) 	{		m_actScope300->setChecked(true);	}
 }
 
+/// Выбрать имя файла и формат для считывания
+bool uoReportViewIteract::chooseLoadFilePathAndFormat(QString& filePath, uoRptStoreFormat& frmt, QWidget* wi)
+{
+	QString filePathThis = filePath;
+	if (filePathThis.isEmpty()){
+		filePathThis = "report.xml";
+	}
+
+	QString fileName = QFileDialog::getOpenFileName(0,
+						 tr("Load report.."),
+						 filePathThis,
+						 tr("XML Files (*.xml);*.xml"));
+	if (!fileName.isEmpty()){
+		frmt = uoRsf_Unknown;
+		if (fileName.endsWith(QString(".xml"), Qt::CaseInsensitive)){
+			frmt = uoRsf_XML;
+		} else {
+			QMessageBox::information(wi, tr("Attention"), tr("Not correct file name"));
+			return false;
+		}
+		// Пока остальные оставим.
+		filePath = fileName;
+		return true;
+	}
+	return false;
+
+}
 /// Выбрать имя файла и формат
 bool uoReportViewIteract::chooseSaveFilePathAndFormat(QString& filePath, uoRptStoreFormat& frmt, QWidget* wi )
 {

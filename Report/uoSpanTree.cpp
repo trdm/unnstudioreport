@@ -193,7 +193,7 @@ bool uoSpanTree::addSpanTo(int start, int stop, spanList* list)
 }
 
 /// Добавление диапазона.
-bool uoSpanTree::addSpan(int start, int stop)
+bool uoSpanTree::addSpan(int start, int stop, bool folded)
 {
 	bool rezu = false;
 	if (!possiblyAddSpan(start, stop))
@@ -201,8 +201,22 @@ bool uoSpanTree::addSpan(int start, int stop)
 	rezu = addSpanTo(start, stop, _firstChild);
 	if(rezu && 	!_freezeComputeLevel)
 		computeLevel();
+	if (rezu) {
+		_lastAddedSpan->_folded = folded;
+	}
 	return rezu;
 }
+
+bool uoSpanTree::addSpan(int start, int stop, QString name)
+{
+	bool rezu = addSpan(start, stop, false);
+	if (rezu) {
+		_lastAddedSpan->_name = name;
+	}
+	return rezu;
+}
+
+
 
 ///\ onProcessAll - рекурсивная обработка дерева определенным алгоритмом.
 void uoSpanTree::onProcessAll(uoSpanTreeScan* scanObj, spanList* list)

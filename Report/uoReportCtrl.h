@@ -85,6 +85,7 @@ typedef QMap<int, qreal> rptScalePositionMap; ///< словарь смещени
 
 /**
 	\class uoReportCtrlMesFilter класс перехватчик некоторых событий.
+	\brief класс перехватчик некоторых событий.
 
 	Конкретно нужно что вот что: перехватить Ctrl+Enter и превратить его в Enter
 	А Enter отловить и поместить отредактированный текст обрабно документ и
@@ -101,8 +102,10 @@ class uoReportCtrlMesFilter : public QObject
         void editComplete(bool accept); ///< сигнал о завершении обработки текста.
 };
 
-///\class uoReportCtrl виджет, обслуживающий отрисовку отчета в режиме разработки или использования печатной формы.
-///\brief инструмент для рендринга отчета, его корректировки.
+/**
+	\class uoReportCtrl виджет, обслуживающий отрисовку отчета в режиме разработки или использования печатной формы.
+	\brief инструмент для рендринга отчета, его корректировки.
+*/
 class uoReportCtrl : public QWidget
 {
     Q_OBJECT
@@ -149,6 +152,7 @@ class uoReportCtrl : public QWidget
 			еффект перетаскивания. Это надо исключить. и исключим с пом. этой _curMouseLastPos.
 		*/
 		QPoint			_curMouseLastPos;
+		QPoint			_curMouseCurPos;
 		void 			mouseSparesAcceleratorDrop();
 		void 			mouseSparesAcceleratorSave(uoRptSparesType spar, int nom, uoRptHeaderType rht);
 
@@ -165,6 +169,9 @@ class uoReportCtrl : public QWidget
 		void	onScrollActionH(int act);
 		void	doScrollAction(int act, uoRptHeaderType rht);
 		void 	scrollView(int dx, int dy);
+	signals:
+		void onColumnSizeChange(const int& nmColl, const qreal& nmLen);
+
 
     protected:
 
@@ -174,7 +181,7 @@ class uoReportCtrl : public QWidget
 		void drawHeaderControlGroup(QPainter& painter);
 		void drawHeaderControl(QPainter& painter);
 		void drawDataArea(QPainter& painter);
-		void drawCell(QPainter& painter, uoCell* cell, int row, int col, QRectF& rectCell);
+		void drawCell(QPainter& painter, uoCell* cell, QRectF& rectCell, uoReportDoc* doc, bool isSell);
 
 		QBrush _brushWindow;
 		QBrush _brushBase;
@@ -246,10 +253,16 @@ class uoReportCtrl : public QWidget
 
 	private slots:
 		void debugRects();
+
 		void onSave();
 		void onSaveAs();
+		void onLoad();
+
 		void onGridShow();
 		void onGridHide();
+
+		void onInvisibleCharShow();
+		void onInvisibleCharHide();
 
 		void onFrameShow();
 		void onFrameHide();
@@ -283,6 +296,7 @@ class uoReportCtrl : public QWidget
 		int  _maxVisibleLineNumberCnt; ///< Количество символов в максимальной видимой строке таблицы. Это нужно для вычисления ширины вертикальной линейки.
 
 		bool _showGroup;
+		bool _showInvisiblChar;
 		bool _showSection;
 		bool _showRuler;
 		bool _showGrid;
@@ -323,9 +337,6 @@ class uoReportCtrl : public QWidget
 		int _sizeHDoc;	///< Реальный размер документа.
 		int _pageWidth;		///< Ширина страницы в столбцах стандартного размера
 		int _pageHeight;	///< Высота страницы в строках стандартного размера
-
-
-
 
 	public slots:
 		void changeDocSize(qreal sizeV, qreal sizeH);

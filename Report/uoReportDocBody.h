@@ -19,7 +19,10 @@
 
 
 namespace uoReport {
-///\struct uoEnumeratedItem - абстрактный класс нумерованного итема.
+/**
+	\struct uoEnumeratedItem - абстрактный класс нумерованного итема.
+	\brief абстрактный класс нумерованного итема.
+*/
 struct uoEnumeratedItem
 {
 	virtual ~uoEnumeratedItem(){};
@@ -28,7 +31,10 @@ struct uoEnumeratedItem
 
 };
 
-///\struct uoRptNumLine - нумерованная "линия" отчета (строка или столбец)
+/**
+	\struct uoRptNumLine - нумерованная "линия" отчета (строка или столбец)
+	\brief нумерованная "линия" отчета (строка или столбец)
+*/
 struct uoRptNumLine : public uoEnumeratedItem{
 	public:
 
@@ -126,6 +132,8 @@ class uoReportDocFontColl {
 		int findFont(QString fontName);
 		int countFonts();
 
+		void clear();
+
 	private:
 		QList<QFont*> _fontList;
 };
@@ -150,21 +158,45 @@ class uoReportDocFontColl {
 */
 
 
-///\struct uoTextTrPoint(uoTextTransferPoint) - точка переноса текста на новую строку.
-struct uoTextTrPoint
+/**
+	\struct uoTextBoundary(uoTextTransferPoint) - точка переноса текста на новую строку.
+	\brief точка переноса текста на новую строку.
+*/
+struct uoTextBoundary
 {
 	public:
-		uoTextTrPoint()	: _textTp(0),_point(-1){};
-		~uoTextTrPoint();
+		uoTextBoundary()	: _textBoundary(0),_charCount(-1){};
+		~uoTextBoundary(){};
 
-		uoTextTrPoint* _textTp;
-		int _point;
+		uoTextBoundary* _textBoundary;
+		int _charCount;
 };
 
+/**
+	\struct uoTextTrPointCash - хешь структур uoTextBoundary.
+	\brief хешь структур uoTextBoundary.
+*/
+struct uoTextTrPointCash
+{
+	public:
+		uoTextTrPointCash();
+		~uoTextTrPointCash();
+	public:
+		uoTextBoundary* getTextTrPoint();
+		void savePoint(uoTextBoundary* point);
+		QLinkedList<uoTextBoundary*> m_blockCash;
+		void clear();
+};
+
+/**
+	\struct uoCellTextProps - содержит данные о тексте ячейки.
+	\brief содержит данные о тексте ячейки и параметрах текста.
+	Шрифт, его размер и опции, сам текст, его поведение при большой длинне..
+*/
 struct uoCellTextProps {
 	public:
 	uoCellTextProps()
-	:_textTp(0)
+	:_textBoundary(0)
 	{
 		_textType 		= uoCTT_Text;
 		_vertAlignment  = uoVA_Top;
@@ -173,6 +205,7 @@ struct uoCellTextProps {
 		_fontSize		= 10;
 		_fontBold		= false;
 		_fontItalic		= false;
+		_maxTextLen		= 0.0;
 	}
 
 	QString 	_text; 	///< Текст содержащийся в ячейке.
@@ -181,22 +214,42 @@ struct uoCellTextProps {
 	int 		_fontSize;
 	bool 		_fontBold;
 	bool		_fontItalic;
+	qreal 		_maxTextLen; ///< длинна самой длинной строки в ячейке....
 
 	uoCellTextType  	_textType;		///< Тип текста ячейки
 	uoVertAlignment 	_vertAlignment;	///< Тип вертикального выравнивания текста.
 	uoHorAlignment		_horAlignment;	///< Тип горизонтального выравнивания текста.
 	uoCellTextBehavior 	_behavior;		///< Тип текста при превышении его длинны размера ячейки.
-	uoTextTrPoint* 		_textTp;		///< структура содержащая переносы текста.
+	uoTextBoundary* 		_textBoundary;		///< структура содержащая переносы текста.
 
 };
-
+/**
+	\struct uoCellBordProps - данные о бордюре ячейки.
+	\brief Содержит данные о бордюре ячейки.
+*/
 struct uoCellBordProps {
 	uoCellBorderType 	_bordType[4];	///< Тип рисунка бордюра.
 	int					_bordColor;		///< Цвеет бордюра.
 };
 
 /**
-	\struct uoCell - содержание и форматирование ячейки таблицы.
+	\struct uoCellJoin данные об объединении ячеек.
+	\brief Содержит данные об объединении ячеек.
+	Описания режимов объединения находится uoReport.h
+*/
+struct uoCellJoin{
+	uoCellJoin()
+		:m_JoinType(uoCJT_Unknown),m_Coord1(0), m_Coord2(0)
+	{}
+	~uoCellJoin()
+	{}
+	uoCellsJoinType m_JoinType;
+	int m_Coord1;
+	int m_Coord2;
+};
+
+/**
+	\struct uoCell содержание и форматирование ячейки таблицы.
 	\brief  Содержание и форматирование ячейки таблицы.
 
 	Содержание и форматирование ячейки таблицы.
@@ -207,29 +260,52 @@ struct uoCellBordProps {
 struct uoCell : public uoEnumeratedItem{
 	uoCell(int nom)
 		: _x(nom)
+		, _bgColorID(0)
 		, _textProp(0)
 		, _bordProp(0)
+		, m_ceelJoin(0)
 	{}
 	~uoCell()
 	{}
 
 	virtual void setNumber(int nm){		_x = nm;	}
 	virtual int  number() {		return _x;	}
+	void clear();
 
 	QString getText();
+	QString getTextWithLineBreak(bool drawInv = false);
+
 	void 	setText(QString text, uoReportDoc* doc);
 	void 	setAlignment(const uoVertAlignment& va, const uoHorAlignment& ha, const uoCellTextBehavior& tb, uoReportDoc* doc);
 	int 	getAlignment();
 
+	uoHorAlignment 		getAlignmentHor();
+	uoVertAlignment 	getAlignmentVer();
+	uoCellTextBehavior 	getTextBehavior();
+
 	QFont*   getFont(uoReportDoc* doc);
 	int		 getFontSize();
-	const QColor*  getFontColor(uoReportDoc* doc);
+	int		 getFontId();
 
-	int 		_x;		///< Номер колонки, к которой ячейка принадлежит.
-	int 		_bgColorID;
+	const
+	QColor*  getFontColor(uoReportDoc* doc);
+	int 	 getFontColorId();
+
+	const
+	QColor*  getBGColor(uoReportDoc* doc);
+	int 	 getBGColorId();
+
+	void saveTrPoint(uoTextTrPointCash* cash);
+	void applyTrPoint(uoTextTrPointCash* cash, const QStringList& listStr, uoReportDoc* doc);
+
+
+	int 		_x;				///< Номер колонки, к которой ячейка принадлежит.
+	int 		_bgColorID;		///< Индекс цвета фона ячейки...
 
 	uoCellTextProps* _textProp;
 	uoCellBordProps* _bordProp;
+	uoCellJoin*		m_ceelJoin;
+
 };
 
 
@@ -239,16 +315,21 @@ class uoRow : public uoEnumeratedItem, public uoNumVector<uoCell>
 	public:
 		uoRow(int nom);
 		virtual ~uoRow();
-	void setNumber(int nm)	{	_number = nm;	}
-	int  number() 			{	return _number;	}
+	public:
+		void setNumber(int nm)	{	_number = nm;	}
+		int  number() 			{	return _number;	}
 
-	///\todo Необходимы поисковые механизмы, найти и получить/установить значение свойства.
-	uoCell* getCell(int posX, bool needCreate = false);
-	virtual void onDeleteItem(uoCell* delItem);
-	virtual void onCreateItem(uoCell* crItem);
-	void saveItems(uoReportLoader* loader);
-	QList<int> getItemNumList();
+		///\todo Необходимы поисковые механизмы, найти и получить/установить значение свойства.
+		uoCell* getCell(int posX, bool needCreate = false);
+		virtual void onDeleteItem(uoCell* delItem);
+		virtual void onCreateItem(uoCell* crItem);
+		void saveItems(uoReportLoader* loader);
 
+		QList<int> getItemNumList();
+
+		// Заполненные ячейки.
+		int _cellFirst;	///< первая ячейка
+		int _cellLast;	///< последняя ячейка
 
 	private:
 		int _number;
@@ -268,7 +349,6 @@ class uoRowsDoc : public uoNumVector<uoRow>
 		uoRow* getRow(int nmRow, bool needCreate = false);
 		uoCell* getCell(int nmRow, int nmCol,bool needCreate = false);
 
-//		uoCell* getCell(const int posY, const int posX, const bool needCreate = false);
 		QString getText(const int posY, const int posX);
 		void saveItems(uoReportLoader* loader);
 
