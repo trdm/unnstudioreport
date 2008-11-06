@@ -101,12 +101,12 @@ void uoHeaderScale::printToDebug()
 	detachIter();
 	if (_list->isEmpty())
 		return;
-	qDebug() << "############ size = " << _list->size();
+//	qDebug() << "############ size = " << _list->size();
 	uoRptNumLine* item = NULL;
 	QLinkedList<uoRptNumLine*>::iterator itLst = _list->begin();
 	while(itLst != _list->end()) {
 		item = *itLst;
-		qDebug() << "№ "<< item->number() << " size " << item->size();
+//		qDebug() << "№ "<< item->number() << " size " << item->size();
 		itLst++;
 	}
 }
@@ -197,12 +197,17 @@ uoReportDocFontColl::uoReportDocFontColl()
 
 uoReportDocFontColl::~uoReportDocFontColl()
 {
+	clear();
+}
+
+/// чистка колекции шрифтов
+void uoReportDocFontColl::clear()
+{
 	QFont* font = NULL;
 	while (!_fontList.isEmpty()) {
 		font = _fontList.takeFirst();
 		delete font;
 	}
-
 }
 
 /// Получить фонт для отрисовки
@@ -246,6 +251,57 @@ int uoReportDocFontColl::addFont(QString fontName)
 	return retVal;
 }
 
+//=========================================
+//=========uoTextTrPointCash==============
+uoTextTrPointCash::uoTextTrPointCash()
+{
+}
+
+uoTextTrPointCash::~uoTextTrPointCash()
+{
+	clear();
+}
+
+/// Очистка
+void uoTextTrPointCash::clear()
+{
+	while (!m_blockCash.isEmpty()) {
+		delete m_blockCash.takeFirst();
+	}
+}
+/// Возвращает свободную структуру uoTextBoundary
+uoTextBoundary* uoTextTrPointCash::getTextTrPoint()
+{
+	uoTextBoundary* point = NULL;
+	if (!m_blockCash.isEmpty()) {
+		point = m_blockCash.takeFirst();
+	} else {
+		point = new uoTextBoundary;
+	}
+	if (point){
+		point->_textBoundary = NULL;
+		point->_charCount = 0;
+	}
+
+	return point;
+}
+/// Сдаем на склад ненужные итемы..
+void uoTextTrPointCash::savePoint(uoTextBoundary* point)
+{
+	if (point){
+		uoTextBoundary* next = point;
+		while(next){
+			next->_charCount = 0;
+			m_blockCash.append(next);
+			next = next->_textBoundary;
+		}
+	}
+}
+
+
+//=========uoTextTrPointCash==============
+//=========================================
+
 /// Получить ID фонта. Именно тут "Заводятся" новые фонты
 int uoReportDocFontColl::getFontId(QString fontName)
 {
@@ -265,11 +321,12 @@ int uoReportDocFontColl::countFonts()
 	return _fontList.count();
 }
 
-
-
-
 ///==============uoReportDocFontColl====================
 ///=====================================================
+void uoCell::clear()
+{
+
+}
 
 /// Взять текст.
 QString uoCell::getText()
@@ -279,6 +336,47 @@ QString uoCell::getText()
 	}
 	return QString("");
 }
+
+/// Вернуть текст, разделеленный согласно форматированию символом, специально для печати.
+QString uoCell::getTextWithLineBreak(bool drawInv)
+{
+	QString str;
+	if (_textProp){
+		QString cellTxt = _textProp->_text;
+		QString tmpStr;
+		QString ch = " ";
+
+		if (drawInv) {
+			ch = QString::fromUtf8("¶");
+			cellTxt = cellTxt.replace('\n' ,ch);
+
+			ch = QString::fromUtf8("¤");
+			cellTxt = cellTxt.replace(' ' ,ch);
+		} else {
+			cellTxt = cellTxt.replace('\n' ,ch);
+		}
+
+
+		int fullLen = cellTxt.length(), alreadyLen = 0;
+
+
+		uoTextBoundary* textTPoint = _textProp->_textBoundary;
+		if (!textTPoint)
+			str = cellTxt;
+		while(textTPoint && fullLen>0){
+			tmpStr = cellTxt.mid(alreadyLen, textTPoint->_charCount);
+			str.append(tmpStr);
+			fullLen = fullLen - textTPoint->_charCount;
+			alreadyLen = alreadyLen + textTPoint->_charCount;
+			if (textTPoint->_textBoundary){
+				str.append(QChar::LineSeparator);
+				textTPoint = textTPoint->_textBoundary;
+			}
+		}
+	}
+	return str;
+}
+
 
 /// Установить текст. Надо гарантировать наличие структуры _textProp;
 void uoCell::setText(QString text, uoReportDoc* doc)
@@ -311,7 +409,6 @@ int uoCell::getAlignment()
 	int flags = 0;
 	if (_textProp) {
 		switch (_textProp->_vertAlignment){
-			case uoVA_Unknovn:
 			case uoVA_Top:{	flags |= Qt::AlignTop; break; }
 			case uoVA_Bottom:{	flags |= Qt::AlignBottom ; break; }
 			case uoVA_Center:{	flags |= Qt::AlignVCenter ; break; }
@@ -319,7 +416,6 @@ int uoCell::getAlignment()
 			break;
 		}
 		switch (_textProp->_horAlignment){
-			case uoHA_Unknovn:
 			case uoHA_Left:{	flags |= Qt::AlignLeft ; break; }
 			case uoHA_Right:{	flags |= Qt::AlignRight  ; break; }
 			case uoHA_Center:{	flags |= Qt::AlignHCenter ; break; }
@@ -329,16 +425,39 @@ int uoCell::getAlignment()
 		switch (_textProp->_behavior){
 			case uoCTB_Transfer:{
 				flags |= Qt::TextWordWrap;
+				flags |= Qt::TextExpandTabs ;
 				break;
 			}
 			default:	{
 				break;
 			}
 		}
-
-		//
 	}
 	return flags;
+}
+
+/// Вернуть поведение текста.
+uoCellTextBehavior 	uoCell::getTextBehavior()
+{
+	if (_textProp){
+		return _textProp->_behavior;
+	}
+	return uoCTB_Auto;
+}
+
+uoHorAlignment 	uoCell::getAlignmentHor()
+{
+	if (_textProp){
+		return _textProp->_horAlignment;
+	}
+	return uoHA_Left;
+}
+uoVertAlignment uoCell::getAlignmentVer()
+{
+	if (_textProp){
+		return _textProp->_vertAlignment;
+	}
+	return uoVA_Top;
 }
 
 
@@ -364,8 +483,15 @@ int	uoCell::getFontSize()
 		return 0;
 	return _textProp->_fontSize;
 }
+/// Получить ID шрифта
+int	uoCell::getFontId(){
+	if (!_textProp)
+		return 0;
+	return _textProp->_fontID;
+}
 
 
+/// Извлекаем шрифт из документа по ID
 const QColor*  uoCell::getFontColor(uoReportDoc* doc)
 {
 	if (!doc || !_textProp)
@@ -373,13 +499,77 @@ const QColor*  uoCell::getFontColor(uoReportDoc* doc)
 	return doc->getColorByID(_textProp->_fontColID);
 }
 
+int uoCell::getFontColorId()
+{
+	if (!_textProp)
+		return 0;
+	return _textProp->_fontColID;
+}
+
+const
+QColor*  uoCell::getBGColor(uoReportDoc* doc)
+{
+	if (!doc )
+		return NULL;
+	return doc->getColorByID(_bgColorID);
+}
+
+int uoCell::getBGColorId(){
+	return _bgColorID;
+}
+
+/// Утилизируем точки выравнивания.
+void uoCell::saveTrPoint(uoTextTrPointCash* cash)
+{
+	if (_textProp){
+		if (_textProp->_textBoundary){
+			cash->savePoint(_textProp->_textBoundary);
+			_textProp->_textBoundary = NULL;
+		}
+	}
+}
+
+/// Применим порезку на строки, подготовленные с учетом размера шрифта.
+void uoCell::applyTrPoint(uoTextTrPointCash* cash, const QStringList& listStr, uoReportDoc* doc)
+{
+	uoTextBoundary* textTPoint = NULL;
+	int cntStr = listStr.size();
+	if (cntStr>1){
+		if (!_textProp) {
+			_textProp = doc->getNewTextProp();
+		}
+		if (_textProp){
+			textTPoint = cash->getTextTrPoint();
+
+			int i = 0, strSize = 0;
+
+			if (textTPoint){
+				_textProp->_textBoundary = textTPoint;
+				QString nextStr;
+				while(textTPoint && i<cntStr){
+					nextStr = listStr.at(i);
+					strSize = nextStr.length();
+					textTPoint->_charCount = strSize;
+					textTPoint->_textBoundary = NULL;
+					if ((i+1)<cntStr){
+						textTPoint->_textBoundary = cash->getTextTrPoint();
+						textTPoint = textTPoint->_textBoundary;
+					}
+					i = i + 1;
+				}
+			}
+		}
+	}
+}
+
 
 ///============================================
 /// uoRow uoRow uoRow uoRow uoRow uoRow
 
 uoRow::uoRow(int nom)
-	:_number(nom){
-
+	:_number(nom)
+{
+	_cellLast =_cellFirst = 0;
 }
 uoRow::~uoRow(){
 }
@@ -390,7 +580,10 @@ uoCell* uoRow::getCell(int posX, bool needCreate){
 }
 
 /// Функция вызывается после создания нового итема. Возможно пригодится для ундо/редо.
-void uoRow::onDeleteItem(uoCell* delItem){
+void uoRow::onDeleteItem(uoCell* delItem)
+{
+	if (delItem)
+		delItem->clear();
 }
 
 /// Функция вызывается перед удалением итема.
@@ -435,7 +628,10 @@ uoRowsDoc::~uoRowsDoc(){
 	//clear(); // а надо тут вызывать??????
 }
 
-void uoRowsDoc::onDeleteItem(uoRow* delItem){
+void uoRowsDoc::onDeleteItem(uoRow* delItem)
+{
+	if(delItem)
+		delItem->clear();
 }
 void uoRowsDoc::onCreateItem(uoRow* crItem){
 }

@@ -44,6 +44,26 @@ class uoNumVector
 			delete _list;
 		}
 
+		int getMinNo(){			return _minNo;		}
+		int getMaxNo(){			return _maxNo;		}
+
+		/// Ищем следующую после итема № after итемку. Нужно сделать экономичный поиск.
+		T* getNextItem(int after){
+			T* item = NULL;
+			if ( after<=0 || after<_minNo || after>_maxNo || _list->isEmpty())
+				return item;
+			detachIter();
+			// Чета влом мне в час ночи ломать голову над оптимизацией...
+			typename QLinkedList<T*>::iterator it = _list->begin();
+			while (it != _list->end() ) {
+				item = *it;
+				if (item->number()>after)
+					return item;
+				it++;
+			}
+			return NULL;
+		}
+
 		/// Очистка вектора
 		void clear() {
 			detachIter();
@@ -57,6 +77,7 @@ class uoNumVector
 				delete item;
 				item = NULL;
 			}
+			_maxNo = _minNo = 0;
 		}
 
 		/// Функция вызывается после создания нового итема. Возможно пригодится для ундо/редо.
@@ -134,10 +155,31 @@ class uoNumVector
 		int getCountItem() {
 			return _list->size();
 		}
-		/// Получение размера списка
+		/// проверить, существует ли итемка.
 		bool itemExist(int nom) {
 			return findItem(nom, false);
 		}
+
+		/// проверить, существует ли итемка.
+		int getNextItemNom(int nom) {
+			int retVal = -1, curVal;
+			if (_list->isEmpty())
+				return retVal;
+
+			typename QLinkedList<T*>::iterator it = _list->begin();
+			T* item = *it;
+			while (it != _list->end() ) {
+				item = *it;
+				curVal = item->number();
+				if (curVal > nom) {
+					retVal = curVal;
+					break;
+				}
+				it++;
+			}
+			return retVal;
+		}
+
 
 	protected:
 

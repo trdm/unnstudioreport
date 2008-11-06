@@ -21,12 +21,16 @@ namespace uoReport {
 #define rptSize qreal
 #define rptSizeNull 0.0
 
+#define TEXT_TR_POINT_ARR_SIZE 400
+
+
 /**
 	Размер крайней области объекта в которой курсор принимает
 	вид "перетаскивателя" и при клике в которой начинается
 	перетаскивание или изменение размера.
 */
 #define UORPT_DRAG_AREA_SIZE 2.0
+#define UORPT_STANDART_OFFSET_TEXT 2.0
 
 #define rptRect QRectF
 
@@ -48,17 +52,20 @@ class uoReportCtrlMesFilter;
 class uoReportCtrl;
 class uoReportView;
 class uoReportViewIteract;
+struct uoTextTrPointCash;
 class uoReportDocBody;
 template <typename T> class uoNumVector;
+template <typename T> class uoCacheItemizer;
 class uoReportLoader;
 class uoReportLoaderXML;
 class uoReportSelection;
 
-struct uoTextTrPoint;
+struct uoTextBoundary;
 struct uoCellTextProps;
 struct uoCellBordProps;
 class uoRowsDoc;
 struct uoCell;
+struct uoCellJoin;
 class uoRow;
 
 
@@ -107,6 +114,37 @@ typedef enum uoRptStoreFormat {
 	, uoRsf_XML = 1
 	, uoRsf_Binary = 2
 	, uoRsf_HTML = 3
+};
+
+/**
+	\enum uoUiCommand - перечень комманд, задействованных в интерфейсе пользователя
+	Буду использовать для управления набором пиктограмм, пунктов меню и т.п.
+*/
+typedef enum uoUiCommandRpt
+{
+	uoUCR_Unknown = 0
+
+	// Типа как-бы общие
+	, uoUCR_Cat 	///< Вырезать
+	, uoUCR_Copy 	///< Скопировать
+	, uoUCR_Paste 	///< Вставить
+
+	// Блок для управления строками/столбцами
+	, uoUCR_CaptionDisplay 	///< Отображать заголовки
+	, uoUCR_Insert 	///< Вставить
+	, uoUCR_Delete 	///< Удалить
+
+	, uoUCR_GridDisplay 	///< Отображать сетку
+
+	// Блок для управления группами
+	, uoUCR_GroupDisplay 	///< Отображать
+	, uoUCR_GroupJoin 		///< Вставить
+	, uoUCR_GroupExclude 	///< Удалить
+
+	// Блок для управления секциями
+	, uoUCR_SectionDisplay 	///< Отображать
+	, uoUCR_SectionInclude 	///< Включить в секцию
+	, uoUCR_SectionExclude 	///< Исключить из секции
 };
 
 /**
@@ -183,11 +221,34 @@ enum uoReportStateMode {
 	, rmsSelectionCell		///< Режим выделения ячеек мышкой или с пом КПК.
 };
 
+/**
+	\enum uoCellTextBehavior - поведение текста при привышении его размера ширины ячейки.
 
+	uoCTB_Auto - Текст будет печататься в сторону его выравнивания, пока не встретит
+		либо границу документа, либо первую заполненную ячейку. Т.е. фактически текст
+		может печататься поверх нескольких ячеек, если это ему нужно....
+	uoCTB_Cut - встретив границу ячейки, текст просто обрежется.
+	uoCTB_Obstruct - встретив границу ячейки, литеры текста поменяется на "@"
+	uoCTB_Transfer - если текст не помещается в отведенную ему область, он будет
+		перенесен и ячейка должна проинформировать строку, что её размер должен быть
+		расширен.
+*/
+enum uoCellTextBehavior {
+	  uoCTB_Unknown = 0 	///< Неопределенное,
+	, uoCTB_Auto = 1
+	, uoCTB_Cut
+	, uoCTB_Obstruct
+	, uoCTB_Transfer
+};
+///\todo определить оптимальные дефолтные настройки для ячейки.
+/*
+	Неопределенные значения для свойств необходимы из-за групповой обработки ячеек..
+	используется для!! группы выдененных ячеек, когда у них смешанные значения.
+*/
 
 ///\enum uoVertAlignment - типы вертикального выравнивания
 typedef enum uoVertAlignment {
-	uoVA_Unknovn = 0
+	  uoVA_Unknown = 0 	///< Неопределенное,
 	, uoVA_Top 		///< Выравнивание по верхнему краю
 	, uoVA_Center 	///< Выравнивание по центру
 	, uoVA_Bottom 	///< Выравнивание по нижнему краю
@@ -195,7 +256,7 @@ typedef enum uoVertAlignment {
 
 ///\enum uoHorAlignment - типы горизонтального выравнивания
 typedef enum uoHorAlignment {
-	uoHA_Unknovn = 0
+	  uoHA_Unknown = 0 	///< Неопределенное,
 	, uoHA_Left 	///< Выравнивание по левому краю
 	, uoHA_Center 	///< Выравнивание по центру
 	, uoHA_Right 	///< Выравнивание по правому краю
@@ -218,7 +279,7 @@ typedef enum uoHorAlignment {
 */
 enum uoCellTextType {
 	uoCTT_Text = 0	///< Простой текст, не интерпретируемый
-	, uoCTT_Expr 	///< Выражение, должно быть взято из хранилищая выражения
+	, uoCTT_Expr 	///< Выражение, должно быть взято из хранилища выражения
 	, uoCTT_Templ 	///< Шаблон. должен быть разобран и интерпретирован.
 };
 
@@ -231,26 +292,31 @@ enum uoCellBorderType {
 	, uoCBT_DashDotDotLine
 	//, uoCBT_CustomDashLine - оно мне надо? :)
 };
-
 /**
-	\enum uoCellTextBehavior - поведение текста при привышении его размера ширины ячейки.
+	\enum uoCellsJoinType типы объединений ячеек.
 
-	uoCTB_Auto - Текст будет печататься в сторону его выравнивания, пока не встретит
-		либо границу документа, либо первую заполненную ячейку. Т.е. фактически текст
-		может печататься поверх нескольких ячеек, если это ему нужно....
-	uoCTB_Cut - встретив границу ячейки, текст просто обрежется.
-	uoCTB_Obstruct - встретив границу ячейки, литеры текста поменяется на "@"
-	uoCTB_Transfer - если текст не помещается в отведенную ему область, он будет
-		перенесен и ячейка должна проинформировать строку, что её размер должен быть
-		расширен.
+	<b> uoCJT_Abstract </b> - Абстрактное объединение, означает просто где можно размещать текст по строке,
+	т.е. значения (m_Coord1 и m_Coord2) означают:
+		m_Coord1 - стартовая ячейка в строке;
+		m_Coord2 - конечная ячейка в строке.
+
+	<b>uoCJT_Formal</b> - Формальное объединение, означает что ячейки НЕ ОБЪЕДИНЕНЫ, но текст выравнивается
+	т.е. значения (m_Coord1 и m_Coord2) означают:
+		m_Coord1 - конечная ячейка в этой строке,
+		m_Coord2 = конечная строка в объединении
+
+	<b>uoCJT_Normal</b> -Нормальное объединение, означает что ячейки ОБЪЕДИНЕНЫ
+	т.е. значения (m_Coord1 и m_Coord2) означают:
+		m_Coord1 - конечная ячейка в этой строке,
+		m_Coord2 = конечная строка в объединении
 */
-enum uoCellTextBehavior {
-	uoCTB_Auto = 0
-	, uoCTB_Cut
-	, uoCTB_Obstruct
-	, uoCTB_Transfer
+enum uoCellsJoinType{
+	  uoCJT_Unknown = 0 // Нет объединения
+	, uoCJT_Abstract 	// Абстрактное объединение
+	, uoCJT_Formal 		// Формальное объединение
+	, uoCJT_Normal 		// Нормальное объединение
 };
-///\todo определить оптимальные дефолтные настройки для ячейки.
+
 
 
 

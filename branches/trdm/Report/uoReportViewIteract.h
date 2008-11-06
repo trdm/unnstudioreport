@@ -49,6 +49,9 @@ class uoReportViewIteract : public QObject
 		QAction* m_actGroupShow;
 		QAction* m_actGroupHide;
 
+		QAction* m_actInvCharShow;
+		QAction* m_actInvCharHide;
+
 		QAction* m_actSectionShow;
 		QAction* m_actSectionHide;
 
@@ -80,6 +83,7 @@ class uoReportViewIteract : public QObject
 
 		void setCheckedState(qreal scaleFactor);
 		bool chooseSaveFilePathAndFormat(QString& filePath, uoRptStoreFormat& frmt, QWidget* wi);
+		bool chooseLoadFilePathAndFormat(QString& filePath, uoRptStoreFormat& frmt, QWidget* wi);
 
 	signals:
 		void onScaleChange(const qreal scaleFact);

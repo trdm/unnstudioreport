@@ -23,15 +23,15 @@ struct uoLineSpan{
 	int _start, _end, _level, _id;
 	bool _folded;
 	QList<uoLineSpan*>* _child;
-	char* _name;
+	QString _name;
 
 	public:
 		uoLineSpan()
-			:_start(-1)	, _end(-1)	,_level(-1)	,_folded(false),_child(0),_name(0)
+			:_start(-1)	, _end(-1)	,_level(-1)	,_folded(false),_child(0)
 			{}
 
 		uoLineSpan(int s1, int s2)
-			: _start(s1), _end(s2)	,_level(-1)	,_folded(false),_child(0),_name(0)
+			: _start(s1), _end(s2)	,_level(-1)	,_folded(false),_child(0)
 			{}
 
 		int getStart() 	{ return _start;}
@@ -59,20 +59,12 @@ struct uoLineSpan{
 			uoLineSpan* spn = NULL;
 			while (!_child->isEmpty()) {
 				spn = _child->takeFirst();
-				if(spn->_name) {
-					delete spn->_name;
-					spn->_name = 0;
-				}
 				spn->clearChilds();
 				delete spn;
 			}
 		};
 
 		void clear() {
-			if(_name) {
-				delete _name;
-				_name = 0;
-			}
 			clearChilds();
 		};
 
@@ -327,7 +319,8 @@ class uoSpanTree : public QObject
 	public:
 		// Интерфейсные функции
 		bool possiblyAddSpan(int start, int stop);
-		bool addSpan(int start, int stop);
+		bool addSpan(int start, int stop, bool folded = false);
+		bool addSpan(int start, int stop, QString name);
 		int  getLevel();
 		int  getSize();
 
