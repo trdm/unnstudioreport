@@ -203,11 +203,10 @@ uoReportDocFontColl::~uoReportDocFontColl()
 /// чистка колекции шрифтов
 void uoReportDocFontColl::clear()
 {
-	QFont* font = NULL;
 	while (!_fontList.isEmpty()) {
-		font = _fontList.takeFirst();
-		delete font;
+		delete _fontList.takeFirst();
 	}
+	_fontList.clear();
 }
 
 /// Получить фонт для отрисовки
@@ -243,13 +242,36 @@ int uoReportDocFontColl::addFont(QString fontName)
 	if (retVal == -1){
 		// есть возможность поработать с фонтом на свое усмотрение.
 		QFont* font = new QFont(fontName);
-		_fontList.append(font);
-		retVal = _fontList.size()-1;
+		if (font){
+			_fontList.append(font);
+			retVal = _fontList.size()-1;
+		}
 	}
+	return retVal;
+}
 
+/// Получить ID фонта. Именно тут "Заводятся" новые фонты
+int uoReportDocFontColl::getFontId(QString fontName)
+{
+	int retVal = findFont(fontName);
+	if (retVal == -1){
+		retVal = addFont(fontName);
+	}
 
 	return retVal;
 }
+
+/// количество зарегистрированный шрифтов.
+int uoReportDocFontColl::countFonts()
+{
+	if (_fontList.isEmpty())
+		return 0;
+	return _fontList.count();
+}
+
+///==============uoReportDocFontColl====================
+///=====================================================
+
 
 //=========================================
 //=========uoTextTrPointCash==============
@@ -302,27 +324,6 @@ void uoTextTrPointCash::savePoint(uoTextBoundary* point)
 //=========uoTextTrPointCash==============
 //=========================================
 
-/// Получить ID фонта. Именно тут "Заводятся" новые фонты
-int uoReportDocFontColl::getFontId(QString fontName)
-{
-	int retVal = findFont(fontName);
-	if (retVal == -1){
-		retVal = addFont(fontName);
-	}
-
-	return retVal;
-}
-
-/// количество зарегистрированный шрифтов.
-int uoReportDocFontColl::countFonts()
-{
-	if (_fontList.isEmpty())
-		return 0;
-	return _fontList.count();
-}
-
-///==============uoReportDocFontColl====================
-///=====================================================
 void uoCell::clear()
 {
 
@@ -335,6 +336,18 @@ QString uoCell::getText()
 		return _textProp->_text;
 	}
 	return QString("");
+}
+
+bool uoCell::provideTextProp(uoReportDoc* doc, bool needCreate /* = false*/)
+{
+	if (_textProp)
+		return true;
+	if (doc && needCreate){
+		_textProp = doc->getNewTextProp();
+		if (_textProp)
+			return true;
+	}
+	return false;
 }
 
 /// Вернуть текст, разделеленный согласно форматированию символом, специально для печати.
@@ -350,10 +363,16 @@ QString uoCell::getTextWithLineBreak(bool drawInv)
 			ch = QString::fromUtf8("¶");
 			cellTxt = cellTxt.replace('\n' ,ch);
 
-			ch = QString::fromUtf8("¤");
+			ch = QString::fromUtf8("•");
 			cellTxt = cellTxt.replace(' ' ,ch);
+
+			ch = QChar(0x2192);	//--> такая длинная стрелка...
+			cellTxt = cellTxt.replace('\t' ,ch);
+
 		} else {
 			cellTxt = cellTxt.replace('\n' ,ch);
+			/// Виснет. разобраться...
+//			ch = QString::fromUtf8("    ");			cellTxt = cellTxt.replace('\t' ,ch);
 		}
 
 
@@ -381,22 +400,28 @@ QString uoCell::getTextWithLineBreak(bool drawInv)
 /// Установить текст. Надо гарантировать наличие структуры _textProp;
 void uoCell::setText(QString text, uoReportDoc* doc)
 {
-	if (!doc)
-		return;
-	if (!_textProp)
-		_textProp = doc->getNewTextProp();
-	if (_textProp)
+	if (provideTextProp(doc, true))
 		_textProp->_text = text;
 }
+
+void uoCell::setMaxRowLength(qreal len, uoReportDoc* doc)
+{
+	if (provideTextProp(doc, true))
+		_textProp->m_maxRowLen = len;
+}
+
+qreal uoCell::getMaxRowLength()
+{
+	if (_textProp)
+		return _textProp->m_maxRowLen;
+	return 0.0;
+}
+
 
 /// установить выравнивание текста в ячейке
 void uoCell::setAlignment(const uoVertAlignment& va, const uoHorAlignment& ha, const uoCellTextBehavior& tb, uoReportDoc* doc)
 {
-	if (!doc)
-		return;
-	if (!_textProp)
-		_textProp = doc->getNewTextProp();
-	if (_textProp) {
+	if (provideTextProp(doc, true)) {
 		_textProp->_horAlignment = ha;
 		_textProp->_vertAlignment = va;
 		_textProp->_behavior = tb;
@@ -463,10 +488,19 @@ uoVertAlignment uoCell::getAlignmentVer()
 
 
 /// Отдаем фонт сразус размером
-QFont* uoCell::getFont(uoReportDoc* doc)
+QFont* uoCell::getFont(uoReportDoc* doc, bool needCreate)
 {
-	if (!doc || !_textProp)
+	if (!doc)
 		return NULL;
+	if (!_textProp){
+		if (!needCreate) {
+			return NULL;
+		}
+		_textProp = doc->getNewTextProp();
+		if (!_textProp)
+			return NULL;
+
+	}
 	QFont* font = doc->getFontByID(_textProp->_fontID);
 	if (font){
 		font->setPointSize(_textProp->_fontSize);

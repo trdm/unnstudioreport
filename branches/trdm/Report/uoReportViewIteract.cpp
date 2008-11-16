@@ -144,7 +144,7 @@ bool uoReportViewIteract::chooseLoadFilePathAndFormat(QString& filePath, uoRptSt
 	QString fileName = QFileDialog::getOpenFileName(0,
 						 tr("Load report.."),
 						 filePathThis,
-						 tr("XML Files (*.xml);*.xml"));
+						 tr("XML Files (*.xml)"));
 	if (!fileName.isEmpty()){
 		frmt = uoRsf_Unknown;
 		if (fileName.endsWith(QString(".xml"), Qt::CaseInsensitive)){

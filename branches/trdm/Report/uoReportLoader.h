@@ -139,6 +139,7 @@ class uoReportLoaderXML : public uoReportLoader {
 		bool loadScalesHeader(const QDomElement &node, uoReportDoc* doc);
 		bool loadRows(const QDomElement &node, uoReportDoc* doc);
 		bool loadCell(const QDomElement &node, uoReportDoc* doc, int rowNum);
+		bool loadFont(const QDomElement &node, uoReportDoc* doc);
 
 
 	private:

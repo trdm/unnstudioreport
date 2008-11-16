@@ -79,8 +79,14 @@ void uoReportDoc::clear()
 	_headerH->clear(); ///< Горизонтальный заголовок
 	_rows->clear();
 	_pointBlock->clear();
-
 }
+
+/// Очистака шрифтов. Обусловлено спецификой порядка выгрузки...
+void uoReportDoc::clearFonts()
+{
+	_fontColl->clear();
+}
+
 
 
 /// Установить дефолтный шрифт.
@@ -178,6 +184,16 @@ const spanList* uoReportDoc::getGroupList(uoRptHeaderType rht, int start, int en
 	else
 		return _spanTreeGrV->getSpanList(start, end, true);
 }
+
+/// Получить список спанов СЕКЦИЙ по диапазону строк/столбцов
+const spanList* uoReportDoc::getSectionList(uoRptHeaderType rht, int start, int end)
+{
+	if (rht == rhtHorizontal)
+		return _spanTreeSctH->getSpanList(start, end, false);
+	else
+		return _spanTreeSctV->getSpanList(start, end, false);
+}
+
 
 
 /// проверка возможности сформировать/вставить СЕКЦИЮ в документ.
@@ -539,6 +555,13 @@ void uoReportDoc::onAccessRowOrCol(int nom, uoRptHeaderType rht)
 	}
 }
 
+void uoReportDoc::onAccessRowCol(int nmRow, int nmCol)
+{
+	if (nmRow > 0)		onAccessRowOrCol(nmRow, rhtVertical);
+	if (nmCol > 0)		onAccessRowOrCol(nmCol, rhtHorizontal);
+}
+
+
 /// Вернуть размер ячейки
 qreal uoReportDoc::getScaleSize(uoRptHeaderType hType, int nom, bool isDef)
 {
@@ -725,14 +748,17 @@ qreal uoReportDoc::doFormatCellText(uoCell* cell, QFont* font, QFontMetricsF& fm
 
 	// задачка не из простых...
 	QString cellStr = cell->getText();
-	if (cellStr.isEmpty())
-		return cellHeight;
-
-	cellStr = cellStr.replace('\t', " ");
 	if (cell->_textProp){
 		_pointBlock->savePoint(cell->_textProp->_textBoundary);
 		cell->_textProp->_textBoundary = NULL;
+		cell->_textProp->m_maxRowLen = 0.0;
 	}
+
+	if (cellStr.isEmpty())
+		return cellHeight;
+
+
+	cellStr = cellStr.replace('\t', " ");
 	uoCellTextBehavior 	tb = cell->getTextBehavior();
 	/*
 		походу очень плохая идея рубить текст и оставлять его порубленным в ячейке.
@@ -745,21 +771,27 @@ qreal uoReportDoc::doFormatCellText(uoCell* cell, QFont* font, QFontMetricsF& fm
 	int listSz = 0;
 
 	qreal fullLength = fm.width(cellStr); // нужно проверить, влезает ли текст в сейку..
-	if ((fullLength > collWidthThis) || (pos != -1)){
+	QString nextStr, curStr;
+	if (pos != -1 || tb == uoCTB_Transfer){
 		// Значит надо рубить
 		QStringList strList = cellStr.split(chrLS);
 		listSz = strList.count();
-		QString nextStr, curStr;
+
 		for (int i = 0; i<strList.count(); i++) {
 			nextStr = strList.at(i);
+
 			if ((i+1)<listSz){
 				nextStr = nextStr + "\n";
 			}
-			if (fm.width(cellStr) > collWidthThis){
-				// надо сплитануть по словам: по табу, пробелу, знакам препинания и т.п.
-				// незабыть стандартный офсет, служащий для антиприлипания строки.
-				QStringList listOfWord = splitQStringToWord(fm, nextStr, collWidthThis);
-				strListReal << listOfWord;
+			if (tb == uoCTB_Transfer){
+				if (fm.width(cellStr) > collWidthThis){
+					// надо сплитануть по словам: по табу, пробелу, знакам препинания и т.п.
+					// незабыть стандартный офсет, служащий для антиприлипания строки.
+					QStringList listOfWord = splitQStringToWord(fm, nextStr, collWidthThis);
+					strListReal << listOfWord;
+				} else {
+					strListReal << nextStr;
+				}
 			} else {
 				strListReal << nextStr;
 			}
@@ -767,12 +799,25 @@ qreal uoReportDoc::doFormatCellText(uoCell* cell, QFont* font, QFontMetricsF& fm
 	} else {
 		strListReal << cellStr;
 	}
+
+	qreal maxRowLength = 0.0;
+	for (int i = 0; i < strListReal.size(); ++i){
+		nextStr = strListReal.at(i);
+		maxRowLength = qMax(maxRowLength, fm.width(nextStr));
+	}
+
+	cell->setMaxRowLength(maxRowLength, this);
 	cell->applyTrPoint(_pointBlock, strListReal, this);
 	cellHeight = fm.height() * strListReal.size();
 	return cellHeight;
 }
 
-/// Форматирование строки: вычисление ВЫСОТЫ, переносов и т.п.
+/**
+	Форматирование строки: \n
+		- вычисление максимальной ВЫСОТЫ строки.
+		- вычисление переносов \n
+		- вычисление ВЫСОТЫ, переносов и т.п. \n
+*/
 void uoReportDoc::doFormatRow(uoRow* row, int nmForCol /* = -1*/ )
 {
 	/*
@@ -793,6 +838,7 @@ void uoReportDoc::doFormatRow(uoRow* row, int nmForCol /* = -1*/ )
 	int cellPrevNo = -1;
 	int cellCurNo = -1;
 	int cellNextNo = -1;
+
 	int cellCounts = cellsNumbers.size();
 	qreal collSize = 0.0; //getScaleSize(rhtVertical
 
@@ -803,15 +849,23 @@ void uoReportDoc::doFormatRow(uoRow* row, int nmForCol /* = -1*/ )
 	uoHorAlignment textHorAl = uoHA_Left;
 
 	bool collBeFormated = false;
+
 	if(nmForCol<=0)
 		collBeFormated = true;
 
 	for (int i = 0; i<cellCounts; i++){
 		cellCurNo = cellsNumbers.at(i);
+		cell = row->getItem(cellCurNo, false);
+		rowRealSize = qMax(cell->m_height,rowRealSize);
+		rowRealSize = qMax(rowRealSize, rowMinSize);
+
+
 		if (nmForCol != -1 && nmForCol != cellCurNo) {
 			// нужно еще проверить ячейки на объединение...
 			continue;
 		}
+		cell->m_height = 0.0;
+
 		collBeFormated = true;
 		cellNextNo = cellCurNo;
 		if (cellCounts>i+1){
@@ -823,7 +877,6 @@ void uoReportDoc::doFormatRow(uoRow* row, int nmForCol /* = -1*/ )
 
 		collSize = getScaleSize(rhtHorizontal,cellCurNo);
 
-		cell = row->getItem(cellCurNo, false);
 		textBehav = cell->getTextBehavior();
 		textHorAl = cell->getAlignmentHor();
 
@@ -861,6 +914,7 @@ void uoReportDoc::doFormatRow(uoRow* row, int nmForCol /* = -1*/ )
 				}
 			}
 			cellHeight = doFormatCellText(cell, font, fm, collSize);
+			cell->m_height = cellHeight;
 
 			rowRealSize = qMax(cellHeight,rowRealSize);
 			rowRealSize = qMax(rowRealSize, rowMinSize);
@@ -927,6 +981,8 @@ void uoReportDoc::doFormatDoc(int nmRow /*= -1*/, int nmForCol /*= -1*/)
 void uoReportDoc::setCellText(const int posY, const int posX, const QString text)
 {
 	_rows->setText(posY, posX, text);	// форматирование? угу.
+	onAccessRowOrCol(posY, rhtVertical);
+	onAccessRowOrCol(posX, rhtHorizontal);
 	doFormatRow(posY, -1);
 }
 
@@ -945,7 +1001,8 @@ QString uoReportDoc::getCellText(const int posY, const int posX){
 }
 
 uoCell* uoReportDoc::getCell(const int posY, const int posX, bool needCreate){
-	return _rows->getCell(posY, posX, needCreate);
+	uoCell* retCell = _rows->getCell(posY, posX, needCreate);
+	return retCell;
 }
 
 
@@ -1008,6 +1065,21 @@ QFont*  uoReportDoc::getFontByID(const int idFont)
 	return font;
 
 }
+
+bool  uoReportDoc::addFont(QString family)
+{
+	bool retVal = false;
+	if (!family.isEmpty())
+	{
+		int fontId =  _fontColl->findFont(family);
+		if (fontId == -1){
+			int fontId = _fontColl->addFont(family);
+		}
+		retVal = (fontId == -1) ? false : true;
+	}
+	return retVal;
+}
+
 
 /// Вернуть цвет из коллекции
 QColor*  uoReportDoc::getColorByID(const int idColor)

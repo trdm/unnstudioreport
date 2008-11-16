@@ -32,6 +32,7 @@ class uoReportDoc
 		virtual ~uoReportDoc();
 	public:
 		void clear();
+		void clearFonts();
 		bool addGroup(int start, int end, uoRptHeaderType ht, bool folded = false);
 		bool addSection(int start, int end, uoRptHeaderType ht, QString name);
 
@@ -40,6 +41,7 @@ class uoReportDoc
 
 		void onDeleteLine(int lineStart, int count = 1);
 		const spanList* getGroupList(uoRptHeaderType rht, int start, int end);
+		const spanList* getSectionList(uoRptHeaderType rht, int start, int end);
 
 		int getGroupLevel(uoRptHeaderType ht);
 		int getSectionLevel(uoRptHeaderType ht);
@@ -73,6 +75,7 @@ class uoReportDoc
 	protected:
 
 	private:
+		void onAccessRowCol(int nmRow = 0, int nmCol = 0); ///< при доступе к строке или столбцу documenta...
 		void onAccessRowOrCol(int nom, uoRptHeaderType rht);
 		void doRowCountChange(int count, int pos = 0 );
 		void doColCountChange(int count, int pos = 0 );
@@ -107,8 +110,11 @@ class uoReportDoc
 		QString 		 _docFilePath;		///< Имя файла
 		uoRptStoreFormat _storeFormat;	///< Формат хранения файла отчета.
 
+		// Группы
 		uoSpanTree* _spanTreeGrH;
 		uoSpanTree* _spanTreeGrV;
+
+		// Секции.
 		uoSpanTree* _spanTreeSctH;
 		uoSpanTree* _spanTreeSctV;
 
@@ -123,6 +129,8 @@ class uoReportDoc
 		uoRowsDoc* 	_rows;		 ///< Значимое содержимое документа, содержимое ячеек документа.
 	public:
 		void 	setCellText(const int posY, const int posX, const QString text);
+		///\todo - имплементировать... setCellFontProp
+//		void 	setCellFontProp(const int idFont, const int posX, const QString text);
 		void 	setCellTextAlignment(const int posY, const int posX, uoVertAlignment va,  uoHorAlignment ha, uoCellTextBehavior tb = uoCTB_Auto);
 		QString getCellText(const int posY, const int posX);
 
@@ -156,6 +164,7 @@ class uoReportDoc
 
 	public:
 		void setDefaultFont(const QFont& defFont);
+		bool  addFont(QString family);
 		QFont*  getFontByID(const int idFont);
 		QColor*  getColorByID(const int idColor);
 

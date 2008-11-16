@@ -31,6 +31,7 @@ namespace uoReport {
 */
 #define UORPT_DRAG_AREA_SIZE 2.0
 #define UORPT_STANDART_OFFSET_TEXT 2.0
+#define UORPT_LENGTH_TEXT_H_SECTION 7
 
 #define rptRect QRectF
 
@@ -236,9 +237,9 @@ enum uoReportStateMode {
 enum uoCellTextBehavior {
 	  uoCTB_Unknown = 0 	///< Неопределенное,
 	, uoCTB_Auto = 1
-	, uoCTB_Cut
-	, uoCTB_Obstruct
-	, uoCTB_Transfer
+	, uoCTB_Cut	 = 2
+	, uoCTB_Obstruct = 3
+	, uoCTB_Transfer = 4
 };
 ///\todo определить оптимальные дефолтные настройки для ячейки.
 /*
@@ -248,18 +249,18 @@ enum uoCellTextBehavior {
 
 ///\enum uoVertAlignment - типы вертикального выравнивания
 typedef enum uoVertAlignment {
-	  uoVA_Unknown = 0 	///< Неопределенное,
-	, uoVA_Top 		///< Выравнивание по верхнему краю
-	, uoVA_Center 	///< Выравнивание по центру
-	, uoVA_Bottom 	///< Выравнивание по нижнему краю
+	  uoVA_Unknown 	= 0 ///< Неопределенное,
+	, uoVA_Top 		= 1	///< Выравнивание по верхнему краю
+	, uoVA_Center	= 2	///< Выравнивание по центру
+	, uoVA_Bottom 	= 3	///< Выравнивание по нижнему краю
 };
 
 ///\enum uoHorAlignment - типы горизонтального выравнивания
 typedef enum uoHorAlignment {
-	  uoHA_Unknown = 0 	///< Неопределенное,
-	, uoHA_Left 	///< Выравнивание по левому краю
-	, uoHA_Center 	///< Выравнивание по центру
-	, uoHA_Right 	///< Выравнивание по правому краю
+	  uoHA_Unknown 	= 0 ///< Неопределенное,
+	, uoHA_Left 	= 1	///< Выравнивание по левому краю
+	, uoHA_Center 	= 2 ///< Выравнивание по центру
+	, uoHA_Right 	= 3 ///< Выравнивание по правому краю
 };
 
 /**

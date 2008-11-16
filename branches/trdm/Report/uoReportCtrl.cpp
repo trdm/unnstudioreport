@@ -101,9 +101,13 @@ uoReportCtrl::uoReportCtrl(QWidget *parent)
 	_shift_RowTop 	= 0; ///< Смещение первой видимой строки вверх (грубо - размер невидимой их части)
 	_shift_ColLeft 	= 0;
 
-	_groupListCache = new rptGroupItemList;	///< кешь для экземпляров uoRptGroupItem
-	_groupListV = new rptGroupItemList;		///< список ректов группировок столбцов
-	_groupListH = new rptGroupItemList;		///< список ректов группировок строк
+	_groupListCache = new uoRptGroupItemList;	///< кешь для экземпляров uoRptGroupItem
+	_groupListV = new uoRptGroupItemList;		///< список ректов группировок столбцов
+	_groupListH = new uoRptGroupItemList;		///< список ректов группировок строк
+
+	_sectItemListCache = new uoRptSectionItemList;	///< кешь для экземпляров uoRptSectionItem
+	_sectItemListV = new uoRptSectionItemList;		///< список итемов секций столбцов
+	_sectItemListH = new uoRptSectionItemList;		///< список итемов секций строк
 
 	_curentCell.setX(1);
 	_curentCell.setY(1);
@@ -223,7 +227,7 @@ int uoReportCtrl::recalcVisibleScales(uoRptHeaderType rht){
 	if (rht == rhtHorizontal) {
 		_scaleStartPositionMapH.clear();
 		numScale 		= _firstVisible_ColLeft;
-		shiftSize 	= _rectGroupH.left();
+		shiftSize 	= _rectDataRegion.left();
 		curetnSize =  shiftSize - _shift_ColLeft;
 		_scaleStartPositionMapH[numScale] = curetnSize;
 	} else if (rht == rhtVertical){
@@ -273,6 +277,18 @@ void uoReportCtrl::dropGropItemToCache()
 		item->clear();
 		_groupListCache->append(item);
 	}
+
+	uoRptSectionItem* rsItem = NULL;
+	while (!_sectItemListV->isEmpty()) {
+		rsItem = _sectItemListV->takeFirst();
+		rsItem->clear();
+		_sectItemListCache->append(rsItem);
+	}
+	while (!_sectItemListH->isEmpty()) {
+		rsItem = _sectItemListH->takeFirst();
+		rsItem->clear();
+		_sectItemListCache->append(rsItem);
+	}
 }
 
 /// Взять uoRptGroupItem из кеша, если кеш пуст, то создать.
@@ -285,6 +301,18 @@ uoRptGroupItem* uoReportCtrl::getGropItemFromCache()
 		item = new uoRptGroupItem();
 	return item;
 }
+
+/// Взять uoRptSectionItem из кеша, если кеш пуст, то создать.
+uoRptSectionItem* uoReportCtrl::getSectionItemFromCache()
+{
+	uoRptSectionItem* item = NULL;
+	if (!_sectItemListCache->isEmpty())
+		item = _sectItemListCache->takeFirst();
+	else
+		item = new uoRptSectionItem();
+	return item;
+}
+
 
 /// Вычисление координат гроуп итема..
 void uoReportCtrl::calcGroupItemPosition(uoRptGroupItem* grItem, uoRptHeaderType rht)
@@ -437,10 +465,11 @@ void uoReportCtrl::recalcGroupSectionRects(uoRptHeaderType rht){
 		_lastVisibleRow = recalcVisibleScales(rhtVertical);
 	}
 
+	uoLineSpan* spn;
+	uoRptHeaderType rhtCur = rht;
+
 	if (_showGroup) {
-		uoLineSpan* spn;
 		uoRptGroupItem* grItem;
-		uoRptHeaderType rhtCur = rht;
 
 		int spnCnt = 0;
 
@@ -513,7 +542,110 @@ void uoReportCtrl::recalcGroupSectionRects(uoRptHeaderType rht){
 				delete spanListV;
 			}
 		}
-	}
+	} //if (_showGroup)
+
+	if (_showSection)
+	{
+		uoRptSectionItem* selectItem = NULL;
+		int sectCount = 0, sectLevel = 0;
+		int cellVisStart = 0, cellVisEnd = 0; // Видимые ячейки
+		qreal coord = 0.0;
+		qreal offSet = 0.0;
+
+		if (rht == rhtUnknown || rht == rhtHorizontal)
+		{
+			rhtCur = rhtHorizontal;
+			sectLevel = doc->getSectionLevel(rhtCur);
+			if (sectLevel>0){
+
+				const spanList* spanSectListH = doc->getSectionList(rhtCur, _firstVisible_ColLeft, _lastVisibleCol);
+				for (i=0; i<spanSectListH->size(); i++){
+					spn = spanSectListH->at(i);
+					selectItem = getSectionItemFromCache();
+					if (selectItem)	{
+						selectItem->copyFrom(spn);
+						zeroQRect(selectItem->_rectView);
+						selectItem->_selected = false;
+
+						// Посчитаем рект данной секции....
+						QRectF& rect = selectItem->_rectView;
+						offSet = 0.0;
+						coord = _rectSectionH.top();
+						coord = coord - ( UORPT_OFFSET_LINE * 2 + _charHeightPlus) * (1 - selectItem->_level);
+						// С каждым уровнем секция все "ниже". Вот только не помню, левел нуль-ориентрованный или как?
+						rect.setTop(coord);
+						rect.setBottom(_rectSectionH.bottom());
+
+						cellVisStart = qMax(selectItem->_start, _firstVisible_ColLeft);
+						cellVisEnd = qMin(selectItem->_end, _lastVisibleCol);
+
+						coord = _rectSectionH.left()-1; // пусть спрячется, если что..
+						if (_scaleStartPositionMapH.contains(cellVisStart)){
+							coord = _scaleStartPositionMapH[cellVisStart];
+							if (cellVisStart == _firstVisible_ColLeft)
+								offSet = _shift_ColLeft;
+						}
+
+						rect.setLeft(coord+offSet);
+						coord = getLengthOfScale(rhtCur, cellVisStart, cellVisEnd);
+						rect.setRight(rect.left() + coord-offSet);
+						_sectItemListH->append(selectItem);
+					}
+				}
+				delete spanSectListH;
+			}
+		}
+		if (rht == rhtUnknown || rht == rhtVertical)
+		{
+			rhtCur = rhtVertical;
+			sectLevel = doc->getSectionLevel(rhtCur);
+			if (sectLevel>0){
+
+				const spanList* spanSectListV = doc->getSectionList(rhtCur, _firstVisible_RowTop, _lastVisibleRow);
+				for (i=0; i<spanSectListV->size(); i++){
+					spn = spanSectListV->at(i);
+					selectItem = getSectionItemFromCache();
+					if (selectItem)	{
+						selectItem->copyFrom(spn);
+						zeroQRect(selectItem->_rectView);
+						selectItem->_selected = false;
+
+						cellVisStart = qMax(selectItem->_start, _firstVisible_RowTop);
+						cellVisEnd = qMin(selectItem->_end, _lastVisibleRow);
+
+						// Посчитаем рект данной секции....
+						QRectF& rect = selectItem->_rectView;
+						offSet = 0.0;
+						coord = 0.0;
+						coord = _rectSectionV.left();
+						offSet = _rectSectionV.right() - _rectSectionV.left();
+
+						offSet = offSet * (selectItem->_level-1) / sectLevel;
+						coord = coord + offSet;
+						offSet = 0.0;
+
+//						coord = coord - ( UORPT_OFFSET_LINE * 2 + _charHeightPlus * UORPT_LENGTH_TEXT_H_SECTION) * (1 - selectItem->_level);
+						// С каждым уровнем секция все "ниже". Вот только не помню, левел нуль-ориентрованный или как?
+						rect.setLeft(coord);
+						rect.setRight(_rectSectionV.right());
+
+						coord = _rectSectionV.top()-2; // пусть спрячется, если что..
+						if (_scaleStartPositionMapV.contains(cellVisStart)){
+							coord = _scaleStartPositionMapV[cellVisStart];
+							if (cellVisStart == _firstVisible_RowTop)
+								offSet = _shift_RowTop;
+						}
+						rect.setTop(coord+offSet);
+						coord = getLengthOfScale(rhtCur, cellVisStart, cellVisEnd);
+						rect.setBottom(rect.top() + coord-offSet);
+						_sectItemListV->append(selectItem);
+					}
+				}
+				delete spanSectListV;
+			}
+		}
+	} // if (_showSection)
+
 }
 
 /// Пересчитываем размеры прямоугольников для областей отчета в зависимости от количества \n
@@ -562,12 +694,12 @@ void uoReportCtrl::recalcHeadersRects()
 	}
 
 	if (_showRuler) {
-		curOffset += UORPT_OFFSET_LINE;
+//		curOffset += UORPT_OFFSET_LINE;
 		_rectRulerH.setTop(curOffset);
 		curOffset += _charHeightPlus;
 		curOffset += UORPT_OFFSET_LINE;
 		_rectRulerH.setBottom(curOffset);
-		curOffset += UORPT_OFFSET_LINE;
+//		curOffset += UORPT_OFFSET_LINE;
 	}
 	_rectDataRegion.setTop(curOffset);
 	_rectGroupV.setTop(curOffset);	_rectSectionV.setTop(curOffset);	_rectRulerV.setTop(curOffset);
@@ -584,17 +716,17 @@ void uoReportCtrl::recalcHeadersRects()
 	if (spnCntV>0 && _showSection) {
 		curOffset += UORPT_OFFSET_LINE; // Оффсет-отступ сверху.
 		_rectSectionV.setLeft(curOffset);
-		curOffset += ( UORPT_OFFSET_LINE * 2 + _charWidthPlus) * spnCntV;
+		curOffset += ( UORPT_OFFSET_LINE * 2 + _charWidthPlus*UORPT_LENGTH_TEXT_H_SECTION) * spnCntV;
 		_rectSectionV.setRight(curOffset);
 	}
 
 	if (_showRuler) {
-		curOffset += UORPT_OFFSET_LINE;
+//		curOffset += UORPT_OFFSET_LINE;
 		_rectRulerV.setLeft(curOffset);
 		curOffset += _charWidthPlus * _maxVisibleLineNumberCnt+5;
 		curOffset += UORPT_OFFSET_LINE;
 		_rectRulerV.setRight(curOffset);
-		curOffset += UORPT_OFFSET_LINE;
+//		curOffset += UORPT_OFFSET_LINE;
 
 		_rectRuleCorner.setTop(_rectRulerH.top());
 		_rectRuleCorner.setLeft(_rectRulerV.left());
@@ -629,14 +761,14 @@ void uoReportCtrl::debugRects()
 {
 	qDebug() << "-----------------------------------";
 	qDebug() << "uoReportCtrl::debugRects() {";
-//	qDebug() << "_rectAll" << 			_rectAll;
-//	qDebug() << "_rectGroupV" << 		_rectGroupV;
-//	qDebug() << "_rectSectionV" << 		_rectSectionV;
-//	qDebug() << "_rectRulerV" << 		_rectRulerV;
-//	qDebug() << "_rectGroupH" << 		_rectGroupH;
-//	qDebug() << "_rectSectionH" << 		_rectSectionH;
-//	qDebug() << "_rectRulerH" << 		_rectRulerH;
-//	qDebug() << "_rectDataRegion" << 	_rectDataRegion;
+	qDebug() << "_rectAll" << 			_rectAll;
+	qDebug() << "_rectGroupV" << 		_rectGroupV;
+	qDebug() << "_rectSectionV" << 		_rectSectionV;
+	qDebug() << "_rectRulerV" << 		_rectRulerV;
+	qDebug() << "_rectGroupH" << 		_rectGroupH;
+	qDebug() << "_rectSectionH" << 		_rectSectionH;
+	qDebug() << "_rectRulerH" << 		_rectRulerH;
+	qDebug() << "_rectDataRegion" << 	_rectDataRegion;
 
 //	if (_showFrame) qDebug() << "_showFrame";
 //	if (_showRuler) qDebug() << "_showRuler";
@@ -730,7 +862,7 @@ void uoReportCtrl::drawHeaderControlGroup(QPainter& painter)
 	QPointF pointStart, pointEnd;
 	qreal pos = 0.0;
 
-
+	painter.save();
 	_penText.setStyle(Qt::SolidLine);
 	painter.setPen(_penText);
 
@@ -802,7 +934,47 @@ void uoReportCtrl::drawHeaderControlGroup(QPainter& painter)
 		}
 	}
 	painter.setClipRect(_rectAll); // Устанавливаем область прорисовки. Будем рисовать только в ней.
+	if (_showSection){
+		uoRptSectionItem* sectItem = NULL;
+		if (!_sectItemListH->isEmpty()) {
+			painter.setClipRect(_rectSectionH); // Устанавливаем область прорисовки. Будем рисовать только в ней.
+			for (cntr = 0; cntr<_sectItemListH->size(); cntr++) {
+				sectItem = _sectItemListH->at(cntr);
+				QRectF rect = sectItem->_rectView;
+				painter.setPen(_penText);
+				if (sectItem->_selected){
+					painter.fillRect(rect, _brushBlack);
+					painter.setPen(_penWhiteText);
+				} else {
+					painter.fillRect(rect, _brushWindow);
+				}
+				painter.drawRect(rect);
+				rect.adjust(UORPT_OFFSET_LINE,UORPT_OFFSET_LINE,-UORPT_OFFSET_LINE,-UORPT_OFFSET_LINE);
+				painter.drawText(rect,Qt::AlignLeft,  sectItem->_nameSections);
 
+			}
+		}
+		if (!_sectItemListV->isEmpty()){
+			painter.setClipRect(_rectSectionV); // Устанавливаем область прорисовки. Будем рисовать только в ней.
+			for (cntr = 0; cntr<_sectItemListV->size(); cntr++) {
+				sectItem = _sectItemListV->at(cntr);
+				QRectF rect = sectItem->_rectView;
+				painter.setPen(_penText);
+				if (sectItem->_selected){
+					painter.fillRect(rect, _brushBlack);
+					painter.setPen(_penWhiteText);
+				} else {
+					painter.fillRect(rect, _brushWindow);
+				}
+				painter.drawRect(rect);
+				rect.adjust(UORPT_OFFSET_LINE,UORPT_OFFSET_LINE,-UORPT_OFFSET_LINE,-UORPT_OFFSET_LINE);
+				painter.drawText(rect,Qt::AlignLeft,  sectItem->_nameSections);
+
+			}
+		}
+	}
+	painter.setClipRect(_rectAll); // Устанавливаем область прорисовки. Будем рисовать только в ней.
+	painter.restore();
 }
 
 
@@ -964,7 +1136,6 @@ void uoReportCtrl::drawCell(QPainter& painter, uoCell* cell, QRectF& rectCell, u
 	if (!cell)
 		return;
 
-
 	QString text = cell->getTextWithLineBreak(_showInvisiblChar);
 	if (!text.isEmpty()) {
 		text = text.replace('\t', " ");
@@ -980,8 +1151,48 @@ void uoReportCtrl::drawCell(QPainter& painter, uoCell* cell, QRectF& rectCell, u
 		if (font)
 			painter.setFont(*font);
 		painter.setPen(_penText);
-		if (isSell)
-			painter.setPen(_penWhiteText);
+		/*
+			тут интересная байда. если текст длинен, тогда он может печататься и
+			поверх остальных ячеек, но нам передается область его отсечения.
+			т.е. рект ячейки... как его правильно распечатать в нужном месте/нужным образом?
+			Очевидным ответом будет расширение ректа в стророну выравнивания на длинну строки...
+		*/
+		qreal diffSize = cell->getMaxRowLength() - rectCpyCell.width();
+		if (diffSize > 1.0){
+			uoHorAlignment ha = cell->getAlignmentHor();
+			qreal pointPos = 0.0, diffSize = cell->getMaxRowLength() - rectCpyCell.width();
+			switch (ha){
+				case uoHA_Left:
+				{
+					// значит надо двигать правый угол. вроде...
+					pointPos = rectCpyCell.right() + diffSize;
+					pointPos = qMin(pointPos, _rectDataRegion.right());
+					rectCpyCell.setRight(pointPos);
+					break;
+				}
+				case uoHA_Right:
+				{
+					// значит надо двигать левый угол. вроде...
+					pointPos = rectCpyCell.left() - diffSize;
+					pointPos = qMin(pointPos, _rectDataRegion.left());
+					rectCpyCell.setLeft(pointPos);
+					break;
+				}
+				case uoHA_Center:
+				{
+					// значит надо двигать левый и правый угол. вроде...
+					// значит надо двигать правый угол. вроде...
+					diffSize = diffSize / 2;
+					rectCpyCell.adjust(-diffSize, 0, diffSize, 0);
+
+					break;
+				}
+				case uoHA_Unknown:
+					break;
+			}
+
+
+		}
 		painter.drawText(rectCpyCell,flags,text);
 		painter.setPen(oldPen);
 		painter.restore();
@@ -1010,8 +1221,10 @@ void uoReportCtrl::drawDataArea(QPainter& painter)
 
 	bool isSell = false;
 	bool isHide = false;
-	// нарисуем рамку области данных, т.к. потом будем рисовать линии на ней в этой процедурине.
-	painter.drawRect(_rectDataRegionFrame);
+	{
+		// нарисуем рамку области данных, т.к. потом будем рисовать линии на ней в этой процедурине.
+		// painter.drawRect(_rectDataRegionFrame);
+	}
 	painter.fillRect(_rectDataRegion, _brushBase);
 	painter.setClipRect(_rectDataRegion); // Устанавливаем область прорисовки. Будем рисовать только в ней.
 	QPen oldPen = painter.pen();
@@ -1032,6 +1245,7 @@ void uoReportCtrl::drawDataArea(QPainter& painter)
 	QString cellTest;
 	uoCell* curCell = NULL;
 
+
 	qreal sz = 0.0;
 	do {	// строки, строки, строки и строки =============
 		while((isHide = doc->getScaleHide(rhtVertical, rowCur))){
@@ -1046,49 +1260,55 @@ void uoReportCtrl::drawDataArea(QPainter& painter)
 		rectCell.setBottom(rowsLenCur);
 
 		colCur = _firstVisible_ColLeft;
-		do {	// столбцы ||||||||||||||||||||||||||||||||||||
-			if (colCur == _firstVisible_ColLeft) {
-				colsLenCur = _rectDataRegion.left() - _shift_ColLeft;
-				rectCell.setLeft(colsLenCur);
-			}
-
-			while((isHide = doc->getScaleHide(rhtHorizontal, colCur))){
-				++colCur;
-			}
-			sz = doc->getScaleSize(rhtHorizontal, colCur);
-			colNext = doc->getNextCellNumber(rowCur, colCur, true);
-
-			colsLenCur += sz;
-			rectCell.setRight(colsLenCur);
-			// а вот если ячейка - текущая?
-			if (_curentCell.x() == colCur && _curentCell.y() == rowCur){
-				rectCellCur = rectCell;				/// у бля....
-			}
-			isSell = _selections->isCellSelect(rowCur,colCur);
-			if (isSell) {
-				rectCell.adjust(-1,-1,-1,-1);
-				painter.fillRect(rectCell, _brushSelection);
-				rectCell.adjust(1,1,1,1);
-			}
-
-			curCell = doc->getCell(rowCur,colCur,false);
-			if (curCell){
-				drawCell(painter, curCell, rectCell, doc, isSell);
-			}
-			if (_showGrid){
-				// draw,  draw,  draw,  draw,  aw, aw, aw, aw, aw, wu-u-u-u-u-u
-				if (isSell) {
-					painter.setPen(_penWhiteText);
-				} else {
-					painter.setPen(_penGrey);
+		for ( int i = 0; i < 2; i++) {
+			colCur = _firstVisible_ColLeft;
+			do {	// столбцы ||||||||||||||||||||||||||||||||||||
+				if (colCur == _firstVisible_ColLeft) {
+					colsLenCur = _rectDataRegion.left() - _shift_ColLeft;
+					rectCell.setLeft(colsLenCur);
 				}
-				painter.drawRect(rectCell);
-			}
 
-			rectCell.setLeft(rectCell.right());
-			colPrev = colCur;
-			colCur = colCur + 1;
-		} while(colsLenCur < colsLensPage);
+				while((isHide = doc->getScaleHide(rhtHorizontal, colCur))){
+					++colCur;
+				}
+				sz = doc->getScaleSize(rhtHorizontal, colCur);
+				colNext = doc->getNextCellNumber(rowCur, colCur, true);
+
+				colsLenCur += sz;
+				rectCell.setRight(colsLenCur);
+				// а вот если ячейка - текущая?
+				if (_curentCell.x() == colCur && _curentCell.y() == rowCur){
+					rectCellCur = rectCell;				/// у бля....
+				}
+				isSell = _selections->isCellSelect(rowCur,colCur);
+				if (i == 0) {
+					if (isSell) {
+						rectCell.adjust(-1,-1,-1,-1);
+						painter.fillRect(rectCell, _brushSelection);
+						rectCell.adjust(1,1,1,1);
+					}
+					if (_showGrid){
+						// draw,  draw,  draw,  draw,  aw, aw, aw, aw, aw, wu-u-u-u-u-u
+						if (isSell) {
+							painter.setPen(_penWhiteText);
+						} else {
+							painter.setPen(_penGrey);
+						}
+						painter.drawRect(rectCell);
+					}
+				} else {
+
+					curCell = doc->getCell(rowCur,colCur,false);
+					if (curCell){
+						drawCell(painter, curCell, rectCell, doc, isSell);
+					}
+				}
+
+				rectCell.setLeft(rectCell.right());
+				colPrev = colCur;
+				colCur = colCur + 1;
+			} while(colsLenCur < colsLensPage);
+		}
 		rectCell.setTop(rectCell.bottom());
 		rowCur = rowCur + 1;
 	} while(rowsLenCur < rowsLensPage);
@@ -1103,16 +1323,16 @@ void uoReportCtrl::drawDataArea(QPainter& painter)
 	painter.setPen(oldPen);
 	// Надо прорисовать линию будующей границы ячейки
 	if (_stateMode == rmsResizeRule_Top || _stateMode == rmsResizeRule_Left){
-		QPoint pnt1, pnt2;
+		QPointF pnt1, pnt2;
 		if (_stateMode == rmsResizeRule_Top) {
-			int xxx = qMax(_curMouseCurPos.x(), (int)_curMouseSparesRect.left());
+			qreal xxx = qMax((qreal)_curMouseCurPos.x(), _curMouseSparesRect.left());
 
 			pnt1.setY(_rectDataRegion.top());
 			pnt2.setY(_rectDataRegion.bottom());
 			pnt1.setX(xxx);
 			pnt2.setX(xxx);
 
-			QLine line(pnt1, pnt2);
+			QLineF line(pnt1, pnt2);
 			QPen redPen;
 			redPen.setColor(Qt::red);
 			redPen.setStyle(Qt::DashDotLine);
@@ -1138,6 +1358,10 @@ void uoReportCtrl::drawWidget(QPainter& painter)
    	_brushBase = palette_c.brush(QPalette::Base /*Qt::white*/); // QPalette::Base - типа белый для текста.
    	_brushBlack = palette_c.brush(QPalette::WindowText /*Qt::white*/);
    	_brushSelection = palette_c.brush(QPalette::Highlight /*Button*/ /*Qt::white*/);
+	// Чуток осветлим выделение..
+   	QColor brCol = _brushSelection.color();
+   	brCol.setAlpha(124);
+   	_brushSelection.setColor(brCol);
 
 	_penText.setColor(palette_c.color(curColGrp, QPalette::WindowText));
 	_penNoPen.setColor(palette_c.color(curColGrp, QPalette::Window));
@@ -1169,7 +1393,7 @@ void uoReportCtrl::paintEvent(QPaintEvent *event)
 
 
 /// Реакция на нажатие мышки-норушки на группах.
-bool uoReportCtrl::mousePressEventForGroup(QMouseEvent *event){
+bool uoReportCtrl::mousePressEventForGroup(QMouseEvent *event, bool isDoubleClick){
 	bool retVal = false;
 	if (event->button() != Qt::LeftButton)
 		return retVal;
@@ -1187,7 +1411,7 @@ bool uoReportCtrl::mousePressEventForGroup(QMouseEvent *event){
 		uoReportDoc* doc = getDoc();
 		if (doc) {
 			event->accept();
-			rptGroupItemList* groupItList = _groupListH;
+			uoRptGroupItemList* groupItList = _groupListH;
 
 			uoRptHeaderType rht = rhtHorizontal;
 			if (_rectGroupV.contains(posX, posY)){
@@ -1217,6 +1441,75 @@ bool uoReportCtrl::mousePressEventForGroup(QMouseEvent *event){
 	}
 	return retVal;
 }
+
+/// Отработаем клик по области секций...
+bool uoReportCtrl::mousePressEventForSection(QMouseEvent *event, bool isDoubleClick)
+{
+	bool retVal = false;
+	uoReportDoc* doc =  getDoc();
+	if (!doc)
+		return retVal;
+
+	qreal posX = event->x();
+	qreal posY = event->y();
+
+	if (_scaleFactor != 1.0){
+		posX = posX * _scaleFactorO;
+		posY = posY * _scaleFactorO;
+	}
+
+
+	if (_rectSectionH.contains(posX, posY) || _rectSectionV.contains(posX, posY))
+	{
+		bool isRow = true;
+		uoRptSectionItem* sItem = NULL;
+		uoRptSectionItem* sItemCur = NULL;
+		uoRptSectionItemList* sList = _sectItemListV;
+		uoRptSectionItemList* sListOther = _sectItemListH;
+		if (_rectSectionH.contains(posX, posY)) {
+			sList = _sectItemListH;
+			sListOther = _sectItemListV;
+			isRow = false;
+		}
+		int i;
+		for (i = 0; i<sListOther->size(); i++){
+			sItemCur = sListOther->at(i);
+			sItemCur->_selected = false;
+		}
+
+		for (i = 0; i<sList->size(); i++){
+			sItemCur = sList->at(i);
+			sItemCur->_selected = false;
+
+			if (sItemCur){
+				if (sItemCur->_rectView.contains(posX, posY))
+					sItem = sItemCur;
+			}
+		}
+		if (sItem){
+			sItem->_selected = true;
+			_selections->clearSelections();
+			if (isRow){
+				_selections->rowSelectedStart(sItem->_start);
+				_selections->rowSelectedEnd(sItem->_end);
+			} else {
+				_selections->colSelectedStart(sItem->_start);
+				_selections->colSelectedEnd(sItem->_end);
+			}
+		}
+		updateThis();
+		if (sItem && isDoubleClick){
+			// ну, тут нужно имя ввести...
+			const QString txt = sItem->_nameSections;
+			QMessageBox::information(this, "report", txt);
+		}
+
+	}
+
+	return retVal;
+
+}
+
 
 /// Поиск региона линейки по координатам с учетом масштаба.
 bool uoReportCtrl::findScaleLocation(qreal posX, qreal posY, int &scaleNo, uoRptHeaderType rht)
@@ -1272,9 +1565,46 @@ bool uoReportCtrl::findScaleLocation(qreal posX, qreal posY, int &scaleNo, uoRpt
 		_curMouseSparesRect.setRight(endPos);
 		mouseSparesAcceleratorSave(uoVst_ScaleH, scaleNo, rht);
 	}
-
 	return	retVal;
 }
+
+/// Определить запчать на которой находится точка QPoint для последующих уточняющих определений.
+uoRptSparesType uoReportCtrl::findPointLocation(qreal posX, qreal posY)
+{
+	uoRptSparesType rst = uoVst_Unknown;
+	if (_showGroup){
+		if (_rectGroupV.contains(posX, posY)){
+			rst = uoVst_GroupV;
+		} else if (_rectGroupH.contains(posX, posY)) {
+			rst = uoVst_GroupH;
+		}
+	}
+	if (rst == uoVst_Unknown && _showRuler) {
+		if (_rectRuleCorner.contains(posX, posY)){
+			rst = uoVst_ScaleVH;
+		} else if (_rectRulerH.contains(posX, posY)) {
+			rst = uoVst_ScaleH;
+		} else if (_rectRulerV.contains(posX, posY)) {
+			rst = uoVst_ScaleV;
+		}
+	}
+
+	if (rst == uoVst_Unknown && _showSection) {
+		if (_rectSectionH.contains(posX, posY)){
+			rst = uoVst_SectionH;
+		} else if (_rectSectionV.contains(posX, posY)){
+			rst = uoVst_SectionV;
+		}
+	}
+
+	if (rst == uoVst_Unknown) {
+		if (_rectDataRegion.contains(posX, posY)){
+			rst = uoVst_Cell;
+		}
+	}
+	return rst;
+}
+
 
 /// сбросить значения акселератора поиска по пространственным координатам.
 void uoReportCtrl::mouseSparesAcceleratorDrop()
@@ -1331,20 +1661,20 @@ uoBorderLocType uoReportCtrl::scaleLocationInBorder(qreal pos, QRectF rect, uoRp
 }
 
 /// Клик мышки-норушки по области с данными.
-bool uoReportCtrl::mousePressEventForDataArea(QMouseEvent *event)
+bool uoReportCtrl::mousePressEventForDataArea(QMouseEvent *event, bool isDoubleClick)
 {
 	bool retVal = false;
-	if (event->button() != Qt::LeftButton)
-		return retVal;
+
 
 	qreal posX = event->x(), posY = event->y();
 	if (_scaleFactor != 1.0){
 		posX = posX * _scaleFactorO;
 		posY = posY * _scaleFactorO;
 	}
-
 	if (!_rectDataRegion.contains(posX, posY))
 		return retVal;
+
+	uoRptSparesType rst = findPointLocation(posX, posY);
 
 	_selections->clearSelections(uoRst_Cells);
 	uoReportDoc* doc =  getDoc();
@@ -1360,6 +1690,13 @@ bool uoReportCtrl::mousePressEventForDataArea(QMouseEvent *event)
 		_selections->cellSelectedStart(pntCell.x(),pntCell.y());
 		setStateMode(rmsSelectionCell);
 	}
+	if (isDoubleClick && (event->button() == Qt::LeftButton))
+		if (doCellEditTextStart(""))
+			setStateMode(rmsEditCell);
+
+	if (event->button() != Qt::LeftButton)
+		return retVal;
+
 	// Надо определить
 	return retVal;
 }
@@ -1368,7 +1705,7 @@ bool uoReportCtrl::mousePressEventForDataArea(QMouseEvent *event)
 
 /// отработаем реакцию на нажатие мышки на линейке.
 ///\todo 1 реализовать логику выбора строк/столбцов.
-bool uoReportCtrl::mousePressEventForRuler(QMouseEvent *event)
+bool uoReportCtrl::mousePressEventForRuler(QMouseEvent *event, bool isDoubleClick)
 {
 	bool retVal = false;
 	uoReportDoc* doc =  getDoc();
@@ -1516,7 +1853,7 @@ void uoReportCtrl::mousePressEvent(QMouseEvent *event)
 	if (_showRuler && mousePressEventForRuler(event)){
 		return;
 	}
-	if (_showSection && false){
+	if (_showSection && mousePressEventForSection(event)){
 		return;
 	}
 
@@ -1527,6 +1864,27 @@ void uoReportCtrl::mousePressEvent(QMouseEvent *event)
 	///\todo 1 добавить вычисление/отображение типа курсора в нужной позиции...
 }
 
+void uoReportCtrl::mouseDoubleClickEvent( QMouseEvent * event )
+{
+	//Note that the widgets gets a mousePressEvent() and a mouseReleaseEvent() before the mouseDoubleClickEvent().
+	if (modeTextEditing())
+		onCellEditTextEnd(true);
+
+	if (_showGroup && mousePressEventForGroup(event, true)) {
+		return;
+	}
+	if (_showRuler && mousePressEventForRuler(event, true)){
+		return;
+	}
+	if (_showSection && mousePressEventForSection(event, true)){
+		return;
+	}
+
+	if (mousePressEventForDataArea(event, true)) {
+		return;
+	}
+
+}
 void uoReportCtrl::mouseReleaseEvent(QMouseEvent *event)
 {
 	QRectF rct;
@@ -1592,12 +1950,15 @@ void uoReportCtrl::mouseReleaseEvent(QMouseEvent *event)
 		}
 	}
 	if (_stateMode == rmsSelectionCell){
+		// Надо сделать выбор единичных ячеек.
 		int distance = (_curMouseLastPos - event->pos()).manhattanLength();
-		if (distance > QApplication::startDragDistance()) {
+		bool isCtrlPress =  _selections->isCtrlPress();
+
+		if (distance > QApplication::startDragDistance() || isCtrlPress) {
 			// Значит процесс пошел...
 			QPoint pntAdd; //= event->pos();
-			pntAdd.setX(posX);
-			pntAdd.setY(posY);
+			pntAdd.setX((int)posX);
+			pntAdd.setY((int)posY);
 
 			pntAdd.setY(qMax(pntAdd.y(), int(_rectDataRegion.top()-_shift_RowTop)));
 			pntAdd.setY(qMin(pntAdd.y(), int(_rectDataRegion.bottom())));
@@ -1610,11 +1971,19 @@ void uoReportCtrl::mouseReleaseEvent(QMouseEvent *event)
 				_selections->cellSelectedEnd(pntCell.x(), pntCell.y());
 				needUpdate = true;
 			}
-
 		}
 	}
 
-	setStateMode(rmsNone);
+	if (_stateMode != rmsEditCell){
+		/*
+			Тут особый случай, при rmsEditCell используется режим,
+			который нужно отрабатывать отдельно.
+			А одним из входов в rmsEditCell является мышко-дабл-клик,
+			за которым естественно следует mouseReleaseEvent и
+			скидывает этот режим, что не есть гуд...
+		*/
+		setStateMode(rmsNone);
+	}
 
 	if (needUpdate)
 		updateThis();
@@ -1969,6 +2338,8 @@ void uoReportCtrl::resizeEvent( QResizeEvent * event ){
 
 void uoReportCtrl::contextMenuEvent(QContextMenuEvent *event){
 	QMenu *contextMenu = new QMenu(this);
+
+
 	QMenu *menuShow = contextMenu->addMenu(QString::fromUtf8("Скрыть / показать"));
 
 	if (_showGrid)	menuShow->addAction(_iteractView->m_actGridHide);
@@ -2060,6 +2431,71 @@ bool uoReportCtrl::modeTextEditing() {
 	return (rmsEditCell == _stateMode) ? true : false;
 }
 
+/**
+	Перекалькуляция размеров поля редактирования текста ячейки.
+	Динамичски вызывается при редактировании текста ячейки
+	По сигналу textChanged().
+*/
+void uoReportCtrl::recalcTextEditRect(QRect& rect)
+{
+	QString textCell;
+	if (_textEdit) {
+		textCell = _textEdit->toPlainText();
+		if (textCell.isEmpty())
+			return;
+		int scrollWidht = _textEdit->horizontalScrollBar()->width();
+		scrollWidht = scrollWidht + scrollWidht / 2;
+
+		uoReportDoc* doc = getDoc();
+		if (doc) {
+			uoCell* cell = doc->getCell(_curentCell.y(), _curentCell.x(), true);
+			if (!cell)
+				return;
+			QFont* cellFont = cell->getFont(doc, true);
+			if (cellFont)
+			{
+				QFontMetricsF fm(*cellFont);
+				QStringList list = textCell.split('\n');
+				qreal maxLength = 0.0, heightText = 0.0;
+				for (int i = 0; i < list.size(); ++i){
+					textCell = list.at(i);
+					maxLength = qMax(maxLength, fm.width(textCell));
+				}
+				heightText = fm.height() * (list.size()+1);
+				int col_Widht = fm.height();
+				int row_add = (int)heightText;
+				int col_add = (int)maxLength + 20; // Прибавим от всяких колебаний...
+				if ((rect.height()-20) < row_add)
+				{
+					rect.setHeight(row_add);
+					if (!_curentCellRect.isEmpty()){
+						if (rect.height()<_curentCellRect.height())
+							rect.setHeight(_curentCellRect.height());
+
+					}
+					if (rect.bottom()>=_rectDataRegion.bottom())
+					{
+						rect.setBottom(_rectDataRegion.bottom());
+					}
+				}
+				if (((rect.width() - scrollWidht)+col_Widht) < col_add)
+				{
+					rect.setWidth(col_add+col_Widht);
+					if (!_curentCellRect.isEmpty()){
+						if (rect.width()<_curentCellRect.width())
+							rect.setWidth(_curentCellRect.width());
+
+					}
+					if (rect.right()>=_rectDataRegion.right()){
+						rect.setRight(_rectDataRegion.right());
+					}
+				}
+			}
+		}
+	}
+}
+
+
 
 /// Начинаем редактирование текста ячейки...
 bool uoReportCtrl::doCellEditTextStart(const QString& str)
@@ -2073,26 +2509,40 @@ bool uoReportCtrl::doCellEditTextStart(const QString& str)
 			_textEdit->setAcceptRichText(false);
 			_textEdit->installEventFilter(_messageFilter);
 			_textEdit->setTabStopWidth((int)(_charWidthPlus*4));
-			_textEdit->setFrameShape(QFrame::NoFrame);
+			{
+				_textEdit->setFrameShape(QFrame::Box); // не очень красиво...
+				//_textEdit->setFrameShape(QFrame::NoFrame);
+			}
 		}
 		QRect rct = getCellRect(_curentCell.y(), _curentCell.x());
+		_curentCellRect = rct;
 		if (!rct.isEmpty()){
 			rct.adjust(1,1,0,0);
 			QString text;
+			uoReportDoc* doc =  getDoc();
+			if (!doc)
+				return false;
+
 			if (!str.isEmpty()) {
 				text = str;
 			} else {
-				uoReportDoc* doc =  getDoc();
-				if (!doc)
-					return false;
 				text = doc->getCellText(_curentCell.y(), _curentCell.x());
 			}
-
-			if (text.contains(QChar('\n'))){
-//				_textEdit->setMu
+			uoCell* cell = doc->getCell(_curentCell.y(), _curentCell.x(),true);
+			if (cell)
+			{
+				QFont* font = cell->getFont(doc);
+				if (font)
+				{
+					_textEdit->setFontFamily(font->family());
+					_textEdit->setFontPointSize(cell->getFontSize());
+				}
 			}
 
 			_textEdit->setPlainText(text);
+			if (!text.isEmpty()){
+				recalcTextEditRect(rct);
+			}
 			_textEdit->setGeometry(rct);
 			_textEdit->show();
 			_textEdit->activateWindow();
@@ -2101,9 +2551,10 @@ bool uoReportCtrl::doCellEditTextStart(const QString& str)
 				// т.е. если вход в режим редактирования был иниццирован алфавитно-цыфирьнйо клавишей, курсорчик надо сдвинуть...
 				_textEdit->moveCursor(QTextCursor::End);
 			}
-
+			connect(_textEdit, SIGNAL(textChanged()),this,SLOT(cellTextChangedFromEdit()));
 			_vScrollCtrl->setDisabled(true);
 			_hScrollCtrl->setDisabled(true);
+			setStateMode(rmsEditCell);
 			return true;
 		}
 		// так, вот тут надо получить координаты ячейки.
@@ -2117,6 +2568,13 @@ bool uoReportCtrl::doCellEditTextStart(const QString& str)
 */
 void uoReportCtrl::onCellEditTextEnd(bool accept)
 {
+
+	if (_textEdit)	{
+		_textEdit->disconnect(SIGNAL(textChanged()));
+	} else {
+		return;
+	}
+
 	if (accept){
 		QString text = _textEdit->toPlainText();
 		uoReportDoc* doc =  getDoc();
@@ -2132,8 +2590,23 @@ void uoReportCtrl::onCellEditTextEnd(bool accept)
 	_hScrollCtrl->setDisabled(false);
 	setStateMode(rmsNone);
 	recalcHeadersRects();
-
 }
+
+/**
+	Слот, принимающий сигнал об изменении текста в _textEdit
+	реагируем так: измиряем длинну и высоту текста, меняем
+	размер, если требуется его увеличить...
+*/
+void uoReportCtrl::cellTextChangedFromEdit()
+{
+	QRect rect;
+	if (_textEdit){
+		rect = _textEdit->geometry();
+		recalcTextEditRect(rect);
+		_textEdit->setGeometry(rect);
+	}
+}
+
 
 
 /// Регулирование показа сетки, групп, секций, линейки.
@@ -2217,9 +2690,10 @@ void uoReportCtrl::onLoad()
 		doc->setStoreOptions(docFilePath, storeFormat);
 		doc->load();
 		doc->doFormatDoc();
-		recalcGroupSectionRects();
+		recalcHeadersRects();
 		setStateMode(rmsNone);
 		updateThis();
+		setFocus();
 	}
 }
 
@@ -2715,6 +3189,13 @@ void uoReportCtrl::onAccessRowOrCol(int nom, uoRptHeaderType rht)
 			}
 		}
 	}
+}
+
+///< при доступе к строке или столбцу документа...
+void uoReportCtrl::onAccessRowCol(int nmRow, int nmCol)
+{
+	if (nmRow > 0)		onAccessRowOrCol(nmRow, rhtVertical);
+	if (nmCol > 0)		onAccessRowOrCol(nmCol, rhtHorizontal);
 }
 
 /// Сигнал установки новых размеров документа.
