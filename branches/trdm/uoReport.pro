@@ -7,6 +7,8 @@ TARGET =
 DEPENDPATH += . common Report
 INCLUDEPATH += .
 
+QT += xml
+
 include( shared.pri )
 !win32 {
 	debug {
@@ -29,6 +31,7 @@ HEADERS += common/codecs.h \
            common/sys_conv.h \
            common/types.h \
            Report/uoNumVector.h \
+           Report/uoCacheItemizer.h \
            Report/uoReport.h \
            Report/uoReportCtrl.h \
            Report/uoReportDescr.h \
@@ -45,6 +48,7 @@ SOURCES += main.cpp \
            common/params.cpp \
            common/sys_conv.cpp \
            Report/uoNumVector.cpp \
+           Report/uoCacheItemizer.cpp \
            Report/uoReport.cpp \
            Report/uoReportCtrl.cpp \
            Report/uoReportDoc.cpp \

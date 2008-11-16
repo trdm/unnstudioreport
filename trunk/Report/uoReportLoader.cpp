@@ -11,6 +11,9 @@
 #include "uoReportDoc.h"
 #include "uoReportDocBody.h"
 #include <QFile>
+#include <QtXml>
+#include <QDomDocument>
+
 
 namespace uoReport {
 /**
@@ -79,7 +82,8 @@ uoReportLoader* uoReportLoader::getLoader(uoRptStoreFormat stFormat)
 /**
 	\class uoReportLoaderXML - сериализация uoReportDoc в XML
 	\brief Класс сериализации документа uoReportDoc в XML.
-	Структура выгрузки в XML
+	Структура выгрузки в XML.
+
 
 */
 uoReportLoaderXML::uoReportLoaderXML(){
@@ -169,14 +173,66 @@ bool uoReportLoaderXML::saveScaleHeaderStart(int count, uoRptHeaderType rht){
 	return true;
 }
 bool uoReportLoaderXML::saveScaleItem(uoRptNumLine* rLine){
-	_textStream << QString("\t<Scale no = \"%1\" hide = \"%2\" size=\"%3\"/>\n")
-	.arg(rLine->number()).arg(rLine->hiden()).arg(rLine->size());
+	_textStream << QString("\t<Scale no = \"%1\" hide = \"%2\" size=\"%3\" fixed=\"%4\"/>\n")
+	.arg(rLine->number()).arg(rLine->hiden()).arg(rLine->size()).arg(rLine->fixed());
 	return true;
 }
 bool uoReportLoaderXML::saveScaleHeaderEnd(uoRptHeaderType rht){
 	_textStream << QString("</Scales>\n");
 	return true;
 }
+
+void uoReportLoaderXML::saveRowsStart(int rowCount){
+	_textStream << QString("<Rows count = \"%1\">\n").arg(rowCount);
+}
+
+void uoReportLoaderXML::saveRowItemStart(int rowNumb, int cellCount){
+	_textStream << QString("\t<RowItem no = \"%1\" cellCnt = \"%2\">\n").arg(rowNumb).arg(cellCount);
+}
+
+void uoReportLoaderXML::saveCell(uoCell* cellItem){
+	QString text = cellItem->getText();
+	text = Qt::escape(text);
+
+	QString str = QString("\t\t<Cell no = \"%1\" fid = \"%2\"  fsz = \"%3\" cId = \"%4\" cbgid = \"%5\" tb = \"%6\" ah = \"%7\" av = \"%8\" >")
+	.arg(cellItem->number())
+	.arg(cellItem->getFontId())
+	.arg(cellItem->getFontSize())
+	.arg(cellItem->getFontColorId())
+	.arg(cellItem->getBGColorId())
+	.arg(cellItem->getTextBehavior())
+	.arg(cellItem->getAlignmentHor())
+	.arg(cellItem->getAlignmentVer())
+	;
+	QString text2 = QString("%1%2</Cell>\n").arg(str).arg(text);
+	_textStream << text2;
+
+}
+
+void uoReportLoaderXML::saveRowItemEnd(){
+	_textStream << QString("\t</RowItem>\n");
+}
+
+void uoReportLoaderXML::saveRowsEnd(){
+	_textStream << QString("\t</Rows>\n");
+}
+
+
+void uoReportLoaderXML::saveFontStart(int count)
+{
+	_textStream << QString("\t<Fonts count = \"%1\">\n").arg(count);
+}
+
+/// сериализуем только имя...
+void uoReportLoaderXML::saveFont(QFont* psFont, int nom)
+{
+	_textStream << QString("\t\t<Font name = \"%1\" />\n").arg(psFont->family());
+}
+void uoReportLoaderXML::saveFontEnd()
+{
+	_textStream << QString("\t</Fonts>\n");
+}
+
 		/// Запись подвальной части
 bool uoReportLoaderXML::saveDocEnd(uoReportDoc* doc){
 	_textStream << QString("</Doc>\n");
@@ -187,6 +243,180 @@ bool uoReportLoaderXML::finalize(){
 	if (_outFile.isOpen())
 		_outFile.close();
 	return true;
+}
+
+bool uoReportLoaderXML::loadGroupsHeader(const QDomElement &node,uoReportDoc* doc)
+{
+	bool retVal = true;
+	int groupType = node.attribute("type").toInt();
+	if (groupType == 1 || groupType == 2)
+	{
+		uoRptHeaderType rht = (groupType == 1) ? rhtVertical : rhtHorizontal;
+		QDomElement child = node.firstChildElement();
+
+		int start = 0, stop = 0, folded = 0;
+		while (!child.isNull()) {
+			start = child.attribute("start").toInt();
+			stop =  child.attribute("end").toInt();
+			folded = child.attribute("folded").toInt();
+			doc->addGroup(start, stop, rht, (bool)folded); ///\todo там надо прятать строки, пока не до...
+
+			child = child.nextSiblingElement();
+		}
+	} else {
+		qWarning() << "Bad attribute for group...";
+	}
+
+	return retVal;
+}
+bool uoReportLoaderXML::loadSectionHeader(const QDomElement &node,uoReportDoc* doc)
+{
+	bool retVal = true;
+	int groupType = node.attribute("type").toInt();
+	if (groupType == 1 || groupType == 2)
+	{
+		uoRptHeaderType rht = (groupType == 1) ? rhtVertical : rhtHorizontal;
+		QDomElement child = node.firstChildElement();
+		QString nameSect;
+		int start = 0, stop = 0;
+		while (!child.isNull()) {
+			start = child.attribute("start").toInt();
+			stop =  child.attribute("end").toInt();
+			nameSect = child.attribute("name");
+			doc->addSection(start, stop, rht, nameSect); ///\todo а тут надо гарантировать, что имя уникальное...
+
+			child = child.nextSiblingElement();
+		}
+	} else {
+		qWarning() << "Bad attribute for Section...";
+	}
+
+	return retVal;
+}
+
+
+bool uoReportLoaderXML::loadScalesHeader(const QDomElement &node, uoReportDoc* doc)
+{
+	bool retVal = true;
+	int groupType = node.attribute("type").toInt();
+	if (groupType == 1 || groupType == 2)
+	{
+		uoRptHeaderType rht = (groupType == 1) ? rhtVertical : rhtHorizontal;
+		QDomElement child = node.firstChildElement();
+		QString nameSect;
+		int number = 0;
+		bool hide = false, fixed = false;
+		qreal size = 0.0;
+		while (!child.isNull()) {
+			number = child.attribute("no").toInt();
+			hide =  child.attribute("hide").toInt();
+			size =  child.attribute("size").toFloat();
+			fixed = child.attribute("fixed").toInt();
+			doc->setScaleSize(rht, number, size);
+			if (hide)
+				doc->setScalesHide(rht, number, hide);
+			if (fixed)
+				doc->setScaleFixedProp(rht, number, fixed);
+
+			child = child.nextSiblingElement();
+		}
+	} else {
+		qWarning() << "Bad attribute for Section...";
+	}
+
+	return retVal;
+}
+bool uoReportLoaderXML::loadCell(const QDomElement &node, uoReportDoc* doc, int rowNum)
+{
+	bool retVal = true;
+	QDomElement child = node.firstChildElement();
+
+	/*	исправление бага, почемуто накапливаются символы '0D' '0D' '0D'
+		когда сохраняю текст, содержащий возврат коретки	*/
+	static const QString ch = "\n";
+	static const QString ch2 = "\r\n";
+
+	int cellNumber;
+	QString cellText;
+	while (!child.isNull()) {
+		cellNumber = child.attribute("no").toInt();
+		cellText = child.text();
+
+		/*	исправление бага, почемуто накапливаются символы '0D' '0D' '0D'
+			когда сохраняю текст, содержащий возврат коретки	*/
+		while(cellText.indexOf(ch2)>=0)
+			cellText = cellText.replace(ch2, ch);
+
+		qDebug() << "load<<" << cellText;
+		doc->setCellText(rowNum,cellNumber,cellText);
+		child = child.nextSiblingElement();
+	}
+	return retVal;
+}
+
+
+
+bool uoReportLoaderXML::loadRows(const QDomElement &node, uoReportDoc* doc)
+{
+	bool retVal = true;
+	QDomElement child = node.firstChildElement();
+	int rowNumber;
+	while (!child.isNull()) {
+		rowNumber = child.attribute("no").toInt();
+		loadCell(child, doc, rowNumber);
+		child = child.nextSiblingElement();
+	}
+
+	return retVal;
+}
+
+
+bool uoReportLoaderXML::loadFont(const QDomElement &node, uoReportDoc* doc)
+{
+	bool retVal = true;
+	QDomElement child = node.firstChildElement();
+	int fontId = 0;
+	doc->clearFonts();
+	QString fontName;
+	while (!child.isNull()) {
+		fontName = child.attribute("name");
+		fontId = doc->addFont(fontName);
+		child = child.nextSiblingElement();
+	}
+
+	return retVal;
+
+}
+
+
+bool uoReportLoaderXML::load(uoReportDoc* doc)
+{
+	bool retVal = true;
+	QDomDocument xmldoc;
+	xmldoc.setContent(&_outFile);
+	QString nodeName;
+
+	QDomElement docElem = xmldoc.documentElement();
+	QDomElement child = docElem.firstChildElement();
+	while (!child.isNull()) {
+//		qDebug() << child.nodeName();
+		nodeName = child.nodeName();
+		if (nodeName.compare("Groups",Qt::CaseInsensitive) == 0){
+			loadGroupsHeader(child,doc);
+		} else if (nodeName.compare("Sections",Qt::CaseInsensitive) == 0){
+			loadSectionHeader(child,doc);
+		} else if (nodeName.compare("Scales",Qt::CaseInsensitive) == 0){
+			loadScalesHeader(child,doc);
+		} else if (nodeName.compare("Rows",Qt::CaseInsensitive) == 0){
+			loadRows(child,doc);
+		} else if (nodeName.compare("Fonts",Qt::CaseInsensitive) == 0){
+			loadFont(child,doc);
+		}
+
+		child = child.nextSiblingElement();
+	}
+
+	return retVal;
 }
 
 } //namespace uoReport

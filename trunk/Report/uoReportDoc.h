@@ -14,13 +14,15 @@
 #include "uoReport.h"
 #include "uoSpanTree.h"
 #include "uoReportDocBody.h"
+#include "uoCacheItemizer.h"
+
 
 
 namespace uoReport {
 
 
-///\class uoReportDoc - обслуживает данные таблицы отчета, тело документа
-///\brief обслуживает данные таблицы отчета: строки, текст, картинки и т.п.
+///\class uoReportDoc - содержит данные отчета.
+///\brief содержит и обслуживает данные таблицы отчета: строки, текст, картинки и т.п.
 class uoReportDoc
 	: public QObject
 {
@@ -30,14 +32,16 @@ class uoReportDoc
 		virtual ~uoReportDoc();
 	public:
 		void clear();
-		bool addGroup(int start, int end, uoRptHeaderType ht);
-		bool addSection(int start, int end, uoRptHeaderType ht);
+		void clearFonts();
+		bool addGroup(int start, int end, uoRptHeaderType ht, bool folded = false);
+		bool addSection(int start, int end, uoRptHeaderType ht, QString name);
 
 		bool possiblyAddGroup(int start, int end, uoRptHeaderType ht);
 		bool possiblyAddSection(int start, int end, uoRptHeaderType ht);
 
 		void onDeleteLine(int lineStart, int count = 1);
 		const spanList* getGroupList(uoRptHeaderType rht, int start, int end);
+		const spanList* getSectionList(uoRptHeaderType rht, int start, int end);
 
 		int getGroupLevel(uoRptHeaderType ht);
 		int getSectionLevel(uoRptHeaderType ht);
@@ -45,6 +49,8 @@ class uoReportDoc
 		void doGroupFold(int idGrop, uoRptHeaderType rht, bool fold);
 
 		bool save();
+		bool load();
+		bool loadFromFile(QString path, uoRptStoreFormat stFormat);
 		bool saveToFile(QString path, uoRptStoreFormat stFormat);
 		bool saveOptionsIsValid();
 		bool flush(uoReportLoader* loader);
@@ -56,14 +62,20 @@ class uoReportDoc
 
 	public:
 		void test();
-		rptSize getScaleSize(uoRptHeaderType hType, int nom, bool isDef = false);
-		void 	setScaleSize(uoRptHeaderType hType, int nom, rptSize size, bool isDef = false);
+		qreal 	getScalesSize(const uoRptHeaderType& hType, const int& nomStart, const int& nomEnd, const bool& ignoreHiden = false, const bool& isDef = false) const;
+
+		qreal 	getScaleSize(uoRptHeaderType hType, int nom, bool isDef = false);
+		void 	setScaleSize(uoRptHeaderType hType, int nom, qreal size, bool isDef = false);
+		void 	setScaleFixedProp(uoRptHeaderType hType, int nom, bool isFixed = true);
+		bool 	getScaleFixedProp(uoRptHeaderType hType, int nom);
+
 		void 	setScalesHide(uoRptHeaderType hType, int nmStart, int cnt = 1,  bool hide = true);
 		bool 	getScaleHide(uoRptHeaderType hType, int nom);
 
 	protected:
 
 	private:
+		void onAccessRowCol(int nmRow = 0, int nmCol = 0); ///< при доступе к строке или столбцу documenta...
 		void onAccessRowOrCol(int nom, uoRptHeaderType rht);
 		void doRowCountChange(int count, int pos = 0 );
 		void doColCountChange(int count, int pos = 0 );
@@ -95,24 +107,49 @@ class uoReportDoc
 
 		int _freezEvent;	/// заморозить посылку сообщений на перерисовку
 
-		int _maxLevelSpanFoldingH;   	///< Группировки
-		int _maxLevelSpanSectionsH;		///< секции.
-
 		QString 		 _docFilePath;		///< Имя файла
 		uoRptStoreFormat _storeFormat;	///< Формат хранения файла отчета.
 
+		// Группы
 		uoSpanTree* _spanTreeGrH;
 		uoSpanTree* _spanTreeGrV;
+
+		// Секции.
 		uoSpanTree* _spanTreeSctH;
 		uoSpanTree* _spanTreeSctV;
 
 		uoHeaderScale* _headerV; ///< Вертикальный заголовок
 		uoHeaderScale* _headerH; ///< Горизонтальный заголовок
+		uoTextTrPointCash* _pointBlock;
+		uoCacheItemizer<uoCellJoin> m_cellJoinCash;
+
+
+	protected:
+		// Содержимое строк документа
+		uoRowsDoc* 	_rows;		 ///< Значимое содержимое документа, содержимое ячеек документа.
+	public:
+		void 	setCellText(const int posY, const int posX, const QString text);
+		///\todo - имплементировать... setCellFontProp
+//		void 	setCellFontProp(const int idFont, const int posX, const QString text);
+		void 	setCellTextAlignment(const int posY, const int posX, uoVertAlignment va,  uoHorAlignment ha, uoCellTextBehavior tb = uoCTB_Auto);
+		QString getCellText(const int posY, const int posX);
+
+		uoCell* getCell(const int posY, const int posX, bool needCreate = false);
+
+		void doFormatDoc(int nmRow = -1, int nmForCol = -1);
+		void doFormatRow(uoRow* row, int nmForCol = -1);
+		void doFormatRow(int nmRow, int nmForCol = -1);
+		qreal doFormatCellText(uoCell* cell, QFont* font, QFontMetricsF& fm, const qreal& collWidth );
+
+		int getNextCellNumber(const int& rowCur, const int& colCur, const bool& ignoreHiden = true);
+		QStringList splitQStringToWord(const QFontMetricsF& fm, const QString& str, const qreal& collWidth);
 
 	protected:
 		QList<uoReportCtrl*> _atachedView; 	///< Приватаченные вьювы
 		QList<QObject*> 	 _atachedObj;	///< Приватаченные объекты. Документ может использоваться без вьюва, наример для заполнения его в модуле.
+
 		long _refCounter;
+
 	public:
 		void attachView(uoReportCtrl* rCtrl, bool autoConnect = true);
 		void detachedView(uoReportCtrl* rCtrl);
@@ -121,6 +158,24 @@ class uoReportDoc
 		void detachedObject(QObject* rObj);
 
 		bool isObjectAttached();
+	protected:
+		uoReportDocFontColl* _fontColl;
+		int _defaultFontId;
+
+	public:
+		void setDefaultFont(const QFont& defFont);
+		bool  addFont(QString family);
+		QFont*  getFontByID(const int idFont);
+		QColor*  getColorByID(const int idColor);
+
+		uoCellTextProps* getNewTextProp();
+		uoCellBordProps* getNewBordProp();
+
+		uoCellJoin* getCellJoin();
+		void 		saveCellJoin(uoCellJoin* cellJItem);
+
+
+
 };
 
 } // namespace uoReport
