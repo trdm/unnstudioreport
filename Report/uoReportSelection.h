@@ -48,7 +48,10 @@ class uoReportSelection : public QObject
 		void cellSelectedEnd(int nmCol, int nmRow);
 		void cellSelectedMidle(int nmCol, int nmRow);
 
+		void selectCell(int nmCol, int nmRow);
+
 		QRect* getCellSpan();
+		QPoint* getCellPoint();
 
 		uoRptSelectionType getSelectionType();
 		uoRptSelectionType getStartSelectionType();
@@ -70,6 +73,9 @@ class uoReportSelection : public QObject
 		QList<int>* 	_selCols;		///< Список выделенных колонок
 		QList<QRect*>* _selSpans;		///< Список выделенных областей/спанов
 		QList<QRect*>* _selSpansCache;	///< Кешь выделенных областей/спанов
+
+		QList<QPoint*>* _selPoints;			///< Список выделенных ячеек
+		QList<QPoint*>* _selPointsCache;	///< Кешь выделенных ячеек
 
 		uoRptSelectionType _startSelMode; 	///< Режим начала выделения диапазона.
 		uoRptSelectionType _selMode; 		///< Режим начала выделения диапазона.

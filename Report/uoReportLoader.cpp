@@ -191,16 +191,22 @@ void uoReportLoaderXML::saveRowItemStart(int rowNumb, int cellCount){
 }
 
 void uoReportLoaderXML::saveCell(uoCell* cellItem){
-	QString text = Qt::escape(cellItem->getText());
-	_textStream << QString("\t\t<Cell no = \"%1\" fid = \"%2\"  fsz = \"%3\" cId = \"%4\" cbgid = \"%5\"  >\n")
+	QString text = cellItem->getText();
+	text = Qt::escape(text);
+
+	QString str = QString("\t\t<Cell no = \"%1\" fid = \"%2\"  fsz = \"%3\" cId = \"%4\" cbgid = \"%5\" tb = \"%6\" ah = \"%7\" av = \"%8\" >")
 	.arg(cellItem->number())
 	.arg(cellItem->getFontId())
 	.arg(cellItem->getFontSize())
 	.arg(cellItem->getFontColorId())
 	.arg(cellItem->getBGColorId())
+	.arg(cellItem->getTextBehavior())
+	.arg(cellItem->getAlignmentHor())
+	.arg(cellItem->getAlignmentVer())
 	;
-	_textStream << QString("\t\t\t%1\n").arg(text);
-	_textStream << QString("\t\t</Cell>\n");
+	QString text2 = QString("%1%2</Cell>\n").arg(str).arg(text);
+	_textStream << text2;
+
 }
 
 void uoReportLoaderXML::saveRowItemEnd(){
@@ -253,7 +259,7 @@ bool uoReportLoaderXML::loadGroupsHeader(const QDomElement &node,uoReportDoc* do
 			start = child.attribute("start").toInt();
 			stop =  child.attribute("end").toInt();
 			folded = child.attribute("folded").toInt();
-			doc->addGroup(start, stop, rht, false /*(bool)folded*/); ///\todo там надо прятать строки, пока не до...
+			doc->addGroup(start, stop, rht, (bool)folded); ///\todo там надо прятать строки, пока не до...
 
 			child = child.nextSiblingElement();
 		}
@@ -324,12 +330,24 @@ bool uoReportLoaderXML::loadCell(const QDomElement &node, uoReportDoc* doc, int 
 {
 	bool retVal = true;
 	QDomElement child = node.firstChildElement();
+
+	/*	исправление бага, почемуто накапливаются символы '0D' '0D' '0D'
+		когда сохраняю текст, содержащий возврат коретки	*/
+	static const QString ch = "\n";
+	static const QString ch2 = "\r\n";
+
 	int cellNumber;
 	QString cellText;
 	while (!child.isNull()) {
 		cellNumber = child.attribute("no").toInt();
 		cellText = child.text();
-		cellText = cellText.trimmed();
+
+		/*	исправление бага, почемуто накапливаются символы '0D' '0D' '0D'
+			когда сохраняю текст, содержащий возврат коретки	*/
+		while(cellText.indexOf(ch2)>=0)
+			cellText = cellText.replace(ch2, ch);
+
+		qDebug() << "load<<" << cellText;
 		doc->setCellText(rowNum,cellNumber,cellText);
 		child = child.nextSiblingElement();
 	}
@@ -345,13 +363,29 @@ bool uoReportLoaderXML::loadRows(const QDomElement &node, uoReportDoc* doc)
 	int rowNumber;
 	while (!child.isNull()) {
 		rowNumber = child.attribute("no").toInt();
-		qDebug() << "Load row № "<< rowNumber;
-
 		loadCell(child, doc, rowNumber);
 		child = child.nextSiblingElement();
 	}
 
 	return retVal;
+}
+
+
+bool uoReportLoaderXML::loadFont(const QDomElement &node, uoReportDoc* doc)
+{
+	bool retVal = true;
+	QDomElement child = node.firstChildElement();
+	int fontId = 0;
+	doc->clearFonts();
+	QString fontName;
+	while (!child.isNull()) {
+		fontName = child.attribute("name");
+		fontId = doc->addFont(fontName);
+		child = child.nextSiblingElement();
+	}
+
+	return retVal;
+
 }
 
 
@@ -365,7 +399,7 @@ bool uoReportLoaderXML::load(uoReportDoc* doc)
 	QDomElement docElem = xmldoc.documentElement();
 	QDomElement child = docElem.firstChildElement();
 	while (!child.isNull()) {
-		qDebug() << child.nodeName();
+//		qDebug() << child.nodeName();
 		nodeName = child.nodeName();
 		if (nodeName.compare("Groups",Qt::CaseInsensitive) == 0){
 			loadGroupsHeader(child,doc);
@@ -375,10 +409,9 @@ bool uoReportLoaderXML::load(uoReportDoc* doc)
 			loadScalesHeader(child,doc);
 		} else if (nodeName.compare("Rows",Qt::CaseInsensitive) == 0){
 			loadRows(child,doc);
+		} else if (nodeName.compare("Fonts",Qt::CaseInsensitive) == 0){
+			loadFont(child,doc);
 		}
-
-
-
 
 		child = child.nextSiblingElement();
 	}

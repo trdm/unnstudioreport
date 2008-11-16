@@ -198,14 +198,18 @@ struct uoCellTextProps {
 	uoCellTextProps()
 	:_textBoundary(0)
 	{
+		_text			= "";
+		_fontID			= -1;
+		_fontColID		= -1;
+		_fontSize		= 10;
+		_fontBold		= false;
+		_fontItalic		= false;
+		m_maxRowLen		= 0.0;
+
 		_textType 		= uoCTT_Text;
 		_vertAlignment  = uoVA_Top;
 		_horAlignment	= uoHA_Left;
 		_behavior		= uoCTB_Auto;
-		_fontSize		= 10;
-		_fontBold		= false;
-		_fontItalic		= false;
-		_maxTextLen		= 0.0;
 	}
 
 	QString 	_text; 	///< Текст содержащийся в ячейке.
@@ -214,13 +218,13 @@ struct uoCellTextProps {
 	int 		_fontSize;
 	bool 		_fontBold;
 	bool		_fontItalic;
-	qreal 		_maxTextLen; ///< длинна самой длинной строки в ячейке....
+	qreal 		m_maxRowLen; ///< длинна самой длинной строки в ячейке....
 
 	uoCellTextType  	_textType;		///< Тип текста ячейки
 	uoVertAlignment 	_vertAlignment;	///< Тип вертикального выравнивания текста.
 	uoHorAlignment		_horAlignment;	///< Тип горизонтального выравнивания текста.
 	uoCellTextBehavior 	_behavior;		///< Тип текста при превышении его длинны размера ячейки.
-	uoTextBoundary* 		_textBoundary;		///< структура содержащая переносы текста.
+	uoTextBoundary* 	_textBoundary;		///< структура содержащая переносы текста.
 
 };
 /**
@@ -261,6 +265,7 @@ struct uoCell : public uoEnumeratedItem{
 	uoCell(int nom)
 		: _x(nom)
 		, _bgColorID(0)
+		, m_height(0.0)
 		, _textProp(0)
 		, _bordProp(0)
 		, m_ceelJoin(0)
@@ -272,18 +277,21 @@ struct uoCell : public uoEnumeratedItem{
 	virtual int  number() {		return _x;	}
 	void clear();
 
+	bool 	provideTextProp(uoReportDoc* doc, bool needCreate = false);
 	QString getText();
 	QString getTextWithLineBreak(bool drawInv = false);
 
 	void 	setText(QString text, uoReportDoc* doc);
 	void 	setAlignment(const uoVertAlignment& va, const uoHorAlignment& ha, const uoCellTextBehavior& tb, uoReportDoc* doc);
 	int 	getAlignment();
+	void 	setMaxRowLength(qreal len, uoReportDoc* doc);
+	qreal 	getMaxRowLength();
 
 	uoHorAlignment 		getAlignmentHor();
 	uoVertAlignment 	getAlignmentVer();
 	uoCellTextBehavior 	getTextBehavior();
 
-	QFont*   getFont(uoReportDoc* doc);
+	QFont*   getFont(uoReportDoc* doc, bool needCreate = false);
 	int		 getFontSize();
 	int		 getFontId();
 
@@ -301,6 +309,7 @@ struct uoCell : public uoEnumeratedItem{
 
 	int 		_x;				///< Номер колонки, к которой ячейка принадлежит.
 	int 		_bgColorID;		///< Индекс цвета фона ячейки...
+	qreal		m_height;		///< Высота ячейки, что-бы не высчитывать формат 100 раз..
 
 	uoCellTextProps* _textProp;
 	uoCellBordProps* _bordProp;

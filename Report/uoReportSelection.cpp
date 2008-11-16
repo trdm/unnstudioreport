@@ -26,6 +26,10 @@ uoReportSelection::uoReportSelection(QObject* parent)
 	_selSpans 		= new QList<QRect*>;
 	_selSpansCache 	= new QList<QRect*>;
 
+	_selPoints 		= new QList<QPoint*>;
+	_selPointsCache = new QList<QPoint*>;
+
+
 	_startSelMode	= uoRst_Unknown;
 	_selMode		= uoRst_Unknown;
 	_strartColRow	= -1;
@@ -42,6 +46,10 @@ uoReportSelection::~uoReportSelection()
 	delete _selCols;
 	while (!_selSpans->isEmpty())		delete _selSpans->takeFirst();
 	while (!_selSpansCache->isEmpty())	delete _selSpansCache->takeFirst();
+
+	while (!_selPoints->isEmpty())	delete _selPoints->takeFirst();
+	while (!_selPointsCache->isEmpty())	delete _selPointsCache->takeFirst();
+
 	delete _selSpans;
 	delete _selSpansCache;
 }
@@ -95,8 +103,12 @@ void uoReportSelection::clearSelections(uoRptSelectionType exclude)
 		_rectCellsMidle.setBottom(0);
 		_rectCellsMidle.setRight(0);
 
-	while (!_selSpans->isEmpty())
-		_selSpansCache->append(_selSpans->takeFirst());
+		while (!_selSpans->isEmpty())
+			_selSpansCache->append(_selSpans->takeFirst());
+
+		while (!_selPoints->isEmpty())
+			_selPointsCache->append(_selPoints->takeFirst());
+
 	} else {
 		_selMode = uoRst_Cells;
 	}
@@ -157,19 +169,31 @@ bool uoReportSelection::isCellSelect(int nmRow, int nmCol)
 	}
 
 
-	if (_selSpans->isEmpty())
-		return false;
+	if (!_selSpans->isEmpty()) {
+		QRect* rct = NULL;
 
-	QRect* rct = NULL;
-
-	QList<QRect*>::const_iterator iter = _selSpans->constBegin();
-	while(iter != _selSpans->constEnd()) {
-		rct = *iter;
-		if (rct) {
-			if (rct->contains(nmCol, nmRow))
-				return true;
+		QList<QRect*>::const_iterator iter = _selSpans->constBegin();
+		while(iter != _selSpans->constEnd()) {
+			rct = *iter;
+			if (rct) {
+				if (rct->contains(nmCol, nmRow))
+					return true;
+			}
+			iter++;
 		}
-		iter++;
+	}
+	if (!_selPoints->isEmpty()) {
+		QPoint* point = NULL;
+
+		QList<QPoint*>::const_iterator iter = _selPoints->constBegin();
+		while(iter != _selPoints->constEnd()) {
+			point = *iter;
+			if (point) {
+				if (point->x() == nmCol &&  point->y() == nmRow)
+					return true;
+			}
+			iter++;
+		}
 	}
 	return retVal;
 }
@@ -358,11 +382,29 @@ QRect* uoReportSelection::getCellSpan()
 	QRect* rect = NULL;
 	if (!_selSpansCache->isEmpty()){
 		rect = _selSpansCache->takeFirst();
+		rect->setBottom(0);
+		rect->setTop(0);
+		rect->setLeft(0);
+		rect->setRight(0);
 	} else {
 		rect = new QRect(0,0,0,0);
 	}
 	return rect;
 }
+
+QPoint* uoReportSelection::getCellPoint()
+{
+	QPoint* point = NULL;
+	if (!_selPointsCache->isEmpty()){
+		point = _selPointsCache->takeFirst();
+		point->setX(0);
+		point->setY(0);
+	} else {
+		point = new QPoint(0,0);
+	}
+	return point;
+}
+
 
 
 /// Окончание редактирования выделения ячеек.
@@ -373,6 +415,8 @@ void uoReportSelection::cellSelectedEnd(int nmCol, int nmRow)
 		return;
 	}
 	if ((_cellStart.x() == nmCol) && (_cellStart.y() == nmRow)){
+		if (isCtrlPress() && !isCellSelect(nmRow,nmCol))
+			selectCell(nmCol, nmRow);
 		return;
 	}
 	QRect* rect = getCellSpan();
@@ -399,6 +443,27 @@ void uoReportSelection::cellSelectedMidle(int nmCol, int nmRow)
 void uoReportSelection::selectDocument(){
 	clearSelections();
 	_selMode = uoRst_Document;
+}
+
+void uoReportSelection::selectCell(int nmCol, int nmRow)
+{
+	bool ctrl = isCtrlPress();
+	if (!ctrl)
+		clearSelections();
+
+	clearSelections(uoRst_Cells);
+	_selMode = uoRst_Cells;
+
+	if (!isCellSelect(nmRow, nmCol)){
+		QPoint* point = getCellPoint();
+		if (point){
+			point->setX(nmCol);
+			point->setY(nmRow);
+			_selPoints->append(point);
+		}
+	}
+
+
 }
 
 

@@ -388,9 +388,6 @@ QList<int>* uoSpanTree::onGroupFold(int id, bool fold){
 	QList<int>* list = ((uoSTScan_FoldPerId*)scaner)->_listProcLn;
 	delete scaner;
 	return list;
-
-
-	return NULL;
 }
 
 /// Обрабатываем исключение строк из спанов.

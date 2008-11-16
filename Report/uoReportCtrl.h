@@ -80,16 +80,69 @@ struct uoRptGroupItem {
 	}
 };
 
-typedef QList<uoRptGroupItem*> rptGroupItemList;
+typedef QList<uoRptGroupItem*> uoRptGroupItemList;
 typedef QMap<int, qreal> rptScalePositionMap; ///< словарь смещений ячеек линеек.
+
+/**
+	\struct uoRptSectionItem - структура для сохранения гуи-координат и атрибутов секции отчета.
+	\brief Используется в uoReportCtr для отрисовки секций.
+*/
+struct uoRptSectionItem
+{
+		uoRptSectionItem()
+		:_level(-1)
+		,_start(-1)
+		,_end(-1)
+		,_id(-1)
+		,_nameSections(0)
+		{}
+	QRectF 	_rectView; 		///< область "кнопки" свертки/развертки структуры.
+	int 	_level; 		///< уровень группировки.
+	int 	_start; 		///< Начало диапазона.
+	int 	_end;			///< Конец диапазона.
+	int 	_id;			///< Идентификатор гроуп итема.
+	bool 	_selected;		///< Секция выделенна.
+	QString _nameSections;	///< Имя секции.
+
+		/// копируем данные из uoLineSpan
+	void copyFrom(uoLineSpan* spn){
+		_start 	= spn->getStart();
+		_end 	= spn->getEnd();
+
+		_level	= spn->getLevel();
+		_nameSections	= spn->_name;
+
+		_id 	= spn->getId();
+	}
+
+	/// чистка итема....
+	void clear(){
+		_level = -1;
+		_start = -1;
+		_end = -1;
+		_id = -1;
+		_nameSections = "";
+		_selected = false;
+		_rectView.setTop(0.0);
+		_rectView.setRight(0.0);
+		_rectView.setBottom(0.0);
+		_rectView.setLeft(0.0);
+	}
+};
+
+typedef QList<uoRptSectionItem*> uoRptSectionItemList;
+
 
 /**
 	\class uoReportCtrlMesFilter класс перехватчик некоторых событий.
 	\brief класс перехватчик некоторых событий.
 
-	Конкретно нужно что вот что: перехватить Ctrl+Enter и превратить его в Enter
+	Конкретно нужно что вот что:
+	1. перехватить Ctrl+Enter и превратить его в Enter
 	А Enter отловить и поместить отредактированный текст обрабно документ и
 	закончить редактирование.
+	2. При изменении текста посчитать его длинну/высоту и изменить поле редактирования
+	так, что-бы текст влезал в него по ширине...
 */
 class uoReportCtrlMesFilter : public QObject
 {
@@ -121,20 +174,25 @@ class uoReportCtrl : public QWidget
     protected:
 
         void paintEvent(QPaintEvent *event);
-        void mousePressEvent(QMouseEvent *event);
-        void mouseReleaseEvent(QMouseEvent *event);
-        void mouseMoveEvent(QMouseEvent *event);
         void contextMenuEvent(QContextMenuEvent *event);
 		void showEvent( QShowEvent* event );
 		void resizeEvent ( QResizeEvent * event );
 		void keyPressEvent ( QKeyEvent * event );
 		void wheelEvent ( QWheelEvent * event );
 
+        void mouseDoubleClickEvent( QMouseEvent * event );
+        void mouseReleaseEvent(QMouseEvent *event);
+        void mouseMoveEvent(QMouseEvent *event);
+        void mousePressEvent(QMouseEvent *event);
 		//-------------------------------------------------
-		bool mousePressEventForGroup(QMouseEvent *event);
-		bool mousePressEventForRuler(QMouseEvent *event);
-		bool mousePressEventForDataArea(QMouseEvent *event);
+		bool mousePressEventForRuler(QMouseEvent *event, bool isDoubleClick = false);
+		bool mousePressEventForGroup(QMouseEvent *event, bool isDoubleClick = false);
+		bool mousePressEventForSection(QMouseEvent *event, bool isDoubleClick = false);
+		bool mousePressEventForDataArea(QMouseEvent *event, bool isDoubleClick = false);
 		bool findScaleLocation(qreal posX, qreal posY, int &scaleNo, uoRptHeaderType rht);
+
+		uoRptSparesType findPointLocation(qreal posX, qreal posY);
+
 		uoBorderLocType  scaleLocationInBorder(qreal pos, QRectF rect, uoRptHeaderType rht);
 		void keyPressEventMoveCursor ( QKeyEvent * event );
 		void updateThis();
@@ -157,6 +215,7 @@ class uoReportCtrl : public QWidget
 		void 			mouseSparesAcceleratorSave(uoRptSparesType spar, int nom, uoRptHeaderType rht);
 
 		QPoint 	_curentCell; ///< Текущая ячейка вьюва. есть всегда. Даже когда работаем с картинками.
+		QRect 	_curentCellRect; ///< Текущая ячейка вьюва. есть всегда. Даже когда работаем с картинками.
 		void	setCurentCell(int x, int y, bool ensureVisible = false);
 		QRect 	getCellRect(const int& posY, const int& posX);
 		QPoint 	getCellFromPosition(const qreal& posY, const qreal& posX);
@@ -208,10 +267,12 @@ class uoReportCtrl : public QWidget
 		QTextEdit*	_textEdit;
 		uoReportCtrlMesFilter* _messageFilter;
 		bool doCellEditTextStart(const QString& str);
+		void recalcTextEditRect(QRect& rect);
 		bool modeTextEditing();
 
 	private slots:
 		void onCellEditTextEnd(bool accept);
+		void cellTextChangedFromEdit();
 
 
 	public:
@@ -234,7 +295,8 @@ class uoReportCtrl : public QWidget
 		void 	calcGroupItemPosition(uoRptGroupItem* grItem, uoRptHeaderType rht);
 
 		void 	dropGropItemToCache();
-		uoRptGroupItem* getGropItemFromCache();
+		uoRptGroupItem* 	getGropItemFromCache();
+		uoRptSectionItem* 	getSectionItemFromCache();
 
 	private:
 		uoReportDoc* _rptDoc;
@@ -322,11 +384,16 @@ class uoReportCtrl : public QWidget
 		int _colCountDoc;	///< колонки дока (просто кеш)
 
 		void onAccessRowOrCol(int nom, uoRptHeaderType rht); ///< при доступе к строке или столбцу вьюва...
+		void onAccessRowCol(int nmRow = 0, int nmCol = 0); ///< при доступе к строке или столбцу вьюва...
 		void doChangeVirtualSize(uoRptHeaderType rht, int changeCnt); ///< обработать смену виртуального размера
 
-		rptGroupItemList* _groupListCache;	///< кешь для экземпляров uoRptGroupItem
-		rptGroupItemList* _groupListV;		///< список ректов группировок столбцов
-		rptGroupItemList* _groupListH;		///< список ректов группировок строк
+		uoRptGroupItemList* _groupListCache;	///< кешь для экземпляров uoRptGroupItem
+		uoRptGroupItemList* _groupListV;		///< список ректов группировок столбцов
+		uoRptGroupItemList* _groupListH;		///< список ректов группировок строк
+
+		uoRptSectionItemList* _sectItemListCache;	///< кешь для экземпляров uoRptSectionItem
+		uoRptSectionItemList* _sectItemListV;		///< список итемов секций столбцов
+		uoRptSectionItemList* _sectItemListH;		///< список итемов секций строк
 
 		rptScalePositionMap _scaleStartPositionMapH; 	///< Координаты х() ячеек горизонтальной линейки (видимой части)
 		rptScalePositionMap _scaleStartPositionMapV;	///< Координаты y() ячеек вертикальной линейки (видимой части)

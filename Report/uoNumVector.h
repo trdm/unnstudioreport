@@ -140,6 +140,20 @@ class uoNumVector
 			}
 		}
 
+		/// Просто отдаем список итемов
+		QList<T*> getItemList(int statrWith = 0, int endWith = 0)
+		{
+			QList<T*> list;
+			typename QLinkedList<T*>::iterator it = _list->begin();
+			T* item = NULL;
+			while (it != _list->end() ) {
+				item = *it;
+				list.append(item);
+				it++;
+			}
+			return list;
+		}
+
 		/// Функция создания нового итема
 		virtual T* createItem(int nom) {
 			T* item = new T(nom);
