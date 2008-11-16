@@ -33,23 +33,52 @@ class uoReportSelection : public QObject
 		bool isCtrlPress();
 		bool isShiftPress();
 
-		void startRowSelected(int nmRow);
-		void startColSelected(int nmCol);
-		void startCellSelected(int nmCol, int nmRow);
+		void rowSelectedStart(int nmRow);
+		void rowSelectedMidle(int nmRow);
+		void rowSelectedEnd(int nmRow);
+
+		void colSelectedStart(int nmCol);
+		void colSelectedEnd(int nmCol);
+
 		void selectDocument();
 		void selectRow(int nmRow);
 		void selectCol(int nmCol);
 
+		void cellSelectedStart(int nmCol, int nmRow);
+		void cellSelectedEnd(int nmCol, int nmRow);
+		void cellSelectedMidle(int nmCol, int nmRow);
+
+		void selectCell(int nmCol, int nmRow);
+
+		QRect* getCellSpan();
+		QPoint* getCellPoint();
+
 		uoRptSelectionType getSelectionType();
+		uoRptSelectionType getStartSelectionType();
+
+		bool calcRectFromPoints(QRect& rct, const QPoint& posStart, const QPoint& posEnd) const;
 
 	private:
+		/*
+			зачем нужны временные выделенные строки?
+			временные выделенные строки возникают когда пользователь откнопал
+			с нажатой клавишей контрол несколько строк, а теперь хочет выделить
+			интервал. и он нажимает на ячейку линейки и тащит мышку не отпуская.
+			в это время он может перекрыть уже выделенные строки, но потом вернуться
+			обратно, покинув их. выделение должно сохраниться.
+			поэтому я работаю не с _selRows а с _selRowsColsTmp.
+		*/
 		QList<int>* 	_selRows; 		///< Список выделенных строк
+		QList<int>* 	_selRowsColsTmp; 	///< Список временных выделенных строк
 		QList<int>* 	_selCols;		///< Список выделенных колонок
 		QList<QRect*>* _selSpans;		///< Список выделенных областей/спанов
 		QList<QRect*>* _selSpansCache;	///< Кешь выделенных областей/спанов
 
-		uoRptSelectionType _startSelMode; ///< Режим начала выделения диапазона.
-		uoRptSelectionType _selMode; ///< Режим начала выделения диапазона.
+		QList<QPoint*>* _selPoints;			///< Список выделенных ячеек
+		QList<QPoint*>* _selPointsCache;	///< Кешь выделенных ячеек
+
+		uoRptSelectionType _startSelMode; 	///< Режим начала выделения диапазона.
+		uoRptSelectionType _selMode; 		///< Режим начала выделения диапазона.
 
 		/*
 			Стартовые объекты для режима выделения.
@@ -60,8 +89,9 @@ class uoReportSelection : public QObject
 		int _strartColRow;	///< Стартовое значение строки/столбца..
 
 		// для режима начала выделения диапазона ячеек
-		int _strartSellX;	///< Стартовое значение столбца..
-		int _strartSellY;	///< Стартовое значение строки..
+		QPoint _cellStart; ///< Стартовое значение при начале выделения ячеек. x-колонка/y-строка.
+		QPoint _cellMidle; ///< Временное конечное значение ячейки при выделения ячеек с пом. КПК.
+		QRect _rectCellsMidle; ///< Временное конечное значение ячейки при выделения ячеек с пом. КПК.
 };
 
 } //namespace uoReport

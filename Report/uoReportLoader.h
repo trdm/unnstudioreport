@@ -12,8 +12,12 @@
 
 #include <QString>
 #include <QTextStream>
+#include <QTextDocument>
 #include <QDataStream>
 #include <QFile>
+#include <QtXml>
+//#include <QDomNode>
+
 
 
 namespace uoReport {
@@ -60,8 +64,29 @@ class uoReportLoader
 		virtual bool saveScaleHeaderStart(int count, uoRptHeaderType rht) = 0;
 		virtual bool saveScaleItem(uoRptNumLine* rLine) = 0;
 		virtual bool saveScaleHeaderEnd(uoRptHeaderType rht) = 0;
+
+		virtual void saveRowsStart(int rowCount) = 0;
+		virtual void saveRowItemStart(int rowNumb, int cellCount) = 0;
+
+		virtual void saveCell(uoCell* cellItem) = 0;
+
+		virtual void saveRowItemEnd() = 0;
+		virtual void saveRowsEnd() = 0;
+
+		virtual void saveFontStart(int count) = 0;
+		virtual void saveFont(QFont* psFont, int nom) = 0;
+		virtual void saveFontEnd() = 0;
+
 		/// Запись подвальной части
 		virtual bool saveDocEnd(uoReportDoc* doc) = 0;
+
+		///================================================
+		///===============LOAD=============================
+		virtual bool load(uoReportDoc* doc) = 0;
+		// остальное помоему можно пока и в производном классе сделать... пока...
+
+		///===============LOAD=============================
+		///================================================
 
 
 	private:
@@ -92,8 +117,30 @@ class uoReportLoaderXML : public uoReportLoader {
 		virtual bool saveScaleHeaderStart(int count, uoRptHeaderType rht);
 		virtual bool saveScaleItem(uoRptNumLine* rLine);
 		virtual bool saveScaleHeaderEnd(uoRptHeaderType rht);
+
+		virtual void saveRowsStart(int rowCount);
+		virtual void saveRowItemStart(int rowNumb, int cellCount);
+		virtual void saveCell(uoCell* cellItem);
+		virtual void saveRowItemEnd();
+		virtual void saveRowsEnd();
+
+		virtual void saveFontStart(int count);
+		virtual void saveFont(QFont* psFont, int nom);
+		virtual void saveFontEnd();
+
+
 		/// Запись подвальной части
 		virtual bool saveDocEnd(uoReportDoc* doc);
+
+		virtual bool load(uoReportDoc* doc);
+
+		bool loadGroupsHeader(const QDomElement &node, uoReportDoc* doc);
+		bool loadSectionHeader(const QDomElement &node, uoReportDoc* doc);
+		bool loadScalesHeader(const QDomElement &node, uoReportDoc* doc);
+		bool loadRows(const QDomElement &node, uoReportDoc* doc);
+		bool loadCell(const QDomElement &node, uoReportDoc* doc, int rowNum);
+		bool loadFont(const QDomElement &node, uoReportDoc* doc);
+
 
 	private:
 		QTextStream _textStream;

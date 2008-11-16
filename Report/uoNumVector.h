@@ -27,29 +27,41 @@ class uoNumVector
 		typename QLinkedList<T*>::iterator _itSave;
 		bool _itSaveOnUse; ///< итератор _itSave - используется.
 		int _maxNo, _minNo;
-		rptSize _def_size;
 
 	public:
 		uoNumVector()
 			: _itSaveOnUse(false)	{
 			_list = new QLinkedList<T*>;
-			_def_size = -1;
 			_maxNo = _minNo = 0;
 		};
-		~uoNumVector()	{
+		virtual ~uoNumVector()	{
 			_itSave = NULL;
-			if (_list->size() == 0)
+			if (_list->size() == 0){
+				delete _list;
 				return;
-			clear();
-		}
-		/// Определить Min и Max № после вставки итема в список.
-		void defineMinMax(int nom) {
-			if (_minNo == 0 && _maxNo == 0) {
-				_minNo = _maxNo = nom;
-			} else {
-				if (_minNo>nom)	_minNo = nom;
-				if (_maxNo<nom)	_maxNo = nom;
 			}
+			clear();
+			delete _list;
+		}
+
+		int getMinNo(){			return _minNo;		}
+		int getMaxNo(){			return _maxNo;		}
+
+		/// Ищем следующую после итема № after итемку. Нужно сделать экономичный поиск.
+		T* getNextItem(int after){
+			T* item = NULL;
+			if ( after<=0 || after<_minNo || after>_maxNo || _list->isEmpty())
+				return item;
+			detachIter();
+			// Чета влом мне в час ночи ломать голову над оптимизацией...
+			typename QLinkedList<T*>::iterator it = _list->begin();
+			while (it != _list->end() ) {
+				item = *it;
+				if (item->number()>after)
+					return item;
+				it++;
+			}
+			return NULL;
 		}
 
 		/// Очистка вектора
@@ -59,15 +71,30 @@ class uoNumVector
 			typename QLinkedList<T*>::iterator it = _list->begin();
 			while (it != _list->end() ) {
 				item = *it;
+				onDeleteItem(item);
 				it = _list->erase(it);
 				item->~T();
 				delete item;
 				item = NULL;
 			}
+			_maxNo = _minNo = 0;
 		}
 
-		/// Функция создания нового итема. Возможно пригодится для ундо/редо.
-		void onDeleteItem(T* delItem){}
+		/// Функция вызывается после создания нового итема. Возможно пригодится для ундо/редо.
+		virtual void onDeleteItem(T* delItem) = 0;
+
+		/// Функция вызывается перед удалением итема.
+		virtual void onCreateItem(T* crItem) = 0;
+
+		/// Доступ к итему.
+		T* getItem(int nom, bool needCreale = false){
+			T* item = NULL;
+			if (findItem(nom, needCreale)){
+				item = *_itSave;
+				return item;
+			}
+			return NULL;
+		}
 
 
 
@@ -113,26 +140,79 @@ class uoNumVector
 			}
 		}
 
+		/// Просто отдаем список итемов
+		QList<T*> getItemList(int statrWith = 0, int endWith = 0)
+		{
+			QList<T*> list;
+			typename QLinkedList<T*>::iterator it = _list->begin();
+			T* item = NULL;
+			while (it != _list->end() ) {
+				item = *it;
+				list.append(item);
+				it++;
+			}
+			return list;
+		}
+
+		/// Функция создания нового итема
+		virtual T* createItem(int nom) {
+			T* item = new T(nom);
+			if (item) {
+				onCreateItem(item);
+			}
+
+			return item;
+		}
+
+
 		/// Получение размера списка
 		int getCountItem() {
 			return _list->size();
 		}
+		/// проверить, существует ли итемка.
+		bool itemExist(int nom) {
+			return findItem(nom, false);
+		}
+
+		/// проверить, существует ли итемка.
+		int getNextItemNom(int nom) {
+			int retVal = -1, curVal;
+			if (_list->isEmpty())
+				return retVal;
+
+			typename QLinkedList<T*>::iterator it = _list->begin();
+			T* item = *it;
+			while (it != _list->end() ) {
+				item = *it;
+				curVal = item->number();
+				if (curVal > nom) {
+					retVal = curVal;
+					break;
+				}
+				it++;
+			}
+			return retVal;
+		}
+
 
 	protected:
 
+		/// Определить Min и Max № после вставки итема в список.
+		void defineMinMax(int nom) {
+			if (_minNo == 0 && _maxNo == 0) {
+				_minNo = _maxNo = nom;
+			} else {
+				if (_minNo>nom)	_minNo = nom;
+				if (_maxNo<nom)	_maxNo = nom;
+			}
+		}
+
 		/// Отключаемся от итератора.
-		void detachIter() {
+		inline void detachIter() {
 			_itSave	= NULL;
 			_itSaveOnUse = false;
 		}
 
-
-		/// Функция создания нового итема
-		T* createItem(int non) {
-			T* item = new T(non);
-			item->setSize(_def_size);
-			return item;
-		}
 
 		/// Поиск итема по номеру в списке. При необходимости происходит создание итема. \n Просто позиционируемся на нужном итераторе
 		bool findItem(int nom, bool needCreate = false)
@@ -258,38 +338,6 @@ class uoNumVector
 			}
 			return false;
 		}
-	public:
- 		/// Получить размер итема, а если итем не существует, тогда его дефолтный размер..
-		rptSize getSize(int nom, bool isDef = false){
-			if (findItem(nom)) {
-				T* item = *_itSave;
-				if (item)
-					return item->size(isDef);
-			}
-			return _def_size;
-		}
-
-		/// Установить размер итема, а если итем не существует, создать и установить
-		bool	setSize(int nom, rptSize size, bool isDef = false){
-			if (!findItem(nom, true)){
-				return false;
-			} else {
-				T* item = *_itSave;
-				if (item) {
-					item->setSize(size, isDef);
-					return true;
-				}
-			}
-			return false;
-		}
-
-
-		/// Установить дефолтный размер итема
-		void setDefSize(rptSize size) {		_def_size = size;	}
-		/// Получить дефолтный размер итема.
-		rptSize getDefSizeItem() {	return _def_size;	}
-
-
 };
 
 
