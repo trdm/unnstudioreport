@@ -16,8 +16,7 @@ namespace uoReport {
 ///\brief Шаблонный расширяемый класс для хранения структур
 ///
 ///		Грубо говоря простое хранилище структур.
-template <typename T>
-class uoCacheItemizer
+template <typename T> class uoCacheItemizer
 {
  	protected:
 		QLinkedList<T*>* _list;

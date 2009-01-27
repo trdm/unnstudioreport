@@ -1,0 +1,154 @@
+<ui version="4.0" >
+ <class>uorTextLayotProp</class>
+ <widget class="QWidget" name="uorTextLayotProp" >
+  <property name="geometry" >
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>321</width>
+    <height>110</height>
+   </rect>
+  </property>
+  <property name="windowTitle" >
+   <string>Form</string>
+  </property>
+  <property name="windowIcon" >
+   <iconset/>
+  </property>
+  <widget class="QGroupBox" name="groupBox" >
+   <property name="geometry" >
+    <rect>
+     <x>10</x>
+     <y>10</y>
+     <width>86</width>
+     <height>91</height>
+    </rect>
+   </property>
+   <property name="sizePolicy" >
+    <sizepolicy>
+     <hsizetype>0</hsizetype>
+     <vsizetype>5</vsizetype>
+     <horstretch>0</horstretch>
+     <verstretch>0</verstretch>
+    </sizepolicy>
+   </property>
+   <property name="title" >
+    <string>Vertical</string>
+   </property>
+   <widget class="QRadioButton" name="m_TopVTA" >
+    <property name="geometry" >
+     <rect>
+      <x>10</x>
+      <y>20</y>
+      <width>39</width>
+      <height>19</height>
+     </rect>
+    </property>
+    <property name="text" >
+     <string>Top</string>
+    </property>
+   </widget>
+   <widget class="QRadioButton" name="m_CenterVTA" >
+    <property name="geometry" >
+     <rect>
+      <x>10</x>
+      <y>40</y>
+      <width>56</width>
+      <height>19</height>
+     </rect>
+    </property>
+    <property name="text" >
+     <string>Midle</string>
+    </property>
+   </widget>
+   <widget class="QRadioButton" name="m_BottomVTA" >
+    <property name="geometry" >
+     <rect>
+      <x>10</x>
+      <y>60</y>
+      <width>56</width>
+      <height>19</height>
+     </rect>
+    </property>
+    <property name="text" >
+     <string>Bottom</string>
+    </property>
+   </widget>
+  </widget>
+  <widget class="QGroupBox" name="groupBox_2" >
+   <property name="geometry" >
+    <rect>
+     <x>116</x>
+     <y>11</y>
+     <width>81</width>
+     <height>91</height>
+    </rect>
+   </property>
+   <property name="sizePolicy" >
+    <sizepolicy>
+     <hsizetype>1</hsizetype>
+     <vsizetype>5</vsizetype>
+     <horstretch>0</horstretch>
+     <verstretch>0</verstretch>
+    </sizepolicy>
+   </property>
+   <property name="title" >
+    <string>Horizontal</string>
+   </property>
+   <widget class="QRadioButton" name="m_LeftHTA" >
+    <property name="geometry" >
+     <rect>
+      <x>10</x>
+      <y>20</y>
+      <width>41</width>
+      <height>19</height>
+     </rect>
+    </property>
+    <property name="text" >
+     <string>Left</string>
+    </property>
+   </widget>
+   <widget class="QRadioButton" name="m_CenterHTA" >
+    <property name="geometry" >
+     <rect>
+      <x>10</x>
+      <y>40</y>
+      <width>61</width>
+      <height>19</height>
+     </rect>
+    </property>
+    <property name="text" >
+     <string>Center</string>
+    </property>
+   </widget>
+   <widget class="QRadioButton" name="m_RightHTA" >
+    <property name="geometry" >
+     <rect>
+      <x>10</x>
+      <y>60</y>
+      <width>51</width>
+      <height>19</height>
+     </rect>
+    </property>
+    <property name="text" >
+     <string>Right</string>
+    </property>
+   </widget>
+  </widget>
+  <widget class="QCheckBox" name="chbUseSelectedCell" >
+   <property name="geometry" >
+    <rect>
+     <x>200</x>
+     <y>20</y>
+     <width>111</width>
+     <height>19</height>
+    </rect>
+   </property>
+   <property name="text" >
+    <string>Use selected cell</string>
+   </property>
+  </widget>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
