@@ -2,6 +2,7 @@
 #include "common/codecs.h"
 #include <QDialog>
 #include <QGridLayout>
+#include <QSplitter>
 #include "common/debug.h"
 #include "Report/uoReport.h"
 #include "Report/uoReportCtrl.h"
@@ -27,26 +28,48 @@ int main(int argc, char *argv[])
 //    for (int r=0; r<10000; r++)    testStru();
 //	uoReport::uoRunTest();
 //	return -1;
+    QFrame m_Dlg;
+    QSplitter* spliter;
+    QGridLayout* gridLayout;
+	uoReport::uoReportView* m_GR;
+	uoReport::uoReportView* m_GR_2;
+    uoReport::uoReportDoc* doc;
 
-    QGridLayout* gridLayout = new QGridLayout();
+	size_t sz = sizeof(uoReport::uorTextDecorBase);
+	gridLayout = new QGridLayout();
+	gridLayout->setSpacing(0);
+	gridLayout->setHorizontalSpacing(0);
+	gridLayout->setContentsMargins(0, 0, 0, 0);
 
 //    QDialog m_Dlg;
-    QFrame m_Dlg;
-    m_Dlg.setLayout(gridLayout);
-    gridLayout->setSpacing(0);
-    gridLayout->setHorizontalSpacing(0);
-     gridLayout->setContentsMargins(0, 0, 0, 0);
+	m_Dlg.setLayout(gridLayout);
+	if (true) {
+		gridLayout->setSpacing(0);
+		gridLayout->setHorizontalSpacing(0);
+		gridLayout->setContentsMargins(0, 0, 0, 0);
+		// немножко протестируем....
+		m_GR = new uoReport::uoReportView(&m_Dlg);
+		doc = m_GR->getControl()->getDoc();
+		gridLayout->addWidget(m_GR);
+		m_GR->show();
+	} else {
+
+		spliter = new QSplitter(&m_Dlg);
+		gridLayout->addWidget(spliter);
+		m_GR = new uoReport::uoReportView(spliter);
+		doc = m_GR->getControl()->getDoc();
+		doc->m_ident = 150;
+		m_GR_2 = new uoReport::uoReportView(spliter);
+		m_GR_2->getControl()->setDoc(doc);
+
+	}
+
 
     m_Dlg.resize(800,700);
     m_Dlg.show();
 
-	// немножко протестируем....
-    uoReport::uoReportView m_GR(&m_Dlg);
-    gridLayout->addWidget(&m_GR);
-    m_GR.show();
 
-    uoReport::uoReportDoc* doc  = m_GR.getControl()->getDoc();
-    if (true)
+    if (false)
     {
 		doc->addGroup(1,2, uoReport::rhtHorizontal);
 		doc->addGroup(3,12, uoReport::rhtHorizontal);
@@ -79,8 +102,9 @@ int main(int argc, char *argv[])
     }
 
 
-    m_GR.getControl()->optionShow(true, true, true, true);
-    m_GR.getControl()->setFocus();
+    m_GR->getControl()->optionShow(true, true, true, true);
+    m_GR->getControl()->setFocus();
+    doc->enableCollectChanges(true);
 
     return app.exec();
 }
