@@ -20,7 +20,7 @@ namespace uoReport {
 ///\brief специальная линия-отрезок с иерархией и некоторыми пропертями
 struct uoLineSpan{
 
-	int _start, _end, _level, _id;
+	int _start, _end, _level, m_id;
 	bool _folded;
 	QList<uoLineSpan*>* _child;
 	QString _name;
@@ -52,8 +52,8 @@ struct uoLineSpan{
 			return _end-_start+1;
 		}
 
-		void setId(int id) 	{_id = id;}
-		int getId() 		{return _id;}
+		void setId(int id) 	{m_id = id;}
+		int getId() 		{return m_id;}
 
 		void clearChilds() {
 			uoLineSpan* spn = NULL;
@@ -179,11 +179,12 @@ typedef QList<uoLineSpan*>::const_iterator  spanList_iterConst;
 typedef QList<uoLineSpan*>::iterator  spanList_iter;
 
 
-///\class uoSpanTreeScan - классы сканеров для дерева.
-///\brief Абстрактный класс обходчика дерева uoSpanTree
+/**
+	\class uoSpanTreeScan - классы сканеров для дерева.
+    \brief Абстрактный класс обходчика дерева uoSpanTree
+*/
 class uoSpanTreeScan {
 	public:
-//		uoSpanTreeScan();
 		virtual ~uoSpanTreeScan(){};
 	public:
 		/// возвращает: true - надо обходить полчиненные, false - не надо.
@@ -195,6 +196,90 @@ class uoSpanTreeScan {
 		/// Проверка признака отказа от последующего сканирования. Если true сканирование прекращается.
 		virtual bool breakProcess() {return false;};
 
+};
+/**
+	Сканер для вычисления уникальности имени секции....
+*/
+class uoSpanScaner01 : public uoSpanTreeScan
+{
+	public:
+		uoSpanScaner01(int perId, QString strName)
+			:m_perId(perId)
+			,m_findId(-1)
+			,m_strName(strName)
+			,m_isUnique(true)
+			{}
+		virtual ~uoSpanScaner01() {}
+
+		virtual bool visitSpan(uoLineSpan* curSpan)	{
+			if (!curSpan->_name.isEmpty()){
+				int comp = QString::compare(curSpan->_name, m_strName, Qt::CaseInsensitive);
+				if (comp == 0)
+				{
+					// нашли одинаковый.
+					m_isUnique = false;
+				}
+			}
+			return true;
+		}
+		virtual bool visitSpanAfter(uoLineSpan* curSpan){ return true;}
+		int m_perId; 		/// Идентификатор секции с которым в данный момент работаем. -1 если не установлен
+		int m_findId; 		/// Найденный идентификатор секции одинаковым именем.
+		QString m_strName;
+		bool m_isUnique;
+};
+
+/**
+	Сканер для общих поисковых операций.
+*/
+class uoSpanScanerCommon : public uoSpanTreeScan
+{
+	public:
+		uoSpanScanerCommon(uoSTScanType type)
+			:m_type(type)
+			,m_findSpan(0)
+			,m_findCount(0)
+			,m_perId(0)
+			{}
+		virtual ~uoSpanScanerCommon() {}
+
+		virtual bool visitSpan(uoLineSpan* curSpan)	{
+			if (!curSpan->_name.isEmpty())
+			{
+				switch(m_type)
+				{
+					case uoSTST_ById:
+					{
+						if (m_perId == curSpan->m_id)
+						{
+							++m_findCount;
+							m_findSpan = curSpan;
+						}
+						break;
+					}
+					case uoSTST_ByName:
+					{
+						break;
+					}
+					case uoSTST_Unknown:
+					{
+						break;
+					}
+					default:
+					{
+						break;
+					}
+				}
+			}
+			return true;
+		}
+		virtual bool visitSpanAfter(uoLineSpan* curSpan){ return true;}
+
+		uoSTScanType m_type;
+		uoLineSpan* m_findSpan;
+		int 		m_findCount;
+		int 		m_perId;
+		QString 	m_perName;
 };
 
 
@@ -260,7 +345,7 @@ class uoSTScan_FoldPerId : public uoSpanTreeScan
 			bool retVal = false;
 			if (!curSpan)
 				return retVal;
-			if (curSpan->_id == _perId){
+			if (curSpan->m_id == _perId){
 				// Нашли узел. с него и начнем вычисления диапазона.
 				_bFound = true;
 				curSpan->_folded = _bExpand;
@@ -283,7 +368,7 @@ class uoSTScan_FoldPerId : public uoSpanTreeScan
 		/// Функция финального посещения спана. Она может установить признак завершения сканирования.
 		bool visitSpanAfter(uoLineSpan* curSpan = 0){
 			if (curSpan) {
-				if (curSpan->_id == _perId){
+				if (curSpan->m_id == _perId){
 					_bFound = true;
 					_bBreak = true;
 					calcProcessList(curSpan);
@@ -345,12 +430,14 @@ class uoSpanTree : public QObject
 		void onLinesAdd(int lineStart, int lineEnd, spanList* list, int moveTo = 0);
 
 		// Обрабатываем исключение строк из спанов.
-		void onLineExclude(int lineStart, int lineCnt);
+		int  onLineExclude(int lineStart, int lineCnt);
 		int  onLineExclude(int lineStart, int lineCnt, spanList* list);
 
 		QList<int>* onGroupFold(int id, bool fold);
 
 		uoLineSpan* getSpanById(int id);
+		bool isNameUnique(int perId, const QString& name);
+		bool setSectionName(int perId, const QString& name);
 
 		void onProcessAll(uoSpanTreeScan* scanObj, spanList* list = NULL);
 

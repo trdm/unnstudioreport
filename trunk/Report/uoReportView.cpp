@@ -12,7 +12,7 @@ namespace uoReport {
 uoReportView::uoReportView(QWidget *parent)
 	: QFrame(parent)
 {
-	_ctrl = new uoReportCtrl(this);
+	m_ctrl = new uoReportCtrl(this);
 	setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
 }
 
@@ -23,13 +23,13 @@ uoReportView::~uoReportView()
 
 void uoReportView::resizeEvent( QResizeEvent * event ){
 	QFrame::resizeEvent(event);
-	_ctrl->resize(event->size());
-	_ctrl->move(0,0);
+	m_ctrl->resize(event->size());
+	m_ctrl->move(0,0);
 }
 
 void uoReportView::resize(int w, int h){
 	QFrame::resize(w, h);
-	_ctrl->resize(w, h);
+	m_ctrl->resize(w, h);
 }
 
 } //namespace uoReport

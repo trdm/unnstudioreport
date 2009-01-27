@@ -9,6 +9,8 @@
 #include "uoReport.h"
 #include "uoReportDoc.h"
 #include "uoSpanTree.h"
+#include "uoReportDocBody.h"
+
 
 
 namespace uoReport {

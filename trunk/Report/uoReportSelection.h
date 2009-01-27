@@ -30,6 +30,9 @@ class uoReportSelection : public QObject
 		bool isDocumSelect();
 		bool isCellSelect(int nmRow, int nmCol);
 
+		bool isTrueForSections();
+		bool getTrueSectionsCR(uoRptHeaderType& rht, int& start, int& end);
+
 		bool isCtrlPress();
 		bool isShiftPress();
 
@@ -49,6 +52,7 @@ class uoReportSelection : public QObject
 		void cellSelectedMidle(int nmCol, int nmRow);
 
 		void selectCell(int nmCol, int nmRow);
+		bool cellStartIsNull() { return _cellStart.isNull();}
 
 		QRect* getCellSpan();
 		QPoint* getCellPoint();
@@ -57,6 +61,11 @@ class uoReportSelection : public QObject
 		uoRptSelectionType getStartSelectionType();
 
 		bool calcRectFromPoints(QRect& rct, const QPoint& posStart, const QPoint& posEnd) const;
+		void refreshSelectionType();
+		void setSelectionMode(uoRptSelectionType sMode);
+
+	signals:
+		void onSelectonChange(const uoRptSelectionType& sModeOld, const uoRptSelectionType& sModeNew);
 
 	private:
 		/*
@@ -68,11 +77,11 @@ class uoReportSelection : public QObject
 			обратно, покинув их. выделение должно сохраниться.
 			поэтому я работаю не с _selRows а с _selRowsColsTmp.
 		*/
-		QList<int>* 	_selRows; 		///< Список выделенных строк
+		QList<int>* 	_selRows; 			///< Список выделенных строк
 		QList<int>* 	_selRowsColsTmp; 	///< Список временных выделенных строк
-		QList<int>* 	_selCols;		///< Список выделенных колонок
-		QList<QRect*>* _selSpans;		///< Список выделенных областей/спанов
-		QList<QRect*>* _selSpansCache;	///< Кешь выделенных областей/спанов
+		QList<int>* 	_selCols;			///< Список выделенных колонок
+		QList<QRect*>* _selSpans;			///< Список выделенных областей/спанов
+		QList<QRect*>* _selSpansCache;		///< Кешь выделенных областей/спанов
 
 		QList<QPoint*>* _selPoints;			///< Список выделенных ячеек
 		QList<QPoint*>* _selPointsCache;	///< Кешь выделенных ячеек

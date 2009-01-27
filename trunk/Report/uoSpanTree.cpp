@@ -172,22 +172,21 @@ bool uoSpanTree::addSpanTo(int start, int stop, spanList* list)
 		_lastAddedSpan = spn;
 		spn->_child = new spanList;
 		++_count;
-		list->append(spn);
-		rezu = true;
 		if (listContainChild(list, start, stop)){
 			uoLineSpan* spn2 = NULL;
 			spanList_iter iterB = list->begin();
 			while(iterB != list->end()) {
 				spn2 = *iterB;
-				if (spn2->isContained(start, stop) && spn != spn2) {
+				if (spn->isInSide(spn2->_start, spn2->_end) && spn != spn2) {
 					iterB = list->erase(iterB);
 					spn->_child->append(spn2);
-					iterB++;
 					continue;
 				}
 				iterB++;
 			}
 		}
+		list->append(spn);
+		rezu = true;
 	}
 	return rezu;
 }
@@ -209,7 +208,10 @@ bool uoSpanTree::addSpan(int start, int stop, bool folded)
 
 bool uoSpanTree::addSpan(int start, int stop, QString name)
 {
-	bool rezu = addSpan(start, stop, false);
+	bool rezu = false;
+	if (!possiblyAddSpan(start, stop) && isNameUnique(-1, name))
+		return false;
+	rezu = addSpan(start, stop, false);
 	if (rezu) {
 		_lastAddedSpan->_name = name;
 	}
@@ -377,8 +379,37 @@ void uoSpanTree::onLinesAdd(int lineStart, int lineEnd, spanList* list, int move
 /// Поиск спана по id.
 uoLineSpan* uoSpanTree::getSpanById(int id){
 	uoLineSpan* spn = NULL;
+
+	uoSpanScanerCommon* scaner = new uoSpanScanerCommon(uoSTST_ById);
+	scaner->m_perId = id;
+	onProcessAll(scaner);
+	spn = scaner->m_findSpan;
+	delete scaner;
 	return spn;
 }
+
+/**
+	Проверить уникальность имени секции..
+*/
+bool uoSpanTree::isNameUnique(int perId, const QString& name)
+{
+	bool retVal = true;
+	uoSpanTreeScan* scaner = new uoSpanScaner01(perId, name);
+	onProcessAll(scaner);
+	retVal = ((uoSpanScaner01*)scaner)->m_isUnique;
+	delete scaner;
+	return retVal;
+}
+
+bool uoSpanTree::setSectionName(int perId, const QString& name)
+{
+	uoLineSpan* spn = getSpanById(perId);
+	if (spn)
+		spn->_name = name;
+	return spn ? true:false;
+
+}
+
 
 /// Обрабатываем свертку/развертку группы.
 QList<int>* uoSpanTree::onGroupFold(int id, bool fold){
@@ -392,19 +423,21 @@ QList<int>* uoSpanTree::onGroupFold(int id, bool fold){
 
 /// Обрабатываем исключение строк из спанов.
 /// Конкретно или удаляет спаны или делает их меньше.
-void uoSpanTree::onLineExclude(int lineStart, int lineCnt)
+int uoSpanTree::onLineExclude(int lineStart, int lineCnt)
 {
 	if (!(lineStart>0 && lineCnt>0))
-		return;
+		return 0;
 	if (!_firstChild)
-		return;
+		return 0;
 	if (_firstChild->isEmpty())
-		return;
+		return 0;
 	int lineEnd;
 	lineEnd = lineStart + lineCnt - 1;
 
-
-	onLineExclude(lineStart, lineCnt, _firstChild);
+	int retVal = onLineExclude(lineStart, lineCnt, _firstChild);
+	if (retVal>0)
+		computeLevel();
+	return retVal;
 
 }
 
@@ -614,7 +647,7 @@ int uoSpanTree::printToDebug(spanList* list, int level)
 				lCount++;
 				retVal++;
 				spn = curList->at(i);
-				qDebug()<<"level: "<<level<<": ("<<spn->_start<<"/"<<spn->_end<<") name: "<<spn->_name << " ID: "<< spn->_id;
+				qDebug()<<"level: "<<level<<": ("<<spn->_start<<"/"<<spn->_end<<") name: "<<spn->_name << " ID: "<< spn->m_id;
 				if (spn->_child) {
 					retVal = retVal + printToDebug(spn->_child, level);
 				}
