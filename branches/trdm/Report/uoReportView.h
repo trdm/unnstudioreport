@@ -24,11 +24,11 @@ class uoReportView : public QFrame
 		virtual ~uoReportView();
 	public:
 		void resize(int w, int h);
-		uoReportCtrl* getControl() {return _ctrl;};
+		uoReportCtrl* getControl() {return m_ctrl;};
 	protected:
 		void resizeEvent ( QResizeEvent * event );
 	private:
-		uoReportCtrl* _ctrl;
+		uoReportCtrl* m_ctrl;
 
 };
 
