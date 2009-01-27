@@ -10,7 +10,16 @@
 #include <QMessageBox>
 
 
+
 namespace uoReport {
+
+
+uoInputIdDlg::uoInputIdDlg(QWidget *parent)
+	:QDialog(parent)
+{
+	setupUi(this);
+}
+
 
 uoReportViewIteract::uoReportViewIteract(QObject* parent)
 	: QObject(parent)
@@ -32,8 +41,13 @@ void uoReportViewIteract::createActions()
 	m_actAdd 		= new QAction(QString::fromUtf8("Добавить"),this);
 	m_actClear 		= new QAction(QString::fromUtf8("Очистить"),this);
 	m_actSize 		= new QAction(QString::fromUtf8("Размер..."),this);
+
 	m_actSectionIn	= new QAction(QString::fromUtf8("Включить в секцию"),this);
-	m_actSectionOut	= new QAction(QString::fromUtf8("Изключить в секцию"),this);
+	m_actSectionOut	= new QAction(QString::fromUtf8("Исключить из секции"),this);
+
+	m_actGroupIn	= new QAction(QString::fromUtf8("Включить в группу"),this);
+	m_actGroupOut	= new QAction(QString::fromUtf8("Исключить из группы"),this);
+
 	m_actFoldTo		= new QAction(QString::fromUtf8("Свернуть"),this);
 	m_actFoldUn		= new QAction(QString::fromUtf8("Развернуть"),this);
 
@@ -71,6 +85,10 @@ void uoReportViewIteract::createActions()
 	m_actSaveAs = new QAction(QString::fromUtf8("Сохранить как.."),this);
 	m_actLoad 	= new QAction(QString::fromUtf8("Открыть"),this);
 
+	m_showProp 	= new QAction(QString::fromUtf8("Свойства..."),this);
+
+
+
 	m_actProperty	= new QAction(QString::fromUtf8("Свойства"),this);
 
 	connect(m_actScope25, SIGNAL(triggered()), this, SLOT(onScale25()));
@@ -82,6 +100,10 @@ void uoReportViewIteract::createActions()
 	connect(m_actScope200, SIGNAL(triggered()), this, SLOT(onScale200()));
 	connect(m_actScope250, SIGNAL(triggered()), this, SLOT(onScale250()));
 	connect(m_actScope300, SIGNAL(triggered()), this, SLOT(onScale300()));
+
+	m_actUndo  	= new QAction(QString::fromUtf8("Отмена"),this);
+	m_actRedo	= new QAction(QString::fromUtf8("Повторить"),this);
+
 }
 
 /// коннектим акции итеракта к uoReportCtrl.
@@ -103,11 +125,24 @@ void uoReportViewIteract::connectActions(uoReportCtrl* rCtrl)
 	connect(m_actSaveAs, 	SIGNAL(triggered()), rCtrl, SLOT(onSaveAs()));
 
 	connect(m_actLoad, 	SIGNAL(triggered()), rCtrl, SLOT(onLoad()));
+	connect(m_actClear,	SIGNAL(triggered()), rCtrl, SLOT(onClear()));
+
+	connect(m_actSectionIn,		SIGNAL(triggered()), rCtrl, SLOT(onSectionInclude()));
+	connect(m_actSectionOut,	SIGNAL(triggered()), rCtrl, SLOT(onSectionExclude()));
+
+	connect(m_actGroupIn,	SIGNAL(triggered()), rCtrl, SLOT(onGroupInclude()));
+	connect(m_actGroupOut,	SIGNAL(triggered()), rCtrl, SLOT(onGroupExclude()));
 
 	connect(m_actOutToDebug, 	SIGNAL(triggered()), rCtrl, SLOT(debugRects()));
 
 	connect(m_actInvCharHide, 	SIGNAL(triggered()), rCtrl, SLOT(onInvisibleCharHide()));
 	connect(m_actInvCharShow, 	SIGNAL(triggered()), rCtrl, SLOT(onInvisibleCharShow()));
+
+	connect(m_actUndo, SIGNAL(triggered()), rCtrl, SLOT(onUndo()));
+	connect(m_actRedo, SIGNAL(triggered()), rCtrl, SLOT(onRedo()));
+
+	connect(m_showProp, SIGNAL(triggered()), rCtrl, SLOT(propertyEditorShow()));
+
 
 }
 
@@ -190,6 +225,23 @@ bool uoReportViewIteract::chooseSaveFilePathAndFormat(QString& filePath, uoRptSt
 		return true;
 	}
 	return false;
+}
+
+/// Запрос на ввод/изменение имени секции...
+bool uoReportViewIteract::inputSectionName(QString& name, QWidget* wi)
+{
+	uoInputIdDlg* dlg = new uoInputIdDlg(wi);
+	if (!dlg)
+		return false;
+	bool retVal = false;
+	dlg->m_name->setText(name);
+	int dret = dlg->exec();
+	if (dret == QDialog::Accepted){
+		retVal = true;
+		name = dlg->m_name->text();
+	}
+	delete  dlg;
+	return retVal;
 }
 
 

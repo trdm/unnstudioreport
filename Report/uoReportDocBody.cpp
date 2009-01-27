@@ -6,8 +6,8 @@
 *
 ***************************************/
 
-#include "uoReportDocBody.h"
 #include "QDebug"
+#include "uoReportDocBody.h"
 
 namespace uoReport {
 
@@ -301,7 +301,7 @@ uoTextBoundary* uoTextTrPointCash::getTextTrPoint()
 		point = new uoTextBoundary;
 	}
 	if (point){
-		point->_textBoundary = NULL;
+		point->m_textBoundary = NULL;
 		point->_charCount = 0;
 	}
 
@@ -315,7 +315,7 @@ void uoTextTrPointCash::savePoint(uoTextBoundary* point)
 		while(next){
 			next->_charCount = 0;
 			m_blockCash.append(next);
-			next = next->_textBoundary;
+			next = next->m_textBoundary;
 		}
 	}
 }
@@ -330,21 +330,17 @@ void uoCell::clear()
 }
 
 /// Взять текст.
-QString uoCell::getText()
-{
-	if (_textProp){
-		return _textProp->_text;
-	}
-	return QString("");
+QString uoCell::getText(){
+	return m_text;
 }
 
 bool uoCell::provideTextProp(uoReportDoc* doc, bool needCreate /* = false*/)
 {
-	if (_textProp)
+	if (m_textProp)
 		return true;
 	if (doc && needCreate){
-		_textProp = doc->getNewTextProp();
-		if (_textProp)
+		m_textProp = doc->getNewTextProp();
+		if (m_textProp)
 			return true;
 	}
 	return false;
@@ -354,8 +350,8 @@ bool uoCell::provideTextProp(uoReportDoc* doc, bool needCreate /* = false*/)
 QString uoCell::getTextWithLineBreak(bool drawInv)
 {
 	QString str;
-	if (_textProp){
-		QString cellTxt = _textProp->_text;
+	if (m_textProp){
+		QString cellTxt = m_text;
 		QString tmpStr;
 		QString ch = " ";
 
@@ -379,7 +375,7 @@ QString uoCell::getTextWithLineBreak(bool drawInv)
 		int fullLen = cellTxt.length(), alreadyLen = 0;
 
 
-		uoTextBoundary* textTPoint = _textProp->_textBoundary;
+		uoTextBoundary* textTPoint = m_textBoundary;
 		if (!textTPoint)
 			str = cellTxt;
 		while(textTPoint && fullLen>0){
@@ -387,9 +383,9 @@ QString uoCell::getTextWithLineBreak(bool drawInv)
 			str.append(tmpStr);
 			fullLen = fullLen - textTPoint->_charCount;
 			alreadyLen = alreadyLen + textTPoint->_charCount;
-			if (textTPoint->_textBoundary){
+			if (textTPoint->m_textBoundary){
 				str.append(QChar::LineSeparator);
-				textTPoint = textTPoint->_textBoundary;
+				textTPoint = textTPoint->m_textBoundary;
 			}
 		}
 	}
@@ -397,24 +393,22 @@ QString uoCell::getTextWithLineBreak(bool drawInv)
 }
 
 
-/// Установить текст. Надо гарантировать наличие структуры _textProp;
+/// Установить текст. Надо гарантировать наличие структуры m_textProp;
 void uoCell::setText(QString text, uoReportDoc* doc)
 {
 	if (provideTextProp(doc, true))
-		_textProp->_text = text;
+		m_text = text;
 }
 
 void uoCell::setMaxRowLength(qreal len, uoReportDoc* doc)
 {
 	if (provideTextProp(doc, true))
-		_textProp->m_maxRowLen = len;
+		m_maxRowLen = len;
 }
 
 qreal uoCell::getMaxRowLength()
 {
-	if (_textProp)
-		return _textProp->m_maxRowLen;
-	return 0.0;
+	return m_maxRowLen;
 }
 
 
@@ -422,9 +416,9 @@ qreal uoCell::getMaxRowLength()
 void uoCell::setAlignment(const uoVertAlignment& va, const uoHorAlignment& ha, const uoCellTextBehavior& tb, uoReportDoc* doc)
 {
 	if (provideTextProp(doc, true)) {
-		_textProp->_horAlignment = ha;
-		_textProp->_vertAlignment = va;
-		_textProp->_behavior = tb;
+		m_textProp->m_horTAlignment = ha;
+		m_textProp->m_vertTAlignment = va;
+		m_textProp->m_TextBehavior = tb;
 	}
 }
 
@@ -432,22 +426,22 @@ void uoCell::setAlignment(const uoVertAlignment& va, const uoHorAlignment& ha, c
 int uoCell::getAlignment()
 {
 	int flags = 0;
-	if (_textProp) {
-		switch (_textProp->_vertAlignment){
+	if (m_textProp) {
+		switch (m_textProp->m_vertTAlignment){
 			case uoVA_Top:{	flags |= Qt::AlignTop; break; }
 			case uoVA_Bottom:{	flags |= Qt::AlignBottom ; break; }
 			case uoVA_Center:{	flags |= Qt::AlignVCenter ; break; }
 			default:
 			break;
 		}
-		switch (_textProp->_horAlignment){
+		switch (m_textProp->m_horTAlignment){
 			case uoHA_Left:{	flags |= Qt::AlignLeft ; break; }
 			case uoHA_Right:{	flags |= Qt::AlignRight  ; break; }
 			case uoHA_Center:{	flags |= Qt::AlignHCenter ; break; }
 			default:
 			break;
 		}
-		switch (_textProp->_behavior){
+		switch (m_textProp->m_TextBehavior){
 			case uoCTB_Transfer:{
 				flags |= Qt::TextWordWrap;
 				flags |= Qt::TextExpandTabs ;
@@ -464,23 +458,37 @@ int uoCell::getAlignment()
 /// Вернуть поведение текста.
 uoCellTextBehavior 	uoCell::getTextBehavior()
 {
-	if (_textProp){
-		return _textProp->_behavior;
+	if (m_textProp){
+		return m_textProp->m_TextBehavior;
 	}
 	return uoCTB_Auto;
+}
+uoCellTextType	uoCell::getTextType()
+{
+	if (m_textProp){
+		return m_textProp->_textType;
+	}
+	return uoCTT_Unknown;
+}
+
+uorTextDecor* uoCell::getTextProp(uoReportDoc* doc, bool needCreate)
+{
+	if (!m_textProp)
+		return m_textProp;
+	return doc->getDefaultTextProp();
 }
 
 uoHorAlignment 	uoCell::getAlignmentHor()
 {
-	if (_textProp){
-		return _textProp->_horAlignment;
+	if (m_textProp){
+		return m_textProp->m_horTAlignment;
 	}
 	return uoHA_Left;
 }
 uoVertAlignment uoCell::getAlignmentVer()
 {
-	if (_textProp){
-		return _textProp->_vertAlignment;
+	if (m_textProp){
+		return m_textProp->m_vertTAlignment;
 	}
 	return uoVA_Top;
 }
@@ -492,20 +500,23 @@ QFont* uoCell::getFont(uoReportDoc* doc, bool needCreate)
 {
 	if (!doc)
 		return NULL;
-	if (!_textProp){
+	if (!m_textProp){
 		if (!needCreate) {
 			return NULL;
 		}
-		_textProp = doc->getNewTextProp();
-		if (!_textProp)
+		m_textProp = doc->getNewTextProp();
+		if (!m_textProp)
 			return NULL;
 
 	}
-	QFont* font = doc->getFontByID(_textProp->_fontID);
+	QFont* font = doc->getFontByID(m_textProp->m_fontId);
 	if (font){
-		font->setPointSize(_textProp->_fontSize);
-		font->setBold(_textProp->_fontBold);
-		font->setItalic(_textProp->_fontItalic);
+		if (m_textProp->m_fontSz>0)
+			font->setPointSize(m_textProp->m_fontSz);
+		if (m_textProp->m_fontB>=0)
+			font->setBold(m_textProp->m_fontB);
+		if (m_textProp->m_fontI>=0)
+			font->setItalic(m_textProp->m_fontI);
 	}
 	return font;
 }
@@ -513,31 +524,31 @@ QFont* uoCell::getFont(uoReportDoc* doc, bool needCreate)
 /// Получить размер шрифта..
 int	uoCell::getFontSize()
 {
-	if (!_textProp)
+	if (!m_textProp)
 		return 0;
-	return _textProp->_fontSize;
+	return m_textProp->m_fontSz;
 }
 /// Получить ID шрифта
 int	uoCell::getFontId(){
-	if (!_textProp)
+	if (!m_textProp)
 		return 0;
-	return _textProp->_fontID;
+	return m_textProp->m_fontId;
 }
 
 
 /// Извлекаем шрифт из документа по ID
 const QColor*  uoCell::getFontColor(uoReportDoc* doc)
 {
-	if (!doc || !_textProp)
+	if (!doc || !m_textProp)
 		return NULL;
-	return doc->getColorByID(_textProp->_fontColID);
+	return doc->getColorByID(m_textProp->m_fontCol);
 }
 
 int uoCell::getFontColorId()
 {
-	if (!_textProp)
+	if (!m_textProp)
 		return 0;
-	return _textProp->_fontColID;
+	return m_textProp->m_fontCol;
 }
 
 const
@@ -555,10 +566,10 @@ int uoCell::getBGColorId(){
 /// Утилизируем точки выравнивания.
 void uoCell::saveTrPoint(uoTextTrPointCash* cash)
 {
-	if (_textProp){
-		if (_textProp->_textBoundary){
-			cash->savePoint(_textProp->_textBoundary);
-			_textProp->_textBoundary = NULL;
+	if (m_textProp){
+		if (m_textBoundary){
+			cash->savePoint(m_textBoundary);
+			m_textBoundary = NULL;
 		}
 	}
 }
@@ -569,25 +580,25 @@ void uoCell::applyTrPoint(uoTextTrPointCash* cash, const QStringList& listStr, u
 	uoTextBoundary* textTPoint = NULL;
 	int cntStr = listStr.size();
 	if (cntStr>1){
-		if (!_textProp) {
-			_textProp = doc->getNewTextProp();
+		if (!m_textProp) {
+			m_textProp = doc->getNewTextProp();
 		}
-		if (_textProp){
+		if (m_textProp){
 			textTPoint = cash->getTextTrPoint();
 
 			int i = 0, strSize = 0;
 
 			if (textTPoint){
-				_textProp->_textBoundary = textTPoint;
+				m_textBoundary = textTPoint;
 				QString nextStr;
 				while(textTPoint && i<cntStr){
 					nextStr = listStr.at(i);
 					strSize = nextStr.length();
 					textTPoint->_charCount = strSize;
-					textTPoint->_textBoundary = NULL;
+					textTPoint->m_textBoundary = NULL;
 					if ((i+1)<cntStr){
-						textTPoint->_textBoundary = cash->getTextTrPoint();
-						textTPoint = textTPoint->_textBoundary;
+						textTPoint->m_textBoundary = cash->getTextTrPoint();
+						textTPoint = textTPoint->m_textBoundary;
 					}
 					i = i + 1;
 				}
@@ -726,21 +737,5 @@ uoRow* uoRowsDoc::getRow(int nmRow, bool needCreate)
 {
 	return getItem(nmRow, needCreate);
 }
-
-///// Получить ячейку по строке/колонке.
-//uoCell* uoRowsDoc::getCell(int nmRow, int nmCol,bool needCreate)
-//{
-//	uoRow* row = getRow(nmRow, needCreate);
-//	if (!row)
-//		return NILL;
-//	return row->getCell(nmCol, needCreate);
-//
-//}
-
-
-
-
-
-
 
 } //namespace uoReport

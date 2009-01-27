@@ -16,9 +16,6 @@
 #include <QDataStream>
 #include <QFile>
 #include <QtXml>
-//#include <QDomNode>
-
-
 
 namespace uoReport {
 // Loader - 1) грузчик
@@ -30,9 +27,9 @@ class uoReportLoader
 		static uoReportLoader* getLoader(uoRptStoreFormat stFormat);
 
 		void 			setFileName(QString fileName);
-		void 			setFormat(uoRptStoreFormat stFormat) {_storeFormat = stFormat;};
-		QString				getFileName() {return _docFilePath;};
-		uoRptStoreFormat	getFormat() {return _storeFormat;};
+		void 			setFormat(uoRptStoreFormat stFormat) {m_storeFormat = stFormat;};
+		QString				getFileName() {return m_docFilePath;};
+		uoRptStoreFormat	getFormat() {return m_storeFormat;};
 
 		QString getLastError() {return _lastError;};
 		void 	setLastError(QString errMes) {_lastError = errMes;};
@@ -91,8 +88,8 @@ class uoReportLoader
 
 	private:
 		QString 		 _lastError;	///< Имя файла
-		QString 		 _docFilePath;	///< Имя файла
-		uoRptStoreFormat _storeFormat;	///< Формат хранения файла отчета.
+		QString 		 m_docFilePath;	///< Имя файла
+		uoRptStoreFormat m_storeFormat;	///< Формат хранения файла отчета.
 
 };
 

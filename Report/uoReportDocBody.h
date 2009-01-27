@@ -14,6 +14,7 @@
 #include "uoReport.h"
 #include "uoNumVector.h"
 #include "uoReportLoader.h"
+#include "uoReportDocBody.h"
 #include "uoReportDoc.h"
 
 
@@ -30,6 +31,61 @@ struct uoEnumeratedItem
 	virtual int  number() = 0;
 
 };
+//struct uorTextDecorBase;
+/**
+	\struct uorTextDecorBase - минимальная структура с декорацией(шрифт(семейство/размер/BIU/цвет), цвет фона)
+	Далее эта структура расползется по всем декорируемым
+	size_t sz2 = sizeof(uorTextDecorBase); = 4 байта, помоему вполне съедобный размер.
+	использование значений для хранения данных:
+	short > {...,-1,0,1000,...}
+	char  > {...,-1,0,128,...}
+	int:2 > {-2,-1,0,1}
+
+*/
+struct uorTextDecorBase
+{
+	short m_fontId; ///< Иднтификатор шрифта
+	char m_fontSz;	///< Размер символов от -1 до 128
+	int m_fontB : 2; ///< Шрифт есть Болд
+	int m_fontI : 2; ///< Шрифт есть Италик
+	int m_fontU : 2; ///< Шрифт есть Подчеркнутый
+	short m_fontCol; ///< Цвет шрифта
+	short m_BgCol; 	 ///< Цвет фона.
+
+	uorTextDecorBase()
+	: m_fontId(-1),
+	m_fontSz(-1),
+	m_fontB(-1),
+	m_fontI(-1),
+	m_fontU(-1),
+	m_fontCol(-1),
+	m_BgCol(-1)	{}
+
+	void resetItem(){
+		m_fontId = -1;
+		m_fontSz = -1;
+		m_fontB = -1;
+		m_fontI = -1;
+		m_fontU = -1;
+		m_fontCol = -1;
+		m_BgCol = -1;
+	}
+	void copyFrom(uorTextDecorBase* src)
+	{
+		m_fontId = src->m_fontId;
+		m_fontSz = src->m_fontSz;
+		m_fontB  = src->m_fontB;
+		m_fontI  = src->m_fontI;
+		m_fontU  = src->m_fontU;
+		m_fontCol = src->m_fontCol;
+		m_BgCol  = src->m_BgCol;
+	}
+	bool mergeItem(struct uorTextDecorBase item){
+		int noEq = 0;
+		return (noEq>0)?true: false;
+	}
+};
+
 
 /**
 	\struct uoRptNumLine - нумерованная "линия" отчета (строка или столбец)
@@ -38,9 +94,7 @@ struct uoEnumeratedItem
 struct uoRptNumLine : public uoEnumeratedItem{
 	public:
 
-		uoRptNumLine(int ln)
-			: _line(ln), _size(-1), _hiden(false), _fixed(false)
-			{}
+		uoRptNumLine(int ln) : _line(ln), _size(-1), _hiden(false), _fixed(false)	{}
 		virtual ~uoRptNumLine(){};
 
 	void 	setNumber(int nm) {_line = nm;}
@@ -165,10 +219,10 @@ class uoReportDocFontColl {
 struct uoTextBoundary
 {
 	public:
-		uoTextBoundary()	: _textBoundary(0),_charCount(-1){};
+		uoTextBoundary()	: m_textBoundary(0),_charCount(-1){};
 		~uoTextBoundary(){};
 
-		uoTextBoundary* _textBoundary;
+		uoTextBoundary* m_textBoundary;
 		int _charCount;
 };
 
@@ -189,51 +243,63 @@ struct uoTextTrPointCash
 };
 
 /**
-	\struct uoCellTextProps - содержит данные о тексте ячейки.
+	\struct uorTextDecor - содержит данные о тексте ячейки.
 	\brief содержит данные о тексте ячейки и параметрах текста.
 	Шрифт, его размер и опции, сам текст, его поведение при большой длинне..
 */
-struct uoCellTextProps {
-	public:
-	uoCellTextProps()
-	:_textBoundary(0)
-	{
-		_text			= "";
-		_fontID			= -1;
-		_fontColID		= -1;
-		_fontSize		= 10;
-		_fontBold		= false;
-		_fontItalic		= false;
-		m_maxRowLen		= 0.0;
+struct uorTextDecor : public uorTextDecorBase {
+public:
+	uorTextDecor()	{
+		resetItem();
+	}
+	void resetItem(){
+		uorTextDecorBase::resetItem();
+//		m_text			= "";
 
 		_textType 		= uoCTT_Text;
-		_vertAlignment  = uoVA_Top;
-		_horAlignment	= uoHA_Left;
-		_behavior		= uoCTB_Auto;
+		m_vertTAlignment  = uoVA_Top;
+		m_horTAlignment	= uoHA_Left;
+		m_TextBehavior		= uoCTB_Auto;
+	}
+	void copyFrom(uorTextDecor* src){
+		uorTextDecorBase::copyFrom(src);
+		_textType 			= src->_textType;
+		m_vertTAlignment  	= src->m_vertTAlignment;
+		m_horTAlignment		= src->m_horTAlignment;
+		m_TextBehavior		= src->m_TextBehavior;
+
 	}
 
-	QString 	_text; 	///< Текст содержащийся в ячейке.
-	int 		_fontID;
-	int 		_fontColID;
-	int 		_fontSize;
-	bool 		_fontBold;
-	bool		_fontItalic;
-	qreal 		m_maxRowLen; ///< длинна самой длинной строки в ячейке....
+//	QString 	m_text; 		///< Текст содержащийся в ячейке.
+//	QString 	m_textDecode; 	///< Текст расшифровки.
 
 	uoCellTextType  	_textType;		///< Тип текста ячейки
-	uoVertAlignment 	_vertAlignment;	///< Тип вертикального выравнивания текста.
-	uoHorAlignment		_horAlignment;	///< Тип горизонтального выравнивания текста.
-	uoCellTextBehavior 	_behavior;		///< Тип текста при превышении его длинны размера ячейки.
-	uoTextBoundary* 	_textBoundary;		///< структура содержащая переносы текста.
+	uoVertAlignment 	m_vertTAlignment;	///< Тип вертикального выравнивания текста.
+	uoHorAlignment		m_horTAlignment;	///< Тип горизонтального выравнивания текста.
+	uoCellTextBehavior 	m_TextBehavior;		///< Тип текста при превышении его длинны размера ячейки.
 
+//	// чисто вспомогательные.
+//	qreal 		m_maxRowLen; 	///< длинна самой длинной строки в ячейке....
 };
 /**
-	\struct uoCellBordProps - данные о бордюре ячейки.
+	\struct uorBorderPropBase - данные о бордюре ячейки.
 	\brief Содержит данные о бордюре ячейки.
 */
-struct uoCellBordProps {
-	uoCellBorderType 	_bordType[4];	///< Тип рисунка бордюра.
-	int					_bordColor;		///< Цвеет бордюра.
+struct uorBorderPropBase {
+	uoCellBorderType 	m_bordType[4];	///< Тип рисунка бордюра.
+	int					m_bordColor;		///< Цвеет бордюра.
+	uorBorderPropBase(){
+		resetItem();
+	}
+	void resetItem()
+	{
+		m_bordColor = -1;
+		m_bordType[0] = uoCBT_Unknown;
+		m_bordType[1] = uoCBT_Unknown;
+		m_bordType[2] = uoCBT_Unknown;
+		m_bordType[3] = uoCBT_Unknown;
+	}
+
 };
 
 /**
@@ -241,7 +307,7 @@ struct uoCellBordProps {
 	\brief Содержит данные об объединении ячеек.
 	Описания режимов объединения находится uoReport.h
 */
-struct uoCellJoin{
+typedef struct uoCellJoin{
 	uoCellJoin()
 		:m_JoinType(uoCJT_Unknown),m_Coord1(0), m_Coord2(0)
 	{}
@@ -263,18 +329,23 @@ struct uoCellJoin{
 */
 struct uoCell : public uoEnumeratedItem{
 	uoCell(int nom)
-		: _x(nom)
+		: m_colNo(nom)
 		, _bgColorID(0)
 		, m_height(0.0)
-		, _textProp(0)
-		, _bordProp(0)
+		, m_textProp(0)
+		, m_borderProp(0)
 		, m_ceelJoin(0)
-	{}
+		, m_textBoundary(0)
+	{
+		m_text			= "";
+		m_textDecode 	= "";
+		m_maxRowLen		= 0.0;
+	}
 	~uoCell()
 	{}
 
-	virtual void setNumber(int nm){		_x = nm;	}
-	virtual int  number() {		return _x;	}
+	virtual void setNumber(int nm){		m_colNo = nm;	}
+	virtual int  number() {		return m_colNo;	}
 	void clear();
 
 	bool 	provideTextProp(uoReportDoc* doc, bool needCreate = false);
@@ -290,6 +361,8 @@ struct uoCell : public uoEnumeratedItem{
 	uoHorAlignment 		getAlignmentHor();
 	uoVertAlignment 	getAlignmentVer();
 	uoCellTextBehavior 	getTextBehavior();
+	uoCellTextType		getTextType(); //_textType
+	uorTextDecor* 	getTextProp(uoReportDoc* doc, bool needCreate = false);
 
 	QFont*   getFont(uoReportDoc* doc, bool needCreate = false);
 	int		 getFontSize();
@@ -307,13 +380,19 @@ struct uoCell : public uoEnumeratedItem{
 	void applyTrPoint(uoTextTrPointCash* cash, const QStringList& listStr, uoReportDoc* doc);
 
 
-	int 		_x;				///< Номер колонки, к которой ячейка принадлежит.
+	int 		m_colNo;				///< Номер колонки, к которой ячейка принадлежит.
 	int 		_bgColorID;		///< Индекс цвета фона ячейки...
 	qreal		m_height;		///< Высота ячейки, что-бы не высчитывать формат 100 раз..
 
-	uoCellTextProps* _textProp;
-	uoCellBordProps* _bordProp;
+	uorTextDecor* m_textProp;
+	uorBorderPropBase* m_borderProp;
 	uoCellJoin*		m_ceelJoin;
+
+	QString 	m_text; 		///< Текст содержащийся в ячейке.
+	QString 	m_textDecode; 	///< Текст расшифровки.
+	uoTextBoundary* 	m_textBoundary;		///< структура содержащая переносы текста.
+	// чисто вспомогательные.
+	qreal 		m_maxRowLen; 	///< длинна самой длинной строки в ячейке....
 
 };
 

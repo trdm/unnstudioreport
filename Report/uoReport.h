@@ -22,6 +22,8 @@ namespace uoReport {
 #define rptSizeNull 0.0
 
 #define TEXT_TR_POINT_ARR_SIZE 400
+#define UNDO_COMMAND_MAX_COUNT 50
+
 
 
 /**
@@ -61,13 +63,23 @@ class uoReportLoader;
 class uoReportLoaderXML;
 class uoReportSelection;
 
-struct uoTextBoundary;
-struct uoCellTextProps;
-struct uoCellBordProps;
-class uoRowsDoc;
-struct uoCell;
-struct uoCellJoin;
-class uoRow;
+struct uorTextDecorBase;
+class uorPropDlg;
+class uoTextPropTab;
+class uoTextLayotTab;
+class uoTextFontPropTab;
+
+class 	uoReportPropEditor;
+struct 	uoTextBoundary;
+struct 	uorTextDecor;
+struct 	uorBorderPropBase;
+class 	uoRowsDoc;
+struct 	uoCell;
+struct 	uoCellJoin;
+class 	uoRow;
+struct 	uoRUndoUnit;
+struct 	uoRUndo01;
+class 	uoReportUndo;
 
 
 ///\enum uoIntersectMode - варианты перечения отрезков
@@ -81,6 +93,14 @@ typedef enum uoIntersectMode {
 	, ismSurround 	= 7
 	, ismAboveUp 	= 9
 	, ismBelowDown 	= 12
+};
+
+/// Тип спанов: секция или группа..
+typedef enum uoRptSpanType
+{
+	uoSpanType_None = 0
+	, uoSpanType_Group
+	, uoSpanType_Sections
 };
 typedef enum uoRptHeaderType {
 	  rhtUnknown = 0
@@ -179,7 +199,7 @@ typedef enum uoRptSelectionType {
 	, uoRst_Rows			///< Выделены строки
 	, uoRst_Cell			///< Выделена ячейка
 	, uoRst_Cells			///< Выделены ячейки
-	, uoRst_Mixed			///< Миксированное выделение.
+	, uoRst_Mixed			///< Миксированное выделение(ячеек?).
 };
 
 ///\enum uoBorderLocType - расположения бордюра
@@ -279,14 +299,17 @@ typedef enum uoHorAlignment {
 	Потом склеивается.
 */
 enum uoCellTextType {
-	uoCTT_Text = 0	///< Простой текст, не интерпретируемый
+	 uoCTT_Unknown = 0	///< Простой текст, не интерпретируемый
+	, uoCTT_Text = 1	///< Простой текст, не интерпретируемый
 	, uoCTT_Expr 	///< Выражение, должно быть взято из хранилища выражения
 	, uoCTT_Templ 	///< Шаблон. должен быть разобран и интерпретирован.
 };
 
+
 ///\enum uoCellBorderType - тип линии бордюра, просто повторение Qt::PenStyle
 enum uoCellBorderType {
-	  uoCBT_SolidLine = 0
+	  uoCBT_Unknown = -1
+	, uoCBT_SolidLine = 0
 	, uoCBT_DashLine
 	, uoCBT_DotLine
 	, uoCBT_DashDotLine
@@ -318,7 +341,34 @@ enum uoCellsJoinType{
 	, uoCJT_Normal 		// Нормальное объединение
 };
 
+/**
+	Типы поиска в uoSpanTree.
+*/
+typedef enum uoSTScanType
+{
+	uoSTST_Unknown = 0
+	, uoSTST_ById = 1
+	, uoSTST_ByName = 2
+};
 
+/**
+	\enum uoDocChangeType - типы изменений документа.
+	\brief Используется для типизации изменеия документа для механизма Undo/Redo
+*/
+typedef enum uoDocChangeType
+{
+	uoDCT_Unknown = 0
+	, uoDCT_ClearDoc  	/// очистка документа.
+	, uoDCT_ChageText  	/// Изменение текста ячейки...
+};
+
+typedef enum uorPropertyTabType
+{
+	uorPropTab_Unknown = 0
+	, uorPropTab_Text = 1
+	, uorPropTab_TextLayot = 2
+	, uorPropTab_TextFont = 3
+};
 
 
 /// Запуск тестов для элементов отчета...

@@ -11,14 +11,24 @@
 #include <QAction>
 #include "uoReport.h"
 #include "uoReportCtrl.h"
+#include "ui_uoInputId.h"
 
 namespace uoReport {
+
+class uoInputIdDlg : public QDialog, public Ui::uoInputId
+{
+	Q_OBJECT
+	public:
+		uoInputIdDlg(QWidget *parent = 0);
+		virtual ~uoInputIdDlg(){};
+};
 
 /**
 	\class uoReportViewIteract
 	\brief Помошник интерактивного взаимодеййствия с пользователем...
 	выносим сюда всякие нудные неконцептуальные массивные вещи, к примеру
-	инициализации множества итемов.
+	инициализации множества итемов, ввод дентификаторов сейций,
+	тупые диалоги и т.п.
 
 	В итоге, это будет отдельный разделяемый класс, наполняющий интерфейс.
 
@@ -40,8 +50,13 @@ class uoReportViewIteract : public QObject
 		QAction* m_actAdd;
 		QAction* m_actClear;
 		QAction* m_actSize;
+
 		QAction* m_actSectionIn;
 		QAction* m_actSectionOut;
+
+		QAction* m_actGroupIn;
+		QAction* m_actGroupOut;
+
 		QAction* m_actFoldTo;
 		QAction* m_actFoldUn;
 		QAction* m_actProperty;
@@ -80,6 +95,10 @@ class uoReportViewIteract : public QObject
 		QAction* m_actSaveAs;
 		QAction* m_actLoad;
 
+		QAction* m_actUndo;
+		QAction* m_actRedo;
+
+		QAction* m_showProp;
 
 		void setCheckedState(qreal scaleFactor);
 		bool chooseSaveFilePathAndFormat(QString& filePath, uoRptStoreFormat& frmt, QWidget* wi);
@@ -98,6 +117,8 @@ class uoReportViewIteract : public QObject
 		void onScale200();
 		void onScale250();
 		void onScale300();
+	public:
+		bool inputSectionName(QString& name, QWidget* wi);
 
 };
 

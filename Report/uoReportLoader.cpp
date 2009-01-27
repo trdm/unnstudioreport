@@ -42,20 +42,20 @@ uoReportLoader::~uoReportLoader(){
 
 void uoReportLoader::setFileName(QString fileName)
 {
-	_docFilePath = fileName;
+	m_docFilePath = fileName;
 }
 
 /// Проверим установлены ли проперти для сохранения/восстановления данных.
 bool uoReportLoader::validateStoreProps(bool forLoad){
 
-	if (_docFilePath.isEmpty() ||
-		_storeFormat == uoRsf_Unknown)
+	if (m_docFilePath.isEmpty() ||
+		m_storeFormat == uoRsf_Unknown)
 	{
 		return false;
 	}
 	if (forLoad) {
 		/// при чтении.
-		if (!QFile::exists(_docFilePath)){
+		if (!QFile::exists(m_docFilePath)){
 			return false;
 		}
 	} else {
@@ -159,8 +159,8 @@ bool uoReportLoaderXML::saveSectionHeaderStart(int count, uoRptHeaderType rht){
 	return true;
 }
 bool uoReportLoaderXML::saveSectionItem(uoLineSpan* peSpn){
-	_textStream << QString("\t<Section start = \"%1\" end = \"%2\" name=\"%3\"/>\n")
-	.arg(peSpn->getStart()).arg(peSpn->getEnd()).arg(peSpn->_name);
+	_textStream << QString("\t<Section start = \"%1\" end = \"%2\" name=\"%3\" level=\"%4\" />\n")
+	.arg(peSpn->getStart()).arg(peSpn->getEnd()).arg(peSpn->_name).arg(peSpn->_level);
 	return true;
 }
 bool uoReportLoaderXML::saveSectionHeaderEnd(uoRptHeaderType rht){

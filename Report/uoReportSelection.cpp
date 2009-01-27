@@ -31,7 +31,7 @@ uoReportSelection::uoReportSelection(QObject* parent)
 
 
 	_startSelMode	= uoRst_Unknown;
-	_selMode		= uoRst_Unknown;
+	setSelectionMode(uoRst_Unknown);
 	_strartColRow	= -1;
 	_cellStart.setX(0);
 	_cellStart.setY(0);
@@ -73,10 +73,21 @@ bool uoReportSelection::calcRectFromPoints(QRect& rct, const QPoint& posStart, c
 	return true;
 }
 
+/// единая точка для установки сел-мода
+void uoReportSelection::setSelectionMode(uoRptSelectionType sMode)
+{
+	if (_selMode != sMode){
+		const uoRptSelectionType selModeOld = _selMode;
+		const uoRptSelectionType selModeNew = sMode;
+		_selMode = sMode;
+		emit onSelectonChange(selModeOld, selModeNew);
+	}
+}
+
 /// Очистка всех даных по выделениям
 void uoReportSelection::clearSelections(uoRptSelectionType exclude)
 {
-	_selMode		= uoRst_Unknown;
+	setSelectionMode(uoRst_Unknown);
 	_startSelMode	= uoRst_Unknown;
 	_strartColRow	= -1;
 
@@ -85,12 +96,12 @@ void uoReportSelection::clearSelections(uoRptSelectionType exclude)
 		_selRows->clear();
 		_selRowsColsTmp->clear();
 	} else {
-		_selMode = uoRst_Rows;
+		setSelectionMode(uoRst_Rows);
 	}
 	if (exclude != uoRst_Columns) {
 		_selCols->clear();
 	} else {
-		_selMode = uoRst_Columns;
+		setSelectionMode(uoRst_Columns);
 	}
 
 	if (exclude != uoRst_Cells) {
@@ -110,7 +121,7 @@ void uoReportSelection::clearSelections(uoRptSelectionType exclude)
 			_selPointsCache->append(_selPoints->takeFirst());
 
 	} else {
-		_selMode = uoRst_Cells;
+		setSelectionMode(uoRst_Cells);
 	}
 }
 
@@ -198,6 +209,119 @@ bool uoReportSelection::isCellSelect(int nmRow, int nmCol)
 	return retVal;
 }
 
+/**
+	Получить правильный диапазон выделенных строк или столбцов и статус возврата.
+*/
+bool uoReportSelection::getTrueSectionsCR(uoRptHeaderType& rht, int& start, int& end)
+{
+	rht = rhtUnknown;
+	start = -1;
+	end = -1;
+
+	bool retVal = false;
+	switch(_selMode)
+	{
+		case uoRst_Unknown:
+		case uoRst_Document:
+		case uoRst_Cell:
+		case uoRst_Cells:
+		case uoRst_Mixed:
+		{
+			return retVal;
+		}
+		case uoRst_Column:
+		case uoRst_Columns:
+		case uoRst_Row:
+		case uoRst_Rows:
+		{
+			int rowLast = -1, rowCur;
+			QList<int>* list = _selRows;
+			rht = rhtVertical;
+
+			if (_selMode == uoRst_Column || _selMode == uoRst_Columns)
+			{
+				list = _selCols;
+				rht = rhtHorizontal;
+			}
+
+			if (list->isEmpty()) {
+				retVal = false;
+
+			} else if (list->size() == 1){
+				retVal = true;
+				end = list->at(0);
+				start = end;
+
+			} else {
+				retVal = true;
+				qSort(*list);
+				QList<int>::const_iterator iter = list->constBegin();
+				while(iter != list->constEnd()){
+					rowCur = *iter;
+					if (rowLast != -1){
+						if (rowLast+1 != rowCur) {
+							retVal = false;
+							break;
+						}
+						end = rowCur;
+					} else {
+						start = rowCur;
+					}
+					rowLast = rowCur;
+					iter++;
+				}
+			}
+			break;
+		}
+		default:{
+			break;
+		}
+	}
+	if (!retVal)
+	{
+		rht = rhtUnknown;
+		start = end = -1;
+	}
+	return retVal;
+
+}
+
+/**
+	Определим, подходит ли выделение для операций с секциями.
+	правильное выделение должно быть строка|Строки_подряд|Столбец|Столбцы_подряд
+*/
+bool uoReportSelection::isTrueForSections()
+{
+	bool retVal = false;
+	switch(_selMode)
+	{
+		case uoRst_Unknown:
+		case uoRst_Document:
+		case uoRst_Cell:
+		case uoRst_Cells:
+		case uoRst_Mixed:
+		{
+			return retVal;
+		}
+		case uoRst_Row:
+		case uoRst_Rows:
+		case uoRst_Column:
+		case uoRst_Columns:
+		{
+			uoRptHeaderType rht;
+			int start, end;
+			retVal = getTrueSectionsCR(rht, start, end);
+
+			break;
+		}
+		default:{
+			break;
+		}
+	}
+	return retVal;
+}
+
+
 /// Определим, нажат ли Ctrl
 bool uoReportSelection::isCtrlPress()
 {
@@ -220,10 +344,11 @@ bool uoReportSelection::isShiftPress()
 void uoReportSelection::selectRow(int nmRow)
 {
 	bool ctrl = isCtrlPress();
-	if (!ctrl)
+	if (!ctrl) {
 		clearSelections();
+	}
 	clearSelections(uoRst_Rows);
-	_selMode = uoRst_Rows;
+	setSelectionMode(uoRst_Rows);
 	if (_selRows->contains(nmRow)){
 		if (ctrl){
 			int pos = 0;
@@ -241,7 +366,7 @@ void uoReportSelection::selectCol(int nmCol)
 	if (!ctrl)
 		clearSelections();
 	clearSelections(uoRst_Columns);
-	_selMode = uoRst_Columns;
+	setSelectionMode(uoRst_Columns);
 	if (_selCols->contains(nmCol)){
 		if (ctrl){
 			int pos = 0;
@@ -273,7 +398,7 @@ void uoReportSelection::rowSelectedStart(int nmRow){
 		selectRow(nmRow);
 	}
 	_strartColRow = nmRow;
-	_selMode = uoRst_Row;
+	setSelectionMode(uoRst_Row);
 }
 
 /**
@@ -325,7 +450,7 @@ void uoReportSelection::colSelectedStart(int nmCol){
 		selectCol(nmCol);
 	}
 	_strartColRow = nmCol;
-	_selMode = uoRst_Column;
+	setSelectionMode(uoRst_Column);
 }
 
 void uoReportSelection::colSelectedEnd(int nmCol)
@@ -424,6 +549,7 @@ void uoReportSelection::cellSelectedEnd(int nmCol, int nmRow)
 		calcRectFromPoints((*rect), QPoint(nmCol,nmRow), _cellStart);
 		_selSpans->append(rect);
 	}
+	refreshSelectionType();
 }
 
 /// промежуточное выделение между cellSelectedStart и cellSelectedEnd
@@ -434,6 +560,7 @@ void uoReportSelection::cellSelectedMidle(int nmCol, int nmRow)
 	_cellMidle.setX(nmCol);
 	_cellMidle.setY(nmRow);
 	calcRectFromPoints(_rectCellsMidle, _cellMidle, _cellStart);
+	refreshSelectionType();
 
 }
 
@@ -442,7 +569,7 @@ void uoReportSelection::cellSelectedMidle(int nmCol, int nmRow)
 /// сигнал о выделениИ документа
 void uoReportSelection::selectDocument(){
 	clearSelections();
-	_selMode = uoRst_Document;
+	setSelectionMode(uoRst_Document);
 }
 
 void uoReportSelection::selectCell(int nmCol, int nmRow)
@@ -452,7 +579,7 @@ void uoReportSelection::selectCell(int nmCol, int nmRow)
 		clearSelections();
 
 	clearSelections(uoRst_Cells);
-	_selMode = uoRst_Cells;
+	setSelectionMode(uoRst_Cells);
 
 	if (!isCellSelect(nmRow, nmCol)){
 		QPoint* point = getCellPoint();
@@ -462,7 +589,41 @@ void uoReportSelection::selectCell(int nmCol, int nmRow)
 			_selPoints->append(point);
 		}
 	}
+}
+/// Анализируем структуры выделений, просто обновляем _selMode
+void uoReportSelection::refreshSelectionType()
+{
+	if (_selMode == uoRst_Document)
+		return;
+	uoRptSelectionType selModeOld = _selMode;
+	uoRptSelectionType selModeNew = _selMode;
 
+	int countItem = 0;
+	if (!_selRows->isEmpty()){
+		countItem = _selRows->count();
+		selModeNew = uoRst_Row;
+		if (countItem>1){
+			selModeNew = uoRst_Rows;
+		}
+	} else if (!_selCols->isEmpty()){
+		countItem = _selCols->count();
+		selModeNew = uoRst_Column;
+		if (countItem>1){
+			selModeNew = uoRst_Columns;
+		}
+	} else {
+		int spnCnt = _selSpans->count();
+		int cellCnt = _selPoints->count();
+		if (spnCnt > 0 && cellCnt > 0){
+			selModeNew = uoRst_Mixed;
+		} else {
+			selModeNew = uoRst_Cells;
+			if (cellCnt == 1 && spnCnt == 0)
+				selModeNew = uoRst_Cell;
+		}
+	}
+	if (selModeOld != selModeNew)
+		setSelectionMode(selModeNew);
 
 }
 

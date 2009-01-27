@@ -112,7 +112,7 @@ class uoNumVector
 
 					item = *_itSave;
 					onDeleteItem(item);
-					item = NULL;
+					item = NULL; /// Удалить?
 					_itSave = _list->erase(_itSave);
 					++cntDelItem;
 				}
