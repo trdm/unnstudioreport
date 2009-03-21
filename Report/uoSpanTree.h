@@ -20,23 +20,23 @@ namespace uoReport {
 ///\brief специальная линия-отрезок с иерархией и некоторыми пропертями
 struct uoLineSpan{
 
-	int _start, _end, _level, m_id;
-	bool _folded;
+	int m_start, m_end, m_level, m_id;
+	bool m_folded;
 	QList<uoLineSpan*>* _child;
 	QString _name;
 
 	public:
 		uoLineSpan()
-			:_start(-1)	, _end(-1)	,_level(-1)	,_folded(false),_child(0)
+			:m_start(-1)	, m_end(-1)	,m_level(-1)	,m_folded(false),_child(0)
 			{}
 
 		uoLineSpan(int s1, int s2)
-			: _start(s1), _end(s2)	,_level(-1)	,_folded(false),_child(0)
+			: m_start(s1), m_end(s2)	,m_level(-1)	,m_folded(false),_child(0)
 			{}
 
-		int getStart() 	{ return _start;}
-		int getEnd() 	{ return _end;	}
-		int getLevel() 	{ return _level;	}
+		int getStart() 	{ return m_start;}
+		int getEnd() 	{ return m_end;	}
+		int getLevel() 	{ return m_level;	}
 		int getChildCount() {
 			if (!_child) {
 				return 0;
@@ -44,12 +44,12 @@ struct uoLineSpan{
 				return _child->size();
 			}
 		}
-		bool getFolded() { return _folded;	}
-		bool isFolded() { return _folded;	}
+		bool getFolded() { return m_folded;	}
+		bool isFolded() { return m_folded;	}
 
 		/// Получить размер отрезка
 		int getSizeSpan() 	{
-			return _end-_start+1;
+			return m_end-m_start+1;
 		}
 
 		void setId(int id) 	{m_id = id;}
@@ -69,34 +69,34 @@ struct uoLineSpan{
 		};
 
 		bool isEqual(int xStart, int xEnd) {
-			if (_start == xStart && _end == xEnd)
+			if (m_start == xStart && m_end == xEnd)
 				return true;
 			return false;
 		};
 
 		bool isDotInside(int xDot) {
-			if (_start <= xDot && _end >= xDot)
+			if (m_start <= xDot && m_end >= xDot)
 				return true;
 			return false;
 		};
 
 		/// сдвиг спана на количество точек..
 		void moveTo(int xDot) {
-			_start = _start + xDot;
-			_end = _end + xDot;
+			m_start = m_start + xDot;
+			m_end = m_end + xDot;
 		};
 
 		/// Расширить диапазон спана..
 		void extendTo(int xDot) {
-			_end = _end + xDot;
+			m_end = m_end + xDot;
 		};
 
 		/// Уменьшить на ХХХ, сверху или снизу
 		void reduceTo(int xDot, bool fromUp = true)	{
 			if (fromUp)
-				_start = _start + xDot;
+				m_start = m_start + xDot;
 			else
-				_end = _end - xDot;
+				m_end = m_end - xDot;
 		}
 
 
@@ -117,14 +117,14 @@ struct uoLineSpan{
 
 		/// Анализируемый диапазон поглащается...
 		bool isInSide(int xStart, int xEnd) {
-			if (_start <= xStart && _end >= xEnd)
+			if (m_start <= xStart && m_end >= xEnd)
 				return true;
 			return false;
 		}
 
 		/// Анализируемый диапазон поглощает текущий
 		bool isContained(int xStart, int xEnd) {
-			if (_start >= xStart && _end <= xEnd && !(xStart==_start && xEnd==_end))
+			if (m_start >= xStart && m_end <= xEnd && !(xStart==m_start && xEnd==m_end))
 				return true;
 			return false;
 		}
@@ -133,11 +133,11 @@ struct uoLineSpan{
 		int getAbove(int xStart, int xEnd) {
 			int rAbove = 0;
 			if (isIntersect(xStart, xEnd)) {
-				if (xEnd>_start)
-					rAbove = _start - xStart;
+				if (xEnd>m_start)
+					rAbove = m_start - xStart;
 				else
 					rAbove = xEnd - xStart;
-			} else if (xEnd < _start){
+			} else if (xEnd < m_start){
 				rAbove = xEnd - xStart + 1;
 			}
 			return rAbove;
@@ -147,14 +147,14 @@ struct uoLineSpan{
 		int getIntersectCount(int xStart, int xEnd) {
 			int intersCnt = 0;
 			if (isIntersect(xStart, xEnd)) {
-				if (xStart < _start)
-					intersCnt = xEnd - _start + 1;
+				if (xStart < m_start)
+					intersCnt = xEnd - m_start + 1;
 				else
-					intersCnt = qMin(xEnd,_end) - xStart + 1;
+					intersCnt = qMin(xEnd,m_end) - xStart + 1;
 			} else if (isInSide(xStart, xEnd)) {
 				intersCnt = xEnd - xStart + 1;
 			} else if (isContained(xStart, xEnd)) {
-				intersCnt = _end - _start + 1;
+				intersCnt = m_end - m_start + 1;
 			}
 			return intersCnt;
 		}
@@ -163,9 +163,9 @@ struct uoLineSpan{
 		int getIsm(int xStart, int xEnd)
 		{
 			int mode = ismNone;
-			if (_start>xStart)
+			if (m_start>xStart)
 				mode = mode | ismAbove;
-			if (_end < xEnd)
+			if (m_end < xEnd)
 				mode = mode | ismBelow;
 			if (isDotInside(xStart) || isDotInside(xEnd) || isContained(xStart, xEnd))
 				mode = mode | ismIn;
@@ -300,7 +300,7 @@ class uoSTScan_FoldPerId : public uoSpanTreeScan
 			_bFound = false;
 			_listProcLn 	= new QList<int>;
 			_listFoldedLine = new QList<int>;
-			_foundLevel = -1;
+			m_foundLevel = -1;
 		}
 		virtual ~uoSTScan_FoldPerId(){
 			delete _listFoldedLine;
@@ -348,14 +348,14 @@ class uoSTScan_FoldPerId : public uoSpanTreeScan
 			if (curSpan->m_id == _perId){
 				// Нашли узел. с него и начнем вычисления диапазона.
 				_bFound = true;
-				curSpan->_folded = _bExpand;
-				_foundLevel = curSpan->getLevel();
+				curSpan->m_folded = _bExpand;
+				m_foundLevel = curSpan->getLevel();
 			}
 
 			if (_bFound)
 			{
 				// Найден, но есть чилды.
-				if (curSpan->getLevel()>_foundLevel){
+				if (curSpan->getLevel()>m_foundLevel){
 					if (curSpan->isFolded()){
 						addToFoldedList(curSpan->getStart()+1, curSpan->getSizeSpan()-1);
 						return retVal;
@@ -383,7 +383,7 @@ class uoSTScan_FoldPerId : public uoSpanTreeScan
 
 		QList<int>* _listFoldedLine;
 		QList<int>* _listProcLn;
-		int _foundLevel;
+		int m_foundLevel;
 		int _perId;
 		bool _bExpand;
 		bool _bFound;

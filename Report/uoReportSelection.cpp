@@ -20,38 +20,38 @@ namespace uoReport{
 uoReportSelection::uoReportSelection(QObject* parent)
 	:QObject(parent)
 {
-	_selRows 	= new QList<int>;
-	_selRowsColsTmp = new QList<int>;
-	_selCols = new QList<int>;
-	_selSpans 		= new QList<QRect*>;
-	_selSpansCache 	= new QList<QRect*>;
+	m_selRows 	= new QList<int>;
+	m_selRowsColsTmp = new QList<int>;
+	m_selCols = new QList<int>;
+	m_selSpans 		= new QList<QRect*>;
+	m_selSpansCache 	= new QList<QRect*>;
 
-	_selPoints 		= new QList<QPoint*>;
-	_selPointsCache = new QList<QPoint*>;
+	m_selPoints 		= new QList<QPoint*>;
+	m_selPointsCache = new QList<QPoint*>;
 
 
-	_startSelMode	= uoRst_Unknown;
+	m_startSelMode	= uoRst_Unknown;
 	setSelectionMode(uoRst_Unknown);
-	_strartColRow	= -1;
-	_cellStart.setX(0);
-	_cellStart.setY(0);
-	_cellMidle.setX(0);
-	_cellMidle.setY(0);
+	m_strartColRow	= -1;
+	m_cellStart.setX(0);
+	m_cellStart.setY(0);
+	m_cellMidle.setX(0);
+	m_cellMidle.setY(0);
 }
 
 uoReportSelection::~uoReportSelection()
 {
-	delete _selRows;
-	delete _selRowsColsTmp;
-	delete _selCols;
-	while (!_selSpans->isEmpty())		delete _selSpans->takeFirst();
-	while (!_selSpansCache->isEmpty())	delete _selSpansCache->takeFirst();
+	delete m_selRows;
+	delete m_selRowsColsTmp;
+	delete m_selCols;
+	while (!m_selSpans->isEmpty())		delete m_selSpans->takeFirst();
+	while (!m_selSpansCache->isEmpty())	delete m_selSpansCache->takeFirst();
 
-	while (!_selPoints->isEmpty())	delete _selPoints->takeFirst();
-	while (!_selPointsCache->isEmpty())	delete _selPointsCache->takeFirst();
+	while (!m_selPoints->isEmpty())	delete m_selPoints->takeFirst();
+	while (!m_selPointsCache->isEmpty())	delete m_selPointsCache->takeFirst();
 
-	delete _selSpans;
-	delete _selSpansCache;
+	delete m_selSpans;
+	delete m_selSpansCache;
 }
 
 /// Вычислить rct из 2-х точек.
@@ -74,51 +74,51 @@ bool uoReportSelection::calcRectFromPoints(QRect& rct, const QPoint& posStart, c
 }
 
 /// единая точка для установки сел-мода
-void uoReportSelection::setSelectionMode(uoRptSelectionType sMode)
+void uoReportSelection::setSelectionMode(uorSelectionType sMode)
 {
-	if (_selMode != sMode){
-		const uoRptSelectionType selModeOld = _selMode;
-		const uoRptSelectionType selModeNew = sMode;
-		_selMode = sMode;
+	if (m_selMode != sMode){
+		const uorSelectionType selModeOld = m_selMode;
+		const uorSelectionType selModeNew = sMode;
+		m_selMode = sMode;
 		emit onSelectonChange(selModeOld, selModeNew);
 	}
 }
 
 /// Очистка всех даных по выделениям
-void uoReportSelection::clearSelections(uoRptSelectionType exclude)
+void uoReportSelection::clearSelections(uorSelectionType exclude)
 {
 	setSelectionMode(uoRst_Unknown);
-	_startSelMode	= uoRst_Unknown;
-	_strartColRow	= -1;
+	m_startSelMode	= uoRst_Unknown;
+	m_strartColRow	= -1;
 
 
 	if (exclude != uoRst_Rows) {
-		_selRows->clear();
-		_selRowsColsTmp->clear();
+		m_selRows->clear();
+		m_selRowsColsTmp->clear();
 	} else {
 		setSelectionMode(uoRst_Rows);
 	}
 	if (exclude != uoRst_Columns) {
-		_selCols->clear();
+		m_selCols->clear();
 	} else {
 		setSelectionMode(uoRst_Columns);
 	}
 
 	if (exclude != uoRst_Cells) {
-		_cellStart.setX(0);
-		_cellStart.setY(0);
-		_cellMidle.setX(0);
-		_cellMidle.setY(0);
-		_rectCellsMidle.setTop(0);
-		_rectCellsMidle.setLeft(0);
-		_rectCellsMidle.setBottom(0);
-		_rectCellsMidle.setRight(0);
+		m_cellStart.setX(0);
+		m_cellStart.setY(0);
+		m_cellMidle.setX(0);
+		m_cellMidle.setY(0);
+		m_rectCellsMidle.setTop(0);
+		m_rectCellsMidle.setLeft(0);
+		m_rectCellsMidle.setBottom(0);
+		m_rectCellsMidle.setRight(0);
 
-		while (!_selSpans->isEmpty())
-			_selSpansCache->append(_selSpans->takeFirst());
+		while (!m_selSpans->isEmpty())
+			m_selSpansCache->append(m_selSpans->takeFirst());
 
-		while (!_selPoints->isEmpty())
-			_selPointsCache->append(_selPoints->takeFirst());
+		while (!m_selPoints->isEmpty())
+			m_selPointsCache->append(m_selPoints->takeFirst());
 
 	} else {
 		setSelectionMode(uoRst_Cells);
@@ -131,8 +131,8 @@ bool uoReportSelection::isColSelect(int nmCol)
 	bool retVal = false;
 	if (retVal = isDocumSelect()){
 		return retVal;
-	} else if (!_selCols->isEmpty()) {
-		retVal = _selCols->contains(nmCol);
+	} else if (!m_selCols->isEmpty()) {
+		retVal = m_selCols->contains(nmCol);
 	}
 	return retVal;
 }
@@ -144,13 +144,13 @@ bool uoReportSelection::isRowSelect(int nmRow)
 	if (retVal = isDocumSelect()){
 		return retVal;
 	}
-	if (!_selRows->isEmpty()) {
-		retVal = _selRows->contains(nmRow);
+	if (!m_selRows->isEmpty()) {
+		retVal = m_selRows->contains(nmRow);
 		if (retVal)
 			return true;
 	}
-	if (!_selRowsColsTmp->isEmpty()){
-		retVal = _selRowsColsTmp->contains(nmRow);
+	if (!m_selRowsColsTmp->isEmpty()){
+		retVal = m_selRowsColsTmp->contains(nmRow);
 		if (retVal)
 			return true;
 	}
@@ -160,7 +160,7 @@ bool uoReportSelection::isRowSelect(int nmRow)
 /// Проверка на выделенность документа
 bool uoReportSelection::isDocumSelect()
 {
-	if (_selMode == uoRst_Document){
+	if (m_selMode == uoRst_Document){
 		return true;
 	} else {
 		return false;
@@ -173,18 +173,18 @@ bool uoReportSelection::isCellSelect(int nmRow, int nmCol)
 	bool retVal = false;
 	if (isDocumSelect() || isColSelect(nmCol) ||  isRowSelect(nmRow)) {
 		return true;
-	} else if(!_rectCellsMidle.isEmpty()) {
-		if (_rectCellsMidle.contains(QPoint(nmCol,nmRow))){
+	} else if(!m_rectCellsMidle.isEmpty()) {
+		if (m_rectCellsMidle.contains(QPoint(nmCol,nmRow))){
 			return true;
 		}
 	}
 
 
-	if (!_selSpans->isEmpty()) {
+	if (!m_selSpans->isEmpty()) {
 		QRect* rct = NULL;
 
-		QList<QRect*>::const_iterator iter = _selSpans->constBegin();
-		while(iter != _selSpans->constEnd()) {
+		QList<QRect*>::const_iterator iter = m_selSpans->constBegin();
+		while(iter != m_selSpans->constEnd()) {
 			rct = *iter;
 			if (rct) {
 				if (rct->contains(nmCol, nmRow))
@@ -193,11 +193,11 @@ bool uoReportSelection::isCellSelect(int nmRow, int nmCol)
 			iter++;
 		}
 	}
-	if (!_selPoints->isEmpty()) {
+	if (!m_selPoints->isEmpty()) {
 		QPoint* point = NULL;
 
-		QList<QPoint*>::const_iterator iter = _selPoints->constBegin();
-		while(iter != _selPoints->constEnd()) {
+		QList<QPoint*>::const_iterator iter = m_selPoints->constBegin();
+		while(iter != m_selPoints->constEnd()) {
 			point = *iter;
 			if (point) {
 				if (point->x() == nmCol &&  point->y() == nmRow)
@@ -219,7 +219,7 @@ bool uoReportSelection::getTrueSectionsCR(uoRptHeaderType& rht, int& start, int&
 	end = -1;
 
 	bool retVal = false;
-	switch(_selMode)
+	switch(m_selMode)
 	{
 		case uoRst_Unknown:
 		case uoRst_Document:
@@ -235,12 +235,12 @@ bool uoReportSelection::getTrueSectionsCR(uoRptHeaderType& rht, int& start, int&
 		case uoRst_Rows:
 		{
 			int rowLast = -1, rowCur;
-			QList<int>* list = _selRows;
+			QList<int>* list = m_selRows;
 			rht = rhtVertical;
 
-			if (_selMode == uoRst_Column || _selMode == uoRst_Columns)
+			if (m_selMode == uoRst_Column || m_selMode == uoRst_Columns)
 			{
-				list = _selCols;
+				list = m_selCols;
 				rht = rhtHorizontal;
 			}
 
@@ -293,7 +293,7 @@ bool uoReportSelection::getTrueSectionsCR(uoRptHeaderType& rht, int& start, int&
 bool uoReportSelection::isTrueForSections()
 {
 	bool retVal = false;
-	switch(_selMode)
+	switch(m_selMode)
 	{
 		case uoRst_Unknown:
 		case uoRst_Document:
@@ -349,15 +349,15 @@ void uoReportSelection::selectRow(int nmRow)
 	}
 	clearSelections(uoRst_Rows);
 	setSelectionMode(uoRst_Rows);
-	if (_selRows->contains(nmRow)){
+	if (m_selRows->contains(nmRow)){
 		if (ctrl){
 			int pos = 0;
-			while((pos = _selRows->indexOf(nmRow)) != -1)
-				_selRows->removeAt(pos);
+			while((pos = m_selRows->indexOf(nmRow)) != -1)
+				m_selRows->removeAt(pos);
 		}
 
 	} else {
-		_selRows->append(nmRow);
+		m_selRows->append(nmRow);
 	}
 }
 void uoReportSelection::selectCol(int nmCol)
@@ -367,27 +367,27 @@ void uoReportSelection::selectCol(int nmCol)
 		clearSelections();
 	clearSelections(uoRst_Columns);
 	setSelectionMode(uoRst_Columns);
-	if (_selCols->contains(nmCol)){
+	if (m_selCols->contains(nmCol)){
 		if (ctrl){
 			int pos = 0;
-			while((pos = _selCols->indexOf(nmCol)) != -1)
-				_selCols->removeAt(pos);
+			while((pos = m_selCols->indexOf(nmCol)) != -1)
+				m_selCols->removeAt(pos);
 		}
 
 	} else {
-		_selCols->append(nmCol);
+		m_selCols->append(nmCol);
 	}
 }
 
 
 
 /// Возвращает текуший тип выделения.
-uoRptSelectionType uoReportSelection::getSelectionType(){
-	return _selMode;
+uorSelectionType uoReportSelection::getSelectionType(){
+	return m_selMode;
 }
 /// Получить текуший тип старт-выделения.
-uoRptSelectionType uoReportSelection::getStartSelectionType(){
-	return _startSelMode;
+uorSelectionType uoReportSelection::getStartSelectionType(){
+	return m_startSelMode;
 }
 
 
@@ -397,7 +397,7 @@ void uoReportSelection::rowSelectedStart(int nmRow){
 		clearSelections();
 		selectRow(nmRow);
 	}
-	_strartColRow = nmRow;
+	m_strartColRow = nmRow;
 	setSelectionMode(uoRst_Row);
 }
 
@@ -408,17 +408,17 @@ void uoReportSelection::rowSelectedStart(int nmRow){
 */
 void uoReportSelection::rowSelectedMidle(int nmRow)
 {
-	if (_strartColRow<=0)
+	if (m_strartColRow<=0)
 		return;
-	_selRowsColsTmp->clear();
+	m_selRowsColsTmp->clear();
 
-	int yStart 	= qMin(_strartColRow, nmRow);
-	int yEnd 	= qMax(_strartColRow, nmRow);
+	int yStart 	= qMin(m_strartColRow, nmRow);
+	int yEnd 	= qMax(m_strartColRow, nmRow);
 
 	if (yStart <= 0 || yEnd <= 0)
 		return;
 	for (int i = yStart; i<= yEnd; i++)	{
-		_selRowsColsTmp->append(i);
+		m_selRowsColsTmp->append(i);
 	}
 }
 
@@ -426,20 +426,20 @@ void uoReportSelection::rowSelectedMidle(int nmRow)
 /// окончание выделения строк. пользователь отпустил мышку..
 void uoReportSelection::rowSelectedEnd(int nmRow)
 {
-	if (_strartColRow<=0)
+	if (m_strartColRow<=0)
 		return;
-	_selRowsColsTmp->clear();
+	m_selRowsColsTmp->clear();
 
-	int yStart 	= qMin(_strartColRow, nmRow);
-	int yEnd 	= qMax(_strartColRow, nmRow);
+	int yStart 	= qMin(m_strartColRow, nmRow);
+	int yEnd 	= qMax(m_strartColRow, nmRow);
 
 	if (yStart <= 0 || yEnd <= 0)
 		return;
 	for (int i = yStart; i<= yEnd; i++)	{
-		if (!_selRows->contains(i))
-			_selRows->append(i);
+		if (!m_selRows->contains(i))
+			m_selRows->append(i);
 	}
-	_strartColRow = 0;
+	m_strartColRow = 0;
 }
 
 
@@ -449,26 +449,26 @@ void uoReportSelection::colSelectedStart(int nmCol){
 		clearSelections();
 		selectCol(nmCol);
 	}
-	_strartColRow = nmCol;
+	m_strartColRow = nmCol;
 	setSelectionMode(uoRst_Column);
 }
 
 void uoReportSelection::colSelectedEnd(int nmCol)
 {
-	if (_strartColRow<=0)
+	if (m_strartColRow<=0)
 		return;
-	_selRowsColsTmp->clear();
+	m_selRowsColsTmp->clear();
 
-	int yStart 	= qMin(_strartColRow, nmCol);
-	int yEnd 	= qMax(_strartColRow, nmCol);
+	int yStart 	= qMin(m_strartColRow, nmCol);
+	int yEnd 	= qMax(m_strartColRow, nmCol);
 
 	if (yStart <= 0 || yEnd <= 0)
 		return;
 	for (int i = yStart; i<= yEnd; i++)	{
-		if (!_selCols->contains(i))
-			_selCols->append(i);
+		if (!m_selCols->contains(i))
+			m_selCols->append(i);
 	}
-	_strartColRow = 0;
+	m_strartColRow = 0;
 
 }
 
@@ -478,26 +478,26 @@ void uoReportSelection::cellSelectedStart(int nmCol, int nmRow)
 {
 	if (isCtrlPress()){
 		clearSelections(uoRst_Cells);
-		if (!_cellMidle.isNull()){
+		if (!m_cellMidle.isNull()){
 			QRect* rect = getCellSpan();
 			if (rect){
-				calcRectFromPoints((*rect), _cellMidle, _cellStart);
-				_selSpans->append(rect);
+				calcRectFromPoints((*rect), m_cellMidle, m_cellStart);
+				m_selSpans->append(rect);
 			}
-			_cellMidle.setX(0);
-			_cellMidle.setY(0);
-			_rectCellsMidle.setTop(0);
-			_rectCellsMidle.setLeft(0);
-			_rectCellsMidle.setBottom(0);
-			_rectCellsMidle.setRight(0);
+			m_cellMidle.setX(0);
+			m_cellMidle.setY(0);
+			m_rectCellsMidle.setTop(0);
+			m_rectCellsMidle.setLeft(0);
+			m_rectCellsMidle.setBottom(0);
+			m_rectCellsMidle.setRight(0);
 		}
 	} else {
 		clearSelections();
 	}
 	if (nmCol>0 && nmRow > 0) {
-		_cellStart.setX(nmCol);
-		_cellStart.setY(nmRow);
-		_startSelMode = uoRst_Cells;
+		m_cellStart.setX(nmCol);
+		m_cellStart.setY(nmRow);
+		m_startSelMode = uoRst_Cells;
 	}
 }
 
@@ -505,8 +505,8 @@ void uoReportSelection::cellSelectedStart(int nmCol, int nmRow)
 QRect* uoReportSelection::getCellSpan()
 {
 	QRect* rect = NULL;
-	if (!_selSpansCache->isEmpty()){
-		rect = _selSpansCache->takeFirst();
+	if (!m_selSpansCache->isEmpty()){
+		rect = m_selSpansCache->takeFirst();
 		rect->setBottom(0);
 		rect->setTop(0);
 		rect->setLeft(0);
@@ -520,8 +520,8 @@ QRect* uoReportSelection::getCellSpan()
 QPoint* uoReportSelection::getCellPoint()
 {
 	QPoint* point = NULL;
-	if (!_selPointsCache->isEmpty()){
-		point = _selPointsCache->takeFirst();
+	if (!m_selPointsCache->isEmpty()){
+		point = m_selPointsCache->takeFirst();
 		point->setX(0);
 		point->setY(0);
 	} else {
@@ -535,19 +535,19 @@ QPoint* uoReportSelection::getCellPoint()
 /// Окончание редактирования выделения ячеек.
 void uoReportSelection::cellSelectedEnd(int nmCol, int nmRow)
 {
-	if (_cellStart.isNull() || (_startSelMode != uoRst_Cells))	{
+	if (m_cellStart.isNull() || (m_startSelMode != uoRst_Cells))	{
 		clearSelections();
 		return;
 	}
-	if ((_cellStart.x() == nmCol) && (_cellStart.y() == nmRow)){
+	if ((m_cellStart.x() == nmCol) && (m_cellStart.y() == nmRow)){
 		if (isCtrlPress() && !isCellSelect(nmRow,nmCol))
 			selectCell(nmCol, nmRow);
 		return;
 	}
 	QRect* rect = getCellSpan();
 	if (rect){
-		calcRectFromPoints((*rect), QPoint(nmCol,nmRow), _cellStart);
-		_selSpans->append(rect);
+		calcRectFromPoints((*rect), QPoint(nmCol,nmRow), m_cellStart);
+		m_selSpans->append(rect);
 	}
 	refreshSelectionType();
 }
@@ -555,12 +555,13 @@ void uoReportSelection::cellSelectedEnd(int nmCol, int nmRow)
 /// промежуточное выделение между cellSelectedStart и cellSelectedEnd
 void uoReportSelection::cellSelectedMidle(int nmCol, int nmRow)
 {
-	if (_cellStart.isNull())
+	if (m_cellStart.isNull())
 		return;
-	_cellMidle.setX(nmCol);
-	_cellMidle.setY(nmRow);
-	calcRectFromPoints(_rectCellsMidle, _cellMidle, _cellStart);
+	m_cellMidle.setX(nmCol);
+	m_cellMidle.setY(nmRow);
+	calcRectFromPoints(m_rectCellsMidle, m_cellMidle, m_cellStart);
 	refreshSelectionType();
+	emit onSelectonChange(m_selMode, m_selMode);
 
 }
 
@@ -586,34 +587,127 @@ void uoReportSelection::selectCell(int nmCol, int nmRow)
 		if (point){
 			point->setX(nmCol);
 			point->setY(nmRow);
-			_selPoints->append(point);
+			m_selPoints->append(point);
 		}
 	}
 }
-/// Анализируем структуры выделений, просто обновляем _selMode
+
+/// Вернем максимальный квадрат, охватывающий выделения.
+QRect uoReportSelection::getSelectionBound()
+{
+	QRect retVal(0,0,0,0);
+	int min_row = 0, max_row = 0;
+	int min_col = 0, max_col = 0;
+	int genVal = 0;
+	if(m_selMode == uoRst_Document || m_selMode == uoRst_Unknown){
+		return retVal;
+	} else {
+		if (!m_selRows->isEmpty()){
+			QList<int>::const_iterator itRow = m_selRows->constBegin();
+			while(itRow != m_selRows->constEnd())		{
+				genVal = *itRow;
+				if (min_row == 0){
+					min_row = max_row = genVal;
+				} else {
+					min_row = qMin(genVal, min_row);
+					max_row = qMax(genVal, max_row);
+				}
+				itRow++;
+			}
+
+		} else if (!m_selCols->isEmpty()){
+			QList<int>::const_iterator itCol = m_selCols->constBegin();
+			while(itCol != m_selCols->constEnd())		{
+				genVal = *itCol;
+				if (min_col == 0){
+					min_col = max_col = genVal;
+				} else {
+					min_col = qMin(genVal, min_col);
+					max_col = qMax(genVal, max_col);
+				}
+				itCol++;
+			}
+		} else {
+			int spnCnt = m_selSpans->count();
+			int cellCnt = m_selPoints->count();
+
+			if (spnCnt>0){
+				QRect* genRect = NULL;
+				QList<QRect*>::const_iterator itRct = m_selSpans->constBegin();
+				while(itRct != m_selSpans->constEnd())		{
+					genRect = *itRct;
+					if (min_col == 0){
+						min_col = genRect->x();
+						max_col = genRect->right();
+						min_row = genRect->y();
+						max_row = genRect->bottom();
+					} else {
+						min_row = qMin(genRect->y(), min_row);
+						max_row = qMax(genRect->bottom(), max_row);
+						min_col = qMin(genRect->x(), min_col);
+						max_col = qMax(genRect->right(), max_col);
+					}
+					itRct++;
+				}
+			}
+			if (cellCnt>0){
+				QPoint* genPoint = NULL;
+				QList<QPoint*>::const_iterator itRct = m_selPoints->constBegin();
+				while(itRct != m_selPoints->constEnd())		{
+					genPoint = *itRct;
+					if (min_col == 0){
+						min_col = max_col = genPoint->y();
+						min_row = max_row = genPoint->x();
+					} else {
+						min_row = qMin(genPoint->y(), min_row);
+						max_row = qMax(genPoint->y(), max_row);
+						min_col = qMin(genPoint->x(), min_col);
+						max_col = qMax(genPoint->x(), max_col);
+					}
+					itRct++;
+				}
+			}
+			if (!m_rectCellsMidle.isEmpty()){
+				min_row = qMin(m_rectCellsMidle.y(), min_row);
+				max_row = qMax(m_rectCellsMidle.bottom(), max_row);
+				min_col = qMin(m_rectCellsMidle.x(), min_col);
+				max_col = qMax(m_rectCellsMidle.right(), max_col);
+			}
+		}
+		retVal.setY(min_row);
+		retVal.setBottom(max_row);
+		retVal.setX(min_col);
+		retVal.setRight(max_col);
+
+//		qDebug()<<" min_row" <<min_row<<"max_row " <<max_row <<" min_col" <<min_col <<" max_col" <<max_col;
+
+	}
+	return retVal;
+}
+/// Анализируем структуры выделений, просто обновляем m_selMode
 void uoReportSelection::refreshSelectionType()
 {
-	if (_selMode == uoRst_Document)
+	if (m_selMode == uoRst_Document)
 		return;
-	uoRptSelectionType selModeOld = _selMode;
-	uoRptSelectionType selModeNew = _selMode;
+	uorSelectionType selModeOld = m_selMode;
+	uorSelectionType selModeNew = m_selMode;
 
 	int countItem = 0;
-	if (!_selRows->isEmpty()){
-		countItem = _selRows->count();
+	if (!m_selRows->isEmpty()){
+		countItem = m_selRows->count();
 		selModeNew = uoRst_Row;
 		if (countItem>1){
 			selModeNew = uoRst_Rows;
 		}
-	} else if (!_selCols->isEmpty()){
-		countItem = _selCols->count();
+	} else if (!m_selCols->isEmpty()){
+		countItem = m_selCols->count();
 		selModeNew = uoRst_Column;
 		if (countItem>1){
 			selModeNew = uoRst_Columns;
 		}
 	} else {
-		int spnCnt = _selSpans->count();
-		int cellCnt = _selPoints->count();
+		int spnCnt = m_selSpans->count();
+		int cellCnt = m_selPoints->count();
 		if (spnCnt > 0 && cellCnt > 0){
 			selModeNew = uoRst_Mixed;
 		} else {

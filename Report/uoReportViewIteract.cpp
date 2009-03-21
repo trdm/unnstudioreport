@@ -141,7 +141,7 @@ void uoReportViewIteract::connectActions(uoReportCtrl* rCtrl)
 	connect(m_actUndo, SIGNAL(triggered()), rCtrl, SLOT(onUndo()));
 	connect(m_actRedo, SIGNAL(triggered()), rCtrl, SLOT(onRedo()));
 
-	connect(m_showProp, SIGNAL(triggered()), rCtrl, SLOT(propertyEditorShow()));
+	connect(m_showProp, SIGNAL(triggered()), rCtrl, SLOT(propertyEditorShowActivate()));
 
 
 }

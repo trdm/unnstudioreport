@@ -39,47 +39,47 @@ namespace uoReport {
 ///\brief Координатное описание группировки строк/столбцов, подготовленное для рендринга.
 struct uoRptGroupItem {
 	uoRptGroupItem()
-		: _folded(false)
-		,_level(-1)
-		,_start(-1)
-		,_end(-1)
+		: m_folded(false)
+		,m_level(-1)
+		,m_start(-1)
+		,m_end(-1)
 		,m_id(-1)
-		,_rectEndPos(0)
-		,_rectMidlePos(0)
-		,_sizeTail(0)
-		,_tailPosIsAbs(false)
+		,m_rectEndPos(0)
+		,m_rectMidlePos(0)
+		,m_sizeTail(0)
+		,m_tailPosIsAbs(false)
 		{}
 	QRectF 	_rectIteract; 	///< область "кнопки" свертки/развертки структуры.
-	bool _folded; 			///< уровень группировки.
-	int _level; 			///< уровень группировки.
-	int _start; 			///< Начало диапазона.
-	int _end;				///< Конец диапазона.
+	bool m_folded; 			///< уровень группировки.
+	int m_level; 			///< уровень группировки.
+	int m_start; 			///< Начало диапазона.
+	int m_end;				///< Конец диапазона.
 	int m_id;				///< Идентификатор гроуп итема.
-	qreal	_rectEndPos; 	///< Координаты правой|нижней стороны ректа. для расчета длины линии группировки.
-	qreal	_rectMidlePos; 	///< Координаты середины правой|нижней стороны ректа для вычерчивания горизонтальной линии группировки.
-	qreal _sizeTail;		///< Размер "хвоста" группировки.
-	bool 	_tailPosIsAbs;	///< Размер "хвоста" указан относительно левой или верхней сторони ректа группировок
+	qreal	m_rectEndPos; 	///< Координаты правой|нижней стороны ректа. для расчета длины линии группировки.
+	qreal	m_rectMidlePos; 	///< Координаты середины правой|нижней стороны ректа для вычерчивания горизонтальной линии группировки.
+	qreal m_sizeTail;		///< Размер "хвоста" группировки.
+	bool 	m_tailPosIsAbs;	///< Размер "хвоста" указан относительно левой или верхней сторони ректа группировок
 
 	/// копируем данные из uoLineSpan
 	void copyFrom(uoLineSpan* spn){
-		_start 	= spn->getStart();
-		_end 	= spn->getEnd();
+		m_start 	= spn->getStart();
+		m_end 	= spn->getEnd();
 
-		_folded = spn->getFolded();
-		_level	= spn->getLevel();
+		m_folded = spn->getFolded();
+		m_level	= spn->getLevel();
 
 		m_id 	= spn->getId();
 	}
 	/// чистка итема....
 	void clear(){
-		_folded = false;
-		_level = -1;
-		_start = -1;
-		_end = -1;
+		m_folded = false;
+		m_level = -1;
+		m_start = -1;
+		m_end = -1;
 		m_id = -1;
-		_rectEndPos = 0.0;
-		_rectMidlePos = 0.0;
-		_sizeTail = 0.0;
+		m_rectEndPos = 0.0;
+		m_rectMidlePos = 0.0;
+		m_sizeTail = 0.0;
 		_rectIteract.setTop(0.0);
 		_rectIteract.setRight(0.0);
 		_rectIteract.setBottom(0.0);
@@ -97,39 +97,39 @@ typedef QMap<int, qreal> rptScalePositionMap; ///< словарь смещени
 struct uoRptSectionItem
 {
 		uoRptSectionItem()
-		:_level(-1)
-		,_start(-1)
-		,_end(-1)
+		:m_level(-1)
+		,m_start(-1)
+		,m_end(-1)
 		,m_id(-1)
-		,_nameSections(0)
+		,m_nameSections(0)
 		{}
 	QRectF 	_rectView; 		///< область "кнопки" свертки/развертки структуры.
-	int 	_level; 		///< уровень группировки.
-	int 	_start; 		///< Начало диапазона.
-	int 	_end;			///< Конец диапазона.
+	int 	m_level; 		///< уровень группировки.
+	int 	m_start; 		///< Начало диапазона.
+	int 	m_end;			///< Конец диапазона.
 	int 	m_id;			///< Идентификатор гроуп итема.
-	bool 	_selected;		///< Секция выделенна.
-	QString _nameSections;	///< Имя секции.
+	bool 	m_selected;		///< Секция выделенна.
+	QString m_nameSections;	///< Имя секции.
 
 		/// копируем данные из uoLineSpan
 	void copyFrom(uoLineSpan* spn){
-		_start 	= spn->getStart();
-		_end 	= spn->getEnd();
+		m_start 	= spn->getStart();
+		m_end 	= spn->getEnd();
 
-		_level	= spn->getLevel();
-		_nameSections	= spn->_name;
+		m_level	= spn->getLevel();
+		m_nameSections	= spn->_name;
 
 		m_id 	= spn->getId();
 	}
 
 	/// чистка итема....
 	void clear(){
-		_level = -1;
-		_start = -1;
-		_end = -1;
+		m_level = -1;
+		m_start = -1;
+		m_end = -1;
 		m_id = -1;
-		_nameSections = "";
-		_selected = false;
+		m_nameSections = "";
+		m_selected = false;
 		_rectView.setTop(0.0);
 		_rectView.setRight(0.0);
 		_rectView.setBottom(0.0);
@@ -162,6 +162,51 @@ class uoReportCtrlMesFilter : public QObject
         void editComplete(bool accept); ///< сигнал о завершении обработки текста.
 };
 
+class uoReportCtrl;
+
+/**
+	\struct uorSelVisitorBase - Абстрактный базовый класс обходчик выдления.
+	\brief Абстрактный базовый класс обходчик выдления.
+*/
+
+struct uorSelVisitorBase
+{
+	uorSelVisitorBase()
+		:m_ctrl(0),m_needCreate(false)
+	{
+		m_textDec_Selection.resetItem();
+		m_borderProp_Selection.resetItem();
+	}
+	uoReportCtrl* m_ctrl;
+	virtual bool visit(uoCell* cell, bool& first = false) = 0;
+	bool m_needCreate;
+	uorTextDecor 		m_textDec_Selection;
+	uorBorderPropBase 	m_borderProp_Selection;	///< закешированное значения свойств.
+
+
+};
+
+/**
+	\struct uorSelVisitorSaveProps - обходчик+сборшик пропертей по выделениям
+	\brief обходчик+сборшик пропертей по выделениям
+*/
+struct uorSelVisitorSaveProps : public uorSelVisitorBase
+{
+	uorSelVisitorSaveProps(){}
+	virtual bool visit(uoCell* cell, bool& first = false);
+};
+
+/**
+	\struct uorSelVisitorSaveProps - обходчик+сборшик пропертей по выделениям
+	\brief обходчик+сборшик пропертей по выделениям
+*/
+struct uorSelVisitorSetProps : public uorSelVisitorBase
+{
+	uorSelVisitorSetProps(){}
+	virtual bool visit(uoCell* cell, bool& first = false);
+};
+
+
 /**
 	\class uoReportCtrl виджет, обслуживающий отрисовку отчета в режиме разработки или использования печатной формы.
 	\brief инструмент для рендринга отчета, его корректировки.
@@ -177,9 +222,8 @@ class uoReportCtrl : public QWidget
 		void setDoc(uoReportDoc* rptDoc);
         void clear();
         bool populateMenu(QMenu* targMenu);
-
-		///\todo Нужно на всякий пожарный так же добавить определение private конструктора копирования и оператора копирующего
-		/// присваивания, чтобы невозможно было случайно контрол скопировать.
+	private:
+		Q_DISABLE_COPY(uoReportCtrl)
     protected:
 
         void paintEvent(QPaintEvent *event);
@@ -201,15 +245,15 @@ class uoReportCtrl : public QWidget
 		bool mousePressEventForDataArea(QMouseEvent *event, bool isDoubleClick = false);
 		bool findScaleLocation(qreal posX, qreal posY, int &scaleNo, uoRptHeaderType rht);
 
-		uoRptSparesType findPointLocation(qreal posX, qreal posY);
+		uorSparesType findPointLocation(qreal posX, qreal posY);
 
-		uoBorderLocType  scaleLocationInBorder(qreal pos, QRectF rect, uoRptHeaderType rht);
+		uorBorderLocType  scaleLocationInBorder(qreal pos, QRectF rect, uoRptHeaderType rht);
 		void keyPressEventMoveCursor ( QKeyEvent * event );
 		void updateThis();
 		int m_freezUpdate;	/// заморозить посылку сообщений на перерисовку
 
 		// Акселераторы для поиска запчасти под курсором.
-		uoRptSparesType m_curMouseSparesType;
+		uorSparesType 	m_curMouseSparesType;
 		int 			m_curMouseSparesNo;
 		uoRptHeaderType m_curMouseSparesRht;
 		QRectF			m_curMouseSparesRect;
@@ -222,7 +266,7 @@ class uoReportCtrl : public QWidget
 		QPoint			m_curMouseLastPos;
 		QPoint			m_curMouseCurPos;
 		void 			mouseSparesAcceleratorDrop();
-		void 			mouseSparesAcceleratorSave(uoRptSparesType spar, int nom, uoRptHeaderType rht);
+		void 			mouseSparesAcceleratorSave(uorSparesType spar, int nom, uoRptHeaderType rht);
 
 		QPoint 	m_curentCell; ///< Текущая ячейка вьюва. есть всегда. Даже когда работаем с картинками.
 		QRect 	m_curentCellRect; ///< Текущая ячейка вьюва. есть всегда. Даже когда работаем с картинками.
@@ -231,9 +275,6 @@ class uoReportCtrl : public QWidget
 		QPoint 	getCellFromPosition(const qreal& posY, const qreal& posX);
 		bool 	curentCellVisible();
 
-		bool propertyEditorApply();
-		bool propertyEditorVisible();
-
 	public slots:
 		void	onSetVScrolPos(int y);
 		void	onSetHScrolPos(int x);
@@ -241,6 +282,7 @@ class uoReportCtrl : public QWidget
 		void	onScrollActionH(int act);
 		void	doScrollAction(int act, uoRptHeaderType rht);
 		void 	scrollView(int dx, int dy);
+
 	signals:
 		void onColumnSizeChange(const int& nmColl, const qreal& nmLen);
 		void onSelectionChange();
@@ -290,7 +332,7 @@ class uoReportCtrl : public QWidget
 	private slots:
 		void onCellEditTextEnd(bool accept);
 		void cellTextChangedFromEdit();
-		void onSelectonChange(const uoRptSelectionType& sModeOld, const uoRptSelectionType& sModeNew);
+		void onSelectonChange(const uorSelectionType& sModeOld, const uorSelectionType& sModeNew);
 
 
 	public:
@@ -300,9 +342,12 @@ class uoReportCtrl : public QWidget
 		void optionShow(bool shGrid, bool shGroup, bool shSection, bool shRuler);
 		uoReportSelection* getSelection(){ return m_selections;};
 		const QPoint 	getCurentCell() const {return m_curentCell;}
+
 		bool propertyEditorInit(uoReportPropEditor* pPropEditor);
-		bool propertyEditorApply(uoReportPropEditor* pPropEditor);
 		bool populatePropEditor(uoReportPropEditor* propEditor);
+
+		bool propertyEditorApply();
+		bool propertyEditorVisible();
 
 
 	protected:
@@ -323,26 +368,15 @@ class uoReportCtrl : public QWidget
 		uoRptSectionItem* 	getSectionItemFromCache();
 
 	private:
-		uoReportDoc* 	m_rptDoc;
-		QImage 			m_imageView;
-		int 			m_drawToImage;
 		void updateImage();
 
 		// В эти переменные собираем свойства выделнных элементов.
 		uorTextDecor 		m_textDec_Selection;
 		uorBorderPropBase 	m_borderProp_Selection;	///< закешированное значения свойств.
+
 		void recalcSelectionProperty();
-
-	private:
-		/// режимы взаимодействия с пользователем.
-		uoReportUseMode 	m_useMode;
-		uoReportStateMode 	m_stateMode;
-		int _resizeLine;	///< строка или колонка которая ресайзится.
+		void processSelection(uorSelVisitorBase* processor);
 		void setStateMode(uoReportStateMode stMode);
-
-	private:
-		uoReportViewIteract* m_iteractView;
-		uoReportSelection* 	 m_selections;
 		void clearSelectionsSection();
 
 
@@ -385,12 +419,17 @@ class uoReportCtrl : public QWidget
 		void onRedo();
 
 		void propertyEditorShow();
+		void propertyEditorShowActivate();
 		void propertyEditorHide();
 		void onPropChange();
 
 	private:
 		void onSpanInclude(uoRptSpanType spType);
 		void onSpanExclude(uoRptSpanType spType);
+
+		void onAccessRowOrCol(int nom, uoRptHeaderType rht); ///< при доступе к строке или столбцу вьюва...
+		void onAccessRowCol(int nmRow = 0, int nmCol = 0); ///< при доступе к строке или столбцу вьюва...
+		void doChangeVirtualSize(uoRptHeaderType rht, int changeCnt); ///< обработать смену виртуального размера
 
 	private:
 		/// данные/ректы для областей....
@@ -405,6 +444,9 @@ class uoReportCtrl : public QWidget
 		QRectF m_rectDataRegion;		///< Регион данных.
 		QRectF m_rectDataRegionFrame;	///< Рамка региона данных. А то что-то тоскливо выглядит...
 
+		uoReportDoc* 	m_rptDoc;
+		QImage 			m_imageView;
+		int 			m_drawToImage;
 
 		int  m_maxVisibleLineNumberCnt; ///< Количество символов в максимальной видимой строке таблицы. Это нужно для вычисления ширины вертикальной линейки.
 
@@ -415,9 +457,18 @@ class uoReportCtrl : public QWidget
 		bool m_showGrid;
 		bool m_showFrame;
 
-		//------- группа контролирующая положение вьюва и во вьюве.
+		/// режимы взаимодействия с пользователем.
+		uoReportUseMode 	m_useMode;
+		uoReportStateMode 	m_stateMode;
+		int m_resizeLine;	///< строка или колонка которая ресайзится.
+
+		uoReportViewIteract* m_iteractView;
+		uoReportSelection* 	 m_selections;
+
+
+		// группа контролирующая положение вьюва и его размеры/свойства.
 		qreal m_shift_RowTop;		///< Смещение первой видимой строки вверх (грубо - размер невидимой/скрытой их части)
-		qreal _shift_ColLeft;		///< Смещение первой видимой колонки влево (грубо - размер невидимой/скрытой их части)
+		qreal m_shift_ColLeft;		///< Смещение первой видимой колонки влево (грубо - размер невидимой/скрытой их части)
 
 		int m_firstVisible_RowTop; 	///< Первая верхняя видимая строка
 		int m_firstVisible_ColLeft; 	///< Первая левая видимая колонка
@@ -434,9 +485,6 @@ class uoReportCtrl : public QWidget
 		int m_rowCountDoc;	///< строки дока (просто кеш)
 		int m_colCountDoc;	///< колонки дока (просто кеш)
 
-		void onAccessRowOrCol(int nom, uoRptHeaderType rht); ///< при доступе к строке или столбцу вьюва...
-		void onAccessRowCol(int nmRow = 0, int nmCol = 0); ///< при доступе к строке или столбцу вьюва...
-		void doChangeVirtualSize(uoRptHeaderType rht, int changeCnt); ///< обработать смену виртуального размера
 
 		uoRptGroupItemList* m_groupListCache;	///< кешь для экземпляров uoRptGroupItem
 		uoRptGroupItemList* m_groupListV;		///< список ректов группировок столбцов
@@ -453,9 +501,9 @@ class uoReportCtrl : public QWidget
 
 		int m_sizeVvirt;	///< Виртуальный размер документа по вертикали. Виртуальный потому что может увеличиваться скролом.
 		int m_sizeHvirt;	///< Виртуальный Размер документа по горизонтали
-		int m_sizeVDoc;	///< Реальный размер документа.
-		int m_sizeHDoc;	///< Реальный размер документа.
-		int m_pageWidth;		///< Ширина страницы в столбцах стандартного размера
+		int m_sizeVDoc;		///< Реальный размер документа.
+		int m_sizeHDoc;		///< Реальный размер документа.
+		int m_pageWidth;	///< Ширина страницы в столбцах стандартного размера
 		int m_pageHeight;	///< Высота страницы в строках стандартного размера
 
 	public slots:

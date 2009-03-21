@@ -122,8 +122,8 @@ class uoReportDoc
 		qreal m_sizeH, m_sizeH_visible;		///< Размер документа по горизонтали полный и видимый.
 		/// "Видимый" - не вьювпорт, а размеры не скрытых секций
 
-		int m_rowCount, m_rowCount_visible;
-		int m_colCount, m_colCount_visible;
+		int m_rowCount;
+		int m_colCount;
 
 		int m_freezEvent;	/// заморозить посылку сообщений на перерисовку
 
@@ -170,6 +170,8 @@ class uoReportDoc
 		QString getCellText(const int row, const int col);
 
 		uoCell* getCell(const int posY, const int posX, bool needCreate = false);
+		inline
+		uoCell* getCellDefault() { return m_cellDefault;}
 
 
 		void 	doFormatDoc(int nmRow = -1, int nmForCol = -1);
@@ -180,13 +182,14 @@ class uoReportDoc
 		int 	getNextCellNumber(const int& rowCur, const int& colCur, const bool& ignoreHiden = true);
 		QStringList splitQStringToWord(const QFontMetricsF& fm, const QString& str, const qreal& collWidth);
 
-		uoCacheItemizer<uorTextDecor> m_TextDecorList;
+		uoCacheItemizer<uorTextDecor> 		m_cellTextDecorList;
+		uoCacheItemizer<uorBorderPropBase> 	m_cellBordPropList;
 		uorTextDecor* getDefaultTextProp();
 		uorTextDecor* getNewTextProp();
 		uorBorderPropBase* getNewBordProp();
 
 	protected:
-		void 			initTextDecorDoc(); //uorTextDecorBase* m_TextDecorDoc;
+		void 			initTextDecorDoc();
 		uorTextDecor* m_TextDecorDoc;
 
 	public:
@@ -197,6 +200,7 @@ class uoReportDoc
 
 
 		uoCellJoin* getCellJoin();
+		uoCell* 	m_cellDefault; ///< Дефолтная ячейка, содержащая значения форматирования документа по умолчанию...
 		void 		saveCellJoin(uoCellJoin* cellJItem);
 		int 		m_ident;
 

@@ -23,7 +23,7 @@ class uoReportSelection : public QObject
 		virtual ~uoReportSelection();
 
 	public:
-		void clearSelections(uoRptSelectionType exclude = uoRst_Unknown);
+		void clearSelections(uorSelectionType exclude = uoRst_Unknown);
 
 		bool isColSelect(int nmCol);
 		bool isRowSelect(int nmRow);
@@ -52,20 +52,21 @@ class uoReportSelection : public QObject
 		void cellSelectedMidle(int nmCol, int nmRow);
 
 		void selectCell(int nmCol, int nmRow);
-		bool cellStartIsNull() { return _cellStart.isNull();}
+		bool cellStartIsNull() { return m_cellStart.isNull();}
 
 		QRect* getCellSpan();
 		QPoint* getCellPoint();
 
-		uoRptSelectionType getSelectionType();
-		uoRptSelectionType getStartSelectionType();
+		uorSelectionType getSelectionType();
+		uorSelectionType getStartSelectionType();
 
 		bool calcRectFromPoints(QRect& rct, const QPoint& posStart, const QPoint& posEnd) const;
 		void refreshSelectionType();
-		void setSelectionMode(uoRptSelectionType sMode);
+		void setSelectionMode(uorSelectionType sMode);
+		QRect getSelectionBound();
 
 	signals:
-		void onSelectonChange(const uoRptSelectionType& sModeOld, const uoRptSelectionType& sModeNew);
+		void onSelectonChange(const uorSelectionType& sModeOld, const uorSelectionType& sModeNew);
 
 	private:
 		/*
@@ -75,32 +76,32 @@ class uoReportSelection : public QObject
 			интервал. и он нажимает на ячейку линейки и тащит мышку не отпуская.
 			в это время он может перекрыть уже выделенные строки, но потом вернуться
 			обратно, покинув их. выделение должно сохраниться.
-			поэтому я работаю не с _selRows а с _selRowsColsTmp.
+			поэтому я работаю не с m_selRows а с m_selRowsColsTmp.
 		*/
-		QList<int>* 	_selRows; 			///< Список выделенных строк
-		QList<int>* 	_selRowsColsTmp; 	///< Список временных выделенных строк
-		QList<int>* 	_selCols;			///< Список выделенных колонок
-		QList<QRect*>* _selSpans;			///< Список выделенных областей/спанов
-		QList<QRect*>* _selSpansCache;		///< Кешь выделенных областей/спанов
+		QList<int>* 	m_selRows; 			///< Список выделенных строк
+		QList<int>* 	m_selRowsColsTmp; 	///< Список временных выделенных строк
+		QList<int>* 	m_selCols;			///< Список выделенных колонок
+		QList<QRect*>*  m_selSpans;			///< Список выделенных областей/спанов
+		QList<QRect*>*  m_selSpansCache;	///< Кешь выделенных областей/спанов
 
-		QList<QPoint*>* _selPoints;			///< Список выделенных ячеек
-		QList<QPoint*>* _selPointsCache;	///< Кешь выделенных ячеек
+		QList<QPoint*>* m_selPoints;		///< Список выделенных ячеек
+		QList<QPoint*>* m_selPointsCache;	///< Кешь выделенных ячеек
 
-		uoRptSelectionType _startSelMode; 	///< Режим начала выделения диапазона.
-		uoRptSelectionType _selMode; 		///< Режим начала выделения диапазона.
+		uorSelectionType m_startSelMode; 	///< Режим начала выделения диапазона.
+		uorSelectionType m_selMode; 		///< Режим начала выделения диапазона.
 
 		/*
 			Стартовые объекты для режима выделения.
-			Для выделения строк/колонок _strartColRow
+			Для выделения строк/колонок m_strartColRow
 			Для выделения ячеек _strartSellX и _strartSellY
 		*/
 
-		int _strartColRow;	///< Стартовое значение строки/столбца..
+		int m_strartColRow;	///< Стартовое значение строки/столбца..
 
 		// для режима начала выделения диапазона ячеек
-		QPoint _cellStart; ///< Стартовое значение при начале выделения ячеек. x-колонка/y-строка.
-		QPoint _cellMidle; ///< Временное конечное значение ячейки при выделения ячеек с пом. КПК.
-		QRect _rectCellsMidle; ///< Временное конечное значение ячейки при выделения ячеек с пом. КПК.
+		QPoint m_cellStart; ///< Стартовое значение при начале выделения ячеек. x-колонка/y-строка.
+		QPoint m_cellMidle; ///< Временное конечное значение ячейки при выделения ячеек с пом. КПК.
+		QRect m_rectCellsMidle; ///< Временное конечное значение ячейки при выделения ячеек с пом. КПК.
 };
 
 } //namespace uoReport

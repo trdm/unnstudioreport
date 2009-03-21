@@ -40,8 +40,8 @@ uoReportDoc::uoReportDoc()
 	m_headerV->setDefSize(UORPT_SCALE_SIZE_DEF_VERTICAL);
 	m_headerH->setDefSize(UORPT_SCALE_SIZE_DEF_HORIZONTAL);
 
-	m_rowCount_visible = m_rowCount 	= 0;
-	m_colCount_visible = m_colCount 	= 0;
+	m_rowCount 	= 0;
+	m_colCount 	= 0;
 
 	m_sizeV_visible = m_sizeV = 0.0;	///< Размер документа по вертикали
 	m_sizeH_visible = m_sizeH = 0.0;	///< Размер документа по горизонтали
@@ -54,6 +54,10 @@ uoReportDoc::uoReportDoc()
 	if (m_undoManager)
 		m_undoManager->setDoc(this);
 	initTextDecorDoc();
+	m_cellDefault = new uoCell(-1);
+	if (m_cellDefault){
+		m_cellDefault->provideAllProps(this, true);
+	}
 }
 
 uoReportDoc::~uoReportDoc()
@@ -67,6 +71,7 @@ uoReportDoc::~uoReportDoc()
 	delete m_headerH;
 	delete m_fontColl;
 	delete m_TextDecorDoc;
+	delete m_cellDefault;
 
 }
 
@@ -78,14 +83,14 @@ void uoReportDoc::clear()
 	m_spanTreeSctH->clear();
 	m_spanTreeSctV->clear();
 
-	m_rowCount_visible = m_rowCount 	= 0;
-	m_colCount_visible = m_colCount 	= 0;
+	m_rowCount 	= 0;
+	m_colCount 	= 0;
 
-	m_sizeV_visible = m_sizeV = 0.0;	///< Размер документа по вертикали
-	m_sizeH_visible = m_sizeH = 0.0;	///< Размер документа по горизонтали
+	m_sizeV_visible = m_sizeV = 0.0;
+	m_sizeH_visible = m_sizeH = 0.0;
 	m_fontColl->clear();
-	m_headerV->clear(); ///< Вертикальный заголовок
-	m_headerH->clear(); ///< Горизонтальный заголовок
+	m_headerV->clear();
+	m_headerH->clear();
 	m_rows->clear();
 	m_pointBlock->clear();
 }
@@ -1166,9 +1171,10 @@ QColor*  uoReportDoc::getColorByID(const int idColor)
 uorTextDecor* uoReportDoc::getNewTextProp()
 {
 	///\todo сбацать акселераторы под считывание документов
-	uorTextDecor* prop = m_TextDecorList.getItem();
+	uorTextDecor* prop = m_cellTextDecorList.getItem();
 	uorTextDecor* propDef = getDefaultTextProp();
 	if (prop && propDef){
+		prop->mergeItem(*propDef);
 
 		prop->m_fontId = 10; //propDef->;
 		if (m_fontColl->countFonts() == 0)
@@ -1180,6 +1186,15 @@ uorTextDecor* uoReportDoc::getNewTextProp()
 
 	return prop;
 }
+
+/// теперь есть возможность вставить акселератор для считывания больших документов.
+uorBorderPropBase* uoReportDoc::getNewBordProp()
+{
+	///\todo сбацать акселераторы под считывание документов
+	uorBorderPropBase* prop = m_cellBordPropList.getItem(); //new uorBorderPropBase();
+	return prop;
+}
+
 
 /// Создаем новую uoCellJoin
 uoCellJoin* uoReportDoc::getCellJoin()
@@ -1195,14 +1210,6 @@ void uoReportDoc::saveCellJoin(uoCellJoin* cellJItem)
 }
 
 
-/// создаем новую структуру uorTextDecor для хранения атрибутов текста.
-/// теперь есть возможность вставить акселератор для считывания больших документов.
-uorBorderPropBase* uoReportDoc::getNewBordProp()
-{
-	///\todo сбацать акселераторы под считывание документов
-	uorBorderPropBase* prop = new uorBorderPropBase();
-	return prop;
-}
 
 
 

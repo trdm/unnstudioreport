@@ -39,7 +39,7 @@
         <number>6</number>
        </property>
        <item>
-        <widget class="QPushButton" name="btnOK" >
+        <widget class="QPushButton" name="m_btnOK" >
          <property name="sizePolicy" >
           <sizepolicy>
            <hsizetype>0</hsizetype>
@@ -81,7 +81,7 @@
         </widget>
        </item>
        <item>
-        <widget class="QPushButton" name="btnCancel" >
+        <widget class="QPushButton" name="m_btnCancel" >
          <property name="sizePolicy" >
           <sizepolicy>
            <hsizetype>0</hsizetype>
@@ -108,7 +108,7 @@
         </widget>
        </item>
        <item>
-        <widget class="QPushButton" name="btmUpdate" >
+        <widget class="QPushButton" name="m_btmUpdate" >
          <property name="sizePolicy" >
           <sizepolicy>
            <hsizetype>0</hsizetype>

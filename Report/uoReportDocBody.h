@@ -31,15 +31,25 @@ struct uoEnumeratedItem
 	virtual int  number() = 0;
 
 };
-//struct uorTextDecorBase;
+
 /**
-	\struct uorTextDecorBase - минимальная структура с декорацией(шрифт(семейство/размер/BIU/цвет), цвет фона)
+	\struct uorTextDecorBase - минимальная структура с декорацией.
+	\brief минимальная структура с декорацией.
+
+	- шрифт,
+	-- семейство+
+	-- размер
+	-- BIU
+	-- цвет
+	- цвет фона
+	<pre>
 	Далее эта структура расползется по всем декорируемым
 	size_t sz2 = sizeof(uorTextDecorBase); = 4 байта, помоему вполне съедобный размер.
 	использование значений для хранения данных:
 	short > {...,-1,0,1000,...}
 	char  > {...,-1,0,128,...}
 	int:2 > {-2,-1,0,1}
+	</pre>
 
 */
 struct uorTextDecorBase
@@ -80,9 +90,84 @@ struct uorTextDecorBase
 		m_fontCol = src->m_fontCol;
 		m_BgCol  = src->m_BgCol;
 	}
-	bool mergeItem(struct uorTextDecorBase item){
+	/// Равны ли проперти
+	bool isEqual(uorTextDecorBase& item){
 		int noEq = 0;
-		return (noEq>0)?true: false;
+		if (m_fontId != item.m_fontId)
+			++noEq;
+
+		if (m_fontSz != item.m_fontSz )
+			++noEq;
+
+		if (m_fontB != item.m_fontB )
+			++noEq;
+
+		if (m_fontI != item.m_fontI )
+			++noEq;
+
+		if (m_fontU != item.m_fontU )
+			++noEq;
+
+		if (m_fontCol != item.m_fontCol )
+			++noEq;
+
+		if (m_BgCol != item.m_BgCol )
+			++noEq;
+		return (noEq>0)?true:false;
+	}
+	/**
+		сольемся с переданным итемом, т.е. если у нас разные значения установим ункноун значения
+		Смыслы мержинга - получить, например для палитры свойств объединенный значения.
+	*/
+	bool mergeItem(uorTextDecorBase& item){
+		if (m_fontId != item.m_fontId && m_fontId != -1)
+			m_fontId = -1;
+
+		if (m_fontSz != item.m_fontSz && m_fontSz != -1)
+			m_fontSz = -1;
+
+		if (m_fontB != item.m_fontB && m_fontB != -1)
+			m_fontB = -1;
+
+		if (m_fontI != item.m_fontI && m_fontI != -1)
+			m_fontI = -1;
+
+		if (m_fontU != item.m_fontU && m_fontU != -1)
+			m_fontU = -1;
+
+		if (m_fontCol != item.m_fontCol && m_fontCol != -1)
+			m_fontCol = -1;
+
+		if (m_BgCol != item.m_BgCol && m_BgCol != -1)
+			m_BgCol = -1;
+
+
+		return isEqual(item);
+	}
+	bool assignItem(uorTextDecorBase& item)
+	{
+		if (m_fontId != item.m_fontId && item.m_fontId != -1)
+			m_fontId = item.m_fontId;
+
+		if (m_fontSz != item.m_fontSz && item.m_fontSz != -1)
+			m_fontSz = item.m_fontSz;
+
+		if (m_fontB != item.m_fontB && item.m_fontB != -1)
+			m_fontB = item.m_fontB;
+
+		if (m_fontI != item.m_fontI && item.m_fontI != -1)
+			m_fontI = item.m_fontI;
+
+		if (m_fontU != item.m_fontU && item.m_fontU != -1)
+			m_fontU = item.m_fontU;
+
+		if (m_fontCol != item.m_fontCol && item.m_fontCol != -1)
+			m_fontCol = item.m_fontCol;
+
+		if (m_BgCol != item.m_BgCol && item.m_BgCol != -1)
+			m_BgCol = item.m_BgCol;
+
+		return isEqual(item);
 	}
 };
 
@@ -248,38 +333,85 @@ struct uoTextTrPointCash
 	Шрифт, его размер и опции, сам текст, его поведение при большой длинне..
 */
 struct uorTextDecor : public uorTextDecorBase {
-public:
-	uorTextDecor()	{
-		resetItem();
-	}
-	void resetItem(){
-		uorTextDecorBase::resetItem();
-//		m_text			= "";
+	public:
+		uorTextDecor()	{
+			resetItem();
+		}
+		void resetItem(){
+			uorTextDecorBase::resetItem();
 
-		_textType 		= uoCTT_Text;
-		m_vertTAlignment  = uoVA_Top;
-		m_horTAlignment	= uoHA_Left;
-		m_TextBehavior		= uoCTB_Auto;
-	}
-	void copyFrom(uorTextDecor* src){
-		uorTextDecorBase::copyFrom(src);
-		_textType 			= src->_textType;
-		m_vertTAlignment  	= src->m_vertTAlignment;
-		m_horTAlignment		= src->m_horTAlignment;
-		m_TextBehavior		= src->m_TextBehavior;
+			m_textType 		= uoCTT_Text;
+			m_vertTAlignment  = uoVA_Top;
+			m_horTAlignment	= uoHA_Left;
+			m_TextBehavior		= uoCTB_Auto;
+		}
+		void copyFrom(uorTextDecor* src){
+			uorTextDecorBase::copyFrom(src);
+			m_textType 			= src->m_textType;
+			m_vertTAlignment  	= src->m_vertTAlignment;
+			m_horTAlignment		= src->m_horTAlignment;
+			m_TextBehavior		= src->m_TextBehavior;
 
-	}
+		}
 
-//	QString 	m_text; 		///< Текст содержащийся в ячейке.
-//	QString 	m_textDecode; 	///< Текст расшифровки.
+			/// Равны ли проперти
+		bool isEqual(uorTextDecor& item){
+			bool retVal = uorTextDecorBase::isEqual(item);
+			if (!retVal)
+				return retVal;
 
-	uoCellTextType  	_textType;		///< Тип текста ячейки
-	uoVertAlignment 	m_vertTAlignment;	///< Тип вертикального выравнивания текста.
-	uoHorAlignment		m_horTAlignment;	///< Тип горизонтального выравнивания текста.
-	uoCellTextBehavior 	m_TextBehavior;		///< Тип текста при превышении его длинны размера ячейки.
+			int noEq = 0;
+			if (m_textType 	!= item.m_textType )
+				++noEq;
+			if (m_vertTAlignment != item.m_vertTAlignment )
+				++noEq;
+			if (m_horTAlignment != item.m_horTAlignment )
+				++noEq;
+			if (m_TextBehavior != item.m_TextBehavior )
+				++noEq;
+			if (retVal && noEq>0)
+				return true;
+			return false;
+		}
+		/**
+			сольемся с переданным итемом, т.е. если у нас разные значения установим ункноун значения
+			Смыслы мержинга - получить, например для палитры свойств объединенный значения.
+		*/
+		bool mergeItem(uorTextDecor& item){
+			uorTextDecorBase::mergeItem(item);
 
-//	// чисто вспомогательные.
-//	qreal 		m_maxRowLen; 	///< длинна самой длинной строки в ячейке....
+			if (m_textType 	!= item.m_textType && m_textType != uoCTT_Unknown)
+				m_textType = uoCTT_Unknown;
+			if (m_vertTAlignment != item.m_vertTAlignment && m_vertTAlignment != uoVA_Unknown)
+				m_vertTAlignment = uoVA_Unknown;
+			if (m_horTAlignment != item.m_horTAlignment && m_horTAlignment != uoHA_Unknown)
+				m_horTAlignment = uoHA_Unknown;
+			if (m_TextBehavior != item.m_TextBehavior && m_TextBehavior!=uoCTB_Unknown)
+				m_TextBehavior = uoCTB_Unknown;
+			return isEqual(item);
+		}
+
+		bool assignItem(uorTextDecor& item){
+			uorTextDecorBase::assignItem(item);
+
+			if (m_textType 	!= item.m_textType && item.m_textType != uoCTT_Unknown)
+				m_textType = item.m_textType;
+			if (m_vertTAlignment != item.m_vertTAlignment && item.m_vertTAlignment != uoVA_Unknown)
+				m_vertTAlignment = item.m_vertTAlignment;
+			if (m_horTAlignment != item.m_horTAlignment && item.m_horTAlignment != uoHA_Unknown)
+				m_horTAlignment = item.m_horTAlignment;
+			if (m_TextBehavior != item.m_TextBehavior && item.m_TextBehavior!=uoCTB_Unknown)
+				m_TextBehavior = item.m_TextBehavior;
+			return isEqual(item);
+		}
+
+
+
+		uoCellTextType  	m_textType;		///< Тип текста ячейки
+		uoVertAlignment 	m_vertTAlignment;	///< Тип вертикального выравнивания текста.
+		uoHorAlignment		m_horTAlignment;	///< Тип горизонтального выравнивания текста.
+		uoCellTextBehavior 	m_TextBehavior;		///< Тип текста при превышении его длинны размера ячейки.
+
 };
 /**
 	\struct uorBorderPropBase - данные о бордюре ячейки.
@@ -309,13 +441,14 @@ struct uorBorderPropBase {
 */
 typedef struct uoCellJoin{
 	uoCellJoin()
-		:m_JoinType(uoCJT_Unknown),m_Coord1(0), m_Coord2(0)
+		:m_JoinType(uoCJT_Unknown),m_row(0), m_col(0)
 	{}
 	~uoCellJoin()
 	{}
 	uoCellsJoinType m_JoinType;
-	int m_Coord1;
-	int m_Coord2;
+
+	unsigned int m_row;
+	unsigned int m_col;
 };
 
 /**
@@ -330,7 +463,6 @@ typedef struct uoCellJoin{
 struct uoCell : public uoEnumeratedItem{
 	uoCell(int nom)
 		: m_colNo(nom)
-		, _bgColorID(0)
 		, m_height(0.0)
 		, m_textProp(0)
 		, m_borderProp(0)
@@ -348,7 +480,7 @@ struct uoCell : public uoEnumeratedItem{
 	virtual int  number() {		return m_colNo;	}
 	void clear();
 
-	bool 	provideTextProp(uoReportDoc* doc, bool needCreate = false);
+	bool 	provideAllProps(uoReportDoc* doc, bool needCreate = false);
 	QString getText();
 	QString getTextWithLineBreak(bool drawInv = false);
 
@@ -361,8 +493,8 @@ struct uoCell : public uoEnumeratedItem{
 	uoHorAlignment 		getAlignmentHor();
 	uoVertAlignment 	getAlignmentVer();
 	uoCellTextBehavior 	getTextBehavior();
-	uoCellTextType		getTextType(); //_textType
-	uorTextDecor* 	getTextProp(uoReportDoc* doc, bool needCreate = false);
+	uoCellTextType		getTextType(); //m_textType
+	uorTextDecor* 		getTextProp(uoReportDoc* doc, bool needCreate = false);
 
 	QFont*   getFont(uoReportDoc* doc, bool needCreate = false);
 	int		 getFontSize();
@@ -378,11 +510,12 @@ struct uoCell : public uoEnumeratedItem{
 
 	void saveTrPoint(uoTextTrPointCash* cash);
 	void applyTrPoint(uoTextTrPointCash* cash, const QStringList& listStr, uoReportDoc* doc);
+	bool isPartOfUnion(const int& row, const bool& basic = false) const;
 
 
 	int 		m_colNo;				///< Номер колонки, к которой ячейка принадлежит.
-	int 		_bgColorID;		///< Индекс цвета фона ячейки...
 	qreal		m_height;		///< Высота ячейки, что-бы не высчитывать формат 100 раз..
+
 
 	uorTextDecor* m_textProp;
 	uorBorderPropBase* m_borderProp;

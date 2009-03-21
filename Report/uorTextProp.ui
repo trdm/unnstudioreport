@@ -54,7 +54,7 @@
         </widget>
        </item>
        <item>
-        <widget class="QComboBox" name="m_TextType" >
+        <widget class="QComboBox" name="m_cbTextType" >
          <property name="sizePolicy" >
           <sizepolicy>
            <hsizetype>0</hsizetype>
@@ -87,7 +87,7 @@
         </widget>
        </item>
        <item>
-        <widget class="QComboBox" name="m_TextBehavior" >
+        <widget class="QComboBox" name="m_cbTextBehavior" >
          <property name="sizePolicy" >
           <sizepolicy>
            <hsizetype>7</hsizetype>

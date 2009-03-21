@@ -334,14 +334,18 @@ QString uoCell::getText(){
 	return m_text;
 }
 
-bool uoCell::provideTextProp(uoReportDoc* doc, bool needCreate /* = false*/)
+/// Обеспеспечивает свойства ячейки.
+///\todo Думаю надо сразу все свойства инициализировать из этого места и переименовать в provideAllProps, ы? угу...
+bool uoCell::provideAllProps(uoReportDoc* doc, bool needCreate /* = false*/)
 {
-	if (m_textProp)
+	if (m_textProp && m_borderProp)
 		return true;
 	if (doc && needCreate){
 		m_textProp = doc->getNewTextProp();
-		if (m_textProp)
+		m_borderProp = doc->getNewBordProp();
+		if (m_textProp && m_borderProp){
 			return true;
+		}
 	}
 	return false;
 }
@@ -396,13 +400,13 @@ QString uoCell::getTextWithLineBreak(bool drawInv)
 /// Установить текст. Надо гарантировать наличие структуры m_textProp;
 void uoCell::setText(QString text, uoReportDoc* doc)
 {
-	if (provideTextProp(doc, true))
+	if (provideAllProps(doc, true))
 		m_text = text;
 }
 
 void uoCell::setMaxRowLength(qreal len, uoReportDoc* doc)
 {
-	if (provideTextProp(doc, true))
+	if (provideAllProps(doc, true))
 		m_maxRowLen = len;
 }
 
@@ -415,7 +419,7 @@ qreal uoCell::getMaxRowLength()
 /// установить выравнивание текста в ячейке
 void uoCell::setAlignment(const uoVertAlignment& va, const uoHorAlignment& ha, const uoCellTextBehavior& tb, uoReportDoc* doc)
 {
-	if (provideTextProp(doc, true)) {
+	if (provideAllProps(doc, true)) {
 		m_textProp->m_horTAlignment = ha;
 		m_textProp->m_vertTAlignment = va;
 		m_textProp->m_TextBehavior = tb;
@@ -466,7 +470,7 @@ uoCellTextBehavior 	uoCell::getTextBehavior()
 uoCellTextType	uoCell::getTextType()
 {
 	if (m_textProp){
-		return m_textProp->_textType;
+		return m_textProp->m_textType;
 	}
 	return uoCTT_Unknown;
 }
@@ -556,11 +560,13 @@ QColor*  uoCell::getBGColor(uoReportDoc* doc)
 {
 	if (!doc )
 		return NULL;
-	return doc->getColorByID(_bgColorID);
+	return doc->getColorByID(getBGColorId());
 }
 
 int uoCell::getBGColorId(){
-	return _bgColorID;
+	if (m_textProp)
+		return m_textProp->m_BgCol;
+	return -1;
 }
 
 /// Утилизируем точки выравнивания.
@@ -572,6 +578,24 @@ void uoCell::saveTrPoint(uoTextTrPointCash* cash)
 			m_textBoundary = NULL;
 		}
 	}
+}
+/**	Возвращает true если ячейка является частью объединения,
+	в зависимости от параметра "basic" = true
+*/
+bool uoCell::isPartOfUnion(const int& row, const bool& basic) const
+{
+	bool rewtVal = false;
+	if (m_ceelJoin){
+
+		if (m_ceelJoin->m_JoinType != uoCJT_Unknown)
+		{
+			rewtVal = true;
+			if (basic && m_ceelJoin->m_JoinType == uoCJT_BackPoint)
+				rewtVal = false;
+		}
+
+	}
+	return rewtVal;
 }
 
 /// Применим порезку на строки, подготовленные с учетом размера шрифта.

@@ -160,7 +160,7 @@ bool uoReportLoaderXML::saveSectionHeaderStart(int count, uoRptHeaderType rht){
 }
 bool uoReportLoaderXML::saveSectionItem(uoLineSpan* peSpn){
 	_textStream << QString("\t<Section start = \"%1\" end = \"%2\" name=\"%3\" level=\"%4\" />\n")
-	.arg(peSpn->getStart()).arg(peSpn->getEnd()).arg(peSpn->_name).arg(peSpn->_level);
+	.arg(peSpn->getStart()).arg(peSpn->getEnd()).arg(peSpn->_name).arg(peSpn->m_level);
 	return true;
 }
 bool uoReportLoaderXML::saveSectionHeaderEnd(uoRptHeaderType rht){
@@ -194,7 +194,7 @@ void uoReportLoaderXML::saveCell(uoCell* cellItem){
 	QString text = cellItem->getText();
 	text = Qt::escape(text);
 
-	QString str = QString("\t\t<Cell no = \"%1\" fid = \"%2\"  fsz = \"%3\" cId = \"%4\" cbgid = \"%5\" tb = \"%6\" ah = \"%7\" av = \"%8\" >")
+	QString str = QString("\t\t<Cell no = \"%1\" fid = \"%2\"  fsz = \"%3\" cId = \"%4\" cbgid = \"%5\" tb = \"%6\" ah = \"%7\" av = \"%8\" tt= \"%9\">")
 	.arg(cellItem->number())
 	.arg(cellItem->getFontId())
 	.arg(cellItem->getFontSize())
@@ -203,6 +203,7 @@ void uoReportLoaderXML::saveCell(uoCell* cellItem){
 	.arg(cellItem->getTextBehavior())
 	.arg(cellItem->getAlignmentHor())
 	.arg(cellItem->getAlignmentVer())
+	.arg(cellItem->getTextType())
 	;
 	QString text2 = QString("%1%2</Cell>\n").arg(str).arg(text);
 	_textStream << text2;
@@ -283,7 +284,7 @@ bool uoReportLoaderXML::loadSectionHeader(const QDomElement &node,uoReportDoc* d
 			start = child.attribute("start").toInt();
 			stop =  child.attribute("end").toInt();
 			nameSect = child.attribute("name");
-			doc->addSection(start, stop, rht, nameSect); ///\todo а тут надо гарантировать, что имя уникальное...
+			doc->addSection(start, stop, rht, nameSect); // а тут надо гарантировать, что имя уникальное...
 
 			child = child.nextSiblingElement();
 		}

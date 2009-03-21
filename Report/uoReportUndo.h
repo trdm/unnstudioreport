@@ -17,6 +17,7 @@ namespace uoReport {
 
 /**
 	\struct uoRUndoUnit - Абстрактный класс комманды отмены/повтора редактирования
+	\brief Абстрактный класс комманды отмены/повтора редактирования
 */
 struct uoRUndoUnit
 {
@@ -32,6 +33,7 @@ struct uoRUndoUnit
 };
 /**
 	\struct uoRUndo01 - класс комманды отмены/повтора редактирования текста.
+	\brief класс комманды отмены/повтора редактирования текста.
 */
 struct uoRUndo01 : public uoRUndoUnit
 {
@@ -52,7 +54,10 @@ struct uoRUndo01 : public uoRUndoUnit
 };
 
 
-//	\class uoReportUndo - Основной класс хранения и обработки механизма ундо/редо.
+/**
+	\class uoReportUndo - Основной класс хранения и обработки механизма ундо/редо.
+	\brief Основной класс хранения и обработки механизма ундо/редо.
+*/
 class uoReportUndo
 {
 	public:
