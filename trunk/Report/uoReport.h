@@ -177,7 +177,7 @@ typedef enum uoUiCommandRpt
 	пространственным координатам.
 	Vst = view Spares Type
 */
-typedef enum uoRptSparesType {
+typedef enum uorSparesType {
 	  uoVst_Unknown = 0
 	, uoVst_GroupV = 1	///< рект вертикальной группы
 	, uoVst_GroupH		///< рект ГОРИЗОНтальной группы
@@ -189,9 +189,9 @@ typedef enum uoRptSparesType {
 	, uoVst_Cell	 	///< Ячейка таблицы или объединение.
 };	// Vst - (ViewSparesType)
 
-///\enum uoRptSelectionType типы выделения во вьюве.
-typedef enum uoRptSelectionType {
-	  uoRst_Unknown 	= 0
+///\enum uorSelectionType типы выделения во вьюве.
+typedef enum uorSelectionType {
+	  uoRst_Unknown 	= 0 ///< Ничего не выделено, 1 текущая ячейка.
 	, uoRst_Document 	= 1	///< Выделен весь документ
 	, uoRst_Column			///< Выделена колонка
 	, uoRst_Columns			///< Выделены колонки
@@ -202,8 +202,8 @@ typedef enum uoRptSelectionType {
 	, uoRst_Mixed			///< Миксированное выделение(ячеек?).
 };
 
-///\enum uoBorderLocType - расположения бордюра
-typedef enum uoBorderLocType
+///\enum uorBorderLocType - расположения бордюра
+typedef enum uorBorderLocType
 {
 	uoBlt_Unknown = 0 /// неопознаный %)
 	, uoBlt_Top  = 1 ///< верхний бордер
@@ -230,8 +230,11 @@ enum uoReportUseMode {
 	, rmUsingMode = 1
 };
 
-///\enum uoReportStateMode - режим взаимодействия с пользователем
-/// Например: редактирование ячейки, выделение групп ячеек, и т.п.
+/**
+	\enum uoReportStateMode - режим взаимодействия с пользователем
+
+	Например: редактирование ячейки, выделение групп ячеек, и т.п.
+*/
 enum uoReportStateMode {
 	rmsNone = 0 			///< Обычный режим. Серфинг с пом. КПК по вьюву.
 	, rmsResizeRule_Top  	///< Изменение размера вертикальной ячейки линейки.
@@ -245,6 +248,7 @@ enum uoReportStateMode {
 /**
 	\enum uoCellTextBehavior - поведение текста при привышении его размера ширины ячейки.
 
+	<pre>
 	uoCTB_Auto - Текст будет печататься в сторону его выравнивания, пока не встретит
 		либо границу документа, либо первую заполненную ячейку. Т.е. фактически текст
 		может печататься поверх нескольких ячеек, если это ему нужно....
@@ -253,6 +257,7 @@ enum uoReportStateMode {
 	uoCTB_Transfer - если текст не помещается в отведенную ему область, он будет
 		перенесен и ячейка должна проинформировать строку, что её размер должен быть
 		расширен.
+	</pre>
 */
 enum uoCellTextBehavior {
 	  uoCTB_Unknown = 0 	///< Неопределенное,
@@ -261,7 +266,6 @@ enum uoCellTextBehavior {
 	, uoCTB_Obstruct = 3
 	, uoCTB_Transfer = 4
 };
-///\todo определить оптимальные дефолтные настройки для ячейки.
 /*
 	Неопределенные значения для свойств необходимы из-за групповой обработки ячеек..
 	используется для!! группы выдененных ячеек, когда у них смешанные значения.
@@ -285,7 +289,9 @@ typedef enum uoHorAlignment {
 
 /**
 	\enum uoCellTextType - типы текста в ячейке
-	Типы текста в ячейке: текст, выражение, шаблон.
+	\brief Типы текста в ячейке: текст, выражение, шаблон.
+
+	<pre>
 	С "текстом" все просто, его надо просто вывести
 	"Выражение", достаточно просто, например "PrnPrice", просто
 	ищем в списке выражений в документе и заменяем на значения
@@ -297,6 +303,7 @@ typedef enum uoHorAlignment {
 	- " руб."
 	"[ВсегоСумма]" - заменяется по принцыпу как и с "Выражением."
 	Потом склеивается.
+	</pre>
 */
 enum uoCellTextType {
 	 uoCTT_Unknown = 0	///< Простой текст, не интерпретируемый
@@ -318,27 +325,55 @@ enum uoCellBorderType {
 };
 /**
 	\enum uoCellsJoinType типы объединений ячеек.
-
-	<b> uoCJT_Abstract </b> - Абстрактное объединение, означает просто где можно размещать текст по строке,
+	<pre>
+	<b> uoCJT_BackPoint </b> - Указатель назад: необходим в объединенных ячейках указатель на стартовую. Вот это он и есть.
 	т.е. значения (m_Coord1 и m_Coord2) означают:
-		m_Coord1 - стартовая ячейка в строке;
-		m_Coord2 - конечная ячейка в строке.
+		m_row - порядковый номер строки этой ячейки в объдинении;
+		m_col - порядковый номер столбца этой ячейки в объдинении.
 
 	<b>uoCJT_Formal</b> - Формальное объединение, означает что ячейки НЕ ОБЪЕДИНЕНЫ, но текст выравнивается
 	т.е. значения (m_Coord1 и m_Coord2) означают:
-		m_Coord1 - конечная ячейка в этой строке,
-		m_Coord2 = конечная строка в объединении
+		m_row = количество строк в объединении,
+		m_col = количество столбцов в объединении
 
 	<b>uoCJT_Normal</b> -Нормальное объединение, означает что ячейки ОБЪЕДИНЕНЫ
 	т.е. значения (m_Coord1 и m_Coord2) означают:
-		m_Coord1 - конечная ячейка в этой строке,
-		m_Coord2 = конечная строка в объединении
+		m_row = количество строк в объединении,
+		m_col = количество столбцов в объединении
+
+	пример:
+           1  2  3  4  5  6  7
+        1 [ ][ ][ ][ ][ ][ ][ ]
+        2 [ ][ ][ ][ ][ ][ ][ ]
+        3 [ ][ ][*][*][ ][ ][ ]
+        4 [ ][ ][*][*][ ][ ][ ]
+        5 [ ][ ][*][*][ ][ ][ ]
+        6 [ ][ ][ ][ ][ ][ ][ ]
+        7 [ ][ ][ ][ ][ ][ ][ ]
+
+		Объединены ячейки R3C3:R5C4
+		в ячейке R3C3
+		uoCellJoin->m_JoinType = uoCJT_Normal;
+		uoCellJoin->m_row = 3;
+		uoCellJoin->m_col = 2;
+
+		в ячейке R3C4
+		uoCellJoin->m_JoinType = uoCJT_BackPoint;
+		uoCellJoin->m_row = 1;
+		uoCellJoin->m_col = 2;
+
+		в ячейке R5C4
+		uoCellJoin->m_JoinType = uoCJT_BackPoint;
+		uoCellJoin->m_row = 3;
+		uoCellJoin->m_col = 2;
+		примечание: нумерация начинается с 1 (с единицы).
+		</pre>
 */
 enum uoCellsJoinType{
 	  uoCJT_Unknown = 0 // Нет объединения
-	, uoCJT_Abstract 	// Абстрактное объединение
-	, uoCJT_Formal 		// Формальное объединение
+	, uoCJT_BackPoint 	// Абстрактное объединение
 	, uoCJT_Normal 		// Нормальное объединение
+	, uoCJT_Formal 		// Формальное объединение
 };
 
 /**
@@ -361,6 +396,10 @@ typedef enum uoDocChangeType
 	, uoDCT_ClearDoc  	/// очистка документа.
 	, uoDCT_ChageText  	/// Изменение текста ячейки...
 };
+/**
+	\enum uorPropertyTabType - типы закладок плавающей панели свойств.
+	\brief типы закладок плавающей панели свойств.
+*/
 
 typedef enum uorPropertyTabType
 {

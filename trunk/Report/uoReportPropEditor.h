@@ -32,30 +32,52 @@ struct QDesktopWidget;
 
 namespace uoReport {
 
-// Декоратор
+/**
+	\class uorCommTab - Декоратор для всех закладок в редакторе свойств.
+	\brief Декоратор для всех закладок в редакторе свойств.
+*/
 class uorCommTab{
 	public:
 		inline void setPropEditor(uoReportPropEditor* pe){m_rpe = pe; init();};
 		inline void setTypeTab(const uorPropertyTabType&	typeTab){m_typeTab = typeTab;};
 		virtual void init(){};
+		virtual void initFromRPE(){};
+		virtual void applyResult(){};
 		uoReportPropEditor* m_rpe;
 		uorPropertyTabType	m_typeTab;
 };
 
+/**
+	\class uoTextPropTab - Виджет для закладки редактирования текста и его общих свойств.
+	\brief Виджет для закладки редактирования текста и его общих свойств.
+*/
 class uoTextPropTab : public QWidget, public Ui::uorTextProp, public uorCommTab
 {
 	public:
 		uoTextPropTab(QWidget *parent = 0);
 		virtual ~uoTextPropTab();
 		virtual void init();
+		virtual void initFromRPE();
+		virtual void applyResult();
 };
+
+/**
+	\class uoTextLayotTab - Виджет для закладки редактирования опций выравнивания текста.
+	\brief Виджет для закладки редактирования опций выравнивания текста.
+*/
 class uoTextLayotTab : public QWidget, public Ui::uorTextLayotProp, public uorCommTab
 {
 	public:
 		uoTextLayotTab(QWidget *parent = 0);
 		virtual ~uoTextLayotTab();
+		virtual void initFromRPE();
+		virtual void applyResult();
 };
 
+/**
+	\class uoTextFontPropTab - Виджет для закладки редактирования опций шрифта текста.
+	\brief Виджет для закладки редактирования опций шрифта текста.
+*/
 class uoTextFontPropTab : public QWidget, public Ui::uorTextFontProp, public uorCommTab
 {
     Q_OBJECT
@@ -79,32 +101,51 @@ class uoTextFontPropTab : public QWidget, public Ui::uorTextFontProp, public uor
 };
 
 
+/**
+	\class uorPropDlg - Собственно плавающая панель, контейнер для остальных закладок.
+	\brief Собственно плавающая панель, контейнер для остальных закладок.
+*/
 class uorPropDlg : public QWidget, public Ui::uoPropDlg
 {
 	Q_OBJECT
 	public:
-		uorPropDlg(QWidget *parent = 0);
+		typedef QMap<uorPropertyTabType, QWidget*>::iterator uoTabPropIter;
+	public:
+		uorPropDlg(QWidget *parent = 0, uoReportPropEditor* pe = 0);
 		virtual ~uorPropDlg();
 		inline void setPropEditor(uoReportPropEditor* pe){m_pe = pe;};
 
-		QWidget* getTab(uorPropertyTabType tabType);
-		void addTab(QWidget* tab, const QString& label);
+//		QWidget* getTab(uorPropertyTabType tabType);
+		void addTab(QWidget* tab, const QString& label, uorPropertyTabType tabType);
 		void clearTabs();
-		void initFontTab(uoTextFontPropTab* tab);
+		bool applyResult();
+
+		bool initFromCtrl(uoReportCtrl* pCtrl);
+
+	public slots:
+		void onApply();
+		void onApplyWithoutHide();
+		void onCancel();
+
 	protected:
 		virtual void moveEvent ( QMoveEvent * event );
 		virtual void resizeEvent ( QResizeEvent * event );
+		virtual void keyPressEvent ( QKeyEvent * event );
 		void savePosition();
 
 	private:
 		QTabWidget* m_tabWidget;
-		QMap<uorPropertyTabType, QWidget*> m_tabs;
+		QList<uorPropertyTabType> m_tabsUsing;
 		uoReportPropEditor* m_pe;
 
+		uoTextPropTab* 		m_tabTxt;
+		uoTextLayotTab* 	m_tabLayot;
+		uoTextFontPropTab* 	m_tabFont;
 };
 
 /**
-	class uoReportPropEditor - объект, координирующий плавающую панетль свойств табличного редактора.
+	\class uoReportPropEditor - объект, координирующий плавающую панетль свойств табличного редактора.
+	\brief объект, координирующий плавающую панетль свойств табличного редактора.
 */
 class uoReportPropEditor : public QObject
 {
@@ -113,27 +154,35 @@ class uoReportPropEditor : public QObject
 		uoReportPropEditor(QObject* pObj = 0);
 		virtual ~uoReportPropEditor();
 
-		bool showPriperty(uoReportCtrl* pCtrl);
-		bool applyProps()	{return true;}
+		bool applyProps();
 		bool initFromCtrl(uoReportCtrl* pCtrl);
+		bool applyResult();
+		bool isChangedProperty();
+
+		bool showProperty(uoReportCtrl* pCtrl, bool forseActivate = false);
 		void hidePriperty(const bool& save = false);
 		bool editorIsVisible();
 
 	private:
 		uorPropDlg* 	m_propDlg;
 		uoReportCtrl* 	m_reportCtrl;
+
 	public:
-		uorTextDecor* 	m_textProp; 	///< закешированное значения свойств.
-		uorBorderPropBase* 	m_borderProp;	///< закешированное значения свойств.
+		uorSelectionType m_sellectonType;
+		QString m_cellText;		///< текст ячейки 		(если m_sellectonType = uoRst_Unknown)
+		QString m_cellDecode;   ///< расшифровка ячейки (если m_sellectonType = )
+
+		uorTextDecor* 		m_textProp; 	///< значения свойств текста.
+		uorTextDecor* 		m_textPropRes; 	///< значения свойств текста полученное мержингом с данных m_textProp и визуального предстваления
+		uorBorderPropBase* 	m_borderProp;	///< значения свойств бордюров.
 		QFontDatabase::WritingSystem m_writingSystem;
-		QFontDatabase 	m_fontBD;
+		QFontDatabase 		m_fontBD;
 
 		QRect 			m_lastGeometry; ///< запоминаем последнее расположение палитры свойств.
 		/* надо поделить на логические части контролы для редактирования.
 		в разных режимах могут быть доступны не все свойства сразу.
 		например при выделении колонок текст не отредактируешь.
-		В принцыпе пока можно опереться на uoRptSelectionType selType*/
-		uoRptSelectionType m_sellectonType;
+		В принцыпе пока можно опереться на uorSelectionType selType*/
 };
 } //namespace uoReport
 #endif // UOREPORTPROPEDITOR_H

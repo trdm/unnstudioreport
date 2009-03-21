@@ -23,16 +23,63 @@ uoTextPropTab::~uoTextPropTab()
 
 void uoTextPropTab::init()
 {
-	this->m_TextType->addItem(QString::fromUtf8(""),uoCTT_Unknown);
-	this->m_TextType->addItem(QString::fromUtf8("Text"),uoCTT_Text);
-	this->m_TextType->addItem(QString::fromUtf8("Expr"),uoCTT_Expr);
-	this->m_TextType->addItem(QString::fromUtf8("Templ"),uoCTT_Templ);
+	this->m_cbTextType->addItem(QString::fromUtf8(""),uoCTT_Unknown);
+	this->m_cbTextType->addItem(QString::fromUtf8("Text"),uoCTT_Text);
+	this->m_cbTextType->addItem(QString::fromUtf8("Expr"),uoCTT_Expr);
+	this->m_cbTextType->addItem(QString::fromUtf8("Templ"),uoCTT_Templ);
 
-	this->m_TextBehavior->addItem(QString::fromUtf8(""),uoCTB_Unknown);
-	this->m_TextBehavior->addItem(QString::fromUtf8("Auto"),uoCTB_Auto);
-	this->m_TextBehavior->addItem(QString::fromUtf8("Cut"),uoCTB_Cut);
-	this->m_TextBehavior->addItem(QString::fromUtf8("Obstruct"),uoCTB_Obstruct);
-	this->m_TextBehavior->addItem(QString::fromUtf8("Transfer"),uoCTB_Transfer);
+	this->m_cbTextBehavior->addItem(QString::fromUtf8(""),uoCTB_Unknown);
+	this->m_cbTextBehavior->addItem(QString::fromUtf8("Auto"),uoCTB_Auto);
+	this->m_cbTextBehavior->addItem(QString::fromUtf8("Cut"),uoCTB_Cut);
+	this->m_cbTextBehavior->addItem(QString::fromUtf8("Obstruct"),uoCTB_Obstruct);
+	this->m_cbTextBehavior->addItem(QString::fromUtf8("Transfer"),uoCTB_Transfer);
+}
+
+/// Считываем данные из m_rpe->m_textProp
+void uoTextPropTab::initFromRPE()
+{
+	// в списках типа текста и поведения иногда необъодимы итемы ункноун, а иногда нет.
+	int index = m_cbTextType->findData(uoCTT_Unknown);
+	if (m_rpe->m_textProp->m_textType != uoCTT_Unknown && index != -1){
+		m_cbTextType->removeItem ( index );
+	}
+	index = m_cbTextType->findData(m_rpe->m_textProp->m_textType);
+	if (index == -1) {
+		m_cbTextType->insertItem(0,QString::fromUtf8(""),uoCTT_Unknown);
+	} else {
+		m_cbTextType->setCurrentIndex(index);
+	}
+
+
+	index = m_cbTextBehavior->findData(uoCTB_Unknown);
+
+	if (m_rpe->m_textProp->m_TextBehavior != uoCTB_Unknown && index != -1){
+		m_cbTextBehavior->removeItem ( index );
+	}
+	index = m_cbTextBehavior->findData(m_rpe->m_textProp->m_TextBehavior);
+	if (index == -1) {
+		m_cbTextBehavior->insertItem(0,QString::fromUtf8(""),uoCTB_Unknown);
+	} else {
+		m_cbTextBehavior->setCurrentIndex(index);
+	}
+
+	bool permTxt = (m_rpe->m_sellectonType == uoRst_Unknown)? true : false;
+
+	m_textCell->setEnabled(permTxt);
+	m_textDecoding->setEnabled(permTxt);
+	if (permTxt ){
+		m_textCell->setPlainText(m_rpe->m_cellText);
+		m_textDecoding->setText(m_rpe->m_cellDecode);
+	}
+}
+
+/// Заливаем данные из гуя в проперть.
+void uoTextPropTab::applyResult()
+{
+	m_rpe->m_textPropRes->m_textType 		= (uoCellTextType)m_cbTextType->itemData(m_cbTextType->currentIndex()).toInt();
+	m_rpe->m_textPropRes->m_TextBehavior	= (uoCellTextBehavior)m_cbTextBehavior->itemData(m_cbTextBehavior->currentIndex()).toInt();
+//	if(m_rpe->m_sellectonType == uoRst_Unknown)
+
 }
 
 uoTextLayotTab::uoTextLayotTab(QWidget *parent)
@@ -43,6 +90,59 @@ uoTextLayotTab::uoTextLayotTab(QWidget *parent)
 }
 uoTextLayotTab::~uoTextLayotTab()
 {}
+
+void uoTextLayotTab::initFromRPE()
+{
+	m_TopVTA->setChecked(false);
+	m_CenterVTA->setChecked(false);
+	m_BottomVTA->setChecked(false);
+
+	m_LeftHTA->setChecked(false);
+	m_CenterHTA->setChecked(false);
+	m_RightHTA->setChecked(false);
+	if (m_rpe->m_textProp){
+		switch (m_rpe->m_textProp->m_horTAlignment){
+		case uoHA_Left: 	{m_LeftHTA->setChecked(true); break;}
+		case uoHA_Center: 	{m_CenterHTA->setChecked(true); break;}
+		case uoHA_Right: 	{m_RightHTA->setChecked(true); break;}
+		default:
+			break;
+		}
+		switch (m_rpe->m_textProp->m_vertTAlignment){
+		case uoVA_Top: 		{m_TopVTA->setChecked(true); break;}
+		case uoVA_Center: 	{m_CenterVTA->setChecked(true); break;}
+		case uoVA_Bottom: 	{m_BottomVTA->setChecked(true); break;}
+		default:
+			break;
+		}
+	}
+}
+
+void uoTextLayotTab::applyResult()
+{
+	if (!m_rpe)
+		return;
+	if (!m_rpe->m_textPropRes)
+		return;
+
+	uoHorAlignment horTAlignment = uoHA_Unknown;
+	if (m_LeftHTA->isChecked())		{		horTAlignment = uoHA_Left;		}
+	if (m_CenterHTA->isChecked())	{		horTAlignment = uoHA_Center;	}
+	if (m_RightHTA->isChecked())	{		horTAlignment = uoHA_Right;	}
+	if (horTAlignment != m_rpe->m_textPropRes->m_horTAlignment)
+	{
+		m_rpe->m_textPropRes->m_horTAlignment = horTAlignment;
+	}
+	uoVertAlignment vTAlignment = uoVA_Unknown;
+	if (m_TopVTA->isChecked())		{		vTAlignment = uoVA_Top;		}
+	if (m_CenterVTA->isChecked())	{		vTAlignment = uoVA_Center;	}
+	if (m_BottomVTA->isChecked())	{		vTAlignment = uoVA_Bottom;	}
+	if (vTAlignment != m_rpe->m_textPropRes->m_vertTAlignment)
+	{
+		m_rpe->m_textPropRes->m_vertTAlignment = vTAlignment;
+	}
+}
+
 
 uoTextFontPropTab::uoTextFontPropTab(QWidget *parent)
 	:QWidget(parent)
@@ -199,7 +299,7 @@ void uoTextFontPropTab::fillFontSizeList()
 	if (size == 0)
 		size = 8;
 
-	qDebug()<<" font name: " << fName;
+//	qDebug()<<" font name: " << fName;
 
 	QList<int> sizes = m_rpe->m_fontBD.pointSizes(fName);
 	m_sizeList->blockSignals(true);
@@ -244,31 +344,62 @@ void uoTextFontPropTab::onFontNameChange(const QString& str)
 
 
 
-uorPropDlg::uorPropDlg(QWidget *parent)
-	:QWidget(parent)
+uorPropDlg::uorPropDlg(QWidget *parent, uoReportPropEditor* pe)
+	:QWidget(parent), m_pe(pe)
 {
 	setupUi(this);
 	hide();
+//	m_pe = NULL;
 	setWindowFlags(Qt::Tool);
+	connect(m_btnOK, SIGNAL(clicked(bool)), this, SLOT(onApply()));
+	connect(m_btnCancel, SIGNAL(clicked(bool)), this, SLOT(onCancel()));
+	connect(m_btmUpdate, SIGNAL(clicked(bool)), this, SLOT(onApplyWithoutHide()));
+
+	m_tabTxt = new uoTextPropTab;
+	if (m_tabTxt){
+		m_tabTxt->setTypeTab(uorPropTab_Text);
+		m_tabTxt->setPropEditor(m_pe);
+	}
+	m_tabLayot = new uoTextLayotTab;
+	if (m_tabLayot){
+		m_tabLayot->setTypeTab(uorPropTab_TextLayot);
+		m_tabLayot->setPropEditor(m_pe);
+	}
+	m_tabFont = new uoTextFontPropTab;
+	if (m_tabFont){
+		m_tabFont->setTypeTab(uorPropTab_TextFont);
+		m_tabFont->setPropEditor(m_pe);
+	}
 }
 
 uorPropDlg::~uorPropDlg()
 {
 	propFrame->clear();
-	QWidget* wi = NULL;
-	QMap<uorPropertyTabType, QWidget*>::iterator i = m_tabs.begin();
-	while(i != m_tabs.end()){
-		wi = *i;
-		delete wi;
-		i++;
-	}
+	m_tabsUsing.clear();
+	delete	m_tabTxt;
+	delete	m_tabLayot;
+	delete	m_tabFont;
+
 }
 
-void uorPropDlg::initFontTab(uoTextFontPropTab* tab)
+
+/// Сливаем проперти из гуя в структуру.
+bool uorPropDlg::applyResult()
 {
-	if (!tab)
-		return;
-	// tab->m_listFonts >> 	QListWidget
+	uorPropertyTabType tabType;
+	for (int i = 0; i < m_tabsUsing.size(); ++i) {
+		tabType = m_tabsUsing.at(i);
+		switch(tabType)
+		{
+			case uorPropTab_Text:		{	m_tabTxt->applyResult();	break;	}
+			case uorPropTab_TextLayot:	{	m_tabLayot->applyResult();	break;	}
+			case uorPropTab_TextFont:	{	m_tabFont->applyResult();	break;	}
+			default:{
+				break;
+			}
+		}
+	}
+	return true;
 }
 
 void uorPropDlg::moveEvent ( QMoveEvent * event )
@@ -290,74 +421,101 @@ void uorPropDlg::savePosition()
 	}
 }
 
-
-QWidget* uorPropDlg::getTab(uorPropertyTabType tabType)
+void uorPropDlg::keyPressEvent ( QKeyEvent * event )
 {
-	QWidget* wi = NULL;
-	if (!m_tabs.contains(tabType))
+	int key = event->key();
+	switch (key)
 	{
-		/**		\todo сделано немного поблядски, надобы табсам унаследоваться от виджета а этот свитч похоронить..		*/
-		switch(tabType)
+		case Qt::Key_Return:
+		case Qt::Key_Enter:
 		{
-			case uorPropTab_Text:
-			{
-
-				uoTextPropTab* tab = new uoTextPropTab;
-				if (tab){
-					tab->setPropEditor(m_pe);
-					tab->setTypeTab(uorPropTab_Text);
-					wi = tab;
-				}
-				break;
-			}
-			case uorPropTab_TextLayot:
-			{
-				uoTextLayotTab* tab = new uoTextLayotTab;
-				if (tab){
-					tab->setPropEditor(m_pe);
-					tab->setTypeTab(uorPropTab_TextLayot);
-					wi = tab;
-				}
-				break;
-			}
-
-			case uorPropTab_TextFont:
-			{
-				uoTextFontPropTab* tab = new uoTextFontPropTab;
-				if (tab){
-					initFontTab(tab);
-					tab->setPropEditor(m_pe);
-					tab->setTypeTab(uorPropTab_TextFont);
-
-					wi = tab;
-				}
-				break;
-			}
-
-
-			case uorPropTab_Unknown:
-			default:{
-				break;
-			}
+			event->accept();
+			onApply();
+			break;
 		}
-		if (wi){
-			m_tabs.insert(tabType,wi);
+		case Qt::Key_Escape:
+		{
+			event->accept();
+			onCancel();
+			break;
 		}
-	} else {
-		wi = m_tabs[tabType];
+		default:{
+			QWidget::keyPressEvent ( event );
+			break;
+		}
 	}
-
-	return wi;
 }
-void uorPropDlg::addTab(QWidget* tab, const QString& label)
+
+void uorPropDlg::addTab(QWidget* tab, const QString& label, uorPropertyTabType tabType)
 {
 	if (propFrame && tab){
 		propFrame->addTab(tab, label);
+		if (!m_tabsUsing.contains(tabType))
+			m_tabsUsing.append(tabType);
+
 	}
 }
 void uorPropDlg::clearTabs()
 {
 	propFrame->clear();
+	m_tabsUsing.clear();
+}
+
+/// Применить свойстра и спрятать панель
+void uorPropDlg::onApply()
+{
+	applyResult();
+	m_pe->hidePriperty(true);
+}
+/// Применить свойстра и НО НЕ спрятать панель
+void uorPropDlg::onApplyWithoutHide()
+{
+	applyResult();
+	m_pe->applyProps();
+}
+
+/// Спрятать панель НЕ применять свойстра
+void uorPropDlg::onCancel()
+{
+	m_pe->hidePriperty(false);
+}
+
+bool uorPropDlg::initFromCtrl(uoReportCtrl* pCtrl)
+{
+	bool rez = false;
+	if (pCtrl){
+		bool isVis = isVisible();
+		if (!isVis)
+			clearTabs();
+		uoReportDoc* doc = pCtrl->getDoc();
+
+		if (doc) {
+			rez = true;
+
+			bool permTxtPrp = true; // свойства текста: тип и поведение
+
+			if (permTxtPrp) {
+				if (m_tabTxt){
+					m_tabTxt->initFromRPE();
+					if (!isVis)
+						addTab(m_tabTxt, QString::fromUtf8("Текст"), m_tabTxt->m_typeTab);
+				}
+				if (m_tabLayot){
+					m_tabLayot->initFromRPE();
+					if (!isVis)
+						addTab(m_tabLayot, QString::fromUtf8("Выравнивание"), m_tabLayot->m_typeTab);
+
+				}
+			}
+//			uoTextFontPropTab* tabFont = (uoTextFontPropTab*)m_propDlg->getTab(uorPropTab_TextFont);
+//			// QComboBox
+//			if (tabFont){
+//				m_propDlg->addTab(tabFont, QString::fromUtf8("Шрифт"));
+//			}
+		}
+	}
+	return rez;
+
 }
 
 
@@ -368,6 +526,7 @@ uoReportPropEditor::uoReportPropEditor(QObject* pObj)
 	m_reportCtrl 	= NULL;
 	m_writingSystem = QFontDatabase::Cyrillic;
 	m_textProp 		= new uorTextDecor;
+	m_textPropRes 	= new uorTextDecor;
 	m_borderProp 	= new uorBorderPropBase;
 	m_sellectonType = uoRst_Unknown;
 
@@ -379,107 +538,32 @@ uoReportPropEditor::~uoReportPropEditor()
 	delete m_borderProp;
 }
 
+/// Вычислим те свойства которые необъодимо изменить и поместим их в m_textPropRes
+bool uoReportPropEditor::applyResult()
+{
+	m_textPropRes->copyFrom(m_textProp);
+	return m_propDlg->applyResult();
+}
 
+/// Проперти изменились?
+bool uoReportPropEditor::isChangedProperty()
+{
+	bool retVal = false;
+	applyResult();
+	retVal = m_textProp->isEqual(*m_textPropRes);
+	return !retVal;
+
+
+}
 
 bool uoReportPropEditor::initFromCtrl(uoReportCtrl* pCtrl)
 {
 	bool rez = false;
 	if (m_propDlg && pCtrl){
-		m_propDlg->clearTabs();
-		uoReportDoc* doc = pCtrl->getDoc();
-
-		if (doc) {
-			rez = true;
-
-			/* наверное пусть сам контрол соберет совокупную информацию.
-			Там сложности с выделениями и т.п. вещами. а я тут просто проанализирую,
-			что он там впихнул мне в m_textProp и m_borderProp и проинициализирую их диалоги.*/
-
-			uoReportSelection* selMengr = pCtrl->getSelection();
-			uoRptSelectionType selType = selMengr->getSelectionType();
-			// permissible - it is permissible ( это разрешается)
-			bool permTxt = false; // сам текст и расшифровка
-			bool permTxtPrp = true; // свойства текста: тип и поведение
-			switch(selType){
-				case uoRst_Unknown:{
-					permTxt = true;
-					break;
-				}
-				case uoRst_Document:
-				case uoRst_Column:
-				case uoRst_Columns:
-				case uoRst_Row:
-				case uoRst_Rows:
-				case uoRst_Cell:
-				case uoRst_Cells:
-				case uoRst_Mixed:{
-
-					break;
-				}
-			}
-			const QPoint pt	= pCtrl->getCurentCell();
-			m_textProp->resetItem();
-			pCtrl->populatePropEditor(this);
-
-			uoCell* cell = doc->getCell(pt.y(),pt.x(),false);
-			if (permTxtPrp) {
-				uoTextPropTab* tabTxt = (uoTextPropTab*)m_propDlg->getTab(uorPropTab_Text);
-				uorTextDecor* prop = NULL;
-				if (cell){
-					prop = cell->getTextProp(doc, true);
-				}
-				if (!prop){
-					prop = doc->getDefaultTextProp();
-				}
-				if (tabTxt){
-					m_propDlg->addTab(tabTxt, QString::fromUtf8("Текст"));
-					if (prop){
-						tabTxt->m_textCell->setEnabled(permTxt);
-						tabTxt->m_textDecoding->setEnabled(permTxt);
-						if (permTxt && cell){
-							tabTxt->m_textCell->setPlainText(cell->m_text);
-							tabTxt->m_textDecoding->setText(cell->m_textDecode);
-						}
-						tabTxt->m_TextBehavior->setCurrentIndex(prop->m_TextBehavior);
-						tabTxt->m_TextType->setCurrentIndex(prop->_textType);
-					}
-				}
-				uoTextLayotTab* tabLayot = (uoTextLayotTab*)m_propDlg->getTab(uorPropTab_TextLayot);
-				if (tabLayot){
-					m_propDlg->addTab(tabLayot, QString::fromUtf8("Выравнивание"));
-					tabLayot->m_TopVTA->setChecked(false);
-					tabLayot->m_CenterVTA->setChecked(false);
-					tabLayot->m_BottomVTA->setChecked(false);
-
-					tabLayot->m_LeftHTA->setChecked(false);
-					tabLayot->m_CenterHTA->setChecked(false);
-					tabLayot->m_RightHTA->setChecked(false);
-					if (prop){
-						switch (prop->m_horTAlignment){
-						case uoHA_Left: 	{tabLayot->m_LeftHTA->setChecked(true); break;}
-						case uoHA_Center: 	{tabLayot->m_CenterHTA->setChecked(true); break;}
-						case uoHA_Right: 	{tabLayot->m_RightHTA->setChecked(true); break;}
-						default:
-							break;
-						}
-						switch (prop->m_vertTAlignment){
-						case uoVA_Top: 		{tabLayot->m_TopVTA->setChecked(true); break;}
-						case uoVA_Center: 	{tabLayot->m_CenterVTA->setChecked(true); break;}
-						case uoVA_Bottom: 	{tabLayot->m_BottomVTA->setChecked(true); break;}
-						default:
-							break;
-						}
-					}
-				}
-			}
-			uoTextFontPropTab* tabFont = (uoTextFontPropTab*)m_propDlg->getTab(uorPropTab_TextFont);
-			// QComboBox
-			if (tabFont){
-				m_propDlg->addTab(tabFont, QString::fromUtf8("Шрифт"));
-			}
-
-
-		}
+		m_textProp->resetItem();
+		pCtrl->populatePropEditor(this); // Заполнили редактор, теперь надо заполнить диалоги редактора
+		rez = m_propDlg->initFromCtrl(pCtrl);
+		m_textPropRes->copyFrom(m_textProp);
 	}
 	return rez;
 }
@@ -487,8 +571,22 @@ bool uoReportPropEditor::initFromCtrl(uoReportCtrl* pCtrl)
 void uoReportPropEditor::hidePriperty(const bool& save)
 {
 	if (m_propDlg){
+		if (save){
+			m_propDlg->applyResult();
+			applyProps();
+		}
 		m_propDlg->hide();
 	}
+}
+
+/// Применяем свойства к репорту.
+bool uoReportPropEditor::applyProps()
+{
+	if (m_reportCtrl){
+		m_reportCtrl->propertyEditorApply();
+		return true;
+	}
+	return false;
 }
 
 bool uoReportPropEditor::editorIsVisible()
@@ -500,34 +598,38 @@ bool uoReportPropEditor::editorIsVisible()
 	return retVal;
 }
 
-bool uoReportPropEditor::showPriperty(uoReportCtrl* pCtrl)
+bool uoReportPropEditor::showProperty(uoReportCtrl* pCtrl, bool forseActivate)
 {
 	bool rez = false;
 	bool firstShow = false;
 	if (!m_propDlg){
 		firstShow = true;
-		m_propDlg = new uorPropDlg(pCtrl);
+		m_propDlg = new uorPropDlg(pCtrl, this);
 		if (m_propDlg){
 			m_propDlg->setPropEditor(this);
 		}
 	}
 	if (!m_propDlg)
 		return false;
+	m_reportCtrl = pCtrl;
 	rez = initFromCtrl(pCtrl);
 	if (rez){
+		bool active = m_propDlg->isActiveWindow();
 		if (!m_propDlg->isVisible()) {
 			if (!m_lastGeometry.isValid()){
 				m_lastGeometry = m_propDlg->geometry();
 				m_lastGeometry.moveCenter(qApp->desktop()->availableGeometry().center());
 			}
 			m_propDlg->setGeometry(m_lastGeometry);
-//			m_propDlg->move( QRect( QPoint(), ( QApplication::desktop()->size() - m_propDlg->size() ) / 2 ).bottomLeft() );
 			m_propDlg->show();
 			m_propDlg->activateWindow();
+		} else {
+			if (forseActivate)
+				m_propDlg->activateWindow();
+
 		}
 	}
 	return rez;
 }
-
 
 } //namespace uoReport

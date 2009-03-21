@@ -177,7 +177,7 @@ bool uoSpanTree::addSpanTo(int start, int stop, spanList* list)
 			spanList_iter iterB = list->begin();
 			while(iterB != list->end()) {
 				spn2 = *iterB;
-				if (spn->isInSide(spn2->_start, spn2->_end) && spn != spn2) {
+				if (spn->isInSide(spn2->m_start, spn2->m_end) && spn != spn2) {
 					iterB = list->erase(iterB);
 					spn->_child->append(spn2);
 					continue;
@@ -201,7 +201,7 @@ bool uoSpanTree::addSpan(int start, int stop, bool folded)
 	if(rezu && 	!_freezeComputeLevel)
 		computeLevel();
 	if (rezu) {
-		_lastAddedSpan->_folded = folded;
+		_lastAddedSpan->m_folded = folded;
 	}
 	return rezu;
 }
@@ -566,7 +566,7 @@ int uoSpanTree::computeLevel(spanList* list, int level)
 			for (int i = 0; i<curList->size(); i++) {
 				spn = curList->at(i);
 				++_count;
-				spn->_level = level;
+				spn->m_level = level;
 				if (spn->_child) {
 					computeLevel(spn->_child, level);
 				}
@@ -607,7 +607,7 @@ spanList* uoSpanTree::getSpanListScan(int startLine, int endLine, spanList* from
 		if (truSpan) {
 			list->append(spn);
 			if (spn->_child) {
-				if (spn->_folded && _foldExclude) {
+				if (spn->m_folded && _foldExclude) {
 				} else
 				if (!spn->_child->isEmpty()) {
 					getSpanListScan(startLine, endLine, spn->_child, list);
@@ -647,7 +647,7 @@ int uoSpanTree::printToDebug(spanList* list, int level)
 				lCount++;
 				retVal++;
 				spn = curList->at(i);
-				qDebug()<<"level: "<<level<<": ("<<spn->_start<<"/"<<spn->_end<<") name: "<<spn->_name << " ID: "<< spn->m_id;
+				qDebug()<<"level: "<<level<<": ("<<spn->m_start<<"/"<<spn->m_end<<") name: "<<spn->_name << " ID: "<< spn->m_id;
 				if (spn->_child) {
 					retVal = retVal + printToDebug(spn->_child, level);
 				}
