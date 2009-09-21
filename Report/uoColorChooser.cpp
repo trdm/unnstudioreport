@@ -59,6 +59,7 @@ uoColorChooser::uoColorChooser(QWidget *parent)
     setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Fixed);
     fillColors();
     m_Container = NULL;
+    getContainer();
     setupBotton();
     m_colorCurPos = 0;
 
@@ -83,7 +84,6 @@ uoColorChooser::~uoColorChooser()
 }
 int uoColorChooser::addColor(QColor col)
 {
-	int retVal = -1;
 	m_colorList.append(QColor(col));
 	if (!m_colorCur.isValid()) {
 		m_colorCur = col;
@@ -176,14 +176,14 @@ void uoColorChooser::fillColors(){
 QSize uoColorChooser::sizeHint() const{
 
     QFontMetrics fm(font());
-    int h = qMax(fm.height(), 7)* 1.6;
-    int w = fm.width(QLatin1Char('x')) * 7 + m_allAddBtnSize; // "some"
+    int h = int(qMax(fm.height(), 7)* 1.6);
+    int w = int(fm.width(QLatin1Char('x')) * 7) + m_allAddBtnSize; // "some"
 	return QSize(w,h);
 }
 QSize uoColorChooser::minimumSizeHint() const{
     QFontMetrics fm(font());
-    int h = qMax(fm.height(), 7)*1.6;
-    int w = fm.width(QLatin1Char('x')) * 7 + m_allAddBtnSize; // "some"
+    int h = int(qMax(fm.height(), 7)*1.6);
+    int w = int(fm.width(QLatin1Char('x')) * 7) + m_allAddBtnSize; // "some"
 	return QSize(w,h);
 }
 
@@ -198,6 +198,7 @@ int uoColorChooser::addButton(const QString& text, uoCC_Btn type)
 
 	m_btns.append(btn);
 	m_addBtn = m_btns.count();
+	return m_addBtn;
 }
 
 int uoColorChooser::addButtonPrimitive(const QStyle::PrimitiveElement prim, uoCC_Btn type)
@@ -215,6 +216,7 @@ int uoColorChooser::addButtonPrimitive(const QStyle::PrimitiveElement prim, uoCC
 	btn->m_Type 	= type;
 	m_btns.append(btn);
 	m_addBtn = m_btns.count();
+	return m_addBtn;
 }
 
 
@@ -527,7 +529,6 @@ void uoColorChooser::mouseReleaseEvent(QMouseEvent *event)
 
 bool uoColorChooser::eventFilter ( QObject * watched, QEvent * event )
 {
-	int i = 0;
 	switch(event->type()){
 		case QEvent::MouseButtonPress:
 		case QEvent::NonClientAreaMouseButtonPress:

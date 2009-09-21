@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Doc type = "uoReportDocXML" version = "0.2">
+<!-- Scales and Group types "1"=Vertical  "2"=Horizontal -->
+<!-- Cell format descr:  Cell no = "number cell" fid = "font ID"
+  fsz = "font size" cId = "color ID" cbgid = "BG color ID" 
+tb = "Text behavior" ah = "Alignment hor." av = "Alignment ver." tt= "Text type" 
+ bt_l = "left bord type" bt_t = "top bord type" bt_r = "right bord type" bt_b = "bottom bord type"
+ bt_c = "border color" -->
+<DocSize>
+	<Sizes row = "0" col = "0" sizeV = "0" sizeH = "1320" />
+	<SizesV sizeV = "0" sizeH = "1320" />
+	<DefSizes row = "15" col = "60"/>
+</DocSize>
+<Groups type = "2" count = "1">
+	<Group start = "9" end = "11" folded="0"/>
+</Groups>
+<Scales type = "2" count = "2">
+	<Scale no = "10" hide = "0" size="60" fixed="0"/>
+	<Scale no = "11" hide = "0" size="60" fixed="0"/>
+</Scales>
+	<Fonts count = "1">
+		<Font name = "MS Shell Dlg 2" />
+	</Fonts>
+</Doc>

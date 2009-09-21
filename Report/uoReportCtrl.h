@@ -24,120 +24,22 @@
 #include "uoReportViewIteract.h"
 #include "uoReportSelection.h"
 #include "uoReportPropEditor.h"
+#include "uoReportCtrlItems.h"
+#include "uorReportAreas.h"
 
 class uoReportDoc;
 class uoReportUndo;
+class QInputDialog;
 struct uoCell;
 struct uoEnumeratedItem;
 struct uorTextDecor;
 struct uorBorderPropBase;
+class uoReportCtrl;
+class uoReportDrawHelper;
+class uorPagePrintSetings;
+class uorPageSetup;
 
 namespace uoReport {
-
-
-///\struct uoRptGroupItem
-///\brief Координатное описание группировки строк/столбцов, подготовленное для рендринга.
-struct uoRptGroupItem {
-	uoRptGroupItem()
-		: m_folded(false)
-		,m_level(-1)
-		,m_start(-1)
-		,m_end(-1)
-		,m_id(-1)
-		,m_rectEndPos(0)
-		,m_rectMidlePos(0)
-		,m_sizeTail(0)
-		,m_tailPosIsAbs(false)
-		{}
-	QRectF 	_rectIteract; 	///< область "кнопки" свертки/развертки структуры.
-	bool m_folded; 			///< уровень группировки.
-	int m_level; 			///< уровень группировки.
-	int m_start; 			///< Начало диапазона.
-	int m_end;				///< Конец диапазона.
-	int m_id;				///< Идентификатор гроуп итема.
-	qreal	m_rectEndPos; 	///< Координаты правой|нижней стороны ректа. для расчета длины линии группировки.
-	qreal	m_rectMidlePos; 	///< Координаты середины правой|нижней стороны ректа для вычерчивания горизонтальной линии группировки.
-	qreal m_sizeTail;		///< Размер "хвоста" группировки.
-	bool 	m_tailPosIsAbs;	///< Размер "хвоста" указан относительно левой или верхней сторони ректа группировок
-
-	/// копируем данные из uoLineSpan
-	void copyFrom(uoLineSpan* spn){
-		m_start 	= spn->getStart();
-		m_end 	= spn->getEnd();
-
-		m_folded = spn->getFolded();
-		m_level	= spn->getLevel();
-
-		m_id 	= spn->getId();
-	}
-	/// чистка итема....
-	void clear(){
-		m_folded = false;
-		m_level = -1;
-		m_start = -1;
-		m_end = -1;
-		m_id = -1;
-		m_rectEndPos = 0.0;
-		m_rectMidlePos = 0.0;
-		m_sizeTail = 0.0;
-		_rectIteract.setTop(0.0);
-		_rectIteract.setRight(0.0);
-		_rectIteract.setBottom(0.0);
-		_rectIteract.setLeft(0.0);
-	}
-};
-
-typedef QList<uoRptGroupItem*> uoRptGroupItemList;
-typedef QMap<int, qreal> rptScalePositionMap; ///< словарь смещений ячеек линеек.
-
-/**
-	\struct uoRptSectionItem - структура для сохранения гуи-координат и атрибутов секции отчета.
-	\brief Используется в uoReportCtr для отрисовки секций.
-*/
-struct uoRptSectionItem
-{
-		uoRptSectionItem()
-		:m_level(-1)
-		,m_start(-1)
-		,m_end(-1)
-		,m_id(-1)
-		,m_nameSections(0)
-		{}
-	QRectF 	_rectView; 		///< область "кнопки" свертки/развертки структуры.
-	int 	m_level; 		///< уровень группировки.
-	int 	m_start; 		///< Начало диапазона.
-	int 	m_end;			///< Конец диапазона.
-	int 	m_id;			///< Идентификатор гроуп итема.
-	bool 	m_selected;		///< Секция выделенна.
-	QString m_nameSections;	///< Имя секции.
-
-		/// копируем данные из uoLineSpan
-	void copyFrom(uoLineSpan* spn){
-		m_start 	= spn->getStart();
-		m_end 	= spn->getEnd();
-
-		m_level	= spn->getLevel();
-		m_nameSections	= spn->_name;
-
-		m_id 	= spn->getId();
-	}
-
-	/// чистка итема....
-	void clear(){
-		m_level = -1;
-		m_start = -1;
-		m_end = -1;
-		m_id = -1;
-		m_nameSections = "";
-		m_selected = false;
-		_rectView.setTop(0.0);
-		_rectView.setRight(0.0);
-		_rectView.setBottom(0.0);
-		_rectView.setLeft(0.0);
-	}
-};
-
-typedef QList<uoRptSectionItem*> uoRptSectionItemList;
 
 
 /**
@@ -172,13 +74,14 @@ class uoReportCtrl;
 struct uorSelVisitorBase
 {
 	uorSelVisitorBase()
-		:m_ctrl(0),m_needCreate(false)
+		:m_ctrl(0),m_type(uorSVT_Unknown),m_needCreate(false)
 	{
 		m_textDec_Selection.resetItem();
 		m_borderProp_Selection.resetItem();
 	}
 	uoReportCtrl* m_ctrl;
-	virtual bool visit(uoCell* cell, bool& first = false) = 0;
+	uorSelVisitorType m_type;
+	virtual bool visit(uoCell* cell, bool first = false) = 0;
 	bool m_needCreate;
 	uorTextDecor 		m_textDec_Selection;
 	uorBorderPropBase 	m_borderProp_Selection;	///< закешированное значения свойств.
@@ -187,23 +90,25 @@ struct uorSelVisitorBase
 };
 
 /**
-	\struct uorSelVisitorSaveProps - обходчик+сборшик пропертей по выделениям
+	\struct uorSelVisitorGetProps - обходчик+сборшик пропертей по выделениям
 	\brief обходчик+сборшик пропертей по выделениям
 */
-struct uorSelVisitorSaveProps : public uorSelVisitorBase
+struct uorSelVisitorGetProps : public uorSelVisitorBase
 {
-	uorSelVisitorSaveProps(){}
-	virtual bool visit(uoCell* cell, bool& first = false);
+	uorSelVisitorGetProps()
+		:uorSelVisitorBase() {m_type = uorSVT_Getter;}
+	virtual bool visit(uoCell* cell, bool first = false);
 };
 
 /**
-	\struct uorSelVisitorSaveProps - обходчик+сборшик пропертей по выделениям
+	\struct uorSelVisitorGetProps - обходчик+сборшик пропертей по выделениям
 	\brief обходчик+сборшик пропертей по выделениям
 */
 struct uorSelVisitorSetProps : public uorSelVisitorBase
 {
-	uorSelVisitorSetProps(){}
-	virtual bool visit(uoCell* cell, bool& first = false);
+	uorSelVisitorSetProps()
+		:uorSelVisitorBase() {m_type = uorSVT_Setter;	}
+	virtual bool visit(uoCell* cell, bool first = false);
 };
 
 
@@ -215,6 +120,9 @@ class uoReportCtrl : public QWidget
 {
     Q_OBJECT
     friend class uoReportDoc;
+    friend class uoReportViewIteract;
+    friend class uorReportAreaBase;
+    friend class uoReportDrawHelper;
     public:
         uoReportCtrl(QWidget *parent = 0);
         virtual ~uoReportCtrl();
@@ -250,6 +158,7 @@ class uoReportCtrl : public QWidget
 		uorBorderLocType  scaleLocationInBorder(qreal pos, QRectF rect, uoRptHeaderType rht);
 		void keyPressEventMoveCursor ( QKeyEvent * event );
 		void updateThis();
+
 		int m_freezUpdate;	/// заморозить посылку сообщений на перерисовку
 
 		// Акселераторы для поиска запчасти под курсором.
@@ -289,32 +198,39 @@ class uoReportCtrl : public QWidget
 		void onCurentCellChange(const QPoint& oldPoint, const QPoint& newPoint);
 		void onStateModeChange(const uoReportStateMode& oMode, const uoReportStateMode& nMode);
 
-
-    protected:
-
+	public:
 		//-------- draw section ----------------
+		void drawDataArea(QPainter& painter, uorReportAreaBase& drArea);
+		void initDrawInstruments();
+    protected:
 		void drawWidget(QPainter& painter);
 		void drawHeaderControlContour(QPainter& painter);
 		void drawHeaderControlGroup(QPainter& painter);
 		void drawHeaderControl(QPainter& painter);
-		void drawDataArea(QPainter& painter);
 		void drawDataAreaResizeRuler(QPainter& painter);
 		void drawCell(QPainter& painter, uoCell* cell, QRectF& rectCell, uoReportDoc* doc, bool isSell);
+		void drawSpliter(QPainter& painter);
+		uoReportDrawHelper* m_drawHelper;
 
-		QBrush m_brushWindow;
-		QBrush m_brushBase;
-		QBrush m_brushBlack;
-		QBrush m_brushSelection;
-		QPen m_penText;
-		QPen m_penNoPen;
-		QPen m_penWhiteText;
-		QPen m_penGrey;
+		/**
+			Используется для расчленения обрасти просмотра отчета на части/закрепления опредененны областей
+			областей для удобства нафигации/просмотра.
+			m_fixationPoint - точка фиксации.
+			x - кол-во фиксированных строк
+			y - кол-во фиксированных колонок
+		*/
+		uorFixationTypes m_fixationType;
+		QPointF	m_fixationPoint;
+		int 	m_fixedRow;
+		int 	m_fixedCol;
+		uorReportViewArea m_areas[4];
+		uorReportViewArea m_areaMain;	///<главная область отчета.
 
 		qreal m_charWidthPlus; 	///< Опорная ширина символа "+" в текушем шрифте.
-		qreal m_charHeightPlus; 	///< Опорная высота символа "+" в текушем шрифте.
+		qreal m_charHeightPlus; ///< Опорная высота символа "+" в текушем шрифте.
 
-		qreal m_scaleFactor;			///< Положительный соэффициент масштаба виджета, если он > 0, тогда виджет крупнее, если меньше, виджет мельче.
-		qreal m_scaleFactorO;		///< обратная величина фактора. для пересчетов смещений.
+		qreal m_scaleFactor;	///< Положительный соэффициент масштаба виджета, если он > 0, тогда виджет крупнее, если меньше, виджет мельче.
+		qreal m_scaleFactorO;	///< обратная величина фактора. для пересчетов смещений.
 
 	private:
 		void 		initControls(QWidget *parent);
@@ -336,7 +252,9 @@ class uoReportCtrl : public QWidget
 
 
 	public:
+		inline
 		uoReportDoc* getDoc() {return m_rptDoc;}
+
 		bool saveDoc();
 		bool saveDocAs();
 		void optionShow(bool shGrid, bool shGroup, bool shSection, bool shRuler);
@@ -349,8 +267,11 @@ class uoReportCtrl : public QWidget
 		bool propertyEditorApply();
 		bool propertyEditorVisible();
 
+		bool	doFixedView(int rows = 0, int cols = 0);
 
 	protected:
+		void 	recalcFixationPointStart();
+
 		qreal 	getWidhtWidget(); 	///< Ширина с учетом масштаба
 		qreal 	getHeightWidget();	///< Высота с учетом масштаба
 
@@ -358,8 +279,9 @@ class uoReportCtrl : public QWidget
 		bool 	colVisible(int nmCol) const;
 
 		void 	recalcHeadersRects();
-		void 	recalcGroupSectionRects(uoRptHeaderType rht = rhtUnknown);
-		qreal getLengthOfScale(uoRptHeaderType rht, int start, int stop);
+		void 	recalcFixedAreasRects();
+		void 	recalcGroupSectionRects(uoRptHeaderType rht = uorRhtUnknown);
+		qreal 	getLengthOfScale(uoRptHeaderType rht, int start, int stop);
 		int  	recalcVisibleScales(uoRptHeaderType rht);
 		void 	calcGroupItemPosition(uoRptGroupItem* grItem, uoRptHeaderType rht);
 
@@ -417,11 +339,25 @@ class uoReportCtrl : public QWidget
 
 		void onUndo();
 		void onRedo();
+		void onDataChange();
 
 		void propertyEditorShow();
 		void propertyEditorShowActivate();
 		void propertyEditorHide();
 		void onPropChange();
+
+		void onRowColDelete();
+		void onRowColAdd();
+		void onRowAutoSize();
+		void onRowColSetSize();
+
+		void onShowPreview();
+		void onShowPagesSetings();
+	private:
+		void onRowColGroupOperation(const uorRCGroupOperationType& opertn);
+		void onRowColGroupOperation2(const uorRCGroupOperationType& opertn);
+//		void onRowColGroupOperation2(const uorRCGroupOperationType& opertn, const QList<int>& psList, const uoRptHeaderType& psRht) const;
+
 
 	private:
 		void onSpanInclude(uoRptSpanType spType);
@@ -451,11 +387,12 @@ class uoReportCtrl : public QWidget
 		int  m_maxVisibleLineNumberCnt; ///< Количество символов в максимальной видимой строке таблицы. Это нужно для вычисления ширины вертикальной линейки.
 
 		bool m_showGroup;
-		bool m_showInvisiblChar;
 		bool m_showSection;
 		bool m_showRuler;
+
 		bool m_showGrid;
 		bool m_showFrame;
+		bool m_showInvisiblChar;
 
 		/// режимы взаимодействия с пользователем.
 		uoReportUseMode 	m_useMode;
@@ -467,15 +404,6 @@ class uoReportCtrl : public QWidget
 
 
 		// группа контролирующая положение вьюва и его размеры/свойства.
-		qreal m_shift_RowTop;		///< Смещение первой видимой строки вверх (грубо - размер невидимой/скрытой их части)
-		qreal m_shift_ColLeft;		///< Смещение первой видимой колонки влево (грубо - размер невидимой/скрытой их части)
-
-		int m_firstVisible_RowTop; 	///< Первая верхняя видимая строка
-		int m_firstVisible_ColLeft; 	///< Первая левая видимая колонка
-
-		int m_lastVisibleRow; 	///< Последняя верхняя видимая строка
-		int m_lastVisibleCol; 	///< Последняя левая видимая колонка
-
 		int m_rowsInPage; 		///< строк на страницу
 		int m_colsInPage; 		///< столбцов на страницу
 

@@ -11,10 +11,14 @@
 #include <QObject>
 #include <QLinkedList>
 #include <QList>
+#include <QPrinter>
+#include <QPrintDialog>
 #include <QFontMetricsF>
 #include "uoReport.h"
 #include "uoSpanTree.h"
 #include "uoCacheItemizer.h"
+#include "uorReportAreas.h"
+
 
 class QObject;
 class QFontMetricsF;
@@ -26,6 +30,9 @@ struct uoTextTrPointCash;
 struct uoLineSpan;
 struct uoCellJoin;
 class uoReportUndo;
+class uoReportManager;
+
+
 class uoCacheItemizer;
 struct uorTextDecorBase;
 
@@ -33,10 +40,12 @@ struct uorTextDecorBase;
 namespace uoReport {
 
 
-///\class uoReportDoc - содержит данные отчета.
-///\brief содержит и обслуживает данные таблицы отчета: строки, текст, картинки и т.п.
-class uoReportDoc
-	: public QObject
+
+/**
+	\class uoReportDoc - содержит данные отчета.
+	\brief содержит и обслуживает данные таблицы отчета: строки, текст, картинки и т.п.
+*/
+class uoReportDoc : public QObject
 {
     Q_OBJECT
 
@@ -55,7 +64,11 @@ class uoReportDoc
 		bool possiblyAddGroup(int start, int end, uoRptHeaderType ht);
 		bool possiblyAddSection(int start, int end, uoRptHeaderType ht);
 
-		void onDeleteLine(int lineStart, int count = 1);
+		void doDeleteColumns(int itemStart, int count = 1);
+		void doDeleteRows(int itemStart, int count = 1);
+
+		void doAddColumns(int itemStart, int count = 1);
+		void doAddRows(int itemStart, int count = 1);
 		const spanList* getGroupList(uoRptHeaderType rht, int start, int end);
 		const spanList* getSectionList(uoRptHeaderType rht, int start, int end);
 
@@ -84,15 +97,17 @@ class uoReportDoc
 
 		qreal 	getScaleSize(uoRptHeaderType hType, int nom, bool isDef = false);
 		void 	setScaleSize(uoRptHeaderType hType, int nom, qreal size, bool isDef = false);
+		void 	setScalesSize(const uoRptHeaderType& hType, const QList<int>& list, const qreal& size, const bool& isDef = false);
 		void 	setScaleFixedProp(uoRptHeaderType hType, int nom, bool isFixed = true);
 		bool 	getScaleFixedProp(uoRptHeaderType hType, int nom);
+		void 	setRowAutoSize(const QList<int>& list);
 
 		void 	setScalesHide(uoRptHeaderType hType, int nmStart, int cnt = 1,  bool hide = true);
 		bool 	getScaleHide(uoRptHeaderType hType, int nom);
 
 	private:
 		void onAccessRowCol(int nmRow = 0, int nmCol = 0); ///< при доступе к строке или столбцу documenta...
-		void onAccessRowOrCol(int nom, uoRptHeaderType rht);
+		void onAccessRowOrCol(int nom, uoRptHeaderType rht, bool write = false);
 		void doRowCountChange(int count, int pos = 0 );
 		void doColCountChange(int count, int pos = 0 );
 		void beforeAddRowOrCol(int count, uoRptHeaderType rht, int noLn = 0);
@@ -115,6 +130,8 @@ class uoReportDoc
 	public slots:
 		void onUndo();
 		void onRedo();
+		void onDataChange();
+		void onPrint();
 
 	protected:
 
@@ -145,14 +162,36 @@ class uoReportDoc
 		uoReportUndo* m_undoManager;
 		uoCacheItemizer<uoCellJoin> m_cellJoinCash;
 
+
+		uorAresList* 			m_pageList;
+		uorPageColSegmentList 	m_segmentList; ///<Список структур (uorPageColSegment) для визуального разделения полотна на страницы.
+		QRect 			m_paperRectPrint;	///< размер страницы в принтере
+		QRect 			m_pageRectPrint;
+		/**
+			ряды страниц...
+			Условно - "[]" - страница.
+			если вертикальный размер полотна превышает ширину страницы,
+			то вырисовываются ряды:
+			[][][]
+			[][][]
+			получается 3 ряда это значение - m_pagesColumnTotal
+		*/
+		int 					m_pagesColumnTotal;
+
+	private:
+		void updatePageSegmentList();
+		bool updatePageRectPrint();
+
+
 	protected:
 		// Содержимое строк документа
-		uoRowsDoc* 	m_rows;		 ///< Значимое содержимое документа, содержимое ячеек документа.
+		uoRowsDoc* 	m_rows;		 				///< Значимое содержимое документа, содержимое ячеек документа.
 		QList<uoReportCtrl*> m_atachedView; 	///< Приватаченные вьювы
-		QList<QObject*> 	 m_atachedObj;	///< Приватаченные объекты. Документ может использоваться без вьюва, наример для заполнения его в модуле.
+		QList<QObject*> 	 m_atachedObj;		///< Приватаченные объекты. Документ может использоваться без вьюва, наример для заполнения его в модуле.
 		long 				 m_refCounter;
 		uoReportDocFontColl* m_fontColl;
 		int 				 m_defaultFontId;
+		bool 				 m_formatStoped;	///< Приостанавливает форматирование документа. Например при считывании его с диска, что-бы не форматилось при пополнении каждой ячейке.
 
 	public:
 		void attachView(uoReportCtrl* rCtrl, bool autoConnect = true);
@@ -169,35 +208,53 @@ class uoReportDoc
 		void 	setCellTextAlignment(const int posY, const int posX, uoVertAlignment va,  uoHorAlignment ha, uoCellTextBehavior tb = uoCTB_Auto);
 		QString getCellText(const int row, const int col);
 
-		uoCell* getCell(const int posY, const int posX, bool needCreate = false);
+		uoCell* getCell(const int posY, const int posX, bool needCreate = false, bool provideProp = false);
 		inline
 		uoCell* getCellDefault() { return m_cellDefault;}
+
+		uorAresList* 	getPageList();
+		void 	updateScaleFactor();
+
+		bool	printDoc(const bool updPrintSourse = true, QWidget* qwidg = NULL );
+		bool 	setupPrinter(QPrinter &printer, QWidget* qwidg = NULL);
+
+inline	QRect 	getPageRectPrint() const {return m_pageRectPrint;}
+inline	QRect 	getPaperRectPrint() const {return m_paperRectPrint;}
+
+		QRect 	m_needFormatArea; ///< Зона, в которой необходимо переформатировать ячейки. Оптимизация для выделений.
+inline 	void 	clearFormatArea() {		m_needFormatArea = QRect(0,0,0,0);		};
 
 
 		void 	doFormatDoc(int nmRow = -1, int nmForCol = -1);
 		void 	doFormatRow(uoRow* row, int nmForCol = -1);
+		void 	doFormatRowLRMaxLng(uoRow* row);
 		void 	doFormatRow(int nmRow, int nmForCol = -1);
 		qreal 	doFormatCellText(uoCell* cell, QFont* font, QFontMetricsF& fm, const qreal& collWidth );
+		void 	enableFormating(const bool format) {m_formatStoped = format;};
+		bool 	isFormatEnable() {return m_formatStoped;}
 
 		int 	getNextCellNumber(const int& rowCur, const int& colCur, const bool& ignoreHiden = true);
 		QStringList splitQStringToWord(const QFontMetricsF& fm, const QString& str, const qreal& collWidth);
 
 		uoCacheItemizer<uorTextDecor> 		m_cellTextDecorList;
 		uoCacheItemizer<uorBorderPropBase> 	m_cellBordPropList;
-		uorTextDecor* getDefaultTextProp();
-		uorTextDecor* getNewTextProp();
-		uorBorderPropBase* getNewBordProp();
+		uorTextDecor* 		getDefaultTextProp();
+		uorTextDecor* 		getNewTextProp();
+		uorBorderPropBase* 	getNewBordProp();
 
 	protected:
-		void 			initTextDecorDoc();
-		uorTextDecor* m_TextDecorDoc;
+		void 				initTextDecorDoc();
+		uorTextDecor* 		m_TextDecorDoc;
+		uorPagePrintSetings* 	m_pagesSetings;
+		long 					m_changes; ///< Счетчик изменений документа, при каждом изменении прибавляется единица.
 
 	public:
+		uorPagePrintSetings* pagesSetings() const;
 		void 	setDefaultFont(const QFont& defFont);
-		bool  	addFont(QString family);
+		int  	addFont(QString family);
 		QFont*  getFontByID(const int idFont);
 		QColor*  getColorByID(const int idColor);
-
+inline  long 	getChangeCount() { return m_changes;}
 
 		uoCellJoin* getCellJoin();
 		uoCell* 	m_cellDefault; ///< Дефолтная ячейка, содержащая значения форматирования документа по умолчанию...

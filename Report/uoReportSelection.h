@@ -31,7 +31,8 @@ class uoReportSelection : public QObject
 		bool isCellSelect(int nmRow, int nmCol);
 
 		bool isTrueForSections();
-		bool getTrueSectionsCR(uoRptHeaderType& rht, int& start, int& end);
+		bool getTrueSectionsCR(uoRptHeaderType& rht, int& start, int& end) const;
+		bool getSelectedColRow(uoRptHeaderType& rht, QList<int>& list) const;
 
 		bool isCtrlPress();
 		bool isShiftPress();

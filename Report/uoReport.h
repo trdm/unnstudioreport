@@ -9,6 +9,7 @@
 *
 ***************************************/
 
+
 namespace uoReport {
 
 //#include "uoReportDescr.h" // убрал, потому что доксиген дублирует описание в \subpage
@@ -17,7 +18,10 @@ namespace uoReport {
 #define UORPT_SCALE_SIZE_DEF_VERTICAL 	15.0
 #define UORPT_SCALE_SIZE_DEF_HORIZONTAL 60.0
 
-#define uoReportVersion "0.1"
+#define uoReportVersion "0.2"
+/*
+	Старые версии: 0.1
+*/
 #define rptSize qreal
 #define rptSizeNull 0.0
 
@@ -34,6 +38,7 @@ namespace uoReport {
 #define UORPT_DRAG_AREA_SIZE 2.0
 #define UORPT_STANDART_OFFSET_TEXT 2.0
 #define UORPT_LENGTH_TEXT_H_SECTION 7
+#define UORPT_VIEW_SCROLL_KOEFF 2
 
 #define rptRect QRectF
 
@@ -43,18 +48,20 @@ namespace uoReport {
 	Cell - ячейка основного поля, \n чисто для изучения английского :)
 */
 
-
+class uoReportManager;
 struct uoEnumeratedItem;
 struct uoLineSpan;
 struct uoRptNumLine;
 class uoHeaderScale;
 class uoReportDocFontColl;
 class uoSpanTree;
+struct uorPagePrintSetings;
 class uoReportDoc;
 class uoReportCtrlMesFilter;
 class uoReportCtrl;
 class uoReportView;
 class uoReportViewIteract;
+class uoReportDrawHelper;
 struct uoTextTrPointCash;
 class uoReportDocBody;
 template <typename T> class uoNumVector;
@@ -62,8 +69,14 @@ template <typename T> class uoCacheItemizer;
 class uoReportLoader;
 class uoReportLoaderXML;
 class uoReportSelection;
+class uoReportPreviewDlg;
+struct uoRptGroupItem;
+struct uoRptSectionItem;
+
 
 struct uorTextDecorBase;
+struct uorReportAreaBase;
+struct uorReportViewArea;
 class uorPropDlg;
 class uoTextPropTab;
 class uoTextLayotTab;
@@ -83,7 +96,7 @@ class 	uoReportUndo;
 
 
 ///\enum uoIntersectMode - варианты перечения отрезков
-typedef enum uoIntersectMode {
+enum uoIntersectMode {
 	  ismNone 		= 0
 	, ismAbove 		= 1
 	, ismAboveIn 	= 3
@@ -96,25 +109,25 @@ typedef enum uoIntersectMode {
 };
 
 /// Тип спанов: секция или группа..
-typedef enum uoRptSpanType
+enum uoRptSpanType
 {
 	uoSpanType_None = 0
 	, uoSpanType_Group
 	, uoSpanType_Sections
 };
-typedef enum uoRptHeaderType {
-	  rhtUnknown = 0
-	, rhtVertical = 1
-	, rhtHorizontal = 2
+enum uoRptHeaderType {
+	  uorRhtUnknown = 0
+	, uorRhtRowsHeader = 1
+	, uorRhtColumnHeader = 2
 };
 
-typedef enum uoSearchDirection {
+enum uoSearchDirection {
 	toUp		///< направление поиска вверх
 	,toDown		///< направление поиска ВНИЗ
 };
 
 /// Тип направления...
-typedef enum uoSideType{
+enum uoSideType{
 	uost_Unknown 	= 0
 	, uost_Top 		= 1
 	, uost_Right 	= 2
@@ -122,7 +135,7 @@ typedef enum uoSideType{
 	, uost_Left 	= 4
 
 };
-typedef enum uoScaleSizePolicy
+enum uoScaleSizePolicy
 {
 	uoSSP_fixed = 0 ///< расширения не происходит
 	, uoSSP_minimum ///< текущий размер минимально возможный, т.е. ячейка может расширяться.
@@ -130,18 +143,27 @@ typedef enum uoScaleSizePolicy
 };
 
 ///\enum uoRptStoreFormat - Формат сохранения отчета.
-typedef enum uoRptStoreFormat {
+enum uoRptStoreFormat {
 	  uoRsf_Unknown = 0
 	, uoRsf_XML = 1
 	, uoRsf_Binary = 2
 	, uoRsf_HTML = 3
 };
-
+/**
+	\enum uorFixationTypes - тип фиксации областей отчета при просмотре
+*/
+enum uorFixationTypes
+{
+	uorAF_None = 0 		///< нет фиксации
+	,uorAF_Rows = 1		///< фиксированы только строки
+	,uorAF_Cols			///< фиксированы только столбцы
+	,uorAF_RowsAndCols	///< фиксированы и строки и столбцы
+};
 /**
 	\enum uoUiCommand - перечень комманд, задействованных в интерфейсе пользователя
 	Буду использовать для управления набором пиктограмм, пунктов меню и т.п.
 */
-typedef enum uoUiCommandRpt
+enum uoUiCommandRpt
 {
 	uoUCR_Unknown = 0
 
@@ -177,7 +199,7 @@ typedef enum uoUiCommandRpt
 	пространственным координатам.
 	Vst = view Spares Type
 */
-typedef enum uorSparesType {
+enum uorSparesType {
 	  uoVst_Unknown = 0
 	, uoVst_GroupV = 1	///< рект вертикальной группы
 	, uoVst_GroupH		///< рект ГОРИЗОНтальной группы
@@ -190,7 +212,7 @@ typedef enum uorSparesType {
 };	// Vst - (ViewSparesType)
 
 ///\enum uorSelectionType типы выделения во вьюве.
-typedef enum uorSelectionType {
+enum uorSelectionType {
 	  uoRst_Unknown 	= 0 ///< Ничего не выделено, 1 текущая ячейка.
 	, uoRst_Document 	= 1	///< Выделен весь документ
 	, uoRst_Column			///< Выделена колонка
@@ -203,7 +225,7 @@ typedef enum uorSelectionType {
 };
 
 ///\enum uorBorderLocType - расположения бордюра
-typedef enum uorBorderLocType
+enum uorBorderLocType
 {
 	uoBlt_Unknown = 0 /// неопознаный %)
 	, uoBlt_Top  = 1 ///< верхний бордер
@@ -272,7 +294,7 @@ enum uoCellTextBehavior {
 */
 
 ///\enum uoVertAlignment - типы вертикального выравнивания
-typedef enum uoVertAlignment {
+enum uoVertAlignment {
 	  uoVA_Unknown 	= 0 ///< Неопределенное,
 	, uoVA_Top 		= 1	///< Выравнивание по верхнему краю
 	, uoVA_Center	= 2	///< Выравнивание по центру
@@ -280,7 +302,7 @@ typedef enum uoVertAlignment {
 };
 
 ///\enum uoHorAlignment - типы горизонтального выравнивания
-typedef enum uoHorAlignment {
+enum uoHorAlignment {
 	  uoHA_Unknown 	= 0 ///< Неопределенное,
 	, uoHA_Left 	= 1	///< Выравнивание по левому краю
 	, uoHA_Center 	= 2 ///< Выравнивание по центру
@@ -313,15 +335,22 @@ enum uoCellTextType {
 };
 
 
-///\enum uoCellBorderType - тип линии бордюра, просто повторение Qt::PenStyle
+/**
+	\enum uoCellBorderType - тип линии бордюра, просто повторение Qt::PenStyle
+
+	Тут бы надо подумать над стилями:
+	uoCBT_SolidSolidLine - 2 линии рядышком...
+	и виджет для редактирования
+*/
 enum uoCellBorderType {
 	  uoCBT_Unknown = -1
-	, uoCBT_SolidLine = 0
+	, uoCBT_NoPen = 0
+	, uoCBT_SolidLine = 1
 	, uoCBT_DashLine
 	, uoCBT_DotLine
 	, uoCBT_DashDotLine
 	, uoCBT_DashDotDotLine
-	//, uoCBT_CustomDashLine - оно мне надо? :)
+	, uoCBT_CustomDashLine // - оно мне надо? :)
 };
 /**
 	\enum uoCellsJoinType типы объединений ячеек.
@@ -403,10 +432,45 @@ typedef enum uoDocChangeType
 
 typedef enum uorPropertyTabType
 {
-	uorPropTab_Unknown = 0
-	, uorPropTab_Text = 1
-	, uorPropTab_TextLayot = 2
-	, uorPropTab_TextFont = 3
+	  uorPropTTab_Unknown = 0
+	, uorPropTTab_Text = 1
+	, uorPropTTab_TextLayot = 2
+	, uorPropTTab_TextFont = 3
+	, uorPropTTab_Border = 4
+};
+/**
+	\enum uorSelVisitorType - типы процессора обработки выделения.
+	\brief Используется для идентификации визитера.
+*/
+typedef enum uorSelVisitorType
+{
+	 uorSVT_Unknown = 0
+	, uorSVT_Getter = 1
+	, uorSVT_Setter = 2
+};
+
+/**
+	\enum uorHeaderScaleChangeType - типы изменения линейки отчета.
+	\brief Используется для механизма Ундо/Редо
+*/
+typedef enum uorHeaderScaleChangeType
+{
+	 uorHSCT_Unknown = 0
+	, uorHSCT_Hide = 1
+	, uorHSCT_Size = 2
+	, uorHSCT_Fixed = 3
+};
+/**
+	\enum uorRCGroupOperationType - идентификаторы групповых операций над строками/столбцами.
+*/
+
+typedef enum uorRCGroupOperationType
+{
+	 uorRCGroupOT_Unknown = -1
+	, uorRCGroupOT_Delete = 1
+	, uorRCGroupOT_Add = 2
+	, uorRCGroupOT_SetSize = 3
+	, uorRCGroupOT_SetAutoSize = 4
 };
 
 
@@ -414,8 +478,10 @@ typedef enum uorPropertyTabType
 extern void uoRunTest();
 
 class uoReportTest {
-	uoReportTest();
-	~uoReportTest();
+	public:
+		uoReportTest();
+		~uoReportTest();
+		void exploreQPrinter();
 };
 
 } // namespace uoReport

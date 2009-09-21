@@ -63,7 +63,8 @@ class uoReportLoader
 		virtual bool saveScaleHeaderEnd(uoRptHeaderType rht) = 0;
 
 		virtual void saveRowsStart(int rowCount) = 0;
-		virtual void saveRowItemStart(int rowNumb, int cellCount) = 0;
+//		virtual void saveRowItemStart(int rowNumb, int cellCount) = 0;
+		virtual void saveRowItemStart(uoRow* row) = 0;
 
 		virtual void saveCell(uoCell* cellItem) = 0;
 
@@ -90,13 +91,16 @@ class uoReportLoader
 		QString 		 _lastError;	///< Имя файла
 		QString 		 m_docFilePath;	///< Имя файла
 		uoRptStoreFormat m_storeFormat;	///< Формат хранения файла отчета.
+	protected:
+		uoReportDoc* 	m_doc;
+		QString 		 m_version;		///< Версия
 
 };
 
 class uoReportLoaderXML : public uoReportLoader {
 	public:
 		uoReportLoaderXML();
-		virtual ~uoReportLoaderXML(){};
+		virtual ~uoReportLoaderXML(){m_doc = NULL;};
 
 		virtual bool init(bool forLoad = true);
 		virtual bool finalize();
@@ -116,7 +120,8 @@ class uoReportLoaderXML : public uoReportLoader {
 		virtual bool saveScaleHeaderEnd(uoRptHeaderType rht);
 
 		virtual void saveRowsStart(int rowCount);
-		virtual void saveRowItemStart(int rowNumb, int cellCount);
+//		virtual void saveRowItemStart(int rowNumb, int cellCount);
+		virtual void saveRowItemStart(uoRow* row);
 		virtual void saveCell(uoCell* cellItem);
 		virtual void saveRowItemEnd();
 		virtual void saveRowsEnd();
@@ -142,8 +147,6 @@ class uoReportLoaderXML : public uoReportLoader {
 	private:
 		QTextStream _textStream;
 		QFile 		_outFile;
-
-
 };
 
 
