@@ -63,6 +63,32 @@ class uoNumVector
 			}
 			return NULL;
 		}
+		T* getFirst(){
+			T* item = NULL;
+			if (_list->isEmpty ())
+				return NULL;
+			detachIter();
+			// Чета влом мне в час ночи ломать голову над оптимизацией...
+			_itSave = _list->begin();
+			if (_itSave != _list->end())
+			{
+				item = *_itSave;
+				return item;
+			}
+			return NULL;
+		}
+		T* getNext(){
+			T* item = NULL;
+			if (_itSaveOnUse)
+				return NULL;
+			_itSave++;
+			if (_itSave != _list->end())
+			{
+				item = *_itSave;
+				return item;
+			}
+			return NULL;
+		}
 
 		/// Очистка вектора
 		void clear() {
@@ -96,6 +122,28 @@ class uoNumVector
 			return NULL;
 		}
 
+		/// Используется при вставке значений, незачем добавлять итемы, нужно просто сдвинуть номера..
+		void addEmptyItems(int nom, int cnt = 1)
+		{
+			if (_list->count() == 0 || nom<=0 || cnt<=0)
+				return;
+			detachIter();
+
+			T* item = NULL;
+			typename QLinkedList<T*>::iterator it = _list->begin();
+			item = *it;
+			_minNo = item->number();
+			while (it != _list->end() ) {
+				item = *it;
+				_maxNo = item->number();
+				if (_maxNo >= nom) {
+					_maxNo = _maxNo + cnt;
+					item->setNumber(_maxNo);
+				}
+				it++;
+			}
+		}
+
 
 
 		/// удаление итема/итемов
@@ -125,6 +173,11 @@ class uoNumVector
 				начиная с последнего удаленного итема или с того номера,
 				который должен быть удален.
 			*/
+			if (_list->count() == 0)
+			{
+				_minNo = _maxNo = -1;
+				return;
+			}
 
 			typename QLinkedList<T*>::iterator it = _list->begin();
 			item = *it;

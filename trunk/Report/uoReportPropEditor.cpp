@@ -13,9 +13,11 @@
 namespace uoReport {
 
 uoTextPropTab::uoTextPropTab(QWidget *parent)
-	:QWidget(parent){
+	:QWidget(parent)
+{
 	setupUi(this);
 	hide();
+	m_textCell->setAcceptRichText(false);
 }
 
 uoTextPropTab::~uoTextPropTab()
@@ -76,9 +78,10 @@ void uoTextPropTab::initFromRPE()
 /// Заливаем данные из гуя в проперть.
 void uoTextPropTab::applyResult()
 {
-	m_rpe->m_textPropRes->m_textType 		= (uoCellTextType)m_cbTextType->itemData(m_cbTextType->currentIndex()).toInt();
-	m_rpe->m_textPropRes->m_TextBehavior	= (uoCellTextBehavior)m_cbTextBehavior->itemData(m_cbTextBehavior->currentIndex()).toInt();
-//	if(m_rpe->m_sellectonType == uoRst_Unknown)
+	m_rpe->m_textPropCopy->m_textType 		= (uoCellTextType)m_cbTextType->itemData(m_cbTextType->currentIndex()).toInt();
+	m_rpe->m_textPropCopy->m_TextBehavior	= (uoCellTextBehavior)m_cbTextBehavior->itemData(m_cbTextBehavior->currentIndex()).toInt();
+	m_rpe->m_cellText = m_textCell->toPlainText();
+	m_rpe->m_cellDecode = m_textDecoding->text();
 
 }
 
@@ -87,12 +90,26 @@ uoTextLayotTab::uoTextLayotTab(QWidget *parent)
 {
 	setupUi(this);
 	hide();
+	m_grVA = new QButtonGroup(this);
+	m_grVA->addButton(m_TopVTA);
+	m_grVA->addButton(m_CenterVTA);
+	m_grVA->addButton(m_BottomVTA);
+
+	m_grHA = new QButtonGroup(this);
+	m_grHA->addButton(m_LeftHTA);
+	m_grHA->addButton(m_CenterHTA);
+	m_grHA->addButton(m_RightHTA);
+	chbUseSelectedCell->setDisabled(true);
+
 }
 uoTextLayotTab::~uoTextLayotTab()
 {}
 
 void uoTextLayotTab::initFromRPE()
 {
+	m_grVA->setExclusive(false);
+	m_grHA->setExclusive(false);
+
 	m_TopVTA->setChecked(false);
 	m_CenterVTA->setChecked(false);
 	m_BottomVTA->setChecked(false);
@@ -116,30 +133,33 @@ void uoTextLayotTab::initFromRPE()
 			break;
 		}
 	}
+	m_grVA->setExclusive(true);
+	m_grHA->setExclusive(true);
+
 }
 
 void uoTextLayotTab::applyResult()
 {
 	if (!m_rpe)
 		return;
-	if (!m_rpe->m_textPropRes)
+	if (!m_rpe->m_textPropCopy)
 		return;
 
 	uoHorAlignment horTAlignment = uoHA_Unknown;
 	if (m_LeftHTA->isChecked())		{		horTAlignment = uoHA_Left;		}
 	if (m_CenterHTA->isChecked())	{		horTAlignment = uoHA_Center;	}
 	if (m_RightHTA->isChecked())	{		horTAlignment = uoHA_Right;	}
-	if (horTAlignment != m_rpe->m_textPropRes->m_horTAlignment)
+	if (horTAlignment != m_rpe->m_textPropCopy->m_horTAlignment)
 	{
-		m_rpe->m_textPropRes->m_horTAlignment = horTAlignment;
+		m_rpe->m_textPropCopy->m_horTAlignment = horTAlignment;
 	}
 	uoVertAlignment vTAlignment = uoVA_Unknown;
 	if (m_TopVTA->isChecked())		{		vTAlignment = uoVA_Top;		}
 	if (m_CenterVTA->isChecked())	{		vTAlignment = uoVA_Center;	}
 	if (m_BottomVTA->isChecked())	{		vTAlignment = uoVA_Bottom;	}
-	if (vTAlignment != m_rpe->m_textPropRes->m_vertTAlignment)
+	if (vTAlignment != m_rpe->m_textPropCopy->m_vertTAlignment)
 	{
-		m_rpe->m_textPropRes->m_vertTAlignment = vTAlignment;
+		m_rpe->m_textPropCopy->m_vertTAlignment = vTAlignment;
 	}
 }
 
@@ -168,6 +188,7 @@ void uoTextFontPropTab::init()
 	for (int i = 0; i<m_listFntNames.count(); i++){
 		m_listFonts->addItem(m_listFntNames.at(i));
 	}
+	m_listFntSizes = m_rpe->m_fontBD.standardSizes();
 	connect(m_listFonts, SIGNAL(currentTextChanged(const QString&)),m_fontName,SLOT(setText( const QString & )));
 	connect(m_fontName, SIGNAL(textChanged(const QString&)),this,SLOT(onFontNameChange( const QString & )));
 
@@ -182,9 +203,86 @@ void uoTextFontPropTab::init()
 	}
 	m_fontName->installEventFilter(this);
 	m_size->installEventFilter(this);
+}
 
+void setupCheckState(int state, QCheckBox* chb)
+{
+	if (state>=0) {
+		if (state == 0)
+			chb->setCheckState(Qt::Unchecked);
+		else
+			chb->setCheckState(Qt::Checked);
+	} else {
+		chb->setCheckState(Qt::PartiallyChecked);
+	}
 
 }
+
+void uoTextFontPropTab::initFromRPE()
+{
+	if (!m_rpe->m_textProp)
+		return;
+	uoReportDoc* doc = m_rpe->getDoc();
+	if (!doc)
+		return;
+	QString str;
+	QFont* font = doc->getFontByID(m_rpe->m_textProp->m_fontId);
+	m_fontName->setText("");
+	if (font){
+		m_fontName->setText(font->family());
+	} else {
+		m_listFonts->setCurrentRow(-1);
+	}
+	m_size->setText("");
+	if (m_rpe->m_textProp->m_fontSz>0){
+		int pos = m_listFntSizes.indexOf(m_rpe->m_textProp->m_fontSz);
+		if (pos != -1){
+			m_sizeList->setCurrentRow(pos);
+		}
+		pos = m_rpe->m_textProp->m_fontSz;
+		str = QString("%1").arg(pos);
+		m_size->setText(str);
+	}
+	setupCheckState(m_rpe->m_textProp->m_fontI,m_chbItalic);
+	setupCheckState(m_rpe->m_textProp->m_fontB,m_chbBold);
+	setupCheckState(m_rpe->m_textProp->m_fontU,m_chbUnderline);
+}
+
+int getFromCheck(const QCheckBox* chb)
+{
+	Qt::CheckState state;
+	int retVal = -1;
+	state = chb->checkState();
+	switch (state){
+		case Qt::PartiallyChecked: 	{retVal = -1; break;}
+		case Qt::Unchecked: 		{retVal = 0; break;}
+		case Qt::Checked: 			{retVal = 1; break;}
+		default: 					{break;}
+	}
+	return retVal;
+}
+
+void uoTextFontPropTab::applyResult()
+{
+	if (!m_rpe->m_textPropCopy)
+		return;
+	uoReportDoc* doc = m_rpe->getDoc();
+	if (!doc)
+		return;
+	QString str = m_fontName->text();
+	if (m_listFntNames.contains(str) && !str.isEmpty()) {
+		///название шрифта валидно...
+		m_rpe->m_textPropCopy->m_fontId = doc->addFont(str);
+	}
+	str = m_size->text();
+	if (m_listFntSizes.contains(str.toInt())){
+		m_rpe->m_textPropCopy->m_fontSz	= str.toInt();
+	}
+	m_rpe->m_textPropCopy->m_fontB = getFromCheck(m_chbBold);
+	m_rpe->m_textPropCopy->m_fontI = getFromCheck(m_chbItalic);
+	m_rpe->m_textPropCopy->m_fontU = getFromCheck(m_chbUnderline);
+}
+
 
 /// Перехватим некоторые эвенты для нормальной реализации диалога.
 bool uoTextFontPropTab::eventFilter(QObject* pObj, QEvent* pEvent)
@@ -341,6 +439,109 @@ void uoTextFontPropTab::onFontNameChange(const QString& str)
 	fillFontSizeList();
 }
 
+uoBorderPropTab::uoBorderPropTab(QWidget *parent)
+	:QWidget(parent)
+{
+	setupUi(this);
+//	QComboBox* 		m_leftCbSizer;
+//	QComboBox* 		m_topCbSizer;
+//	QComboBox* 		m_rightCbSizer;
+//	QComboBox* 		m_bottomCbSizer;
+
+	QStringList sizes;
+	sizes<<""<<"1"<<"2"<<"3"<<"4"<<"5"<<"6";
+	bool needSz = false;
+
+	m_leftBFCh = new uoFrameChooser(m_leftBorderFrame);
+	if (needSz) {
+	m_leftCbSizer = new QComboBox(m_leftBorderFrame);
+	m_leftCbSizer->addItems(sizes);
+	}
+	QHBoxLayout* layot_1 = new QHBoxLayout(m_leftBorderFrame);
+	layot_1->addWidget(m_leftBFCh);
+	if (needSz) layot_1->addWidget(m_leftCbSizer);
+	layot_1->setSpacing(0);    layot_1->setMargin(0);
+
+	m_topBFCh = new uoFrameChooser(m_topBorderFrame);
+	if (needSz) {
+	m_topCbSizer = new QComboBox(m_topBorderFrame);
+	m_topCbSizer->addItems(sizes); }
+
+	QHBoxLayout* layot_2 = new QHBoxLayout(m_topBorderFrame);
+	layot_2->addWidget(m_topBFCh);
+	if (needSz) layot_2->addWidget(m_topCbSizer);
+	layot_2->setSpacing(0);    layot_2->setMargin(0);
+
+	m_rightBFCh = new uoFrameChooser(m_rightBorderFrame);
+	if (needSz) {
+	m_rightCbSizer = new QComboBox(m_rightBorderFrame);
+	m_rightCbSizer->addItems(sizes);
+	}
+	QHBoxLayout* layot_3 = new QHBoxLayout(m_rightBorderFrame);
+	layot_3->addWidget(m_rightBFCh);
+	if (needSz) layot_3->addWidget(m_rightCbSizer);
+	layot_3->setSpacing(0);    layot_3->setMargin(0);
+
+	m_bottomBFCh = new uoFrameChooser(m_bottomBorderFrame);
+	if (needSz) {
+	m_bottomCbSizer = new QComboBox(m_bottomBorderFrame);
+	m_bottomCbSizer->addItems(sizes);
+	}
+	QHBoxLayout* layot_4 = new QHBoxLayout(m_bottomBorderFrame);
+	layot_4->addWidget(m_bottomBFCh);
+	if (needSz) layot_4->addWidget(m_bottomCbSizer);
+	layot_4->setSpacing(0);    layot_4->setMargin(0);
+
+	m_outlineBFCh = new uoFrameChooser(m_outlineBorderFrame);
+	QHBoxLayout* layot_5 = new QHBoxLayout(m_outlineBorderFrame);layot_5->addWidget(m_outlineBFCh); layot_5->setSpacing(0);    layot_5->setMargin(0);
+	hide();
+
+}
+uoBorderPropTab::~uoBorderPropTab()
+{}
+void uoBorderPropTab::initFromRPE()
+{
+	m_leftBFCh->setBorderType(m_rpe->m_borderProp->m_bordType[0]);
+	m_topBFCh->setBorderType(m_rpe->m_borderProp->m_bordType[1]);
+	m_rightBFCh->setBorderType(m_rpe->m_borderProp->m_bordType[2]);
+	m_bottomBFCh->setBorderType(m_rpe->m_borderProp->m_bordType[3]);
+
+	m_outlineBFCh->setBorderType(uoCBT_Unknown);
+	if (m_rpe->m_sellectonType == uoRst_Unknown || m_rpe->m_sellectonType == uoRst_Cell)
+	{
+		uoCellBorderType cbt = m_rpe->m_borderProp->m_bordType[0];
+
+		for (int i =1; i<4; i++){
+			if (cbt != m_rpe->m_borderProp->m_bordType[i]){
+				cbt = uoCBT_Unknown;
+				break;
+			}
+		}
+		m_outlineBFCh->setBorderType(cbt);
+
+	}
+
+}
+void uoBorderPropTab::applyResult()
+{
+	if (!m_rpe)
+		return;
+	if (!m_rpe->m_borderPropCopy)
+		return;
+	uoCellBorderType bt = uoCBT_Unknown;
+	for (int i=0; i<4; i++)
+	{
+		switch (i) {
+			case 0: { bt = m_leftBFCh->borderType(); break;}
+			case 1: { bt = m_topBFCh->borderType(); break;}
+			case 2: { bt = m_rightBFCh->borderType(); break;}
+			case 3: { bt = m_bottomBFCh->borderType(); break;}
+			default:{break;}
+		}
+		if (m_rpe->m_borderPropCopy->m_bordType[i] != bt)
+			m_rpe->m_borderPropCopy->m_bordType[i] = bt;
+	}
+}
 
 
 
@@ -357,19 +558,25 @@ uorPropDlg::uorPropDlg(QWidget *parent, uoReportPropEditor* pe)
 
 	m_tabTxt = new uoTextPropTab;
 	if (m_tabTxt){
-		m_tabTxt->setTypeTab(uorPropTab_Text);
+		m_tabTxt->setTypeTab(uorPropTTab_Text);
 		m_tabTxt->setPropEditor(m_pe);
 	}
 	m_tabLayot = new uoTextLayotTab;
 	if (m_tabLayot){
-		m_tabLayot->setTypeTab(uorPropTab_TextLayot);
+		m_tabLayot->setTypeTab(uorPropTTab_TextLayot);
 		m_tabLayot->setPropEditor(m_pe);
 	}
 	m_tabFont = new uoTextFontPropTab;
 	if (m_tabFont){
-		m_tabFont->setTypeTab(uorPropTab_TextFont);
+		m_tabFont->setTypeTab(uorPropTTab_TextFont);
 		m_tabFont->setPropEditor(m_pe);
 	}
+	m_tabBorder = new uoBorderPropTab;
+	if (m_tabBorder) {
+		m_tabBorder->setTypeTab(uorPropTTab_Border);
+		m_tabBorder->setPropEditor(m_pe);
+	}
+
 }
 
 uorPropDlg::~uorPropDlg()
@@ -379,6 +586,7 @@ uorPropDlg::~uorPropDlg()
 	delete	m_tabTxt;
 	delete	m_tabLayot;
 	delete	m_tabFont;
+	delete	m_tabBorder;
 
 }
 
@@ -391,9 +599,10 @@ bool uorPropDlg::applyResult()
 		tabType = m_tabsUsing.at(i);
 		switch(tabType)
 		{
-			case uorPropTab_Text:		{	m_tabTxt->applyResult();	break;	}
-			case uorPropTab_TextLayot:	{	m_tabLayot->applyResult();	break;	}
-			case uorPropTab_TextFont:	{	m_tabFont->applyResult();	break;	}
+			case uorPropTTab_Text:		{	m_tabTxt->applyResult();	break;	}
+			case uorPropTTab_TextLayot:	{	m_tabLayot->applyResult();	break;	}
+			case uorPropTTab_TextFont:	{	m_tabFont->applyResult();	break;	}
+			case uorPropTTab_Border:	{	m_tabBorder->applyResult();	break;	}
 			default:{
 				break;
 			}
@@ -464,20 +673,23 @@ void uorPropDlg::clearTabs()
 /// Применить свойстра и спрятать панель
 void uorPropDlg::onApply()
 {
+	m_pe->m_canselApply = false;
 	applyResult();
-	m_pe->hidePriperty(true);
+	m_pe->hideProperty(true);
 }
 /// Применить свойстра и НО НЕ спрятать панель
 void uorPropDlg::onApplyWithoutHide()
 {
 	applyResult();
+	m_pe->m_canselApply = false;
 	m_pe->applyProps();
 }
 
 /// Спрятать панель НЕ применять свойстра
 void uorPropDlg::onCancel()
 {
-	m_pe->hidePriperty(false);
+	m_pe->m_canselApply = true;
+	m_pe->hideProperty(false);
 }
 
 bool uorPropDlg::initFromCtrl(uoReportCtrl* pCtrl)
@@ -507,11 +719,17 @@ bool uorPropDlg::initFromCtrl(uoReportCtrl* pCtrl)
 
 				}
 			}
-//			uoTextFontPropTab* tabFont = (uoTextFontPropTab*)m_propDlg->getTab(uorPropTab_TextFont);
-//			// QComboBox
-//			if (tabFont){
-//				m_propDlg->addTab(tabFont, QString::fromUtf8("Шрифт"));
-//			}
+			if (m_tabBorder){
+				m_tabBorder->initFromRPE();
+				if (!isVis)
+					addTab(m_tabBorder, QString::fromUtf8("Рамка"), m_tabBorder->m_typeTab);
+
+			}
+			if(m_tabFont){
+				m_tabFont->initFromRPE();
+				if (!isVis)
+					addTab(m_tabFont, QString::fromUtf8("Шрифт"), m_tabFont->m_typeTab);
+			}
 		}
 	}
 	return rez;
@@ -526,22 +744,30 @@ uoReportPropEditor::uoReportPropEditor(QObject* pObj)
 	m_reportCtrl 	= NULL;
 	m_writingSystem = QFontDatabase::Cyrillic;
 	m_textProp 		= new uorTextDecor;
-	m_textPropRes 	= new uorTextDecor;
+	m_textPropCopy 	= new uorTextDecor;
 	m_borderProp 	= new uorBorderPropBase;
+	m_borderPropCopy= new uorBorderPropBase;
 	m_sellectonType = uoRst_Unknown;
+	m_canselApply	= false;
+	m_outlineBT 	= uoCBT_Unknown;
+	m_outlineBTCopy = uoCBT_Unknown;
+
 
 }
 
 uoReportPropEditor::~uoReportPropEditor()
 {
 	delete m_textProp;
+	delete m_textPropCopy;
 	delete m_borderProp;
+	delete m_borderPropCopy;
 }
 
-/// Вычислим те свойства которые необъодимо изменить и поместим их в m_textPropRes
+/// Вычислим те свойства которые необъодимо изменить и поместим их в m_textPropCopy
 bool uoReportPropEditor::applyResult()
 {
-	m_textPropRes->copyFrom(m_textProp);
+	m_textPropCopy->copyFrom(m_textProp);
+	m_borderPropCopy->copyFrom(m_borderProp);
 	return m_propDlg->applyResult();
 }
 
@@ -550,7 +776,7 @@ bool uoReportPropEditor::isChangedProperty()
 {
 	bool retVal = false;
 	applyResult();
-	retVal = m_textProp->isEqual(*m_textPropRes);
+	retVal = m_textProp->isEqual(*m_textPropCopy);
 	return !retVal;
 
 
@@ -561,16 +787,21 @@ bool uoReportPropEditor::initFromCtrl(uoReportCtrl* pCtrl)
 	bool rez = false;
 	if (m_propDlg && pCtrl){
 		m_textProp->resetItem();
+		m_borderProp->resetItem();
 		pCtrl->populatePropEditor(this); // Заполнили редактор, теперь надо заполнить диалоги редактора
 		rez = m_propDlg->initFromCtrl(pCtrl);
-		m_textPropRes->copyFrom(m_textProp);
+		m_textPropCopy->copyFrom(m_textProp);
+		m_borderPropCopy->copyFrom(m_borderProp);
+
+		m_canselApply = false;
 	}
 	return rez;
 }
 
-void uoReportPropEditor::hidePriperty(const bool& save)
+void uoReportPropEditor::hideProperty(const bool& save)
 {
 	if (m_propDlg){
+		m_canselApply = !save;
 		if (save){
 			m_propDlg->applyResult();
 			applyProps();
@@ -598,6 +829,13 @@ bool uoReportPropEditor::editorIsVisible()
 	return retVal;
 }
 
+uoReportDoc* uoReportPropEditor::getDoc()
+{
+	if (!m_reportCtrl)
+		return NULL;
+	return m_reportCtrl->getDoc();
+}
+
 bool uoReportPropEditor::showProperty(uoReportCtrl* pCtrl, bool forseActivate)
 {
 	bool rez = false;
@@ -614,7 +852,7 @@ bool uoReportPropEditor::showProperty(uoReportCtrl* pCtrl, bool forseActivate)
 	m_reportCtrl = pCtrl;
 	rez = initFromCtrl(pCtrl);
 	if (rez){
-		bool active = m_propDlg->isActiveWindow();
+//		bool active = m_propDlg->isActiveWindow();
 		if (!m_propDlg->isVisible()) {
 			if (!m_lastGeometry.isValid()){
 				m_lastGeometry = m_propDlg->geometry();

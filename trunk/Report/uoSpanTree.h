@@ -222,7 +222,7 @@ class uoSpanScaner01 : public uoSpanTreeScan
 			}
 			return true;
 		}
-		virtual bool visitSpanAfter(uoLineSpan* curSpan){ return true;}
+		virtual bool visitSpanAfter(uoLineSpan* curSpan){ Q_UNUSED(curSpan) return true;}
 		int m_perId; 		/// Идентификатор секции с которым в данный момент работаем. -1 если не установлен
 		int m_findId; 		/// Найденный идентификатор секции одинаковым именем.
 		QString m_strName;

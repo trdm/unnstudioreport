@@ -43,6 +43,7 @@ class uoReportViewIteract : public QObject
 
 		void createActions();
 		void connectActions(uoReportCtrl* rCtrl);
+		void refreshActions(uoReportCtrl* rCtrl);
 
 		QAction* m_actCut;
 		QAction* m_actRemember;
@@ -91,6 +92,11 @@ class uoReportViewIteract : public QObject
 
 		QAction* m_actOutToDebug;
 
+		QAction* m_actRowCol_Delete;
+		QAction* m_actRowCol_Add;
+		QAction* m_actRow_AutoSize;
+		QAction* m_actRowCol_SetSize;
+
 		QAction* m_actSave;
 		QAction* m_actSaveAs;
 		QAction* m_actLoad;
@@ -99,6 +105,8 @@ class uoReportViewIteract : public QObject
 		QAction* m_actRedo;
 
 		QAction* m_showProp;
+		QAction* m_showPreview;
+		QAction* m_showPageSettings;
 
 		void setCheckedState(qreal scaleFactor);
 		bool chooseSaveFilePathAndFormat(QString& filePath, uoRptStoreFormat& frmt, QWidget* wi);

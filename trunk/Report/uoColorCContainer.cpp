@@ -181,6 +181,8 @@ void uoColorCContainer::setCurentItem(int curItem)
 
 int uoColorCContainer::doChangeCurColor(int key)
 {
+	int old = m_curentItem;
 	m_curentItem = key;
 	update();
+	return old;
 }

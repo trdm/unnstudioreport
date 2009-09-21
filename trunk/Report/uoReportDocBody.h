@@ -179,7 +179,7 @@ struct uorTextDecorBase
 struct uoRptNumLine : public uoEnumeratedItem{
 	public:
 
-		uoRptNumLine(int ln) : _line(ln), _size(-1), _hiden(false), _fixed(false)	{}
+		uoRptNumLine(int ln) : _line(ln), _size(-1), _hiden(false), _fixed(false),m_textDecor(0)	{}
 		virtual ~uoRptNumLine(){};
 
 	void 	setNumber(int nm) {_line = nm;}
@@ -210,6 +210,7 @@ struct uoRptNumLine : public uoEnumeratedItem{
 		qreal _sizeDef;
 		bool _hiden;
 		bool _fixed;
+		uorTextDecor* m_textDecor;
 };
 
 // по typename:
@@ -351,7 +352,6 @@ struct uorTextDecor : public uorTextDecorBase {
 			m_vertTAlignment  	= src->m_vertTAlignment;
 			m_horTAlignment		= src->m_horTAlignment;
 			m_TextBehavior		= src->m_TextBehavior;
-
 		}
 
 			/// Равны ли проперти
@@ -409,16 +409,24 @@ struct uorTextDecor : public uorTextDecorBase {
 
 		uoCellTextType  	m_textType;		///< Тип текста ячейки
 		uoVertAlignment 	m_vertTAlignment;	///< Тип вертикального выравнивания текста.
-		uoHorAlignment		m_horTAlignment;	///< Тип горизонтального выравнивания текста.
+		uoHorAlignment 		m_horTAlignment;	///< Тип горизонтального выравнивания текста.
 		uoCellTextBehavior 	m_TextBehavior;		///< Тип текста при превышении его длинны размера ячейки.
 
 };
 /**
 	\struct uorBorderPropBase - данные о бордюре ячейки.
 	\brief Содержит данные о бордюре ячейки.
+
+	Индексы массива m_bordType:
+	0 - левый
+	1 - верхний
+	2 - правый
+	3 - нижний бордюр
+
 */
 struct uorBorderPropBase {
-	uoCellBorderType 	m_bordType[4];	///< Тип рисунка бордюра.
+	uoCellBorderType 	m_bordType[4];		///< Тип рисунка бордюра.
+	unsigned char 		m_bordSize[4];		///< Толщина бордюра.
 	int					m_bordColor;		///< Цвеет бордюра.
 	uorBorderPropBase(){
 		resetItem();
@@ -426,11 +434,72 @@ struct uorBorderPropBase {
 	void resetItem()
 	{
 		m_bordColor = -1;
-		m_bordType[0] = uoCBT_Unknown;
-		m_bordType[1] = uoCBT_Unknown;
-		m_bordType[2] = uoCBT_Unknown;
-		m_bordType[3] = uoCBT_Unknown;
+		for (int i=0; i<4; i++) {
+			m_bordType[i] = uoCBT_Unknown;
+			m_bordSize[i] = 0;
+		}
 	}
+	inline
+	void setBorderTypes(
+		uoCellBorderType left,
+		uoCellBorderType top,
+		uoCellBorderType right,
+		uoCellBorderType bottom
+	)
+	{
+		m_bordType[0] = left;
+		m_bordType[1] = top;
+		m_bordType[2] = right;
+		m_bordType[3] = bottom;
+	}
+	inline
+	void setBorderTypeAll(uoCellBorderType allBord )
+	{
+		m_bordType[0] = allBord;
+		m_bordType[1] = allBord;
+		m_bordType[2] = allBord;
+		m_bordType[3] = allBord;
+	}
+
+	void copyFrom(uorBorderPropBase* src){
+		m_bordColor = -1;
+		m_bordType[0] = src->m_bordType[0];
+		m_bordType[1] = src->m_bordType[1];
+		m_bordType[2] = src->m_bordType[2];
+		m_bordType[3] = src->m_bordType[3];
+	}
+
+	bool isEqual(uorBorderPropBase& src){
+		for (int i = 0;i<4; i++){
+			if (m_bordType[i] != src.m_bordType[i])
+				return false;
+		}
+		return (m_bordColor == src.m_bordColor);
+	}
+
+	bool mergeItem(uorBorderPropBase& src){
+		for (int i = 0;i<4; i++){
+			if (m_bordType[i] != src.m_bordType[i] && m_bordType[i] != uoCBT_Unknown)
+				m_bordType[i] = uoCBT_Unknown;
+		}
+		if (m_bordColor != src.m_bordColor && m_bordColor != -1)
+			m_bordColor = src.m_bordColor;
+
+		return isEqual(src);
+	}
+
+	bool assignItem(uorBorderPropBase& src){
+
+		for (int i = 0;i<4; i++){
+			if (m_bordType[i] != src.m_bordType[i] && src.m_bordType[i] != uoCBT_Unknown)
+				m_bordType[i] = src.m_bordType[i];
+		}
+		if (m_bordColor != src.m_bordColor && src.m_bordColor != -1)
+			m_bordColor = src.m_bordColor;
+
+		return isEqual(src);
+	}
+
 
 };
 
@@ -500,6 +569,11 @@ struct uoCell : public uoEnumeratedItem{
 	int		 getFontSize();
 	int		 getFontId();
 
+	inline	int		 getFontB(){if(m_textProp) return m_textProp->m_fontB; return 0; };
+	inline	int		 getFontI(){if(m_textProp) return m_textProp->m_fontI; return 0; };
+	inline	int		 getFontU(){if(m_textProp) return m_textProp->m_fontU; return 0; };
+
+
 	const
 	QColor*  getFontColor(uoReportDoc* doc);
 	int 	 getFontColorId();
@@ -511,6 +585,9 @@ struct uoCell : public uoEnumeratedItem{
 	void saveTrPoint(uoTextTrPointCash* cash);
 	void applyTrPoint(uoTextTrPointCash* cash, const QStringList& listStr, uoReportDoc* doc);
 	bool isPartOfUnion(const int& row, const bool& basic = false) const;
+
+	void drawBorder(QPainter& painter, QPointF& pt1, QPointF& pt2) const;
+	void drawBorder(QPainter& painter, QRectF& rectCell) const;
 
 
 	int 		m_colNo;				///< Номер колонки, к которой ячейка принадлежит.
@@ -527,7 +604,11 @@ struct uoCell : public uoEnumeratedItem{
 	// чисто вспомогательные.
 	qreal 		m_maxRowLen; 	///< длинна самой длинной строки в ячейке....
 
+	inline
+	uorBorderPropBase* getBorderProp() {return m_borderProp ? m_borderProp : NULL; }
+
 };
+
 
 
 /// Строка документа. Содержит набор ячеек, в свою очередь содержащих данные.
@@ -537,8 +618,8 @@ class uoRow : public uoEnumeratedItem, public uoNumVector<uoCell>
 		uoRow(int nom);
 		virtual ~uoRow();
 	public:
-		void setNumber(int nm)	{	_number = nm;	}
-		int  number() 			{	return _number;	}
+		void setNumber(int nm)	{	m_number = nm;	}
+		int  number() 			{	return m_number;	}
 
 		///\todo Необходимы поисковые механизмы, найти и получить/установить значение свойства.
 		uoCell* getCell(int posX, bool needCreate = false);
@@ -549,11 +630,24 @@ class uoRow : public uoEnumeratedItem, public uoNumVector<uoCell>
 		QList<int> getItemNumList();
 
 		// Заполненные ячейки.
-		int _cellFirst;	///< первая ячейка
-		int _cellLast;	///< последняя ячейка
+		int m_cellFirst;	///< первая ячейка
+		int m_cellLast;	///< последняя ячейка
+		/**
+			m_lengthMaxToRight	- максимальная длина текста от первой ячейки вправо.
+			m_lengthMaxToLeft 	- величина выступа текста за левый край первой ячейки.
+			m_lengthFromCell	- длина от 1-й ячейки до правого края последней заполненной ячейки.
+
+			путаница может возникнуть из-за названий (уже накололся. жара наверное.)
+			m_lengthMaxToRight - для ячеек, выровненных по левому краю.
+			m_lengthMaxToLeft - для ячеек, выровненных по правому краю.
+		*/
+
+		qreal m_lengthMaxToRight;
+		qreal m_lengthMaxToLeft;
+		qreal m_lengthFromCell;
 
 	private:
-		int _number;
+		int m_number;
 };
 
 
@@ -566,7 +660,7 @@ class uoRowsDoc : public uoNumVector<uoRow>
 		virtual void onDeleteItem(uoRow* delItem);
 		virtual void onCreateItem(uoRow* crItem);
 
-		void setDoc(uoReportDoc* doc){_doc = doc;};
+		void setDoc(uoReportDoc* doc){m_doc = doc;};
 		uoRow* getRow(int nmRow, bool needCreate = false);
 		uoCell* getCell(int nmRow, int nmCol,bool needCreate = false);
 
@@ -574,7 +668,7 @@ class uoRowsDoc : public uoNumVector<uoRow>
 		void saveItems(uoReportLoader* loader);
 
 		bool setText(const int posY, const int posX, QString text);
-		uoReportDoc* _doc;
+		uoReportDoc* m_doc;
 };
 
 

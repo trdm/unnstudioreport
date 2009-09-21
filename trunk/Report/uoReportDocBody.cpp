@@ -7,6 +7,7 @@
 ***************************************/
 
 #include "QDebug"
+#include "QtGui"
 #include "uoReportDocBody.h"
 
 namespace uoReport {
@@ -101,12 +102,10 @@ void uoHeaderScale::printToDebug()
 	detachIter();
 	if (_list->isEmpty())
 		return;
-//	qDebug() << "############ size = " << _list->size();
 	uoRptNumLine* item = NULL;
 	QLinkedList<uoRptNumLine*>::iterator itLst = _list->begin();
 	while(itLst != _list->end()) {
 		item = *itLst;
-//		qDebug() << "№ "<< item->number() << " size " << item->size();
 		itLst++;
 	}
 }
@@ -499,7 +498,7 @@ uoVertAlignment uoCell::getAlignmentVer()
 
 
 
-/// Отдаем фонт сразус размером
+/// Отдаем фонт сразу с размером
 QFont* uoCell::getFont(uoReportDoc* doc, bool needCreate)
 {
 	if (!doc)
@@ -521,6 +520,8 @@ QFont* uoCell::getFont(uoReportDoc* doc, bool needCreate)
 			font->setBold(m_textProp->m_fontB);
 		if (m_textProp->m_fontI>=0)
 			font->setItalic(m_textProp->m_fontI);
+		if (m_textProp->m_fontU>=0)
+			font->setUnderline(m_textProp->m_fontU);
 	}
 	return font;
 }
@@ -598,6 +599,90 @@ bool uoCell::isPartOfUnion(const int& row, const bool& basic) const
 	return rewtVal;
 }
 
+void uoCell::drawBorder(QPainter& painter, QPointF& pt1, QPointF& pt2) const
+{
+	bool horiz = (pt1.y() == pt2.y()) ? true : false;
+
+	if (horiz){
+		pt1.setY(pt1.y()-0.5);
+		pt2.setY(pt2.y()-0.5);
+		painter.drawLine(pt1, pt2);
+		pt1.setY(pt1.y()+1.5);
+		pt2.setY(pt2.y()+1.5);
+		painter.drawLine(pt1, pt2);
+	} else {
+		pt1.setX(pt1.x()-0.5);
+		pt2.setX(pt2.x()-0.5);
+		painter.drawLine(pt1, pt2);
+		pt1.setX(pt1.x()+1.5);
+		pt2.setX(pt2.x()+1.5);
+		painter.drawLine(pt1, pt2);
+	}
+}
+
+
+/// Прорисуем бордюр
+void uoCell::drawBorder(QPainter& painter, QRectF& rectCell) const
+{
+	if (!m_borderProp)
+		return;
+	QPen oldPen = painter.pen();
+	QPen newPen;
+	newPen.setWidthF(1);
+	Qt::PenStyle pStyle;
+	uoCellBorderType bt;
+	QPointF pt1, pt2;
+	for (int i=0; i<4; i++)	{
+		bt = m_borderProp->m_bordType[i];
+		if (bt == uoCBT_Unknown)
+			continue;
+
+		pStyle = (Qt::PenStyle)bt;
+		newPen.setStyle(pStyle);
+		painter.setPen(newPen);
+		switch (i){
+			case 0: // левый
+			{
+				pt1 = rectCell.bottomLeft();
+				pt2 = rectCell.topLeft();
+				break;
+			}
+			case 1: // верхний
+			{
+				pt1 = rectCell.topLeft();
+				pt2 = rectCell.topRight();
+//				painter.drawLine(pt1, pt2);
+				break;
+			}
+			case 2: // правый
+			{
+				pt1 = rectCell.topRight();
+				pt2 = rectCell.bottomRight();
+//				painter.drawLine(pt1, pt2);
+				break;
+			}
+			case 3: // низ
+			{
+				pt1 = rectCell.bottomRight();
+				pt2 = rectCell.bottomLeft();
+//				painter.drawLine(pt1, pt2);
+				break;
+			}
+			default:
+			{
+				continue;
+				break;
+			}
+		}
+		if (bt != uoCBT_CustomDashLine){
+			painter.drawLine(pt1, pt2);
+		} else {
+			drawBorder(painter, pt1, pt2);
+		}
+	}
+}
+
+
 /// Применим порезку на строки, подготовленные с учетом размера шрифта.
 void uoCell::applyTrPoint(uoTextTrPointCash* cash, const QStringList& listStr, uoReportDoc* doc)
 {
@@ -636,9 +721,11 @@ void uoCell::applyTrPoint(uoTextTrPointCash* cash, const QStringList& listStr, u
 /// uoRow uoRow uoRow uoRow uoRow uoRow
 
 uoRow::uoRow(int nom)
-	:_number(nom)
+	:m_number(nom)
 {
-	_cellLast =_cellFirst = 0;
+	m_cellLast =m_cellFirst = 0;
+	m_lengthMaxToRight = m_lengthMaxToLeft = m_lengthFromCell = 0.0;
+
 }
 uoRow::~uoRow(){
 }
@@ -732,7 +819,7 @@ bool uoRowsDoc::setText(const int posY, const int posX, QString text){
 
 	uoCell* cell = getCell(posY, posX, true);
 	if (cell){
-		cell->setText(text, _doc);
+		cell->setText(text, m_doc);
 		isFind = true;
 	}
 	return isFind;
@@ -749,7 +836,8 @@ void uoRowsDoc::saveItems(uoReportLoader* loader)
 	QLinkedList<uoRow*>::iterator itLst = _list->begin();
 	while(itLst != _list->end()) {
 		item = *itLst;
-		loader->saveRowItemStart(item->number(), item->getCountItem());
+//		loader->saveRowItemStart(item->number(), item->getCountItem());
+		loader->saveRowItemStart(item);
 		item->saveItems(loader);
 		loader->saveRowItemEnd();
 		itLst++;

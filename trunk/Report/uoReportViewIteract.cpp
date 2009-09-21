@@ -87,6 +87,10 @@ void uoReportViewIteract::createActions()
 
 	m_showProp 	= new QAction(QString::fromUtf8("Свойства..."),this);
 
+	m_actRowCol_Delete	= new QAction(QString::fromUtf8("Удалить"),this);
+	m_actRowCol_Add 	= new QAction(QString::fromUtf8("Вставить"),this);
+	m_actRow_AutoSize 	= new QAction(QString::fromUtf8("Авторазмер"),this);
+	m_actRowCol_SetSize = new QAction(QString::fromUtf8("Установить размер"),this);
 
 
 	m_actProperty	= new QAction(QString::fromUtf8("Свойства"),this);
@@ -104,6 +108,9 @@ void uoReportViewIteract::createActions()
 	m_actUndo  	= new QAction(QString::fromUtf8("Отмена"),this);
 	m_actRedo	= new QAction(QString::fromUtf8("Повторить"),this);
 
+	m_showPreview	= new QAction(QString::fromUtf8("Предварительный просмотр"),this);
+	m_showPageSettings = new QAction(QString::fromUtf8("Страница"),this);
+
 }
 
 /// коннектим акции итеракта к uoReportCtrl.
@@ -118,34 +125,125 @@ void uoReportViewIteract::connectActions(uoReportCtrl* rCtrl)
 	connect(m_actRulerHide, SIGNAL(triggered()), rCtrl, SLOT(onRulerHide()));
 	connect(m_actRulerShow, SIGNAL(triggered()), rCtrl, SLOT(onRulerShow()));
 
-	connect(m_actSectionHide, SIGNAL(triggered()), rCtrl, SLOT(onSectionHide()));
-	connect(m_actSectionShow, SIGNAL(triggered()), rCtrl, SLOT(onSectionShow()));
+	connect(m_actSectionHide, 	SIGNAL(triggered()), rCtrl, SLOT(onSectionHide()));
+	connect(m_actSectionShow, 	SIGNAL(triggered()), rCtrl, SLOT(onSectionShow()));
 
-	connect(m_actSave, 	SIGNAL(triggered()), rCtrl, SLOT(onSave()));
-	connect(m_actSaveAs, 	SIGNAL(triggered()), rCtrl, SLOT(onSaveAs()));
+	connect(m_actSave, 			SIGNAL(triggered()), rCtrl, SLOT(onSave()));
+	connect(m_actSaveAs, 		SIGNAL(triggered()), rCtrl, SLOT(onSaveAs()));
 
-	connect(m_actLoad, 	SIGNAL(triggered()), rCtrl, SLOT(onLoad()));
-	connect(m_actClear,	SIGNAL(triggered()), rCtrl, SLOT(onClear()));
+	connect(m_actLoad, 			SIGNAL(triggered()), rCtrl, SLOT(onLoad()));
+	connect(m_actClear,			SIGNAL(triggered()), rCtrl, SLOT(onClear()));
 
 	connect(m_actSectionIn,		SIGNAL(triggered()), rCtrl, SLOT(onSectionInclude()));
 	connect(m_actSectionOut,	SIGNAL(triggered()), rCtrl, SLOT(onSectionExclude()));
 
-	connect(m_actGroupIn,	SIGNAL(triggered()), rCtrl, SLOT(onGroupInclude()));
-	connect(m_actGroupOut,	SIGNAL(triggered()), rCtrl, SLOT(onGroupExclude()));
+	connect(m_actGroupIn,		SIGNAL(triggered()), rCtrl, SLOT(onGroupInclude()));
+	connect(m_actGroupOut,		SIGNAL(triggered()), rCtrl, SLOT(onGroupExclude()));
 
 	connect(m_actOutToDebug, 	SIGNAL(triggered()), rCtrl, SLOT(debugRects()));
 
 	connect(m_actInvCharHide, 	SIGNAL(triggered()), rCtrl, SLOT(onInvisibleCharHide()));
 	connect(m_actInvCharShow, 	SIGNAL(triggered()), rCtrl, SLOT(onInvisibleCharShow()));
 
-	connect(m_actUndo, SIGNAL(triggered()), rCtrl, SLOT(onUndo()));
-	connect(m_actRedo, SIGNAL(triggered()), rCtrl, SLOT(onRedo()));
+	connect(m_actUndo, 			SIGNAL(triggered()), rCtrl, SLOT(onUndo()));
+	connect(m_actRedo, 			SIGNAL(triggered()), rCtrl, SLOT(onRedo()));
 
-	connect(m_showProp, SIGNAL(triggered()), rCtrl, SLOT(propertyEditorShowActivate()));
+	connect(m_actRowCol_Delete, 	SIGNAL(triggered()), rCtrl, SLOT(onRowColDelete()));
+	connect(m_actRowCol_Add, 		SIGNAL(triggered()), rCtrl, SLOT(onRowColAdd()));
+	connect(m_actRow_AutoSize, 		SIGNAL(triggered()), rCtrl, SLOT(onRowAutoSize()));
+	connect(m_actRowCol_SetSize, 	SIGNAL(triggered()), rCtrl, SLOT(onRowColSetSize()));
+
+	connect(m_showPreview, 		SIGNAL(triggered()), rCtrl, SLOT(onShowPreview()));
+	connect(m_showPageSettings, 		SIGNAL(triggered()), rCtrl, SLOT(onShowPagesSetings()));
+
+	connect(m_showProp, 		SIGNAL(triggered()), rCtrl, SLOT(propertyEditorShowActivate()));
+}
+
+
+void uoReportViewIteract::refreshActions(uoReportCtrl* rCtrl)
+{
+	if (!rCtrl){
+		m_actCut->setEnabled(false);
+		m_actRemember->setEnabled(false);
+		m_actDelete->setEnabled(false);
+		m_actAdd->setEnabled(false);
+		m_actClear->setEnabled(false);
+		m_actSize->setEnabled(false);
+
+		m_actSectionIn->setEnabled(false);
+		m_actSectionOut->setEnabled(false);
+
+		m_actGroupIn->setEnabled(false);
+		m_actGroupOut->setEnabled(false);
+
+		m_actFoldTo->setEnabled(false);
+		m_actFoldUn->setEnabled(false);
+
+		m_actGroupShow->setEnabled(false);
+		m_actGroupHide->setEnabled(false);
+
+		m_actSectionShow->setEnabled(false);
+		m_actSectionHide->setEnabled(false);
+
+		m_actGridShow->setEnabled(false);
+		m_actGridHide->setEnabled(false);
+
+		m_actInvCharShow->setEnabled(false);
+		m_actInvCharHide->setEnabled(false);
+
+		m_actFrameShow->setEnabled(false);
+		m_actFrameHide->setEnabled(false);
+
+		m_actRulerShow->setEnabled(false);
+		m_actRulerHide->setEnabled(false);
+
+		m_actOutToDebug->setEnabled(false);
+
+		m_actScope25->setEnabled(false);
+		m_actScope50->setEnabled(false);
+		m_actScope75->setEnabled(false);
+		m_actScope100->setEnabled(false);
+		m_actScope125->setEnabled(false);
+		m_actScope150->setEnabled(false);
+		m_actScope200->setEnabled(false);
+		m_actScope250->setEnabled(false);
+		m_actScope300->setEnabled(false);
+
+		m_actSave->setEnabled(false);
+		m_actSaveAs->setEnabled(false);
+		m_actLoad->setEnabled(false);
+
+		m_showProp->setEnabled(false);
+
+		m_actRowCol_Delete->setEnabled(false);
+		m_actRowCol_Add->setEnabled(false);
+		m_actRow_AutoSize->setEnabled(false);
+		m_actRowCol_SetSize->setEnabled(false);
+
+		m_actProperty->setEnabled(false);
+		return;
+	}
+
+	bool enabl = rCtrl->m_selections->isTrueForSections();
+	uorSelectionType selMode = rCtrl->m_selections->getSelectionType();
+	m_actRowCol_Delete->setEnabled(enabl);
+	m_actRowCol_Add->setEnabled(enabl);
+	m_actRow_AutoSize->setEnabled(false);
+	if (selMode == uoRst_Row || selMode == uoRst_Rows){
+		m_actRow_AutoSize->setEnabled(enabl);
+	}
+	m_actRowCol_SetSize->setEnabled(false);
+	if (
+	selMode == uoRst_Row ||
+	selMode == uoRst_Rows ||
+	selMode == uoRst_Column ||
+	selMode == uoRst_Columns
+	){
+		m_actRowCol_SetSize->setEnabled(true);
+	}
 
 
 }
-
 void uoReportViewIteract::setCheckedState(qreal scaleFactor){
 	m_actScope25->setChecked(false);
 	m_actScope50->setChecked(false);

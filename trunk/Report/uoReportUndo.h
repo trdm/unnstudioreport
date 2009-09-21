@@ -25,7 +25,8 @@ struct uoRUndoUnit
 		uoRUndoUnit():m_nomCh(-1){};
 		virtual ~uoRUndoUnit();
 
-		int m_nomCh; /// номер изменения, если у нас нет комплексного уинта, а изменения группируюися...
+		int m_nomCh; 					///< номер изменения, если у нас нет комплексного уинта, а изменения группируюися...
+		virtual QString toString() = 0; ///< сериализация итема для просмотра и анализа.
 
 		virtual bool undo(uoReportDoc* doc) = 0;
 		virtual bool redo(uoReportDoc* doc) = 0;
@@ -48,6 +49,46 @@ struct uoRUndo01 : public uoRUndoUnit
 		,m_row(row), m_col(col),m_text(text){};
 
 	virtual ~uoRUndo01(){};
+	virtual QString toString();
+	virtual bool undo(uoReportDoc* doc);
+	virtual bool redo(uoReportDoc* doc);
+	virtual void clear() {};
+};
+
+/**
+	\struct uoRUndo01 - класс комманды отмены/повтора размера котонок или строк.
+	\brief класс комманды отмены/повтора редактирования uoHeaderScale
+
+	uoHeaderScale* m_headerV; ///< Вертикальный заголовок
+	uoHeaderScale* m_headerH; ///< Горизонтальный заголовок
+	struct uoRptNumLine.
+		qreal _size;
+		qreal _sizeDef;
+		bool _hiden;
+		bool _fixed;
+
+*/
+struct uoRUndo02 : public uoRUndoUnit
+{
+	private:
+		int 				m_row_or_col;
+		uoRptHeaderType  	m_hType;
+		uorHeaderScaleChangeType m_changeType;
+	public:
+		union //m_data
+		{
+			bool 	mu_fixed;
+			bool 	mu_hiden;
+			qreal 	mu_size;
+		};
+	public:
+
+	uoRUndo02(int row_or_col, uoRptHeaderType hType, uorHeaderScaleChangeType chType)
+		:uoRUndoUnit()
+		,m_row_or_col(row_or_col),m_hType(hType), m_changeType(chType){};
+
+	virtual ~uoRUndo02(){};
+	virtual QString toString();
 	virtual bool undo(uoReportDoc* doc);
 	virtual bool redo(uoReportDoc* doc);
 	virtual void clear() {};
@@ -98,6 +139,7 @@ class uoReportUndo
 
 	public:
 		void doTextChange(QString oldText, int row, int col);
+		void doScaleResize(uoRptHeaderType hType, int nomRC, qreal oldSize);
 
 
 };

@@ -30,6 +30,56 @@ bool uoRUndo01::redo(uoReportDoc* doc){
 	m_text = txt;
 	return true;
 }
+
+QString uoRUndo01::toString()
+{
+	return QString("set to row/col %1/%2 text: ''%3''").arg(m_row).arg(m_col).arg(m_text);
+}
+
+bool uoRUndo02::undo(uoReportDoc* doc)
+{
+	if (!doc)
+		return false;
+
+	switch(m_changeType)
+	{
+		case uorHSCT_Fixed:	{
+			bool old = doc->getScaleFixedProp(m_hType,m_row_or_col);
+			doc->setScaleFixedProp(m_hType,m_row_or_col,mu_fixed);
+			mu_fixed = old;
+			break;
+		}
+		case uorHSCT_Size:	{
+			qreal old = doc->getScaleSize(m_hType,m_row_or_col);
+			doc->setScaleSize(m_hType,m_row_or_col,mu_size);
+			mu_size = old;
+			break;
+		}
+		default:{
+			break;
+		}
+	}
+	return true;
+}
+bool uoRUndo02::redo(uoReportDoc* doc)
+{
+	return undo(doc);
+}
+
+QString uoRUndo02::toString()
+{
+//	switch(m_changeType)
+//	{
+//		case uorHSCT_Size:
+//		{
+//			return QString("set to row/col %1/%2 text: ''%3''").arg(m_row).arg(m_col).arg(m_text);
+//		}
+//	}
+	return QString("set ????");
+}
+
+
+
 /**
 	\class uoReportUndo - Основной класс хранения и обработки механизма ундо/редо.
 	Сохраянет все данные для того, что-бы восстановить
@@ -90,6 +140,7 @@ bool uoReportUndo::undo(uoReportDoc* doc)
 		}
 		while(true);
 	}
+	doc->onDataChange();
 	m_collectChanges = old;
 	return rezult;
 }
@@ -125,6 +176,7 @@ bool uoReportUndo::redo(uoReportDoc* doc)
 		}
 		while(true);
 	}
+	doc->onDataChange();
 	m_collectChanges = old;
 	return rezult;
 }
@@ -181,6 +233,45 @@ void uoReportUndo::doTextChange(QString oldText, int row, int col)
 	if (undo){
 		pushUndo(undo);
 	}
+}
+
+void uoReportUndo::doScaleResize(uoRptHeaderType hType, int nomRC, qreal oldSize)
+{
+	if (!m_collectChanges)
+		return;
+	if (!m_doc)
+		return;
+//	uoRUndo02(int row_or_col, uoRptHeaderType hType, uorHeaderScaleChangeType chType)
+	if (hType == uorRhtUnknown){
+		qWarning() << "bad perametere from uoReportUndo::doScaleResize";
+		return;
+	}
+	bool gropStarted = false;
+	bool fixed; // строка фиксирована
+	if (hType == uorRhtRowsHeader) {
+		fixed = m_doc->getScaleFixedProp(hType, nomRC);
+		if (!fixed){
+			gropStarted = true;
+		}
+	}
+	if (gropStarted){
+		groupCommandStart();
+		uoRUndo02* undo2 = new uoRUndo02(nomRC, hType, uorHSCT_Fixed);
+		if (undo2){
+			undo2->mu_fixed = fixed;
+			pushUndo(undo2);
+		}
+	}
+
+	uoRUndo02* undo = new uoRUndo02(nomRC, hType, uorHSCT_Size);
+	if (undo){
+		undo->mu_size = oldSize;
+		pushUndo(undo);
+	}
+	if (gropStarted){
+		groupCommandEnd();
+	}
+
 }
 
 

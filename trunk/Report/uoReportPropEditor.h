@@ -18,12 +18,14 @@
 #include <QTabWidget>
 #include <QString>
 #include "uoColorChooser.h"
+#include "uoFrameChooser.h"
 #include "uoReportDoc.h"
 #include "uoReportCtrl.h"
 #include "ui_uorPropDlg.h"
 #include "ui_uorTextProp.h"
 #include "ui_uorTextLayotProp.h"
 #include "ui_uorTextFontProp.h"
+#include "ui_uorBorderProp.h"
 class QStandardItemModel;
 struct uoCell;
 struct QDesktopWidget;
@@ -72,6 +74,36 @@ class uoTextLayotTab : public QWidget, public Ui::uorTextLayotProp, public uorCo
 		virtual ~uoTextLayotTab();
 		virtual void initFromRPE();
 		virtual void applyResult();
+	private:
+		QButtonGroup* m_grVA;
+		QButtonGroup* m_grHA;
+
+};
+
+
+/**
+	\class uoBorderPropTab - Виджет для закладки редактирования опций бордюров ячеек.
+	\brief Виджет для закладки редактирования опций бордюров ячеек.
+*/
+class uoBorderPropTab : public QWidget, public Ui::uorBorderProp, public uorCommTab
+{
+    Q_OBJECT
+	public:
+		uoBorderPropTab(QWidget *parent = 0);
+		virtual ~uoBorderPropTab();
+		virtual void initFromRPE();
+		virtual void applyResult();
+	private:
+		uoFrameChooser* m_leftBFCh;
+		uoFrameChooser* m_topBFCh;
+		uoFrameChooser* m_rightBFCh;
+		uoFrameChooser* m_bottomBFCh;
+		uoFrameChooser* m_outlineBFCh;
+
+		QComboBox* 		m_leftCbSizer;
+		QComboBox* 		m_topCbSizer;
+		QComboBox* 		m_rightCbSizer;
+		QComboBox* 		m_bottomCbSizer;
 };
 
 /**
@@ -85,6 +117,8 @@ class uoTextFontPropTab : public QWidget, public Ui::uorTextFontProp, public uor
 		uoTextFontPropTab(QWidget *parent = 0);
 		virtual ~uoTextFontPropTab();
 		virtual void init();
+		virtual void initFromRPE();
+		virtual void applyResult();
 		void fillFontSizeList();
 	public slots:
 		void onFontNameChange(const QString& str);
@@ -92,6 +126,7 @@ class uoTextFontPropTab : public QWidget, public Ui::uorTextFontProp, public uor
 	protected:
 		int findFontItem(QString& fontName);
 		QStringList m_listFntNames;
+		QList<int> 	m_listFntSizes;
 		QCompleter* m_cmpl;
 		uoColorChooser* m_ColChooser;
 	protected:
@@ -141,11 +176,18 @@ class uorPropDlg : public QWidget, public Ui::uoPropDlg
 		uoTextPropTab* 		m_tabTxt;
 		uoTextLayotTab* 	m_tabLayot;
 		uoTextFontPropTab* 	m_tabFont;
+		uoBorderPropTab*	m_tabBorder;
 };
 
 /**
 	\class uoReportPropEditor - объект, координирующий плавающую панетль свойств табличного редактора.
 	\brief объект, координирующий плавающую панетль свойств табличного редактора.
+
+	Использование приема: m_textProp+m_textPropCopy
+	Смысл: необходимо определить и размножить по документу только те свойства,
+	которые пользователь изменил, а не все. использование копии позволяет
+	определить путем мерджинга(сравнения) эти измененные свойства...
+
 */
 class uoReportPropEditor : public QObject
 {
@@ -160,8 +202,9 @@ class uoReportPropEditor : public QObject
 		bool isChangedProperty();
 
 		bool showProperty(uoReportCtrl* pCtrl, bool forseActivate = false);
-		void hidePriperty(const bool& save = false);
+		void hideProperty(const bool& save = false);
 		bool editorIsVisible();
+		uoReportDoc* getDoc();
 
 	private:
 		uorPropDlg* 	m_propDlg;
@@ -169,12 +212,17 @@ class uoReportPropEditor : public QObject
 
 	public:
 		uorSelectionType m_sellectonType;
+		bool 	m_canselApply;
 		QString m_cellText;		///< текст ячейки 		(если m_sellectonType = uoRst_Unknown)
 		QString m_cellDecode;   ///< расшифровка ячейки (если m_sellectonType = )
 
-		uorTextDecor* 		m_textProp; 	///< значения свойств текста.
-		uorTextDecor* 		m_textPropRes; 	///< значения свойств текста полученное мержингом с данных m_textProp и визуального предстваления
-		uorBorderPropBase* 	m_borderProp;	///< значения свойств бордюров.
+		uorTextDecor* 		m_textProp; 		///< значения свойств текста.
+		uorTextDecor* 		m_textPropCopy; 	///< значения свойств текста полученное мержингом с данных m_textProp и визуального предстваления
+		uorBorderPropBase* 	m_borderProp;		///< значения свойств бордюров.
+		uorBorderPropBase* 	m_borderPropCopy;	///< значения свойств бордюров.
+		uoCellBorderType 	m_outlineBT;
+		uoCellBorderType 	m_outlineBTCopy;
+
 		QFontDatabase::WritingSystem m_writingSystem;
 		QFontDatabase 		m_fontBD;
 

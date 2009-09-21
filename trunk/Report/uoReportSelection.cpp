@@ -212,9 +212,9 @@ bool uoReportSelection::isCellSelect(int nmRow, int nmCol)
 /**
 	Получить правильный диапазон выделенных строк или столбцов и статус возврата.
 */
-bool uoReportSelection::getTrueSectionsCR(uoRptHeaderType& rht, int& start, int& end)
+bool uoReportSelection::getTrueSectionsCR(uoRptHeaderType& rht, int& start, int& end) const
 {
-	rht = rhtUnknown;
+	rht = uorRhtUnknown;
 	start = -1;
 	end = -1;
 
@@ -236,12 +236,12 @@ bool uoReportSelection::getTrueSectionsCR(uoRptHeaderType& rht, int& start, int&
 		{
 			int rowLast = -1, rowCur;
 			QList<int>* list = m_selRows;
-			rht = rhtVertical;
+			rht = uorRhtRowsHeader;
 
 			if (m_selMode == uoRst_Column || m_selMode == uoRst_Columns)
 			{
 				list = m_selCols;
-				rht = rhtHorizontal;
+				rht = uorRhtColumnHeader;
 			}
 
 			if (list->isEmpty()) {
@@ -279,11 +279,72 @@ bool uoReportSelection::getTrueSectionsCR(uoRptHeaderType& rht, int& start, int&
 	}
 	if (!retVal)
 	{
-		rht = rhtUnknown;
+		rht = uorRhtUnknown;
 		start = end = -1;
 	}
 	return retVal;
 
+}
+
+/**
+	Возвращает труе, если выделения имеют тип строка/строки или столбцы/столбец и
+	их тип и список выделений.
+*/
+bool uoReportSelection::getSelectedColRow(uoRptHeaderType& rht, QList<int>& list) const
+{
+	rht = uorRhtUnknown;
+	bool retVal = false;
+	switch(m_selMode)
+	{
+		case uoRst_Unknown:
+		case uoRst_Document:
+		case uoRst_Cell:
+		case uoRst_Cells:
+		case uoRst_Mixed:
+		{
+			return retVal;
+		}
+		case uoRst_Column:
+		case uoRst_Columns:
+		case uoRst_Row:
+		case uoRst_Rows:
+		{
+			int rowCur;
+			QList<int>* p_list = m_selRows;
+			rht = uorRhtRowsHeader;
+
+			if (m_selMode == uoRst_Column || m_selMode == uoRst_Columns)
+			{
+				p_list = m_selCols;
+				rht = uorRhtColumnHeader;
+			}
+
+			if (p_list->isEmpty()) {
+				retVal = false;
+
+			} else if (p_list->size() == 1){
+				retVal = true;
+				list.append(p_list->at(0));
+
+			} else {
+				retVal = true;
+				qSort(*p_list);
+				QList<int>::const_iterator iter = p_list->constBegin();
+				while(iter != p_list->constEnd()){
+					rowCur = *iter;
+					list.append(rowCur);
+					iter++;
+				}
+			}
+			break;
+		}
+		default:{	break;	}
+	}
+	if (!retVal)	{
+		rht = uorRhtUnknown;
+	}
+
+	return retVal;
 }
 
 /**

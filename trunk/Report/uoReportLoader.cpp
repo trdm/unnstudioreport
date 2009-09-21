@@ -88,6 +88,7 @@ uoReportLoader* uoReportLoader::getLoader(uoRptStoreFormat stFormat)
 */
 uoReportLoaderXML::uoReportLoaderXML(){
 	setFormat(uoRsf_XML);
+	m_version = uoReportVersion;
 }
 
 ///Инициализация лоадера. Конкренто  QTextStream и QFile
@@ -116,10 +117,20 @@ bool uoReportLoaderXML::init(bool forLoad){
 bool uoReportLoaderXML::saveDocStart(uoReportDoc* doc){
 
 	QString outStr = "";
+	m_doc = doc;
 	outStr = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
 	_textStream << outStr;
 	_textStream << QString("<Doc type = \"%1\" version = \"%2\">\n").arg(UORPT_XMLTYPEDOC).arg(uoReportVersion);
-	_textStream << QString("<!-- Scales and Group types \"%1\"=Vertical  \"%2\"=Horizontal -->\n").arg(rhtVertical).arg(rhtHorizontal);
+	_textStream << QString("<!-- Scales and Group types \"%1\"=Vertical  \"%2\"=Horizontal -->\n").arg(uorRhtRowsHeader).arg(uorRhtColumnHeader);
+	_textStream << QString(
+	"<!-- Cell format descr:  Cell no = \"number cell\" fid = \"font ID\"\n  "
+	"fsz = \"font size\" cId = \"color ID\" cbgid = \"BG color ID\" \n"
+	"tb = \"Text behavior\" ah = \"Alignment hor.\" av = \"Alignment ver.\" tt= \"Text type\" \n"
+	" bt_l = \"left bord type\" bt_t = \"top bord type\" bt_r = \"right bord type\" bt_b = \"bottom bord type\"\n"
+	" bt_c = \"border color\" -->\n");
+
+
+
 	_textStream << QString("<DocSize>\n");
 	_textStream << QString("\t<Sizes row = \"%1\" col = \"%2\" sizeV = \"%3\" sizeH = \"%4\" />\n")
 		.arg(doc->getRowCount())
@@ -130,8 +141,8 @@ bool uoReportLoaderXML::saveDocStart(uoReportDoc* doc){
 		.arg(doc->getVSize(true))
 		.arg(doc->getHSize(true));
 	_textStream << QString("\t<DefSizes row = \"%1\" col = \"%2\"/>\n")
-		.arg(doc->getDefScaleSize(rhtVertical))
-		.arg(doc->getDefScaleSize(rhtHorizontal));
+		.arg(doc->getDefScaleSize(uorRhtRowsHeader))
+		.arg(doc->getDefScaleSize(uorRhtColumnHeader));
 	_textStream << QString("</DocSize>\n");
 
 
@@ -186,27 +197,96 @@ void uoReportLoaderXML::saveRowsStart(int rowCount){
 	_textStream << QString("<Rows count = \"%1\">\n").arg(rowCount);
 }
 
-void uoReportLoaderXML::saveRowItemStart(int rowNumb, int cellCount){
-	_textStream << QString("\t<RowItem no = \"%1\" cellCnt = \"%2\">\n").arg(rowNumb).arg(cellCount);
+
+void uoReportLoaderXML::saveRowItemStart(uoRow* row){
+	int rowNumb = row->number();
+	int cellCount = row->getCountItem();
+	_textStream << QString("\t<RowItem no = \"%1\" cellCnt = \"%2\" LMaxToRight = \"%3\" LMaxToLeft = \"%4\" LFromCell = \"%5\"  >\n")
+	.arg(rowNumb)
+	.arg(cellCount)
+	.arg(row->m_lengthMaxToRight)
+	.arg(row->m_lengthMaxToLeft)
+	.arg(row->m_lengthFromCell)
+	;
 }
 
 void uoReportLoaderXML::saveCell(uoCell* cellItem){
 	QString text = cellItem->getText();
 	text = Qt::escape(text);
+	uorBorderPropBase* bp = cellItem->getBorderProp();
+	uorTextDecor* td = cellItem->getTextProp(m_doc,false);
+	QString strFont;
+	QString strTextT;
+	QString bpStr;
 
-	QString str = QString("\t\t<Cell no = \"%1\" fid = \"%2\"  fsz = \"%3\" cId = \"%4\" cbgid = \"%5\" tb = \"%6\" ah = \"%7\" av = \"%8\" tt= \"%9\">")
+	if (td){
+		strFont = QString("font = \"%1#%2#%3#%4#%5#%6#%7\" ")
+		.arg(cellItem->getFontId())
+		.arg(cellItem->getFontSize())
+		.arg(cellItem->getFontB())
+		.arg(cellItem->getFontI())
+		.arg(cellItem->getFontU())
+		.arg(cellItem->getFontColorId())
+		.arg(cellItem->getBGColorId())
+		;
+
+		strTextT = QString("textAtr = \"%1#%2#%3#%4\" ")
+		.arg(cellItem->getAlignmentHor())
+		.arg(cellItem->getAlignmentVer())
+		.arg(cellItem->getTextType())
+		.arg(cellItem->getTextBehavior())
+		;
+	}
+
+	if (bp){
+		bpStr = QString(" border = \"%1#%2#%3#%4#%5\" ")
+		.arg(bp->m_bordType[0])
+		.arg(bp->m_bordType[1])
+		.arg(bp->m_bordType[2])
+		.arg(bp->m_bordType[3])
+		.arg(bp->m_bordColor);
+	}
+
+
+
+	QString strAllCell = QString("\t\t<Cell no = \"%1\" %2 %3 %4>%5</Cell>\n")
 	.arg(cellItem->number())
-	.arg(cellItem->getFontId())
-	.arg(cellItem->getFontSize())
-	.arg(cellItem->getFontColorId())
-	.arg(cellItem->getBGColorId())
-	.arg(cellItem->getTextBehavior())
-	.arg(cellItem->getAlignmentHor())
-	.arg(cellItem->getAlignmentVer())
-	.arg(cellItem->getTextType())
+	.arg(strFont)
+	.arg(strTextT)
+	.arg(bpStr)
+	.arg(text)
 	;
-	QString text2 = QString("%1%2</Cell>\n").arg(str).arg(text);
-	_textStream << text2;
+	_textStream << strAllCell;
+
+
+	if(false) {
+		// для версии 0.1
+		qDebug() << strAllCell;
+
+
+		QString str = QString("\t\t<Cell no = \"%1\" fid = \"%2\"  fsz = \"%3\" cId = \"%4\" cbgid = \"%5\" tb = \"%6\" ah = \"%7\" av = \"%8\" tt= \"%9\"")
+		.arg(cellItem->number())
+		.arg(cellItem->getFontId())
+		.arg(cellItem->getFontSize())
+		.arg(cellItem->getFontColorId())
+		.arg(cellItem->getBGColorId())
+		.arg(cellItem->getTextBehavior())
+		.arg(cellItem->getAlignmentHor())
+		.arg(cellItem->getAlignmentVer())
+		.arg(cellItem->getTextType())
+		;
+		if (bp){
+			bpStr = QString(" bt_l = \"%1\" bt_t = \"%2\" bt_r = \"%3\" bt_b = \"%4\" bt_c = \"%5\" ")
+			.arg(bp->m_bordType[0])
+			.arg(bp->m_bordType[1])
+			.arg(bp->m_bordType[2])
+			.arg(bp->m_bordType[3])
+			.arg(bp->m_bordColor);
+		}
+
+		QString text2 = QString("%1 %2>%3</Cell>\n").arg(str).arg(bpStr).arg(text);
+		_textStream << text2;
+	}
 
 }
 
@@ -234,7 +314,7 @@ void uoReportLoaderXML::saveFontEnd()
 	_textStream << QString("\t</Fonts>\n");
 }
 
-		/// Запись подвальной части
+/// Запись подвальной части
 bool uoReportLoaderXML::saveDocEnd(uoReportDoc* doc){
 	_textStream << QString("</Doc>\n");
 
@@ -252,7 +332,7 @@ bool uoReportLoaderXML::loadGroupsHeader(const QDomElement &node,uoReportDoc* do
 	int groupType = node.attribute("type").toInt();
 	if (groupType == 1 || groupType == 2)
 	{
-		uoRptHeaderType rht = (groupType == 1) ? rhtVertical : rhtHorizontal;
+		uoRptHeaderType rht = (groupType == 1) ? uorRhtRowsHeader : uorRhtColumnHeader;
 		QDomElement child = node.firstChildElement();
 
 		int start = 0, stop = 0, folded = 0;
@@ -276,7 +356,7 @@ bool uoReportLoaderXML::loadSectionHeader(const QDomElement &node,uoReportDoc* d
 	int groupType = node.attribute("type").toInt();
 	if (groupType == 1 || groupType == 2)
 	{
-		uoRptHeaderType rht = (groupType == 1) ? rhtVertical : rhtHorizontal;
+		uoRptHeaderType rht = (groupType == 1) ? uorRhtRowsHeader : uorRhtColumnHeader;
 		QDomElement child = node.firstChildElement();
 		QString nameSect;
 		int start = 0, stop = 0;
@@ -302,7 +382,7 @@ bool uoReportLoaderXML::loadScalesHeader(const QDomElement &node, uoReportDoc* d
 	int groupType = node.attribute("type").toInt();
 	if (groupType == 1 || groupType == 2)
 	{
-		uoRptHeaderType rht = (groupType == 1) ? rhtVertical : rhtHorizontal;
+		uoRptHeaderType rht = (groupType == 1) ? uorRhtRowsHeader : uorRhtColumnHeader;
 		QDomElement child = node.firstChildElement();
 		QString nameSect;
 		int number = 0;
@@ -336,8 +416,9 @@ bool uoReportLoaderXML::loadCell(const QDomElement &node, uoReportDoc* doc, int 
 		когда сохраняю текст, содержащий возврат коретки	*/
 	static const QString ch = "\n";
 	static const QString ch2 = "\r\n";
-
+	uoCell* cell = NULL;
 	int cellNumber;
+	int other = 0;
 	QString cellText;
 	while (!child.isNull()) {
 		cellNumber = child.attribute("no").toInt();
@@ -348,8 +429,77 @@ bool uoReportLoaderXML::loadCell(const QDomElement &node, uoReportDoc* doc, int 
 		while(cellText.indexOf(ch2)>=0)
 			cellText = cellText.replace(ch2, ch);
 
-		qDebug() << "load<<" << cellText;
+//		qDebug() << "load<<" << cellText;
 		doc->setCellText(rowNum,cellNumber,cellText);
+		cell = doc->getCell(rowNum,cellNumber,true,true);
+		if (cell){
+			/* <Cell no="2" fid="0" fsz="8" cId="-1" cbgid="-1" tb="1" ah="1" av="1"
+			tt="1" bt_l="1" bt_t="1" bt_r="1" bt_b="1" bt_c="-1"/>
+
+			Cell format descr:  Cell no = "number cell" fid = "font ID"
+			fsz = "font size" cId = "color ID" cbgid = "BG color ID"
+			tb = "Text behavior" ah = "Alignment hor." av = "Alignment ver." tt= "Text type"
+			bt_l = "left bord type" bt_t = "top bord type" bt_r = "right bord type" bt_b = "bottom bord type"
+			bt_c = "border color"
+			*/
+			if (m_version == "0.1"){
+				other = child.attribute("fid").toInt();			cell->m_textProp->m_fontId = other;
+				other = child.attribute("fsz").toInt();			cell->m_textProp->m_fontSz = other;
+				other = child.attribute("tb").toInt();			cell->m_textProp->m_TextBehavior = (uoCellTextBehavior)other;
+				other = child.attribute("ah").toInt();			cell->m_textProp->m_horTAlignment = (uoHorAlignment)other;
+				other = child.attribute("av").toInt();			cell->m_textProp->m_vertTAlignment = (uoVertAlignment)other;
+				other = child.attribute("tt").toInt();			cell->m_textProp->m_textType = (uoCellTextType)other;
+				other = child.attribute("bt_l").toInt();		cell->m_borderProp->m_bordType[0] = (uoCellBorderType)other;
+				other = child.attribute("bt_t").toInt();		cell->m_borderProp->m_bordType[1] = (uoCellBorderType)other;
+				other = child.attribute("bt_r").toInt();		cell->m_borderProp->m_bordType[2] = (uoCellBorderType)other;
+				other = child.attribute("bt_b").toInt();		cell->m_borderProp->m_bordType[3] = (uoCellBorderType)other;
+			} else
+			if(m_version == "0.2")
+			{
+				QString atrVal, str;
+				QStringList sList;
+				str = child.attribute("font");
+				if (!str.isEmpty()){
+					sList = str.split("#");
+					if (sList.size() == 7){
+						other = sList.at(0).toInt();	cell->m_textProp->m_fontId = other;
+						other = sList.at(1).toInt();	cell->m_textProp->m_fontSz = other;
+						other = sList.at(2).toInt();	cell->m_textProp->m_fontB = other;
+						other = sList.at(3).toInt();	cell->m_textProp->m_fontI = other;
+						other = sList.at(4).toInt();	cell->m_textProp->m_fontU = other;
+						///\todo тут цвета, доработать
+//						other = sList.at(5).toInt();	cell->m_textProp->m_fontU = other;
+//						other = sList.at(6).toInt();	cell->m_textProp->m_fontU = other;
+
+					}
+				}
+				str = child.attribute("textAtr");
+				if (!str.isEmpty()){
+					sList = str.split("#");
+					if (sList.size() == 4){
+						other = sList.at(0).toInt();	cell->m_textProp->m_horTAlignment = (uoHorAlignment)other;
+						other = sList.at(1).toInt();	cell->m_textProp->m_vertTAlignment = (uoVertAlignment)other;
+						other = sList.at(2).toInt();	cell->m_textProp->m_textType = (uoCellTextType)other;
+						other = sList.at(3).toInt();	cell->m_textProp->m_TextBehavior = (uoCellTextBehavior)other;
+					}
+				}
+				str = child.attribute("border");
+				if (!str.isEmpty()){
+					sList = str.split("#");
+					if (sList.size() == 5){
+						other = sList.at(0).toInt();	cell->m_borderProp->m_bordType[0] = (uoCellBorderType)other;
+						other = sList.at(1).toInt();	cell->m_borderProp->m_bordType[1] = (uoCellBorderType)other;
+						other = sList.at(2).toInt();	cell->m_borderProp->m_bordType[2] = (uoCellBorderType)other;
+						other = sList.at(3).toInt();	cell->m_borderProp->m_bordType[3] = (uoCellBorderType)other;
+						///\todo тут цвет.
+//						other = sList.at(4).toInt();
+					}
+				}
+			}
+
+
+		}
+
 		child = child.nextSiblingElement();
 	}
 	return retVal;
@@ -396,8 +546,11 @@ bool uoReportLoaderXML::load(uoReportDoc* doc)
 	QDomDocument xmldoc;
 	xmldoc.setContent(&_outFile);
 	QString nodeName;
+	m_doc = doc;
 
 	QDomElement docElem = xmldoc.documentElement();
+	m_version = docElem.attribute("version");
+	qDebug() << "Load m_version" << m_version;
 	QDomElement child = docElem.firstChildElement();
 	while (!child.isNull()) {
 //		qDebug() << child.nodeName();
@@ -416,6 +569,8 @@ bool uoReportLoaderXML::load(uoReportDoc* doc)
 
 		child = child.nextSiblingElement();
 	}
+
+	m_doc = NULL;
 
 	return retVal;
 }

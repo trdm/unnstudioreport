@@ -288,7 +288,7 @@
         </widget>
        </item>
        <item>
-        <widget class="QCheckBox" name="chbBold" >
+        <widget class="QCheckBox" name="m_chbBold" >
          <property name="sizePolicy" >
           <sizepolicy>
            <hsizetype>0</hsizetype>
@@ -302,51 +302,51 @@
          </property>
         </widget>
        </item>
-         <item>
-          <widget class="QLabel" name="labelColor" >
-           <property name="sizePolicy" >
-            <sizepolicy>
-             <hsizetype>0</hsizetype>
-             <vsizetype>0</vsizetype>
-             <horstretch>0</horstretch>
-             <verstretch>0</verstretch>
-            </sizepolicy>
-           </property>
-           <property name="text" >
-            <string>Color</string>
-           </property>
-           <property name="buddy" >
-            <cstring>m_cBoxColor</cstring>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QFrame" name="m_colFrm" >
-           <property name="sizePolicy" >
-            <sizepolicy>
-             <hsizetype>1</hsizetype>
-             <vsizetype>1</vsizetype>
-             <horstretch>0</horstretch>
-             <verstretch>0</verstretch>
-            </sizepolicy>
-           </property>
-           <property name="minimumSize" >
-            <size>
-             <width>70</width>
-             <height>20</height>
-            </size>
-           </property>
-           <property name="frameShape" >
-            <enum>QFrame::NoFrame</enum>
-           </property>
-           <property name="frameShadow" >
-            <enum>QFrame::Plain</enum>
-           </property>
-           <property name="lineWidth" >
-            <number>0</number>
-           </property>
-          </widget>
-         </item>
+       <item>
+        <widget class="QLabel" name="labelColor" >
+         <property name="sizePolicy" >
+          <sizepolicy>
+           <hsizetype>0</hsizetype>
+           <vsizetype>0</vsizetype>
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="text" >
+          <string>Color</string>
+         </property>
+         <property name="buddy" >
+          <cstring>m_cBoxColor</cstring>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QFrame" name="m_colFrm" >
+         <property name="sizePolicy" >
+          <sizepolicy>
+           <hsizetype>1</hsizetype>
+           <vsizetype>1</vsizetype>
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="minimumSize" >
+          <size>
+           <width>70</width>
+           <height>20</height>
+          </size>
+         </property>
+         <property name="frameShape" >
+          <enum>QFrame::NoFrame</enum>
+         </property>
+         <property name="frameShadow" >
+          <enum>QFrame::Plain</enum>
+         </property>
+         <property name="lineWidth" >
+          <number>0</number>
+         </property>
+        </widget>
+       </item>
        <item>
         <spacer>
          <property name="orientation" >
@@ -376,7 +376,7 @@
   <tabstop>m_sizeList</tabstop>
   <tabstop>m_chbItalic</tabstop>
   <tabstop>m_chbUnderline</tabstop>
-  <tabstop>chbBold</tabstop>
+  <tabstop>m_chbBold</tabstop>
  </tabstops>
  <resources/>
  <connections/>
