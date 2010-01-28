@@ -127,14 +127,27 @@ void uoFrameChooser::paintEvent(QPaintEvent *event)
 	QPen frmCurentPen(palette().color(QPalette::Highlight));
 	frmCurentPen.setStyle(Qt::DotLine);
 	QPen curentLinePen(palette().color(QPalette::Text));
+	bool oldStyle = false;
+	if (oldStyle) {
+		/*
+		QStyleOptionComboBox opt;
+		opt.initFrom(this);
+		opt.frame = 1;
+		opt.subControls = QStyle::SC_ComboBoxFrame; // | QStyle::SC_ComboBoxEditField; низя, рисует фигню какую-то.
+		opt.state |= QStyle::State_Sunken;
+		painter.drawComplexControl(QStyle::CC_ComboBox, opt);
+		*/
+	} else {
 
-    QStyleOptionComboBox opt;
-    opt.initFrom(this);
-    opt.frame = 1;
-    opt.subControls = QStyle::SC_ComboBoxFrame;
-	opt.state |= QStyle::State_Sunken;
+		QStyleOptionFrameV2 opt;
+		opt.initFrom(this);
+		opt.lineWidth = 1;
+		opt.midLineWidth = 0;
+		opt.state |= QStyle::State_Sunken;
+		style()->drawPrimitive(QStyle::PE_PanelLineEdit, &opt, &painter, this);
 
-    painter.drawComplexControl(QStyle::CC_ComboBox, opt);
+	}
+
 
    	QRect frmRect = rect();
 	QLine line;
@@ -142,19 +155,18 @@ void uoFrameChooser::paintEvent(QPaintEvent *event)
 	pt1.setY(frmRect.height()/2);
 	pt2.setY(frmRect.height()/2);
 
-	frmRect.adjust(m_leftOffset,m_leftOffset,-m_leftOffset,-m_leftOffset);
+	frmRect.adjust(m_leftOffset,m_leftOffset,-(m_leftOffset+1),-(m_leftOffset+1));
 
 	if (m_curentLine == -1)	{
 		painter.fillRect(frmRect, palette_c.color(QPalette::Window));
-		frmCurentPen.setBrush(palette().color(QPalette::Highlight));
+		frmCurentPen.setBrush(palette_c.color(QPalette::Highlight));
 	}
 	if (hasFocus()) {
 		painter.setPen(frmCurentPen);
 		painter.drawRect(frmRect);
 	}
-	frmRect.adjust(m_leftOffset,m_leftOffset,-m_leftOffset,-m_leftOffset);
+	frmRect.adjust(m_leftOffset,m_leftOffset,-(m_leftOffset+1),-(m_leftOffset+1));
 
-	//m_leftOffset
 	int offTop = m_leftOffset;
 	offTop *= 2;
 	int penWidht = qMax(1, curentLinePen.width());
@@ -162,7 +174,6 @@ void uoFrameChooser::paintEvent(QPaintEvent *event)
 	uoFC_LineItem* item = NULL;
     int i;
    	for(i=0; i<=FRAMECHOOSER_LINEITEM_COUNT; i++){
-		//m_liArray[i]->m_offsetH = i * FRAMECHOOSER_LINEITEM_WIDHT + m_leftOffset;
 		item = m_liArray[i];
 
 		frmRect.setX(item->m_offsetH + offTop);

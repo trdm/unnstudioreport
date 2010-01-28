@@ -13,11 +13,14 @@
 #include <QLinkedList>
 #include "uoReport.h"
 #include "uoNumVector.h"
+#include "uoNumVector2.h"
 #include "uoReportLoader.h"
 #include "uoReportDocBody.h"
 #include "uoReportDoc.h"
+#include "uoReportSelection.h"
+#include "uoPainter.h"
 
-
+class uoReportUndo;
 
 namespace uoReport {
 /**
@@ -27,7 +30,7 @@ namespace uoReport {
 struct uoEnumeratedItem
 {
 	virtual ~uoEnumeratedItem(){};
-	virtual void setNumber(int nm) = 0;
+	virtual void setNumber(const int& nm) = 0;
 	virtual int  number() = 0;
 
 };
@@ -182,19 +185,19 @@ struct uoRptNumLine : public uoEnumeratedItem{
 		uoRptNumLine(int ln) : _line(ln), _size(-1), _hiden(false), _fixed(false),m_textDecor(0)	{}
 		virtual ~uoRptNumLine(){};
 
-	void 	setNumber(int nm) {_line = nm;}
+	void 	setNumber(const int& nm) {_line = nm;}
 	int  	number() {return _line;}
 
-	void 	setSize(qreal sz, bool isDef = false) {
+	void 	setSize(const uorNumber& sz, bool isDef = false) {
 		if (isDef)	_sizeDef = sz;
 		else 		_size = sz;
 	}
-	qreal size(bool isDef = false) {return isDef?_sizeDef:_size;}
+	uorNumber size(bool isDef = false) {return isDef?_sizeDef:_size;}
 
 	bool 	hiden() {return _hiden;}
-	void 	setHiden(bool hd) {_hiden = hd;}
+	void 	setHiden(const bool& hd) {_hiden = hd;}
 	bool 	fixed() {return _fixed;}
-	void 	setFixed(bool fx) {_fixed = fx;}
+	void 	setFixed(const bool& fx) {_fixed = fx;}
 
 	private:
 		int _line;
@@ -206,8 +209,8 @@ struct uoRptNumLine : public uoEnumeratedItem{
 			но когда ячейка пуста, размер возвращается из _sizeDef.
 			_size   - ЭТО ТАКЖЕ  ширина столбца
 		*/
-		qreal _size;
-		qreal _sizeDef;
+		uorNumber _size;
+		uorNumber _sizeDef;
 		bool _hiden;
 		bool _fixed;
 		uorTextDecor* m_textDecor;
@@ -223,6 +226,7 @@ struct uoRptNumLine : public uoEnumeratedItem{
 /// строк документа, содержащих данные рядов ячеек. Данные ячеек - текст, его \n
 /// форматирование, рамки, данные по их объединению и т.п.
 /// (примечание) Scale - ячейка линейки, Cell - ячейка основного поля, \n чисто для изучения английского :)
+//class uoHeaderScale	: public uoNumVector2<uoRptNumLine>
 class uoHeaderScale	: public uoNumVector<uoRptNumLine>
 {
 	public:
@@ -230,24 +234,28 @@ class uoHeaderScale	: public uoNumVector<uoRptNumLine>
 		~uoHeaderScale();
 
 	void printToDebug();
-	bool getHide(int nom );
-	void setHide(int nom, bool hide);
-	bool getFixed(int nom );
-	void setFixed(int nom, bool fix);
+	bool getHide(const int& nom );
+	void setHide(const int& nom, const bool& hide);
+	bool getFixed(const int& nom );
+	void setFixed(const int& nom, const bool& fix);
 
-	bool onStoreItems(uoReportLoader* loader);
-	qreal getSize(int nom, bool isDef = false);
-	bool	setSize(int nom, qreal size, bool isDef = false);
+	void copyFrom(uoHeaderScale* fromSrc, int startNo = -1, int endNo = -1, int colOffset = 0);
+	bool copyFrom(uoHeaderScale* fromSrc, QList<int>& listRc, int colOffset = 0);
+
+
+	bool onStoreItems(uoReportLoader* loader, QList<int>* list = NULL);
+	uorNumber getSize(const int& nom, bool isDef = false);
+	bool	setSize(const int& nom, const uorNumber& size, bool isDef = false);
 
 	virtual void onCreateItem(uoRptNumLine* crItem);
 	virtual void onDeleteItem(uoRptNumLine* delItem);
 
 	/// Установить дефолтный размер итема
-	void setDefSize(qreal size) {		_def_size = size;	}
+	void setDefSize(const uorNumber& size) {		m_def_size = size;	}
 	/// Получить дефолтный размер итема.
-	qreal getDefSizeItem() {	return _def_size;	}
+	uorNumber getDefSizeItem() {	return m_def_size;	}
 
-	qreal _def_size;
+	uorNumber m_def_size;
 
 	void test();
 };
@@ -266,16 +274,18 @@ class uoReportDocFontColl {
 		uoReportDocFontColl();
 		~uoReportDocFontColl();
 	public:
-		QFont* getFont(int nmFont);
-		int getFontId(QString fontName);
-		int addFont(QString fontName);
-		int findFont(QString fontName);
+		QFont* getFont(const int& nmFont);
+		int getFontId(const QString& fontName);
+		int addFont(const QString& fontName);
+		int findFont(const QString& fontName);
 		int countFonts();
 
 		void clear();
 
 	private:
-		QList<QFont*> _fontList;
+		QVector<QFont*> _fontList;
+		int m_fCount;
+//		QList<QFont*> _fontList;
 };
 
 
@@ -335,8 +345,17 @@ struct uoTextTrPointCash
 */
 struct uorTextDecor : public uorTextDecorBase {
 	public:
+		uoCellTextType  	m_textType;		///< Тип текста ячейки
+		uoVertAlignment 	m_vertTAlignment;	///< Тип вертикального выравнивания текста.
+		uoHorAlignment 		m_horTAlignment;	///< Тип горизонтального выравнивания текста.
+		uoCellTextBehavior 	m_TextBehavior;		///< Тип текста при превышении его длинны размера ячейки.
+		short 				m_rotareTextAngle;	///< Угол поворота текста.
+		int 				m_alignFlags;		///< Флаг для отрисовки текста (оптимизация)
+
+	public:
 		uorTextDecor()	{
 			resetItem();
+			m_alignFlags = 0;
 		}
 		void resetItem(){
 			uorTextDecorBase::resetItem();
@@ -345,6 +364,7 @@ struct uorTextDecor : public uorTextDecorBase {
 			m_vertTAlignment  = uoVA_Top;
 			m_horTAlignment	= uoHA_Left;
 			m_TextBehavior		= uoCTB_Auto;
+			m_rotareTextAngle = 0;
 		}
 		void copyFrom(uorTextDecor* src){
 			uorTextDecorBase::copyFrom(src);
@@ -404,14 +424,6 @@ struct uorTextDecor : public uorTextDecorBase {
 				m_TextBehavior = item.m_TextBehavior;
 			return isEqual(item);
 		}
-
-
-
-		uoCellTextType  	m_textType;		///< Тип текста ячейки
-		uoVertAlignment 	m_vertTAlignment;	///< Тип вертикального выравнивания текста.
-		uoHorAlignment 		m_horTAlignment;	///< Тип горизонтального выравнивания текста.
-		uoCellTextBehavior 	m_TextBehavior;		///< Тип текста при превышении его длинны размера ячейки.
-
 };
 /**
 	\struct uorBorderPropBase - данные о бордюре ячейки.
@@ -441,10 +453,10 @@ struct uorBorderPropBase {
 	}
 	inline
 	void setBorderTypes(
-		uoCellBorderType left,
-		uoCellBorderType top,
-		uoCellBorderType right,
-		uoCellBorderType bottom
+		const uoCellBorderType& left,
+		const uoCellBorderType& top,
+		const uoCellBorderType& right,
+		const uoCellBorderType& bottom
 	)
 	{
 		m_bordType[0] = left;
@@ -453,7 +465,7 @@ struct uorBorderPropBase {
 		m_bordType[3] = bottom;
 	}
 	inline
-	void setBorderTypeAll(uoCellBorderType allBord )
+	void setBorderTypeAll(const uoCellBorderType& allBord )
 	{
 		m_bordType[0] = allBord;
 		m_bordType[1] = allBord;
@@ -469,7 +481,7 @@ struct uorBorderPropBase {
 		m_bordType[3] = src->m_bordType[3];
 	}
 
-	bool isEqual(uorBorderPropBase& src){
+	bool isEqual(const uorBorderPropBase& src){
 		for (int i = 0;i<4; i++){
 			if (m_bordType[i] != src.m_bordType[i])
 				return false;
@@ -477,7 +489,7 @@ struct uorBorderPropBase {
 		return (m_bordColor == src.m_bordColor);
 	}
 
-	bool mergeItem(uorBorderPropBase& src){
+	bool mergeItem(const uorBorderPropBase& src){
 		for (int i = 0;i<4; i++){
 			if (m_bordType[i] != src.m_bordType[i] && m_bordType[i] != uoCBT_Unknown)
 				m_bordType[i] = uoCBT_Unknown;
@@ -508,16 +520,30 @@ struct uorBorderPropBase {
 	\brief Содержит данные об объединении ячеек.
 	Описания режимов объединения находится uoReport.h
 */
-typedef struct uoCellJoin{
-	uoCellJoin()
-		:m_JoinType(uoCJT_Unknown),m_row(0), m_col(0)
-	{}
-	~uoCellJoin()
-	{}
+struct uoCellJoin
+{
+	uoCellJoin():m_JoinType(uoCJT_Unknown),m_row(0), m_col(0),m_width(uorNumberNull), m_height(uorNumberNull){}
+	~uoCellJoin(){}
+
 	uoCellsJoinType m_JoinType;
 
-	unsigned int m_row;
-	unsigned int m_col;
+	unsigned int 	m_row;		///< количество строк в объединении
+	unsigned int 	m_col;		///< количество колонок в объединении
+	QRect 			m_cellRect;	///< Рект номеров ячеек
+	uorNumber 		m_width; 	///< Ширина ректа объединения в пикселах
+	uorNumber 		m_height; 	///< Высота ректа объединения в пикселах
+
+	void setCellRect(const int& colSt, const int& rowSt,const int& colCount,const int& rowCount)
+	{
+		m_cellRect = QRect(colSt, rowSt, colCount, rowCount);
+	}
+
+	void clear() {
+		m_JoinType = uoCJT_Unknown;
+		m_row = m_col = 0;
+		m_width = m_height = uorNumberNull;
+
+	}
 };
 
 /**
@@ -532,7 +558,8 @@ typedef struct uoCellJoin{
 struct uoCell : public uoEnumeratedItem{
 	uoCell(int nom)
 		: m_colNo(nom)
-		, m_height(0.0)
+		, m_rowNo(0)
+		, m_height(uorNumberNull)
 		, m_textProp(0)
 		, m_borderProp(0)
 		, m_ceelJoin(0)
@@ -540,24 +567,28 @@ struct uoCell : public uoEnumeratedItem{
 	{
 		m_text			= "";
 		m_textDecode 	= "";
-		m_maxRowLen		= 0.0;
+		m_maxRowLen		= uorNumberNull;
 	}
 	~uoCell()
 	{}
 
-	virtual void setNumber(int nm){		m_colNo = nm;	}
+	virtual void setNumber(const int& nm){		m_colNo = nm;	}
 	virtual int  number() {		return m_colNo;	}
 	void clear();
+	void clearFormat(uoReportDoc* doc);
 
 	bool 	provideAllProps(uoReportDoc* doc, bool needCreate = false);
-	QString getText();
+	bool 	provideJoinProp(uoReportDoc* doc);
+	QString& getText();
 	QString getTextWithLineBreak(bool drawInv = false);
 
-	void 	setText(QString text, uoReportDoc* doc);
+	void 	setText(const QString& text, uoReportDoc* doc);
 	void 	setAlignment(const uoVertAlignment& va, const uoHorAlignment& ha, const uoCellTextBehavior& tb, uoReportDoc* doc);
 	int 	getAlignment();
-	void 	setMaxRowLength(qreal len, uoReportDoc* doc);
-	qreal 	getMaxRowLength();
+	void 	setMaxRowLength(const uorNumber& len, uoReportDoc* doc);
+	void 	copyFrom(uoCell* fromSrc, uoReportDoc* doc, uoReportDoc* docSrc, int rowNo);
+
+inline uorNumber getMaxRowLength() {return m_maxRowLen;};
 
 	uoHorAlignment 		getAlignmentHor();
 	uoVertAlignment 	getAlignmentVer();
@@ -584,48 +615,91 @@ struct uoCell : public uoEnumeratedItem{
 
 	void saveTrPoint(uoTextTrPointCash* cash);
 	void applyTrPoint(uoTextTrPointCash* cash, const QStringList& listStr, uoReportDoc* doc);
+
 	bool isPartOfUnion(const int& row, const bool& basic = false) const;
 
-	void drawBorder(QPainter& painter, QPointF& pt1, QPointF& pt2) const;
-	void drawBorder(QPainter& painter, QRectF& rectCell) const;
+	bool isUnionHas() const;
+	QRect getCellJoinRect();
+	void setCellJoin(uoCellJoin* cellJ, uoReportDoc* doc);
+	uoCellJoin* deleteCellJoin();
+	uoCellJoin* cellJoin() {return m_ceelJoin;};
+
+	uoCellsJoinType joinType() const;
+	uoCellsJoinType unionType() const;
+	bool isFirstOfUnionCell() const;
+	int unionRow() const;
+	int unionCol() const;
+
+	bool 	skipVisitor();
+	QPoint 	getFirstUnionCellPoint(const int rowNo) const;
+
+	void drawBorder(uoPainter& painter, uorPoint& pt1, uorPoint& pt2) const;
+	void drawBorder(uoPainter& painter, uorRect& rectCell) const;
 
 
-	int 		m_colNo;				///< Номер колонки, к которой ячейка принадлежит.
-	qreal		m_height;		///< Высота ячейки, что-бы не высчитывать формат 100 раз..
+	int 		m_colNo;		///< Номер колонки, к которой ячейка принадлежит.
+	int 		m_rowNo;		///< Номер строки, к которой ячейка принадлежит. (используется в крайних случаях)
+	uorNumber	m_height;		///< Высота ячейки, что-бы не высчитывать формат 100 раз..
 
 
-	uorTextDecor* m_textProp;
-	uorBorderPropBase* m_borderProp;
-	uoCellJoin*		m_ceelJoin;
+	uorTextDecor* 		m_textProp;
+	uorBorderPropBase* 	m_borderProp;
+	uoCellJoin*			m_ceelJoin;
+	QString 			m_textDecode; 	///< Текст расшифровки.
 
+protected:
 	QString 	m_text; 		///< Текст содержащийся в ячейке.
-	QString 	m_textDecode; 	///< Текст расшифровки.
+public:
+	void setText(const QString& text);
+	QString& text();
+
 	uoTextBoundary* 	m_textBoundary;		///< структура содержащая переносы текста.
 	// чисто вспомогательные.
-	qreal 		m_maxRowLen; 	///< длинна самой длинной строки в ячейке....
+	uorNumber 		m_maxRowLen; 	///< длинна самой длинной строки в ячейке....
+
 
 	inline
 	uorBorderPropBase* getBorderProp() {return m_borderProp ? m_borderProp : NULL; }
 
 };
 
+/// Структура для калькуляции ректов объединенных ячеек.
+struct uoCellUnionRect
+{
+	uoCell* m_cell;
+	uorRect 	m_rect;
+	QRect 	m_uRect; ///<координаты объединения
+
+	uoCellUnionRect(uoCell* cell)	: m_cell(cell)	{
+		m_uRect.setTop(cell->m_rowNo);
+		m_uRect.setLeft(cell->m_colNo);
+		if (cell->m_ceelJoin){
+			m_uRect.setHeight(cell->m_ceelJoin->m_row);
+			m_uRect.setWidth(cell->m_ceelJoin->m_col);
+		}
+	};
+};
+
 
 
 /// Строка документа. Содержит набор ячеек, в свою очередь содержащих данные.
+//class uoRow : public uoEnumeratedItem, public uoNumVector2<uoCell>
 class uoRow : public uoEnumeratedItem, public uoNumVector<uoCell>
 {
 	public:
 		uoRow(int nom);
 		virtual ~uoRow();
 	public:
-		void setNumber(int nm)	{	m_number = nm;	}
+		void setNumber(const int& nm)	{	m_number = nm;	}
 		int  number() 			{	return m_number;	}
 
+		void copyFrom(uoRow* fromSrc, uoReportDoc* docThere, uoReportDoc* docSrc, int startColNo = -1, int endColNo = -1,int rowOffset = 0, int colOffset = 0);
+
 		///\todo Необходимы поисковые механизмы, найти и получить/установить значение свойства.
-		uoCell* getCell(int posX, bool needCreate = false);
+		uoCell* getCell(int colNo, bool needCreate = false);
 		virtual void onDeleteItem(uoCell* delItem);
 		virtual void onCreateItem(uoCell* crItem);
-		void saveItems(uoReportLoader* loader);
+		void saveItems(uoReportLoader* loader, uoReportSelection* selection = 0);
 
 		QList<int> getItemNumList();
 
@@ -642,9 +716,16 @@ class uoRow : public uoEnumeratedItem, public uoNumVector<uoCell>
 			m_lengthMaxToLeft - для ячеек, выровненных по правому краю.
 		*/
 
-		qreal m_lengthMaxToRight;
-		qreal m_lengthMaxToLeft;
-		qreal m_lengthFromCell;
+		uorNumber m_lengthMaxToRight;
+		uorNumber m_lengthMaxToLeft;
+		uorNumber m_lengthFromCell;
+		/**
+			Максимальный выступ текста за пределы ячейки, нужен для расчета
+			скоко цеплять колонок для полной прорисовки строки, начало которой
+			в соседних ячейках.
+		*/
+		uorNumber 	m_lengthMaxOver;
+		int 		m_unionCount; ///< количество уникальных объединений.
 
 	private:
 		int m_number;
@@ -652,6 +733,7 @@ class uoRow : public uoEnumeratedItem, public uoNumVector<uoCell>
 
 
 /// Коллекция строк документа
+//class uoRowsDoc : public uoNumVector2<uoRow>
 class uoRowsDoc : public uoNumVector<uoRow>
 {
 	public:
@@ -660,15 +742,25 @@ class uoRowsDoc : public uoNumVector<uoRow>
 		virtual void onDeleteItem(uoRow* delItem);
 		virtual void onCreateItem(uoRow* crItem);
 
+		void copyFrom(uoRowsDoc* fromSrc, int startRowNo = -1, int endRowNo = -1, int startColNo = -1, int endColNo = -1, int rowOffset = 0, int colOffset = 0);
+		void copyFrom(uoRowsDoc* fromSrc, uoRptHeaderType& rht, QList<int> listRc, int rowOffset = 0, int colOffset = 0);
+
 		void setDoc(uoReportDoc* doc){m_doc = doc;};
 		uoRow* getRow(int nmRow, bool needCreate = false);
-		uoCell* getCell(int nmRow, int nmCol,bool needCreate = false);
+		uoCell* getCell(const int& nmRow, const int& nmCol, bool needCreate = false);
 
-		QString getText(const int posY, const int posX);
-		void saveItems(uoReportLoader* loader);
+		QString getText(const int rowNo, const int colNo, uorCellTextType type = uorCTT_Text);
+		bool setText(const int rowNo, const int colNo, const QString& text, uorCellTextType type = uorCTT_Text);
 
-		bool setText(const int posY, const int posX, QString text);
+		void saveItems(uoReportLoader* loader, uoReportSelection* selection = NULL);
+
 		uoReportDoc* m_doc;
+
+		// оптимизадница...
+	private:
+		uoRow* m_lastFRow;
+		int m_lastFRowNo;
+		void clearLastRow();
 };
 
 

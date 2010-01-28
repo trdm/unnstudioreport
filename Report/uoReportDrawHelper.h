@@ -11,12 +11,18 @@
 #include <QtGlobal>
 #include <QtGui>
 #include "uoReport.h"
+#include "uoPainter.h"
+
+#ifdef Q_OS_WIN
+	#include <windows.h>
+#endif
+
 
 class uoReportDoc;
 class QApplication;
 struct uorReportAreaBase;
 struct 	uoCell;
-class 	QRectF;
+class 	uorRect;
 
 
 namespace uoReport {
@@ -40,35 +46,46 @@ class uoReportDrawHelper
 
 	private:
 		uoReportDoc* m_doc;
-		qreal m_scaleFactor;	///< Положительный соэффициент масштаба виджета, если он > 0, тогда виджет крупнее, если меньше, виджет мельче.
+		uorNumber m_scaleFactor;	///< Положительный соэффициент масштаба виджета, если он > 0, тогда виджет крупнее, если меньше, виджет мельче.
+		bool m_directDraw;			///< Использовать ли прямое рисование (на HDC)
+#ifdef Q_OS_WIN
+		HDC m_hdc;
+		HRGN m_hrgn;
+		bool m_rgnCreated;
+#endif
 
 	public:
 		inline
 		uoReportDoc* getDoc() {return m_doc;}
 		void setDoc(uoReportDoc* rptDoc);
+		void setDirectDraw(const bool& direct) {m_directDraw = direct;};
 
 		inline
-		void setScaleFactor(qreal sFactor){ m_scaleFactor = sFactor;}
+		void setScaleFactor(uorNumber sFactor){ m_scaleFactor = sFactor;}
 		void initDrawInstruments(QWidget* wi = NULL, QPalette* pal = NULL);
 
-		void drawCell(QPainter& painter, uoCell* cell, QRectF& rectCell, uoReportDoc* doc, bool isSell, uorReportAreaBase& drArea);
-		void drawDataArea(QPainter& painter, uorReportAreaBase& drArea);
-		void drawFields(QPainter& painter);
+		void drawCell(uoPainter& painter, uoCell* cell, uorRect& rectCell, uoReportDoc* doc, const bool& isSell, uorReportAreaBase& drArea);
+		void drawDataAreaSelection(uoPainter& painter, uorReportAreaBase& drArea);
+		void drawDataArea(uoPainter& painter, uorReportAreaBase& drArea);
+		void drawFields(uoPainter& painter);
 		inline void setCurCell(QPoint cureCell) {m_curentCell = cureCell;}
 
-		void drawTest(QPainter& painter, qreal offset = 0.0);
+	private:
+		void drawText(uoPainter& painter, uorRect& rectCpyCell, QString& text, uoCell* cell);
+		void clipRect(uoPainter& painter, uorRect& rect); //m_rgnCreated
 
 
 	public:
 		QBrush m_brushWindow;
 		QBrush m_brushBase;
+		QBrush m_brushDarkPhone;
 		QBrush m_brushBlack;
 		QBrush m_brushSelection;
 		QPen m_penText;
 		QPen m_penNoPen;
 		QPen m_penWhiteText;
 		QPen m_penGrey;
-		QRectF m_rectCurCell;
+		uorRect m_rectCurCell;
 
 		bool m_showInvisiblChar;
 		bool m_showGrid;

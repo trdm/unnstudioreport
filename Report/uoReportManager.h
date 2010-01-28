@@ -10,8 +10,12 @@
 
 class QPrinter;
 class QPrintDialog;
+class QProgressDialog;
+class QWidget;
 
 namespace uoReport {
+
+///\todo отладить в винде, где не установлены принтера, что-бы ругани небыло...
 
 class uoReportManager
 {
@@ -27,8 +31,12 @@ class uoReportManager
 			return m_self;
 		}
 		QPrinter *printer();
+		QProgressDialog* progressDlg();
+		void setMainWidget(QWidget* wi);
 	protected:
-		QPrinter* 		m_printer;
+		QPrinter* 			m_printer;
+		QProgressDialog* 	m_progressDlg;
+		QWidget*			m_mainWidget;
 
 };
 

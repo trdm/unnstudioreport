@@ -159,13 +159,16 @@
         </size>
        </property>
        <property name="inputMask" >
-        <string>ddd; </string>
+        <string>99999; </string>
        </property>
        <property name="text" >
         <string/>
        </property>
        <property name="maxLength" >
-        <number>3</number>
+        <number>5</number>
+       </property>
+       <property name="cursorPosition" >
+        <number>0</number>
        </property>
       </widget>
      </item>

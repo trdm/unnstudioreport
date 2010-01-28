@@ -1,6 +1,7 @@
 #include <qapplication.h>
 #include "common/codecs.h"
 #include <QDialog>
+#include <QProgressDialog>
 #include <QGridLayout>
 #include <QSplitter>
 #include "common/debug.h"
@@ -9,9 +10,12 @@
 #include "Report/uoReportDoc.h"
 #include "Report/uoSpanTree.h"
 #include "Report/uoReportDocBody.h"
-#include "Report/uoNumVector.h"
+//#include "Report/uoNumVector.h"
+#include "Report/uoNumVector2.h"
 #include "Report/uoReportView.h"
+#include "Report/uoReportManager.h"
 
+///\todo посмотреть: QTextItem/QTextItemInt
 
 
 int main(int argc, char *argv[])
@@ -24,11 +28,26 @@ int main(int argc, char *argv[])
     InstallMsgHandler("debug_log.txt");    /// теперь можно тестировать...
     if (false) {
 		uoReport::uoRunTest();
+		uoReportTest rTest;
+		rTest.testuoNumVector2();
+		rTest.testuoNumVector3();
 		return -1;
 	}
 
-	uoReportTest rTest;
-	rTest.exploreQPrinter();
+
+	if (false) {
+
+		QList<int> listInt;
+		listInt << 1 << 2 << 10 << 11 << 12 << 14;
+		QList<QPoint*> listP;
+		if (uorRangesExtract(listInt, listP )){
+			QPoint* point;
+			foreach ( point, listP )
+				qDebug() << *point;
+		}
+
+		uorRangesClear(listP);
+	}
 
 
 
@@ -41,14 +60,16 @@ int main(int argc, char *argv[])
 
 	gridLayout = new QGridLayout();
 	gridLayout->setSpacing(0);
-	gridLayout->setHorizontalSpacing(0);
-	gridLayout->setContentsMargins(0, 0, 0, 0);
+#if (QT_VERSION > 0x040201)
+		gridLayout->setHorizontalSpacing(0);
+		gridLayout->setContentsMargins(0, 0, 0, 0);
+#endif
 
 	m_Dlg.setLayout(gridLayout);
 	if (true) {
 		gridLayout->setSpacing(0);
-		gridLayout->setHorizontalSpacing(0);
-		gridLayout->setContentsMargins(0, 0, 0, 0);
+//		gridLayout->setHorizontalSpacing(0);
+//		gridLayout->setContentsMargins(0, 0, 0, 0);
 		// немножко протестируем....
 		m_GR = new uoReport::uoReportView(&m_Dlg);
 		doc = m_GR->getControl()->getDoc();
@@ -60,16 +81,14 @@ int main(int argc, char *argv[])
 		gridLayout->addWidget(spliter);
 		m_GR = new uoReport::uoReportView(spliter);
 		doc = m_GR->getControl()->getDoc();
-		doc->m_ident = 150;
 		m_GR_2 = new uoReport::uoReportView(spliter);
 		m_GR_2->getControl()->setDoc(doc);
 
 	}
 
-
+//	uoReport::uoReportManager::instance()->setMainWidget(&m_Dlg);
     m_Dlg.resize(800,700);
     m_Dlg.show();
-
 
     if (true)
     {
@@ -93,11 +112,11 @@ int main(int argc, char *argv[])
 			doc->addSection(12,12, uoReport::uorRhtRowsHeader,"third3");
 			doc->addSection(12,12, uoReport::uorRhtRowsHeader,"third4");
 
-			doc->setScaleSize(uoReport::uorRhtColumnHeader, 2, 120.5);
-			doc->setScaleSize(uoReport::uorRhtColumnHeader, 9, 0.0);
-			doc->setScaleSize(uoReport::uorRhtRowsHeader, 9, 3.0);
-			doc->setScaleSize(uoReport::uorRhtRowsHeader, 1, 45.3);
-			doc->setScaleSize(uoReport::uorRhtRowsHeader, 35, 45.3);
+			doc->setScaleSize(uoReport::uorRhtColumnHeader, 2, (uorNumber)120.5);
+			doc->setScaleSize(uoReport::uorRhtColumnHeader, 9, (uorNumber)0.0);
+			doc->setScaleSize(uoReport::uorRhtRowsHeader, 9, (uorNumber)3.0);
+			doc->setScaleSize(uoReport::uorRhtRowsHeader, 1, (uorNumber)45.3);
+			doc->setScaleSize(uoReport::uorRhtRowsHeader, 35, (uorNumber)45.3);
 		}
 		if (false)
 		    doc->setCellText(2,2,"Behind the scenes, QString uses implicit sharing (copy-on-write) to reduce memory usage and to avoid the needless copying of data. This also helps reduce the inherent overhead of storing 16-bit characters instead of 8-bit characters. ");
@@ -108,6 +127,8 @@ int main(int argc, char *argv[])
 				QChar ch = '\t';
 				QStringList list;
 				QString line, linePart;
+				bool oldCC = doc->enableCollectChanges(false);
+				bool oldDF = doc->enableFormating(false);
 				int row = 1;
 				while (!in.atEnd()) {
 					QString line = in.readLine();
@@ -120,6 +141,8 @@ int main(int argc, char *argv[])
 
 					++row;
 				}
+				doc->enableCollectChanges(oldCC);
+				doc->enableFormating(oldDF);
 			}
 		}
 		if (false) {

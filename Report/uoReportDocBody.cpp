@@ -9,14 +9,16 @@
 #include "QDebug"
 #include "QtGui"
 #include "uoReportDocBody.h"
+#include "uoReportUndo.h"
+
 
 namespace uoReport {
 
 
-uoHeaderScale::uoHeaderScale()
-	: uoNumVector<uoRptNumLine>()
+//uoHeaderScale::uoHeaderScale()	: uoNumVector2<uoRptNumLine>()
+uoHeaderScale::uoHeaderScale()	: uoNumVector<uoRptNumLine>()
 {
-	_def_size = -1;
+	m_def_size = -1;
 }
 
 uoHeaderScale::~uoHeaderScale(){
@@ -24,11 +26,15 @@ uoHeaderScale::~uoHeaderScale(){
 }
 
 /// Получение признака спрятанности итема
-bool uoHeaderScale::getHide(int nom ){
+bool uoHeaderScale::getHide(const int& nom ){
+	if (getMaxNo() == 0)
+		return false;
+	if (m_map->isEmpty() || m_map->count() < nom)
+		return false;
 	if (!findItem(nom)){
 		return false;
 	} else {
-		uoRptNumLine* item = *_itSave;
+		uoRptNumLine* item = m_map->at(nom-1);
 		if (item) {
 			return item->hiden();
 		}
@@ -37,11 +43,11 @@ bool uoHeaderScale::getHide(int nom ){
 }
 
 /// Установка признака спрятанности итема
-void uoHeaderScale::setHide(int nom, bool hide){
+void uoHeaderScale::setHide(const int& nom, const bool& hide){
 	if (!findItem(nom, true)){
 		return;
 	} else {
-		uoRptNumLine* item = *_itSave;
+		uoRptNumLine* item = m_map->at(nom-1);
 		if (item) {
 			item->setHiden(hide);
 			return;
@@ -51,12 +57,15 @@ void uoHeaderScale::setHide(int nom, bool hide){
 }
 
 /// Получение свойства фиксированности размера строки
-bool uoHeaderScale::getFixed(int nom )
+bool uoHeaderScale::getFixed(const int& nom )
 {
+	if (getMaxNo() == 0)
+		return false;
+
 	if (!findItem(nom)){
 		return false;
 	} else {
-		uoRptNumLine* item = *_itSave;
+		uoRptNumLine* item = m_map->at(nom-1);
 		if (item) {
 			return item->fixed();
 		}
@@ -66,11 +75,11 @@ bool uoHeaderScale::getFixed(int nom )
 }
 
 /// Установка/снятие свойства фиксированности
-void uoHeaderScale::setFixed(int nom, bool fix){
+void uoHeaderScale::setFixed(const int& nom, const bool& fix){
 	if (!findItem(nom, true)){
 		return;
 	} else {
-		uoRptNumLine* item = *_itSave;
+		uoRptNumLine* item = m_map->at(nom-1);
 		if (item) {
 			item->setFixed(fix);
 			return;
@@ -79,17 +88,66 @@ void uoHeaderScale::setFixed(int nom, bool fix){
 	return;
 }
 
+/// Скопировать из другого.
+void uoHeaderScale::copyFrom(uoHeaderScale* fromSrc, int startNo /*= -1*/, int endNo /*= -1*/, int colOffset )
+{
+	if (fromSrc->isEmpty())
+		return;
+	int startNoSrc = fromSrc->getMinNo(), endNoSrc = fromSrc->getMaxNo();
+	uoRptNumLine* item = NULL;
+
+	for (int i = startNoSrc; i <= endNoSrc; i++){
+		if (startNo == -1 && endNo == -1) {
+		} else if (i >= startNo && i <= endNo ){
+		} else {
+			continue;
+		}
+
+		item = fromSrc->getItem(i, false);
+		if (item){
+			setSize(i+colOffset, item->size());
+			setHide(i+colOffset, item->hiden());
+			setFixed(i+colOffset, item->fixed());
+		}
+	}
+}
+
+bool uoHeaderScale::copyFrom(uoHeaderScale* fromSrc, QList<int>& listRc, int colOffset)
+{
+	bool retVal = true;
+	if (listRc.isEmpty())
+		return true;
+	QList<QPoint*> listTo;
+	if (uorRangesExtract(listRc,listTo)){
+		QPoint* point;
+		foreach ( point, listTo )
+		{
+			copyFrom(fromSrc, point->x(), point->y(), colOffset);
+		}
+		uorRangesClear(listTo);
+	}
+	return retVal;
+}
+
 /// сохраняем итемы...
-bool uoHeaderScale::onStoreItems(uoReportLoader* loader){
+bool uoHeaderScale::onStoreItems(uoReportLoader* loader, QList<int>* list){
 
 	detachIter();
-	if (_list->isEmpty())
+	if (m_map->isEmpty())
 		return true;
 	uoRptNumLine* item = NULL;
-	QLinkedList<uoRptNumLine*>::iterator itLst = _list->begin();
-	while(itLst != _list->end()) {
+	//QMap<int, uoRptNumLine*>::iterator itLst = m_map->begin();
+	QVector<uoRptNumLine*>::iterator itLst = m_map->begin();
+	while(itLst != m_map->end()) {
 		item = *itLst;
-		loader->saveScaleItem(item);
+		if (item) {
+			if (list){
+				if (list->contains(item->number()))
+					loader->saveScaleItem(item);
+			} else {
+				loader->saveScaleItem(item);
+			}
+		}
 		itLst++;
 	}
 	return true;
@@ -100,12 +158,17 @@ bool uoHeaderScale::onStoreItems(uoReportLoader* loader){
 void uoHeaderScale::printToDebug()
 {
 	detachIter();
-	if (_list->isEmpty())
+	if (m_map->isEmpty())
 		return;
 	uoRptNumLine* item = NULL;
-	QLinkedList<uoRptNumLine*>::iterator itLst = _list->begin();
-	while(itLst != _list->end()) {
+//	QLinkedList<uoRptNumLine*>::iterator itLst = m_map->begin();
+	//QMap<int, uoRptNumLine*>::iterator itLst = m_map->begin();
+	QVector<uoRptNumLine*>::iterator itLst = m_map->begin();
+	while(itLst != m_map->end()) {
 		item = *itLst;
+
+		if (item);
+
 		itLst++;
 	}
 }
@@ -114,10 +177,10 @@ void uoHeaderScale::test()
 {
 	qDebug() << "uoHeaderScale::test";
 	setDefSize(200);
-	setSize(1, 0.0);
-	setSize(2, 0.0);
-	setSize(2, 120.5);
-	setSize(9, 120.5);
+	setSize(1, (uorNumber)0.0);
+	setSize(2, (uorNumber)0.0);
+	setSize(2, (uorNumber)120.5);
+	setSize(9, (uorNumber)120.5);
 	printToDebug();
 	getSize(4);
 	setHide(4, true);
@@ -127,16 +190,16 @@ void uoHeaderScale::test()
 	printToDebug();
 	clear();
 	qDebug() << "uoHeaderScale::test-2";
-	setSize(1, 0.0);
-	setSize(9, 120.5);
+	setSize(1, (uorNumber)0.0);
+	setSize(9, (uorNumber)120.5);
 	getSize(2);
 	setHide(2, true);
 	printToDebug();
 
 	clear();
 	qDebug() << "uoHeaderScale::test-3";
-	setSize(9, 3.0);
-	setSize(1, 45.3);
+	setSize(9, (uorNumber)3.0);
+	setSize(1, (uorNumber)45.3);
 	printToDebug();
 	int i = 0;
 	for (i = 9; i<=20; i++){
@@ -151,21 +214,23 @@ void uoHeaderScale::test()
 
 
 /// Получить размер итема, а если итем не существует, тогда его дефолтный размер..
-qreal uoHeaderScale::getSize(int nom, bool isDef){
+uorNumber uoHeaderScale::getSize(const int& nom, bool isDef){
+	if (m_map->size() == 0)
+		return m_def_size;
 	if (findItem(nom)) {
-		uoRptNumLine* item = *_itSave;
+		uoRptNumLine* item = m_map->at(nom-1);
 		if (item)
 			return item->size(isDef);
 	}
-	return _def_size;
+	return m_def_size;
 }
 
 /// Установить размер итема, а если итем не существует, создать и установить
-bool	uoHeaderScale::setSize(int nom, qreal size, bool isDef){
+bool	uoHeaderScale::setSize(const int& nom, const uorNumber& size, bool isDef){
 	if (!findItem(nom, true)){
 		return false;
 	} else {
-		uoRptNumLine* item = *_itSave;
+		uoRptNumLine* item = m_map->at(nom-1);
 		if (item) {
 			item->setSize(size, isDef);
 			return true;
@@ -178,7 +243,7 @@ bool	uoHeaderScale::setSize(int nom, qreal size, bool isDef){
 void uoHeaderScale::onCreateItem(uoRptNumLine* crItem)
 {
 	if (crItem){
-		crItem->setSize(_def_size);
+		crItem->setSize(m_def_size);
 	}
 }
 
@@ -192,6 +257,7 @@ void uoHeaderScale::onDeleteItem(uoRptNumLine* delItem)
 ///==============uoReportDocFontColl====================
 uoReportDocFontColl::uoReportDocFontColl()
 {
+	m_fCount = 0;
 }
 
 uoReportDocFontColl::~uoReportDocFontColl()
@@ -202,24 +268,27 @@ uoReportDocFontColl::~uoReportDocFontColl()
 /// чистка колекции шрифтов
 void uoReportDocFontColl::clear()
 {
-	while (!_fontList.isEmpty()) {
-		delete _fontList.takeFirst();
+	QFont* font = 0;
+	for (int i = 0; i< _fontList.count(); i++)	{
+		delete _fontList.at(i);
 	}
+	//while (!_fontList.isEmpty()) {		delete _fontList.takeFirst();	}
 	_fontList.clear();
+	m_fCount = 0;
 }
 
 /// Получить фонт для отрисовки
-QFont* uoReportDocFontColl::getFont(int nmFont)
+QFont* uoReportDocFontColl::getFont(const int& nmFont)
 {
-	if (_fontList.isEmpty())
+	if (m_fCount == 0)
 		return NULL;
-	if (_fontList.size() < (nmFont-1))
-		return NULL;
-	return _fontList.at(nmFont);
+	if (nmFont < _fontList.size())
+		return _fontList.at(nmFont);
+	return NULL;
 }
 
 /// чиста поиск.
-int uoReportDocFontColl::findFont(QString fontName)
+int uoReportDocFontColl::findFont(const QString& fontName)
 {
 	int retVal = -1;
 	if (!_fontList.isEmpty()){
@@ -235,7 +304,7 @@ int uoReportDocFontColl::findFont(QString fontName)
 }
 
 /// Добавим фонт.
-int uoReportDocFontColl::addFont(QString fontName)
+int uoReportDocFontColl::addFont(const QString& fontName)
 {
 	int retVal = findFont(fontName);
 	if (retVal == -1){
@@ -243,6 +312,7 @@ int uoReportDocFontColl::addFont(QString fontName)
 		QFont* font = new QFont(fontName);
 		if (font){
 			_fontList.append(font);
+			m_fCount = _fontList.size();
 			retVal = _fontList.size()-1;
 		}
 	}
@@ -250,7 +320,7 @@ int uoReportDocFontColl::addFont(QString fontName)
 }
 
 /// Получить ID фонта. Именно тут "Заводятся" новые фонты
-int uoReportDocFontColl::getFontId(QString fontName)
+int uoReportDocFontColl::getFontId(const QString& fontName)
 {
 	int retVal = findFont(fontName);
 	if (retVal == -1){
@@ -263,9 +333,7 @@ int uoReportDocFontColl::getFontId(QString fontName)
 /// количество зарегистрированный шрифтов.
 int uoReportDocFontColl::countFonts()
 {
-	if (_fontList.isEmpty())
-		return 0;
-	return _fontList.count();
+	return m_fCount;
 }
 
 ///==============uoReportDocFontColl====================
@@ -325,11 +393,15 @@ void uoTextTrPointCash::savePoint(uoTextBoundary* point)
 
 void uoCell::clear()
 {
-
+}
+/// Очистка форматов
+void uoCell::clearFormat(uoReportDoc* doc)
+{
+	Q_ASSERT(false);
 }
 
 /// Взять текст.
-QString uoCell::getText(){
+QString& uoCell::getText(){
 	return m_text;
 }
 
@@ -348,39 +420,59 @@ bool uoCell::provideAllProps(uoReportDoc* doc, bool needCreate /* = false*/)
 	}
 	return false;
 }
+/// Обеспеспечивает структуру для объединения
+bool uoCell::provideJoinProp(uoReportDoc* doc)
+{
+	if (m_ceelJoin)
+		return true;
+	if (doc){
+		m_ceelJoin = doc->getCellJoinStruct();
+		if (m_ceelJoin){
+			return true;
+		}
+	}
+	return false;
+
+}
 
 /// Вернуть текст, разделеленный согласно форматированию символом, специально для печати.
 QString uoCell::getTextWithLineBreak(bool drawInv)
 {
 	QString str;
+	static const QString str2192 = QChar(0x2192);	//--> такая длинная стрелка...
+	static const QString str1 = QString::fromUtf8("¶");
+	static const QString str2 = QString::fromUtf8("•");
+	static const QString str3 = " ";
 	if (m_textProp){
 		QString cellTxt = m_text;
 		QString tmpStr;
-		QString ch = " ";
 
 		if (drawInv) {
-			ch = QString::fromUtf8("¶");
-			cellTxt = cellTxt.replace('\n' ,ch);
+			cellTxt = cellTxt.replace('\n' ,str1);
 
-			ch = QString::fromUtf8("•");
-			cellTxt = cellTxt.replace(' ' ,ch);
+			cellTxt = cellTxt.replace(' ' ,str2);
 
-			ch = QChar(0x2192);	//--> такая длинная стрелка...
-			cellTxt = cellTxt.replace('\t' ,ch);
+			if (m_textProp->m_alignFlags & uoCTF_ContainsTab)
+				cellTxt = cellTxt.replace('\t' ,str2192);
 
 		} else {
-			cellTxt = cellTxt.replace('\n' ,ch);
-			/// Виснет. разобраться...
-//			ch = QString::fromUtf8("    ");			cellTxt = cellTxt.replace('\t' ,ch);
+			if (m_textProp->m_alignFlags & uoCTF_ContainsLineBreak)
+				cellTxt = cellTxt.replace('\n' ,str3);
+
+			if (m_textProp->m_alignFlags & uoCTF_ContainsTab)
+				cellTxt = cellTxt.replace('\t', str3);
 		}
 
 
-		int fullLen = cellTxt.length(), alreadyLen = 0;
+		int fullLen = 0, alreadyLen = 0;
 
 
 		uoTextBoundary* textTPoint = m_textBoundary;
-		if (!textTPoint)
+		if (!textTPoint) {
 			str = cellTxt;
+		} else {
+			fullLen = cellTxt.length();
+		}
 		while(textTPoint && fullLen>0){
 			tmpStr = cellTxt.mid(alreadyLen, textTPoint->_charCount);
 			str.append(tmpStr);
@@ -397,22 +489,57 @@ QString uoCell::getTextWithLineBreak(bool drawInv)
 
 
 /// Установить текст. Надо гарантировать наличие структуры m_textProp;
-void uoCell::setText(QString text, uoReportDoc* doc)
+void uoCell::setText(const QString& text, uoReportDoc* doc)
 {
 	if (provideAllProps(doc, true))
 		m_text = text;
 }
 
-void uoCell::setMaxRowLength(qreal len, uoReportDoc* doc)
+QRect uoCell::getCellJoinRect()
+{
+	QRect retVarRC;
+	if (isUnionHas()){
+		retVarRC = m_ceelJoin->m_cellRect;
+		if (retVarRC.isEmpty() || retVarRC.top() == 0){
+			m_ceelJoin->m_cellRect = QRect(m_colNo,m_rowNo, m_ceelJoin->m_col, m_ceelJoin->m_row);
+			retVarRC = m_ceelJoin->m_cellRect;
+		}
+	}
+	return retVarRC;
+}
+
+void uoCell::setMaxRowLength(const uorNumber& len, uoReportDoc* doc)
 {
 	if (provideAllProps(doc, true))
 		m_maxRowLen = len;
 }
 
-qreal uoCell::getMaxRowLength()
+void uoCell::copyFrom(uoCell* fromSrc, uoReportDoc* doc, uoReportDoc* docSrc, int rowNo)
 {
-	return m_maxRowLen;
+	uoReportUndo* undoManager = doc->getUndoManager();
+	bool collectChanges = doc->isCollectChanges();
+	if (!undoManager){
+		collectChanges = false;
+	}
+
+	QString oldText;
+	if (collectChanges){
+		oldText = fromSrc->getText();
+		undoManager->doTextChange(oldText, rowNo, fromSrc->number());
+	}
+	m_text 		= fromSrc->m_text;
+	m_textDecode = fromSrc->m_textDecode;
+
+	if (m_borderProp)
+		m_borderProp->copyFrom(fromSrc->m_borderProp);
+	if (m_textProp)
+		m_textProp->copyFrom(fromSrc->m_textProp);
+	/**
+		\todo - надо убедиться, что шрифты (наименования есть)
+		ну и цвета скопировать.
+	*/
 }
+
 
 
 /// установить выравнивание текста в ячейке
@@ -451,6 +578,7 @@ int uoCell::getAlignment()
 				break;
 			}
 			default:	{
+				flags |= Qt::TextSingleLine;
 				break;
 			}
 		}
@@ -476,7 +604,7 @@ uoCellTextType	uoCell::getTextType()
 
 uorTextDecor* uoCell::getTextProp(uoReportDoc* doc, bool needCreate)
 {
-	if (!m_textProp)
+	if (m_textProp)
 		return m_textProp;
 	return doc->getDefaultTextProp();
 }
@@ -582,6 +710,7 @@ void uoCell::saveTrPoint(uoTextTrPointCash* cash)
 }
 /**	Возвращает true если ячейка является частью объединения,
 	в зависимости от параметра "basic" = true
+	пс. Кчему тут строка не помню..
 */
 bool uoCell::isPartOfUnion(const int& row, const bool& basic) const
 {
@@ -599,30 +728,131 @@ bool uoCell::isPartOfUnion(const int& row, const bool& basic) const
 	return rewtVal;
 }
 
-void uoCell::drawBorder(QPainter& painter, QPointF& pt1, QPointF& pt2) const
+///	Ячейка задействована в объединении.
+bool uoCell::isUnionHas() const
+{
+	bool rewtVal = false;
+	if (m_ceelJoin){
+		if (m_ceelJoin->m_JoinType != uoCJT_Unknown)
+		{
+			rewtVal = true;
+		}
+	}
+	return rewtVal;
+}
+
+/// Устанавливаем объединение.
+void uoCell::setCellJoin(uoCellJoin* cellJ, uoReportDoc* doc){
+	Q_ASSERT(!m_ceelJoin); /// не должно быть объединено.
+	Q_ASSERT(cellJ);
+	m_ceelJoin = cellJ;
+}
+/// Разрываем объединение, солим старое :)
+uoCellJoin* uoCell::deleteCellJoin()
+{
+	Q_ASSERT(m_ceelJoin); /// не должно быть объединено.
+	uoCellJoin* retVal = m_ceelJoin;
+	m_ceelJoin = 0;
+	return retVal;
+}
+
+/// Какой тип объединения.
+uoCellsJoinType uoCell::joinType() const
+{
+	if (m_ceelJoin)
+		return m_ceelJoin->m_JoinType;
+	return uoCJT_Unknown;
+}
+
+uoCellsJoinType uoCell::unionType() const
+{
+	return joinType();
+}
+/// Это первая ячейка в объединении? Для прорисовки остальные не нужны.
+bool uoCell::isFirstOfUnionCell() const
+{
+	if (m_ceelJoin && (m_ceelJoin->m_JoinType == uoCJT_Normal || m_ceelJoin->m_JoinType == uoCJT_TextToCol))
+		return true;
+	return false;
+}
+
+int uoCell::unionRow() const
+{
+	if (m_ceelJoin && (m_ceelJoin->m_JoinType == uoCJT_Normal || m_ceelJoin->m_JoinType == uoCJT_TextToCol))
+		return m_ceelJoin->m_row;
+	return 0;
+}
+int uoCell::unionCol() const
+{
+	if (m_ceelJoin && (m_ceelJoin->m_JoinType == uoCJT_Normal || m_ceelJoin->m_JoinType == uoCJT_TextToCol))
+		return m_ceelJoin->m_col;
+	return 0;
+}
+
+
+/// Совершенно не нужно обрабатывать ячейки, задействованные как uoCJT_BackPoint в объединении
+bool uoCell::skipVisitor()
+{
+	if (m_ceelJoin){
+		if (m_ceelJoin->m_JoinType == uoCJT_BackPoint)
+			return true;
+		return false;
+	}
+	return false;
+}
+
+QPoint uoCell::getFirstUnionCellPoint(const int rowNo) const
+{
+	QPoint pt = QPoint(m_colNo,rowNo);
+	if (joinType() == uoCJT_BackPoint){
+		pt.setX(m_ceelJoin->m_col);
+		pt.setY(m_ceelJoin->m_row);
+	}
+
+	return pt;
+}
+
+void uoCell::setText(const QString& text)
+{
+	m_text = text;
+	if (m_textProp){
+		m_textProp->m_alignFlags = 0;
+		if (text.contains('\t'))
+			m_textProp->m_alignFlags |= uoCTF_ContainsTab;
+		if (text.contains('\n'))
+			m_textProp->m_alignFlags |= uoCTF_ContainsLineBreak;
+	}
+}
+
+QString& uoCell::text(){
+	return m_text;
+}
+
+
+void uoCell::drawBorder(uoPainter& painter, uorPoint& pt1, uorPoint& pt2) const
 {
 	bool horiz = (pt1.y() == pt2.y()) ? true : false;
 
 	if (horiz){
-		pt1.setY(pt1.y()-0.5);
-		pt2.setY(pt2.y()-0.5);
+		pt1.setY(pt1.y()-(uorNumber)0.5);
+		pt2.setY(pt2.y()-(uorNumber)0.5);
 		painter.drawLine(pt1, pt2);
-		pt1.setY(pt1.y()+1.5);
-		pt2.setY(pt2.y()+1.5);
+		pt1.setY(pt1.y()+(uorNumber)1.5);
+		pt2.setY(pt2.y()+(uorNumber)1.5);
 		painter.drawLine(pt1, pt2);
 	} else {
-		pt1.setX(pt1.x()-0.5);
-		pt2.setX(pt2.x()-0.5);
+		pt1.setX(pt1.x()-(uorNumber)0.5);
+		pt2.setX(pt2.x()-(uorNumber)0.5);
 		painter.drawLine(pt1, pt2);
-		pt1.setX(pt1.x()+1.5);
-		pt2.setX(pt2.x()+1.5);
+		pt1.setX(pt1.x()+(uorNumber)1.5);
+		pt2.setX(pt2.x()+(uorNumber)1.5);
 		painter.drawLine(pt1, pt2);
 	}
 }
 
 
 /// Прорисуем бордюр
-void uoCell::drawBorder(QPainter& painter, QRectF& rectCell) const
+void uoCell::drawBorder(uoPainter& painter, uorRect& rectCell) const
 {
 	if (!m_borderProp)
 		return;
@@ -631,7 +861,7 @@ void uoCell::drawBorder(QPainter& painter, QRectF& rectCell) const
 	newPen.setWidthF(1);
 	Qt::PenStyle pStyle;
 	uoCellBorderType bt;
-	QPointF pt1, pt2;
+	uorPoint pt1, pt2;
 	for (int i=0; i<4; i++)	{
 		bt = m_borderProp->m_bordType[i];
 		if (bt == uoCBT_Unknown)
@@ -724,15 +954,43 @@ uoRow::uoRow(int nom)
 	:m_number(nom)
 {
 	m_cellLast =m_cellFirst = 0;
-	m_lengthMaxToRight = m_lengthMaxToLeft = m_lengthFromCell = 0.0;
+	m_lengthMaxOver = m_lengthMaxToRight = m_lengthMaxToLeft = m_lengthFromCell = uorNumberNull;
+	m_unionCount = 0;
 
 }
 uoRow::~uoRow(){
 }
 
 /// Получить ячейку.
-uoCell* uoRow::getCell(int posX, bool needCreate){
-	return getItem(posX, needCreate);
+uoCell* uoRow::getCell(int colNo, bool needCreate){
+	return getItem(colNo, needCreate);
+}
+
+/// Копирование строки
+//void copyFrom(uoRow* fromSrc, uoReportDoc* docThere, uoReportDoc* docSrc, int startColNo = -1, int endColNo = -1,int rowOffset = 0, int colOffset = 0);
+void uoRow::copyFrom(uoRow* fromSrc, uoReportDoc* docThere, uoReportDoc* docSrc, int startColNo, int endColNo, int rowOffset, int colOffset)
+{
+	if (fromSrc->isEmpty())
+		return;
+	int startNoSrc = fromSrc->getMinNo(), endNoSrc = fromSrc->getMaxNo();
+	int rowNo = fromSrc->number();
+
+	uoCell* cellFrom = NULL;
+	uoCell* cellThere = NULL;
+
+	for (int i = startNoSrc; i <= endNoSrc; i++){
+		if (startColNo == -1 && endColNo == -1) {
+		} else if (i >= startColNo && i <= endColNo ){
+		} else {
+			continue;
+		}
+
+		cellFrom = fromSrc->getItem(i, false);
+		if (cellFrom){
+			cellThere = docThere->getCell(rowNo+rowOffset, i+colOffset , true, true);
+			cellThere->copyFrom(cellFrom, docThere, docSrc, rowNo+rowOffset);
+		}
+	}
 }
 
 /// Функция вызывается после создания нового итема. Возможно пригодится для ундо/редо.
@@ -747,15 +1005,40 @@ void uoRow::onCreateItem(uoCell* crItem){
 }
 
 /// Записываем в файл содержимое строки.
-void uoRow::saveItems(uoReportLoader* loader){
+void uoRow::saveItems(uoReportLoader* loader, uoReportSelection* selection){
 	detachIter();
-	if (_list->isEmpty())
+	if (m_map->isEmpty())
 		return;
+
 	uoCell* item = NULL;
-	QLinkedList<uoCell*>::iterator itLst = _list->begin();
-	while(itLst != _list->end()) {
+
+	uorSelectionType selMode = uoRst_Unknown;
+
+	bool saveThisCell = true;
+
+	if (selection)
+		selMode = selection->selectionType();
+
+	//QMap<int, uoCell*>::iterator itLst = m_map->begin(); // uoNumVector
+	QVector<uoCell*>::iterator itLst = m_map->begin(); // uoNumVector2
+	while(itLst != m_map->end()) {
 		item = *itLst;
-		loader->saveCell(item);
+		saveThisCell = true;
+		if (selection) {
+			saveThisCell = false;
+
+			if (selMode == uoRst_Column || selMode == uoRst_Columns){
+				saveThisCell = selection->isColSelect(item->number());
+			} else if (selMode == uoRst_Document) {
+				saveThisCell = true;
+			} else if (selMode == uoRst_Unknown) {
+				saveThisCell = selection->isCurrentCell(number(), item->number());;
+			} else {
+				saveThisCell = selection->isCellSelect(number(), item->number());
+			}
+		}
+		if (saveThisCell && item)
+			loader->saveCell(item);
 		itLst++;
 	}
 }
@@ -764,82 +1047,198 @@ void uoRow::saveItems(uoReportLoader* loader){
 QList<int> uoRow::getItemNumList()
 {
 	QList<int> listNo;
-	if (_list->isEmpty())
+	if (m_map->isEmpty())
 		return listNo;
 	uoCell* item = NULL;
-	QLinkedList<uoCell*>::iterator itLst = _list->begin();
-	while(itLst != _list->end()) {
+	//QMap<int, uoCell*>::iterator itLst = m_map->begin(); // uoNumVector2
+	QVector<uoCell*>::iterator itLst = m_map->begin(); // uoNumVector
+	while(itLst != m_map->end()) {
 		item = *itLst;
-		listNo.append(item->number());
+		if (item)
+			listNo.append(item->number());
 		itLst++;
 	}
 	return listNo;
 }
 
 /// uoRowsDoc==========================================
-uoRowsDoc::uoRowsDoc(): uoNumVector<uoRow>()
-{
+//uoRowsDoc::uoRowsDoc(): uoNumVector2<uoRow>(){
+uoRowsDoc::uoRowsDoc(): uoNumVector<uoRow>(){
+	clearLastRow();
 }
 uoRowsDoc::~uoRowsDoc(){
-	//clear(); // а надо тут вызывать??????
+	clearLastRow();
 }
-
+void uoRowsDoc::clearLastRow()
+{
+	m_lastFRow = 0;
+	m_lastFRowNo = 0;
+}
 void uoRowsDoc::onDeleteItem(uoRow* delItem)
 {
 	if(delItem)
 		delItem->clear();
+	clearLastRow();
 }
 void uoRowsDoc::onCreateItem(uoRow* crItem){
+	clearLastRow();
 }
 
 /// Найти ячейку, если она существует, и оздать в случае необходимости (параметр needCreate).
-uoCell* uoRowsDoc::getCell(int posY, int posX, bool needCreate){
-	uoRow* row = getItem(posY, needCreate);
+uoCell* uoRowsDoc::getCell(const int& rowNo, const int& colNo, bool needCreate){
+	uoRow* row = 0;
+	if (m_lastFRowNo != 0 && m_lastFRowNo == rowNo){
+		row = m_lastFRow;
+		m_lastFRowNo = rowNo;
+	} else {
+		row = getItem(rowNo, needCreate);
+		m_lastFRow = row;
+	}
+
 	if (row) {
-		return row->getItem(posX, needCreate);
+		uoCell* cell = row->getItem(colNo, needCreate);
+		if (cell)
+			cell->m_rowNo = rowNo;
+		return cell;
 	}
 	return NULL;
 }
 
 
 /// Получить текст ячейки
-QString uoRowsDoc::getText(int posY, int posX){
+QString uoRowsDoc::getText(int rowNo, int colNo, uorCellTextType type /*= uorCTT_Text*/){
 	QString retVal;
 
-	uoCell* cell = getCell(posY, posX, false);
+	uoCell* cell = getCell(rowNo, colNo, false);
 	if (cell){
-		retVal = cell->getText();
+		if (type == uorCTT_Text) {
+			retVal = cell->getText();
+		} else if (type == uorCTT_Decode) {
+			retVal = cell->m_textDecode;
+		}
 	}
 	return retVal;
 }
 
 /// Установить текст в ячейку.
-bool uoRowsDoc::setText(const int posY, const int posX, QString text){
+bool uoRowsDoc::setText(const int rowNo, const int colNo, const QString& text, uorCellTextType type /*= uorCTT_Text*/){
 	bool isFind = false;
 
-	uoCell* cell = getCell(posY, posX, true);
+	uoCell* cell = getCell(rowNo, colNo, true);
 	if (cell){
-		cell->setText(text, m_doc);
+		if (type == uorCTT_Text){
+			cell->setText(text, m_doc);
+		} else if (type == uorCTT_Decode){
+			cell->m_textDecode = text;
+		}
+
 		isFind = true;
 	}
 	return isFind;
 }
 
+/// Копирование строк из другого документа...
+void uoRowsDoc::copyFrom(uoRowsDoc* fromSrc, int startRowNo, int endRowNo, int startColNo, int endColNo, int rowOffset, int colOffset){
+
+	if (fromSrc->isEmpty())
+		return;
+	int startNoSrc = fromSrc->getMinNo(), endNoSrc = fromSrc->getMaxNo();
+//	int startColNoSrc = -1, endColNoSrc = -1;
+
+	uoRow* row = NULL;
+	uoRow* rowThere = NULL;
+
+	uoReportDoc* docThere = m_doc;
+	uoReportDoc* docSrc = fromSrc->m_doc;
+
+	for (int i = startNoSrc; i <= endNoSrc; i++){
+		if (startRowNo == -1 && endRowNo == -1) {
+		} else if (i >= startRowNo && i <= endRowNo ){
+		} else {
+			continue;
+		}
+
+		row = fromSrc->getItem(i, false);
+		if (row){
+			rowThere = getRow(i+rowOffset, true);
+			if (rowThere){
+				rowThere->copyFrom(row, docThere, docSrc, startColNo, endColNo,rowOffset ,colOffset);
+			}
+		}
+	}
+}
+
+void uoRowsDoc::copyFrom(uoRowsDoc* fromSrc, uoRptHeaderType& rht, QList<int> listRc, int rowOffset, int colOffset)
+{
+	if (listRc.isEmpty())
+		return;
+
+	QList<QPoint*> listTo;
+	if (uorRangesExtract(listRc,listTo)){
+		QPoint* point;
+		foreach ( point, listTo )
+		{
+			if (rht == uorRhtColumnHeader){
+				copyFrom(fromSrc,-1,-1, point->x(), point->y(), rowOffset, colOffset);
+			} else if (rht == uorRhtRowsHeader){
+				copyFrom(fromSrc, point->x(), point->y(),-1,-1, rowOffset, colOffset);
+			}
+		}
+		uorRangesClear(listTo);
+	}
+}
+
 /// Сохранение строк документа.
-void uoRowsDoc::saveItems(uoReportLoader* loader)
+void uoRowsDoc::saveItems(uoReportLoader* loader, uoReportSelection* selection)
 {
 
 	detachIter();
-	if (_list->isEmpty())
+	if (m_map->isEmpty())
 		return;
+	bool saveThisRow = true;
+
+	uorSelectionType selMode = uoRst_Unknown;
+
+	QRect sbRect; // если выделение миксированное, то нет смысла сливать туда все троки.
+
+	if (selection) {
+		selMode = selection->selectionType();
+		if (selMode == uoRst_Cell || selMode == uoRst_Cells || selMode == uoRst_Mixed){
+ 			sbRect = selection->getSelectionBound();
+		} else if (selMode == uoRst_Unknown){
+			sbRect = QRect(selection->currentCell(), selection->currentCell());
+		}
+	}
+
+	int rowNum = -1;
+
 	uoRow* item = NULL;
-	QLinkedList<uoRow*>::iterator itLst = _list->begin();
-	while(itLst != _list->end()) {
+//	QMap<int,uoRow*>::iterator itLst = m_map->begin(); //uoNumVector2
+	QVector<uoRow*>::iterator itLst = m_map->begin(); // uoNumVector
+	while(itLst != m_map->end()) {
 		item = *itLst;
-//		loader->saveRowItemStart(item->number(), item->getCountItem());
-		loader->saveRowItemStart(item);
-		item->saveItems(loader);
-		loader->saveRowItemEnd();
+		if (item) {
+			// может быть пустым...
+			rowNum = item->number();
+			saveThisRow = true;
+			if (selection){
+				if (selMode == uoRst_Row || selMode == uoRst_Rows)
+				{
+					saveThisRow = selection->isRowSelect(rowNum);
+				} else 	if (selMode == uoRst_Cell || selMode == uoRst_Cells || selMode == uoRst_Mixed || selMode == uoRst_Unknown){
+					saveThisRow = false;
+					if (sbRect.top()<= rowNum && rowNum <=sbRect.bottom())
+						saveThisRow = true;
+				}
+
+
+			}
+			if (saveThisRow) {
+				loader->saveRowItemStart(item);
+				item->saveItems(loader, selection);
+				loader->saveRowItemEnd();
+			}
+		}
 		itLst++;
 	}
 }

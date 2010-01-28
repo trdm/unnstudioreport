@@ -20,28 +20,33 @@
 #include "uorPagePrintSetings.h"
 #include "uoReportManager.h"
 #include "uoReportDrawHelper.h"
+#include "uorMimeData.h"
+#include "uoCellMatrix.h"
+#include "uoPainter.h"
 
 namespace uoReport {
 
 
 uoReportDoc::uoReportDoc()
 //	:uoReportDocBody()
-	: m_spanTreeGrH(new uoSpanTree)
-	, m_spanTreeGrV(new uoSpanTree)
-	, m_spanTreeSctH(new uoSpanTree)
-	, m_spanTreeSctV(new uoSpanTree)
-	, m_headerV(new uoHeaderScale)
-	, m_headerH(new uoHeaderScale)
+	: m_headerRow(new uoHeaderScale)
+	, m_headerCol(new uoHeaderScale)
 	, m_rows(new uoRowsDoc)
 	, m_TextDecorDoc(0)
 {
+	m_spanTreeGrCol = new uoSpanTree(this, uorStt_Group);
+	m_spanTreeGrRow = new uoSpanTree(this, uorStt_Group);
+	m_spanTreeSctCol = new uoSpanTree(this, uorStt_Section);
+	m_spanTreeSctRow = new uoSpanTree(this, uorStt_Section);
 
-	m_spanTreeSctH->setCanOnlyOne(true);
-	m_spanTreeSctV->setCanOnlyOne(true);
+	m_spanTreeSctCol->setCanOnlyOne(true);
+	m_spanTreeSctRow->setCanOnlyOne(true);
 	m_storeFormat = uoRsf_Unknown;
 	m_pagesSetings = new uorPagePrintSetings;
 	m_fontColl = new uoReportDocFontColl;
 	m_pageList = new uorAresList;
+	m_selection = new uoReportSelection;
+	m_matrixCell = 0;
 
 	m_rows->setDoc(this);
 	initTextDecorDoc();
@@ -49,14 +54,14 @@ uoReportDoc::uoReportDoc()
 
 
 
-	m_headerV->setDefSize(UORPT_SCALE_SIZE_DEF_VERTICAL);
-	m_headerH->setDefSize(UORPT_SCALE_SIZE_DEF_HORIZONTAL);
+	m_headerRow->setDefSize((uorNumber)UORPT_SCALE_SIZE_DEF_VERTICAL);
+	m_headerCol->setDefSize((uorNumber)UORPT_SCALE_SIZE_DEF_HORIZONTAL);
 
 	m_rowCount 	= 0;
 	m_colCount 	= 0;
 
-	m_sizeV_visible = m_sizeV = 0.0;	///< Размер документа по вертикали
-	m_sizeH_visible = m_sizeH = 0.0;	///< Размер документа по горизонтали
+	m_sizeV_visible = m_sizeV = uorNumberNull;	///< Размер документа по вертикали
+	m_sizeH_visible = m_sizeH = uorNumberNull;	///< Размер документа по горизонтали
 	m_freezEvent = 0;
 	m_refCounter = 0;
 	m_defaultFontId = 0;
@@ -70,42 +75,47 @@ uoReportDoc::uoReportDoc()
 		m_cellDefault->provideAllProps(this, true);
 	}
 	m_changes = 0;
-	m_formatStoped = false;
+	m_formatEnable = true;
+	m_saveWithUndoStack = false;
 }
 
 uoReportDoc::~uoReportDoc()
 {
 	clear();
-	delete m_spanTreeGrH;
-	delete m_spanTreeGrV;
-	delete m_spanTreeSctH;
-	delete m_spanTreeSctV;
-	delete m_headerV;
-	delete m_headerH;
+	delete m_spanTreeGrCol;
+	delete m_spanTreeGrRow;
+	delete m_spanTreeSctCol;
+	delete m_spanTreeSctRow;
+	delete m_headerRow;
+	delete m_headerCol;
 	delete m_fontColl;
 	delete m_TextDecorDoc;
 	delete m_cellDefault;
 	delete m_pagesSetings;
+	delete m_selection;
+	if(m_matrixCell) 	delete m_matrixCell;
+
 
 }
 
 /// Очистка секций.
 void uoReportDoc::clear()
 {
-	m_spanTreeGrH->clear();
-	m_spanTreeGrV->clear();
-	m_spanTreeSctH->clear();
-	m_spanTreeSctV->clear();
+	m_spanTreeGrCol->clear();
+	m_spanTreeGrRow->clear();
+	m_spanTreeSctCol->clear();
+	m_spanTreeSctRow->clear();
+	m_selection->clearSelections();
 
 	m_rowCount 	= 0;
 	m_colCount 	= 0;
 	m_pagesSetings->clear();
 
-	m_sizeV_visible = m_sizeV = 0.0;
-	m_sizeH_visible = m_sizeH = 0.0;
+	m_sizeV_visible = m_sizeV = uorNumberNull;
+	m_sizeH_visible = m_sizeH = uorNumberNull;
 	m_fontColl->clear();
-	m_headerV->clear();
-	m_headerH->clear();
+	m_headerRow->clear();
+	m_headerCol->clear();
 	m_rows->clear();
 	m_pointBlock->clear();
 	m_undoManager->clear();
@@ -166,8 +176,8 @@ void uoReportDoc::initTextDecorDoc()
 /// может потребоваться для того, что-бы задизаблить пункты динамического меню
 bool uoReportDoc::possiblyAddGroup(int start, int end, uoRptHeaderType ht)
 {
-	if(ht == uorRhtRowsHeader)	return m_spanTreeGrV->possiblyAddSpan(start, end);
-	else					return m_spanTreeGrH->possiblyAddSpan(start, end);
+	if(ht == uorRhtRowsHeader)	return m_spanTreeGrRow->possiblyAddSpan(start, end);
+	else					return m_spanTreeGrCol->possiblyAddSpan(start, end);
 }
 
 /// добавление группировки в отчет.
@@ -177,10 +187,10 @@ bool uoReportDoc::addGroup(int start, int end, uoRptHeaderType ht, bool folded)
 	uoSpanTree* treeGrp = NULL;
 
 	if(ht == uorRhtRowsHeader) {
-		treeGrp = m_spanTreeGrV;
+		treeGrp = m_spanTreeGrRow;
 		beforeAddRowOrCol(end - m_rowCount, ht);
 	} else if (ht == uorRhtColumnHeader) {
-		treeGrp = m_spanTreeGrH;
+		treeGrp = m_spanTreeGrCol;
 		beforeAddRowOrCol(end - m_colCount, ht);
 	}
 	retVal = treeGrp->addSpan(start, end, folded);
@@ -192,25 +202,25 @@ bool uoReportDoc::addGroup(int start, int end, uoRptHeaderType ht, bool folded)
 int uoReportDoc::getGroupLevel(uoRptHeaderType ht){
 	uoSpanTree* treeGrp = NULL;
 	if(ht == uorRhtRowsHeader)
-		treeGrp = m_spanTreeGrV;
+		treeGrp = m_spanTreeGrRow;
 	else
-		treeGrp = m_spanTreeGrH;
+		treeGrp = m_spanTreeGrCol;
 	return treeGrp->getLevel();
 }
 
 /// Максимальный уровень вложения секций.
 int uoReportDoc::getSectionLevel(uoRptHeaderType ht){
 	uoSpanTree* treeGrp = NULL;
-	if(ht == uorRhtRowsHeader)	treeGrp = m_spanTreeSctV;
-	else					treeGrp = m_spanTreeSctH;
+	if(ht == uorRhtRowsHeader)	treeGrp = m_spanTreeSctRow;
+	else					treeGrp = m_spanTreeSctCol;
 	return treeGrp->getLevel();
 }
 
 /// Свертка/развертка группы.
 void uoReportDoc::doGroupFold(int idGrop, uoRptHeaderType rht, bool fold){
 	uoSpanTree* treeGrp = NULL;
-	if(rht == uorRhtRowsHeader)	treeGrp = m_spanTreeGrV;
-	else					treeGrp = m_spanTreeGrH;
+	if(rht == uorRhtRowsHeader)	treeGrp = m_spanTreeGrRow;
+	else					treeGrp = m_spanTreeGrCol;
 	++m_freezEvent;
 	QList<int>* lineList= treeGrp->onGroupFold(idGrop, fold);
 	if (!lineList)
@@ -267,18 +277,18 @@ void uoReportDoc::setStoreOptions(QString  filePath, uoRptStoreFormat stFormat)	
 const spanList* uoReportDoc::getGroupList(uoRptHeaderType rht, int start, int end)
 {
 	if (rht == uorRhtColumnHeader)
-		return m_spanTreeGrH->getSpanList(start, end, true);
+		return m_spanTreeGrCol->getSpanList(start, end, true);
 	else
-		return m_spanTreeGrV->getSpanList(start, end, true);
+		return m_spanTreeGrRow->getSpanList(start, end, true);
 }
 
 /// Получить список спанов СЕКЦИЙ по диапазону строк/столбцов
 const spanList* uoReportDoc::getSectionList(uoRptHeaderType rht, int start, int end)
 {
 	if (rht == uorRhtColumnHeader)
-		return m_spanTreeSctH->getSpanList(start, end, false);
+		return m_spanTreeSctCol->getSpanList(start, end, false);
 	else
-		return m_spanTreeSctV->getSpanList(start, end, false);
+		return m_spanTreeSctRow->getSpanList(start, end, false);
 }
 
 
@@ -288,40 +298,40 @@ const spanList* uoReportDoc::getSectionList(uoRptHeaderType rht, int start, int 
 bool uoReportDoc::possiblyAddSection(int start, int end, uoRptHeaderType ht)
 {
 	if(ht == uorRhtColumnHeader)
-		return m_spanTreeSctH->possiblyAddSpan(start, end);
+		return m_spanTreeSctCol->possiblyAddSpan(start, end);
 	else
-		return m_spanTreeSctV->possiblyAddSpan(start, end);
+		return m_spanTreeSctRow->possiblyAddSpan(start, end);
 }
 
 /// вставка секции в отчет
 bool uoReportDoc::addSection(int start, int end, uoRptHeaderType ht, QString name)
 {
-	if(ht == uorRhtColumnHeader)	return m_spanTreeSctH->addSpan(start, end, name);
-	else					return m_spanTreeSctV->addSpan(start, end, name);
+	if(ht == uorRhtColumnHeader)	return m_spanTreeSctCol->addSpan(start, end, name);
+	else					return m_spanTreeSctRow->addSpan(start, end, name);
 	++m_changes;
 }
 
 /// Отдать менеджер секций
 uoSpanTree* uoReportDoc::getSectionManager(uoRptHeaderType ht)
 {
-	if(ht == uorRhtColumnHeader)		return m_spanTreeSctH;
-	else if(ht == uorRhtRowsHeader)	return m_spanTreeSctV;
+	if(ht == uorRhtColumnHeader)		return m_spanTreeSctCol;
+	else if(ht == uorRhtRowsHeader)	return m_spanTreeSctRow;
 	return NULL;
 }
 /// Отдать менеджер групп
 uoSpanTree* uoReportDoc::getGroupManager(uoRptHeaderType ht)
 {
-	if(ht == uorRhtColumnHeader)		return m_spanTreeGrH;
-	else if(ht == uorRhtRowsHeader)	return m_spanTreeGrV;
+	if(ht == uorRhtColumnHeader)		return m_spanTreeGrCol;
+	else if(ht == uorRhtRowsHeader)	return m_spanTreeGrRow;
 	return NULL;
 }
 
 
 void uoReportDoc::doDeleteColumns(int itemStart, int count)
 {
-	m_spanTreeSctH->onLinesDelete(itemStart, count);
-	m_spanTreeGrH->onLinesDelete(itemStart, count);
-	m_headerH->deleteItem(itemStart, count);
+	m_spanTreeSctCol->onLinesDelete(itemStart, count);
+	m_spanTreeGrCol->onLinesDelete(itemStart, count);
+	m_headerCol->deleteItem(itemStart, count);
 	uoRow* row = m_rows->getFirst();
 	while(row)
 	{
@@ -336,9 +346,9 @@ void uoReportDoc::doDeleteColumns(int itemStart, int count)
 
 void uoReportDoc::doDeleteRows(int itemStart, int count)
 {
-	m_spanTreeSctV->onLinesDelete(itemStart, count);
-	m_spanTreeGrV->onLinesDelete(itemStart, count);
-	m_headerV->deleteItem(itemStart, count);
+	m_spanTreeSctRow->onLinesDelete(itemStart, count);
+	m_spanTreeGrRow->onLinesDelete(itemStart, count);
+	m_headerRow->deleteItem(itemStart, count);
 	m_rows->deleteItem(itemStart, count);
 	doFormatDoc();
 	emit onDataChange();
@@ -348,9 +358,9 @@ void uoReportDoc::doDeleteRows(int itemStart, int count)
 
 void uoReportDoc::doAddColumns(int itemStart, int count)
 {
-	m_spanTreeSctH->onLinesAdd(itemStart, count);
-	m_spanTreeGrH->onLinesAdd(itemStart, count);
-	m_headerH->addEmptyItems(itemStart, count);
+	m_spanTreeSctCol->onLinesAdd(itemStart, count);
+	m_spanTreeGrCol->onLinesAdd(itemStart, count);
+	m_headerCol->addEmptyItems(itemStart, count);
 	uoRow* row = m_rows->getFirst();
 	while(row)
 	{
@@ -363,26 +373,47 @@ void uoReportDoc::doAddColumns(int itemStart, int count)
 }
 void uoReportDoc::doAddRows(int itemStart, int count)
 {
-	m_spanTreeSctV->onLinesAdd(itemStart, count);
-	m_spanTreeGrV->onLinesAdd(itemStart, count);
-	m_headerV->addEmptyItems(itemStart, count);
+	m_spanTreeSctRow->onLinesAdd(itemStart, count);
+	m_spanTreeGrRow->onLinesAdd(itemStart, count);
+	m_headerRow->addEmptyItems(itemStart, count);
 	m_rows->addEmptyItems(itemStart, count);
 	doFormatDoc();
 	emit onDataChange();
 }
+
+/**
+	Обеспечение работы буфера обмена и перетаскивания.
+*/
+
+uorMimeData* uoReportDoc::createMimeData(uoReportSelection* selection)
+{
+	uorMimeData* data = new uorMimeData(this, selection);
+	uoReportLoader* loader = uoReportLoader::getLoader(uoRsf_XML_Mime);
+	QString allText;
+	if (loader){
+		flush(loader, selection);
+		allText = loader->readAll();
+	}
+
+	delete loader;
+	return data;
+}
+
 
 
 /** Сброс документа на диск после инициализации лоадера.
 	использую для обхода необходимости писать каждый раз
 	деинициализацию лоадера при неудаче в выгрузке...
 */
-bool uoReportDoc::flush(uoReportLoader* loader){
+bool uoReportDoc::flush(uoReportLoader* loader, uoReportSelection* selection){
 
 	bool retVal = false;
 
 	int cntItem 	= 0;
+	int cntItem2 	= 0;
 	int i 			= 0;
 	int typeHeader 	= 0;
+//	bool store 		= false;
 
 	uoLineSpan* spn 	= NULL;
 	uoSpanTree* curTree = NULL;
@@ -395,31 +426,46 @@ bool uoReportDoc::flush(uoReportLoader* loader){
 	// ---------------выгрузка группировок --------------
 	for (typeHeader = 1; typeHeader<=2; typeHeader++) {
 		if(typeHeader == 1){
-			curTree	= m_spanTreeGrH;
+			curTree	= m_spanTreeGrCol;
 			curHeaderType = uorRhtColumnHeader;
 		} else {
-			curTree	= m_spanTreeGrV;
+			curTree	= m_spanTreeGrRow;
 			curHeaderType = uorRhtRowsHeader;
 		}
 
 
 		cntItem = curTree->getSize();
 		if (cntItem > 0) {
-			retVal = loader->saveGroupsHeaderStart(cntItem, curHeaderType);
-			if (!retVal) break;
-
 			const spanList* spnList = curTree->getSpanList();
+			spanList spnList2;
+			cntItem2 = 0;
 			for (i = 0; i<cntItem; i++){
 				spn = spnList->at(i);
-				retVal = loader->saveGroupsItem(spn);
+				if (selection){
+					if (selection->isSpanFullSeleced(spn, curHeaderType)){
+						spnList2.append(spn);
+						cntItem2 += 1;
+					}
+				} else {
+					spnList2.append(spn);
+					cntItem2 += 1;
+				}
+			}
+			if (cntItem2 > 0){
+
+				retVal = loader->saveGroupsHeaderStart(cntItem2, curHeaderType);
+				if (!retVal) break;
+				for (i = 0; i<cntItem2; i++){
+					spn = spnList2.at(i);
+					retVal = loader->saveGroupsItem(spn);
+					if (!retVal) break;
+				}
+				retVal = loader->saveGroupsHeaderEnd(curHeaderType);
 				if (!retVal) break;
 			}
 
 			delete spnList;
 			spnList = NULL;
-
-			retVal = loader->saveGroupsHeaderEnd(curHeaderType);
-			if (!retVal) break;
 		}
 	}
 	if (!retVal) return false;
@@ -427,66 +473,193 @@ bool uoReportDoc::flush(uoReportLoader* loader){
 	// ---------------выгрузка секций --------------
 	for (typeHeader = 1; typeHeader<=2; typeHeader++) {
 		if(typeHeader == 1){
-			curTree	= m_spanTreeSctH;
+			curTree	= m_spanTreeSctCol;
 			curHeaderType = uorRhtColumnHeader;
 		} else {
-			curTree	= m_spanTreeSctV;
+			curTree	= m_spanTreeSctRow;
 			curHeaderType = uorRhtRowsHeader;
 		}
 
 
 		cntItem = curTree->getSize();
 		if (cntItem > 0) {
-			retVal = loader->saveSectionHeaderStart(cntItem, curHeaderType);
-			if (!retVal) break;
 
 			const spanList* spnList = curTree->getSpanList();
+
+			spanList spnList2;
+			cntItem2 = 0;
 			for (i = 0; i<cntItem; i++){
 				spn = spnList->at(i);
-				retVal = loader->saveSectionItem(spn);
+				if (selection){
+					if (selection->isSpanFullSeleced(spn, curHeaderType)){
+						spnList2.append(spn);
+						cntItem2 += 1;
+					}
+				} else {
+					spnList2.append(spn);
+					cntItem2 += 1;
+				}
+			}
+			if (cntItem2 > 0){
+				retVal = loader->saveSectionHeaderStart(cntItem2, curHeaderType);
+				if (!retVal) break;
+
+				for (i = 0; i<cntItem2; i++){
+					spn = spnList2.at(i);
+					retVal = loader->saveSectionItem(spn);
+					if (!retVal) break;
+				}
+
+				retVal = loader->saveSectionHeaderEnd(curHeaderType);
 				if (!retVal) break;
 			}
-
 			delete spnList;
 			spnList = NULL;
 
-			retVal = loader->saveSectionHeaderEnd(curHeaderType);
-			if (!retVal) break;
 		}
 	}
 	if (!retVal) return false;
 
 	uoHeaderScale* headerScale = NULL;
 
-	// ---------------выгрузка размеров строк/столбцов --------------
-	// Тут же надо делать выгрузку соодержимого ячеек.
+	uorSelectionType selType = uoRst_Unknown;
+	if (selection){
+		selType = selection->selectionType();
+	}
+
+
+	QList<int> setOfScale;
+	bool hasItem = false;
+	bool useSelection = false;
+
+	// ---------------выгрузка размеров и фиксации строк/ размеров столбцов --------------
 	for (typeHeader = 1; typeHeader<=2; typeHeader++) {
 		if(typeHeader == 1){
-			headerScale	= m_headerH;
+			headerScale	= m_headerCol;
 			curHeaderType = uorRhtColumnHeader;
 		} else {
-			headerScale	= m_headerV;
+			headerScale	= m_headerRow;
 			curHeaderType = uorRhtRowsHeader;
 		}
 
 		cntItem = headerScale->getCountItem();
+		hasItem = true;
+		useSelection = false;
+		if (selection){
+			if (!selection->isTrueForCopy())
+					continue;
+			selType = selection->selectionType();
+
+			if (curHeaderType == uorRhtColumnHeader){
+				if (!(selType == uoRst_Document || selType == uoRst_Column || selType == uoRst_Column))
+					continue;
+			} else if (curHeaderType == uorRhtRowsHeader){
+				if (!(selType == uoRst_Document || selType == uoRst_Row || selType == uoRst_Rows))
+					continue;
+			}
+			useSelection = true;
+
+			if (useSelection && selType == uoRst_Document)
+				useSelection = false; // не надо филтровать
+
+			if (useSelection){
+				if (!selection->getSelectedColRow(curHeaderType, setOfScale))
+					continue;
+				cntItem = setOfScale.size();
+			}
+		}
+
 		if (cntItem > 0) {
 			retVal = loader->saveScaleHeaderStart(cntItem, curHeaderType);
 			if (!retVal) break;
-
-			headerScale->onStoreItems(loader);
+			if (useSelection) {
+				headerScale->onStoreItems(loader, &setOfScale);
+			} else {
+				headerScale->onStoreItems(loader);
+			}
 
 			retVal = loader->saveScaleHeaderEnd(curHeaderType);
 			if (!retVal) break;
 		}
+
 	}
 
 	//--------- выгрузка содержания строк -------------------
+	///\todo вот тут остановился... НУЖНА ОТЛАДКА.....
+
+	QRect boundRect; // если выделение миксированное, то нет смысла сливать туда все троки.
+	uoCellMatrix* cellMatrix = 0;
+	bool useStandatrMethod = true;
+
 	int rowCount = m_rows->getCountItem();
+	if (selection) {
+		if (selType == uoRst_Row || selType == uoRst_Rows) {
+			rowCount = selection->rowCount();
+		} else if (selType == uoRst_Cell || selType == uoRst_Cells || selType == uoRst_Mixed || selType == uoRst_Unknown){
+			useStandatrMethod = false;
+ 			boundRect = selection->getSelectionBound();
+			if (boundRect.height()>0)
+				rowCount = boundRect.height();
+		}
+		selection->saveSelection(loader);
+
+	}
 	if (rowCount>0) {
-		loader->saveRowsStart(rowCount);
-		m_rows->saveItems(loader);
-		loader->saveRowsEnd();
+		if (useStandatrMethod) {
+			loader->saveRowsStart(rowCount);
+			m_rows->saveItems(loader, selection);
+			loader->saveRowsEnd();
+		} else {
+			cellMatrix = new uoCellMatrix(boundRect.height(),boundRect.width());
+			QPoint curCellView = selection->currentCell();
+
+			uoCell* curCell = 0;
+			bool cellIsSelected = false;
+			int r_cntr = 1, c_cntr = 1;
+			for (int rrow = boundRect.top(); rrow<=boundRect.bottom(); rrow++)	{
+				c_cntr = 1;
+				for (int rcol = boundRect.left(); rcol<=boundRect.right(); rcol++)	{
+					cellIsSelected = selection->isCellSelect(rrow, rcol);
+					if (!cellIsSelected && selType == uoRst_Unknown){
+						if (rcol == curCellView.x() && rrow == curCellView.y()){
+							cellIsSelected = true;
+						}
+					}
+
+					if (cellIsSelected){
+						curCell = getCell(rrow, rcol, false);
+						cellMatrix->setCell(r_cntr, c_cntr, curCell);
+						cellMatrix->setCellSelected(r_cntr, c_cntr);
+					}
+					c_cntr += 1;
+				}
+				r_cntr += 1;
+			}
+			loader->saveMatrixStart(cellMatrix);
+
+			r_cntr = 1, c_cntr = 1;
+			int oldCellNom = 0;
+			for (int rrow = 1; rrow<=cellMatrix->rows(); rrow++)	{
+				c_cntr = 1;
+				loader->saveMatrixRowStart(r_cntr);
+				for (int rcol = 1; rcol<=cellMatrix->cols(); rcol++)	{
+					curCell = cellMatrix->cell(r_cntr, c_cntr);
+					if (curCell){
+						// Необходимо установить номер.
+						oldCellNom = curCell->number();
+						curCell->setNumber(c_cntr);
+						loader->saveCell(curCell);
+						curCell->setNumber(oldCellNom);
+					}
+					c_cntr += 1;
+				}
+				r_cntr += 1;
+				loader->saveMatrixRowEmd();
+			}
+			loader->saveMatrixEnd(cellMatrix);
+
+			delete cellMatrix;
+		}
 	}
 	if (m_fontColl->countFonts()>0){
 		QFont* font = NULL;
@@ -496,8 +669,12 @@ bool uoReportDoc::flush(uoReportLoader* loader){
 			loader->saveFont(font, i);
 		}
 		loader->saveFontEnd();
+	}
 
-
+	if (m_saveWithUndoStack){
+		loader->saveArbitraryBlockStart("Undo stack");
+		m_undoManager->save(loader);
+		loader->saveArbitraryBlockEnd("Undo stack");
 	}
 
 	if (!retVal) return false;
@@ -506,7 +683,7 @@ bool uoReportDoc::flush(uoReportLoader* loader){
 }
 
 /// Сохранение отчета. Инициализируем лоадер, вызываем сохранение...
-bool uoReportDoc::saveToFile(QString path, uoRptStoreFormat stFormat)
+bool uoReportDoc::saveToFile(QString path, uoRptStoreFormat stFormat, uoReportSelection* sel)
 {
 	bool retVal = false;
 	if (stFormat == uoRsf_Unknown) {
@@ -519,16 +696,48 @@ bool uoReportDoc::saveToFile(QString path, uoRptStoreFormat stFormat)
 	}
 
 	loader->setFileName(path);
-	if (!loader->init(false)){
+	if (!loader->initFO(false)){
 		qWarning() << loader->getLastError();
 	} else {
-		flush(loader);
+		flush(loader, sel);
 	}
 	loader->finalize();
 	delete loader;
 
 	return retVal;
 }
+
+bool uoReportDoc::saveToByteArray(QByteArray& byteArr, uoReportSelection* sel)
+{
+	return true;
+}
+bool uoReportDoc::loadFromByteArray(QByteArray& byteArr, uoReportSelection* sel)
+{
+	bool retVal = false;
+	uoReportLoader* loader = uoReportLoader::getLoader(uoRsf_XML_Mime);
+	loader->enableProcDialog(false);
+	if (!loader) {
+		qWarning() << tr("Can not create loader");
+		return false;
+	}
+//	bool is_ch = enableCollectChanges(false);
+//	bool is_fr = enableFormating(false);
+
+
+	m_formatEnable = false;
+
+//	qDebug() << "uoReportDoc::loadFromByteArray byteArr.size() "<< byteArr.size();
+	if (!loader->initBA(uorSO_LoadFromBArray, byteArr)){
+		qWarning() << loader->getLastError();
+	} else {
+		retVal = loader->load(this);
+	}
+	loader->finalize();
+	delete loader;
+	m_formatEnable = true;
+	return retVal;
+}
+
 
 /// Проверка на валидность опций записи: имя файла и тип документа.
 bool uoReportDoc::saveOptionsIsValid(){
@@ -540,9 +749,9 @@ bool uoReportDoc::saveOptionsIsValid(){
 }
 
 /// Сохранение отчета.
-bool uoReportDoc::save(){
+bool uoReportDoc::save(uoReportSelection* sel){
 	if (saveOptionsIsValid()) {
-		return saveToFile(m_docFilePath, m_storeFormat);
+		return saveToFile(m_docFilePath, m_storeFormat, sel);
 	}
 	return false;
 }
@@ -568,18 +777,23 @@ bool uoReportDoc::loadFromFile(QString path, uoRptStoreFormat stFormat)
 	if (!loader) {
 		qWarning() << tr("Can not create loader");		return false;
 	}
+	bool is_ch = enableCollectChanges(false);
+	bool is_fr = enableFormating(false);
 
-	m_formatStoped = true;
+
+	m_formatEnable = false;
 
 	loader->setFileName(path);
-	if (!loader->init(true)){
+	if (!loader->initFO(true)){
 		qWarning() << loader->getLastError();
 	} else {
 		loader->load(this);
 	}
 	loader->finalize();
 	delete loader;
-	m_formatStoped = false;
+	m_formatEnable = true;
+	enableCollectChanges(is_ch);
+	enableFormating(is_fr);
 	doFormatDoc();
 
 	return retVal;
@@ -589,18 +803,18 @@ bool uoReportDoc::loadFromFile(QString path, uoRptStoreFormat stFormat)
 
 
 /// Возвращаем дефолтный размер строки или колонки
-qreal  	uoReportDoc::getDefScaleSize(uoRptHeaderType rht)
+uorNumber  	uoReportDoc::getDefScaleSize(uoRptHeaderType rht)
 {
 	if (rht == uorRhtRowsHeader){
-		return m_headerV->getDefSizeItem();
+		return m_headerRow->getDefSizeItem();
 	} else if (rht == uorRhtColumnHeader) {
-		return m_headerH->getDefSizeItem();
+		return m_headerCol->getDefSizeItem();
 	}
-	return 0.0;
+	return uorNumberNull;
 }
 
 /// Возвращаем высоту документа полную (по умолчанию) или видимую.
-qreal  	uoReportDoc::getVSize(bool visible){
+uorNumber  	uoReportDoc::getVSize(bool visible){
 	if (visible)
 		return m_sizeV_visible;
 	else
@@ -608,7 +822,7 @@ qreal  	uoReportDoc::getVSize(bool visible){
 }
 
 /// Возвращаем длину документа полную (по умолчанию) или видимую.
-qreal  	uoReportDoc::getHSize(bool visible){
+uorNumber  	uoReportDoc::getHSize(bool visible){
 	if (visible)
 		return m_sizeH_visible;
 	else
@@ -658,6 +872,222 @@ void uoReportDoc::onPrint()
 	printDoc(true);
 }
 
+
+void uoReportDoc::onPasteText(uoReportSelection* sel, const QMimeData* mime)
+{
+	QString plainText = mime->text();
+	QString rowText, cellText;
+	if (plainText.isEmpty() || !sel)
+		return;
+
+	QPoint insPoint = sel->getInsertPoint();
+
+
+	bool isCsv = mime->hasFormat("text/csv");
+	QStringList strListRow;
+	QStringList strListWord;
+	strListRow = plainText.split("\n");
+
+	int n_row = 0, n_col = 0;
+	int real_row = insPoint.y(), real_col = insPoint.x();
+
+	m_undoManager->groupCommandStart();
+	for(n_row = 0; n_row < strListRow.size(); n_row++) {
+		rowText = strListRow.at(n_row);
+		cellText = "";
+		if (isCsv){
+			strListWord = rowText.split(";");
+		} else {
+			strListWord = rowText.split("\t");
+		}
+		for(n_col = 0; n_col<strListWord.size(); n_col++){
+			cellText = strListWord.at(n_col);
+			setCellText(real_row+n_row, real_col+n_col , cellText);
+		}
+		doFormatRow(real_row+n_row, -1);
+	}
+	m_undoManager->groupCommandEnd();
+}
+
+void uoReportDoc::copyDocum(uoReportDoc* fromDoc)
+{
+	clear();
+	// Группы
+	m_spanTreeGrCol->copyFrom(fromDoc->m_spanTreeGrCol);
+	m_spanTreeGrRow->copyFrom(fromDoc->m_spanTreeGrRow);
+
+	// Секции.
+	m_spanTreeSctCol->copyFrom(fromDoc->m_spanTreeSctCol);
+	m_spanTreeSctRow->copyFrom(fromDoc->m_spanTreeSctRow);
+
+	m_headerRow->copyFrom(fromDoc->m_headerRow);
+	m_headerCol->copyFrom(fromDoc->m_headerCol);
+
+	m_rows->copyFrom(fromDoc->m_rows);
+	doFormatDoc(-1, -1);
+}
+
+
+void uoReportDoc::onPasteDocum(uoReportSelection* sel, const QMimeData* mime)
+{
+	QByteArray byteArr = mime->data(UOR_MIME_XML_DATA);
+	if (byteArr.isEmpty())
+		return;
+	uoReportDoc* newDoc = new uoReportDoc();
+	if (newDoc){
+		if (newDoc->loadFromByteArray(byteArr)){
+			//пока тут замержим, потом перенесем в отдельную процедуру.
+
+			uoReportSelection* selOth_Doc = newDoc->selection();
+			if (selOth_Doc) {
+				m_undoManager->groupCommandStart();
+				// а без матрицы че делать? Вот только не помню, если весь документ выделен, матрица там какая?
+				uoCellMatrix* matrixO_Doc = newDoc->getCellMatrix();
+				uorSelectionType selType = selOth_Doc->selectionType();
+
+				if (selType == uoRst_Document ){
+					copyDocum(newDoc);
+					return;
+				}
+				uoRptHeaderType rht;
+				int rowOffset = 0;
+				int colOffset = 0;
+				int startWith = 0;
+
+				QPoint curCell = sel->currentCell();
+
+				if (selType == uoRst_Row || selType == uoRst_Rows ||selType == uoRst_Column || selType == uoRst_Columns) {
+					/**
+						\todo продолжить тут 2009
+						сделать функцию копирования документа.
+						сделать вставку в нужное место, т.е. сдвинуть относительно текущего положения курсора в таблице.
+						добавить вызов комманды форматирования после вставки.
+					*/
+					QList<int> listRC;
+					if (selOth_Doc->getSelectedColRow(rht, listRC)) {
+
+						startWith = listRC.at(0);
+
+						if (rht == uorRhtColumnHeader){
+							colOffset = curCell.x() - startWith;
+							m_spanTreeGrCol->copyFrom(newDoc->m_spanTreeGrCol, listRC, colOffset);
+							m_headerCol->copyFrom(newDoc->m_headerCol, listRC, colOffset);
+							m_spanTreeSctCol->copyFrom(newDoc->m_spanTreeSctCol, listRC, colOffset);
+
+						} else if (rht == uorRhtRowsHeader){
+							rowOffset = curCell.y() - startWith;
+
+							m_spanTreeGrRow->copyFrom(newDoc->m_spanTreeGrRow, listRC, rowOffset);
+							m_spanTreeSctRow->copyFrom(newDoc->m_spanTreeSctRow, listRC, rowOffset);
+							m_headerRow->copyFrom(newDoc->m_headerRow, listRC, rowOffset);
+						}
+						m_rows->copyFrom(newDoc->m_rows, rht, listRC, rowOffset, colOffset);
+					}
+
+				} else if (selType == uoRst_Cell || selType == uoRst_Cells || selType == uoRst_Unknown) {
+					if (matrixO_Doc){
+						rowOffset = curCell.y()-1;
+						colOffset = curCell.x()-1;
+						int row_cnt = 0;
+						int col_cnt = 0;
+						int cellCount = 0;
+
+
+						uoCell *cell = 0, *cellOther = 0;
+						/*  В случае матрицы у нас запомнен селекшинз и сама матрица,
+						нужно только пробежаться и вставить с учетом текущей ячейки	*/
+						for (row_cnt = 1; row_cnt <= matrixO_Doc->rows();  row_cnt++) {
+							for (col_cnt = 1; col_cnt <= matrixO_Doc->cols();  col_cnt++) {
+								cellCount += 1;
+								cellOther = matrixO_Doc->cell(row_cnt, col_cnt);
+								if (cellOther){
+									cell = getCell(row_cnt + rowOffset, col_cnt + colOffset, true, true);
+									cell->copyFrom(cellOther, this, newDoc, row_cnt + rowOffset);
+								}
+							}
+						}
+						if (cellCount == 1){
+							colOffset = rowOffset = 0;
+							selOth_Doc->selectCell(curCell.x(), curCell.y());
+						}
+					}
+				}
+
+				/* вместо того, что-бы заниматься форматированием по меcту, лучше имплементировать
+				копирование uoReportSelection и сдвиг его на rowOffset и colOffset	*/
+				sel->copyFrom(selOth_Doc, rowOffset, colOffset);
+				doFormatDocWithSelection(sel);
+
+				m_undoManager->groupCommandEnd();
+			}
+		}
+	}
+	delete newDoc;
+}
+
+
+void uoReportDoc::onCopy(uoReportSelection* sel, bool withDelete)
+{
+	if (!sel)
+		return;
+	QClipboard* clipBrd = qApp->clipboard();
+	if (clipBrd){
+		QByteArray byteArr;
+		uoReportLoader* loader = uoReportLoader::getLoader(uoRsf_XML);
+		loader->enableProcDialog(false);
+		QMimeData* mime = new QMimeData;
+
+		if (loader) {
+			if (loader->initBA(uorSO_SaveToBArray,byteArr)){
+				flush(loader, sel);
+			}
+			loader->finalize();
+			byteArr = loader->getByteArray();
+			mime->setData(UOR_MIME_XML_DATA, byteArr);
+			delete loader;
+		}
+
+		uoReportLoader* loader2 = uoReportLoader::getLoader(uoRsf_TXL);
+		if (loader2) {
+			QByteArray byteArr2;
+			if (loader2->initBA(uorSO_SaveToBArray,byteArr2)){
+				flush(loader2, sel);
+			}
+			loader2->finalize();
+			byteArr2 = loader2->getByteArray();
+			QString str = QString(byteArr2);
+//			qDebug() << " buffer: " << str;
+			mime->setText(str);
+			delete loader2;
+		}
+		clipBrd->setMimeData(mime);
+	}
+}
+
+
+void uoReportDoc::onPaste(uoReportSelection* sel)
+{
+	if (!sel) return;
+
+	QClipboard* clipBrd = qApp->clipboard();
+	if (clipBrd){
+		const QMimeData* mime = clipBrd->mimeData();
+		if (mime){
+			if (mime->hasFormat(UOR_MIME_XML_DATA))	{
+				onPasteDocum(sel, mime);
+			}else if (mime->hasFormat("text/csv") || mime->hasFormat("text/plain"))	{
+				onPasteText(sel, mime);
+			}
+			++m_changes;
+		}
+	}
+}
+void uoReportDoc::onCut(uoReportSelection* sel){
+	onCopy(sel, true);
+}
+
+
+
 /// перед добавлением строк или столбцов. Необходимо что-бы посчитать длину/ширину дока.
 void uoReportDoc::beforeAddRowOrCol(int count, uoRptHeaderType rht, int noLn)
 {
@@ -667,15 +1097,15 @@ void uoReportDoc::beforeAddRowOrCol(int count, uoRptHeaderType rht, int noLn)
 
 	uoHeaderScale* header = NULL;
 	if (rht == uorRhtRowsHeader) {
-		header = m_headerV;
+		header = m_headerRow;
 		oldCnt = m_rowCount;
 	} else {
-		header = m_headerH;
+		header = m_headerCol;
 		oldCnt = m_colCount;
 	}
-	qreal itemSize 	 = 0.0;
-	qreal addSize 	 = 0.0;
-	qreal addSizeVis = 0.0;
+	uorNumber itemSize 	 = uorNumberNull;
+	uorNumber addSize 	 = uorNumberNull;
+	uorNumber addSizeVis = uorNumberNull;
 	for (int i = 1; i<=count; i++){
 		itemSize = header->getSize(oldCnt + i);
 		addSize = addSize + itemSize;
@@ -704,8 +1134,8 @@ void uoReportDoc::doRowCountChange(int count, int pos)
 {
 	if (count == 0)
 		return;
-	qreal oldSize = m_sizeV;
-	qreal oldSizeVis = m_sizeV_visible;
+	uorNumber oldSize = m_sizeV;
+	uorNumber oldSizeVis = m_sizeV_visible;
 
 	m_rowCount = m_rowCount + count;
 	m_sizeV = oldSize + count * getDefScaleSize(uorRhtRowsHeader);
@@ -719,8 +1149,8 @@ void uoReportDoc::doColCountChange(int count, int pos )
 {
 	if (count == 0)
 		return;
-	qreal oldSize = m_sizeH;
-	qreal oldSizeVis = m_sizeH_visible;
+	uorNumber oldSize = m_sizeH;
+	uorNumber oldSizeVis = m_sizeH_visible;
 
 	m_colCount = m_colCount + count;
 	m_sizeH = oldSize + count * getDefScaleSize(uorRhtColumnHeader);
@@ -762,24 +1192,24 @@ void uoReportDoc::onAccessRowCol(int nmRow, int nmCol)
 
 
 /// Вернуть размер ячейки
-qreal uoReportDoc::getScaleSize(uoRptHeaderType hType, int nom, bool isDef)
+uorNumber uoReportDoc::getScaleSize(const uoRptHeaderType& hType, const int& nom, bool isDef)
 {
 	if (hType == uorRhtRowsHeader)
-		return m_headerV->getSize(nom, isDef);
+		return m_headerRow->getSize(nom, isDef);
 	else
-		return m_headerH->getSize(nom, isDef);
+		return m_headerCol->getSize(nom, isDef);
 }
 
 /// Вернуть размер диапазона ячек
-qreal uoReportDoc::getScalesSize(const uoRptHeaderType& hType, const int& nomStart, const int& nomEnd, const bool& ignoreHiden, const bool& isDef) const
+uorNumber uoReportDoc::getScalesSize(const uoRptHeaderType& hType, const int& nomStart, const int& nomEnd, const bool& ignoreHiden, const bool& isDef) const
 {
 	uoHeaderScale* pHeader = NULL;
 	if (hType == uorRhtRowsHeader) {
-		pHeader = m_headerV;
+		pHeader = m_headerRow;
 	} else {
-		pHeader = m_headerH;
+		pHeader = m_headerCol;
 	}
-	qreal retVal = 0.0;
+	uorNumber retVal = uorNumberNull;
 	int nmStart = qMin(nomStart,nomEnd), nmEnd = qMax(nomStart,nomEnd), i = 0;
 	for (i = nmStart; i<=nmEnd; i++){
 		if (pHeader->getHide(i) && ignoreHiden)
@@ -790,16 +1220,16 @@ qreal uoReportDoc::getScalesSize(const uoRptHeaderType& hType, const int& nomSta
 }
 
 /// Установить размер ячейки
-void uoReportDoc::setScaleSize(uoRptHeaderType hType, int nom, qreal size, bool isDef){
+void uoReportDoc::setScaleSize(const uoRptHeaderType& hType, const int& nom, uorNumber size, bool isDef){
 	bool scVisible = true;
-	qreal oldSizeItem = 0.0, oldSize = 0.0;
+	uorNumber oldSizeItem = uorNumberNull, oldSize = uorNumberNull;
 	if (hType == uorRhtRowsHeader) {
-		oldSizeItem = m_headerV->getSize(nom, isDef);
-		scVisible = m_headerV->getHide(nom);
+		oldSizeItem = m_headerRow->getSize(nom, isDef);
+		scVisible = m_headerRow->getHide(nom);
 
 		if (m_undoManager){		m_undoManager->doScaleResize(hType,nom,oldSizeItem);		}
 
-		m_headerV->setSize(nom, size, isDef);
+		m_headerRow->setSize(nom, size, isDef);
 		++m_changes;
 		m_sizeV = m_sizeV - oldSizeItem + size;
 		if (!scVisible) {
@@ -810,14 +1240,14 @@ void uoReportDoc::setScaleSize(uoRptHeaderType hType, int nom, qreal size, bool 
 		}
 	}
 	else {
-		oldSizeItem= m_headerH->getSize(nom, isDef);
+		oldSizeItem= m_headerCol->getSize(nom, isDef);
 
 		if (m_undoManager){		m_undoManager->doScaleResize(hType,nom,oldSizeItem);		}
 
-		m_headerH->setSize(nom, size, isDef);
+		m_headerCol->setSize(nom, size, isDef);
 		++m_changes;
 		m_sizeH = m_sizeH - oldSizeItem + size;
-		scVisible = m_headerH->getHide(nom);
+		scVisible = m_headerCol->getHide(nom);
 		if (!scVisible) {
 			oldSize = m_sizeH_visible;
 			m_sizeH_visible = m_sizeH_visible - oldSizeItem + size;
@@ -829,18 +1259,18 @@ void uoReportDoc::setScaleSize(uoRptHeaderType hType, int nom, qreal size, bool 
 }
 
 /// Установка размера для группы или одного столбца/строки.
-void uoReportDoc::setScalesSize(const uoRptHeaderType& hType, const QList<int>& list, const qreal& size, const bool& isDef)
+void uoReportDoc::setScalesSize(const uoRptHeaderType& hType, const QList<int>& list, const uorNumber& size, const bool& isDef)
 {
-	if (list.size() == 0 || size < 0.0)
+	if (list.size() == 0 || size < uorNumberNull)
 		return;
 	bool scVisible = true;
 
-	uoHeaderScale* heider = m_headerV;
+	uoHeaderScale* heider = m_headerRow;
 	if (hType == uorRhtColumnHeader)
-		heider = m_headerH;
+		heider = m_headerCol;
 	int itemNo = 0;
 
-	qreal oldSizeItem = 0.0, oldSize = 0.0;
+	uorNumber oldSizeItem = uorNumberNull, oldSize = uorNumberNull;
 	QList<int>::const_iterator it = list.constBegin();
 	while(it != list.constEnd()){
 		itemNo = *it;
@@ -876,19 +1306,19 @@ void uoReportDoc::setRowAutoSize(const QList<int>& list)
 	Примечание. бесполезно для столбцов, они не будут подгоняться
 	"под размер" текста. Ну по крайней мере пока...
 */
-void uoReportDoc::setScaleFixedProp(uoRptHeaderType hType, int nom, bool isFixed)
+void uoReportDoc::setScaleFixedProp(const uoRptHeaderType& hType, const int& nom, bool isFixed)
 {
 	if (hType == uorRhtRowsHeader) {
-		m_headerV->setFixed(nom, isFixed);
+		m_headerRow->setFixed(nom, isFixed);
 		++m_changes;
 	}
 	/// для колонок собственно безсмысленно...
 }
 
-bool uoReportDoc::getScaleFixedProp(uoRptHeaderType hType, int nom)
+bool uoReportDoc::getScaleFixedProp(const uoRptHeaderType& hType, const int& nom)
 {
 	if (hType == uorRhtRowsHeader) {
-		return m_headerV->getFixed(nom);
+		return m_headerRow->getFixed(nom);
 	}
 	return false;
 }
@@ -898,17 +1328,17 @@ bool uoReportDoc::getScaleFixedProp(uoRptHeaderType hType, int nom)
 void uoReportDoc::setScalesHide(uoRptHeaderType hType, int nmStart, int cnt,  bool hide){
 	uoHeaderScale* header = NULL;
 	if (hType == uorRhtRowsHeader) {
-		header = m_headerV;
+		header = m_headerRow;
 	} else {
-		header = m_headerH;
+		header = m_headerCol;
 	}
-	qreal szAdd = 0.0;
+	uorNumber szAdd = uorNumberNull;
 	for (int i = 0; i<cnt; i++)	{
 		szAdd = szAdd + header->getSize(nmStart + i);
 		header->setHide(nmStart + i, hide);
 		++m_changes;
 	}
-	qreal oldSize = 0.0;
+	uorNumber oldSize = uorNumberNull;
 	szAdd = szAdd * ( hide ? -1 : 1);
 	if (hType == uorRhtRowsHeader){
 		oldSize = m_sizeV_visible;
@@ -939,12 +1369,12 @@ int uoReportDoc::getNextCellNumber(const int& rowCur, const int& colCur, const b
 }
 
 /// пошинковать строку на слова не превышающие длинны collWidth
-QStringList uoReportDoc::splitQStringToWord(const QFontMetricsF& fm, const QString& str, const qreal& collWidth)
+QStringList uoReportDoc::splitQStringToWord(const QFontMetricsF& fm, const QString& str, const uorNumber& collWidth)
 {
 	QStringList list;
 	QString curStr, curWord;
 	QChar qchar;
-	qreal lenStr = 0.0, lenCurW = 0.0;
+	uorNumber lenStr = uorNumberNull, lenCurW = uorNumberNull;
 
 	QStringList listW = str.split(QRegExp("\\b"));
 	for (int i = 0; i<listW.count(); i++)
@@ -953,12 +1383,12 @@ QStringList uoReportDoc::splitQStringToWord(const QFontMetricsF& fm, const QStri
 		if (curWord.isEmpty())
 			continue;
 
-		lenCurW = fm.width(curWord);
+		lenCurW = (uorNumber)fm.width(curWord);
 		if ((lenStr + lenCurW)>collWidth){
 			if (!curStr.isEmpty()) {
 				list.append(curStr);
 				curStr = "";
-				lenStr = 0.0;
+				lenStr = uorNumberNull;
 			}
 			if (lenCurW > collWidth) {
 				// а вдруг длинна слова больше чем общая ширина?
@@ -982,7 +1412,7 @@ QStringList uoReportDoc::splitQStringToWord(const QFontMetricsF& fm, const QStri
 		} else {
 			curStr.append(curWord);
 		}
-		lenStr = fm.width(curStr);
+		lenStr = (uorNumber)fm.width(curStr);
 	}
 	if (!curStr.isEmpty())
 		list.append(curStr);
@@ -991,10 +1421,10 @@ QStringList uoReportDoc::splitQStringToWord(const QFontMetricsF& fm, const QStri
 
 
 /// Форматирование текста ячейки, одновременно расчет её высоты..
-qreal uoReportDoc::doFormatCellText(uoCell* cell, QFont* font, QFontMetricsF& fm, const qreal& collWidth)
+uorNumber uoReportDoc::doFormatCellText(uoCell* cell, QFont* font, QFontMetricsF& fm, const uorNumber& collWidth)
 {
-	qreal cellHeight = 0.0;
-	qreal collWidthThis = collWidth - UORPT_STANDART_OFFSET_TEXT*2; // 2 офсета, справ и слева.
+	uorNumber cellHeight = uorNumberNull;
+	uorNumber collWidthThis = collWidth - (uorNumber)(UORPT_STANDART_OFFSET_TEXT*2); // 2 офсета, справ и слева.
 
 
 	// задачка не из простых...
@@ -1002,7 +1432,7 @@ qreal uoReportDoc::doFormatCellText(uoCell* cell, QFont* font, QFontMetricsF& fm
 	if (cell->m_textProp){
 		m_pointBlock->savePoint(cell->m_textBoundary);
 		cell->m_textBoundary = NULL;
-		cell->m_maxRowLen = 0.0;
+		cell->m_maxRowLen = uorNumberNull;
 	}
 
 	if (cellStr.isEmpty())
@@ -1021,7 +1451,7 @@ qreal uoReportDoc::doFormatCellText(uoCell* cell, QFont* font, QFontMetricsF& fm
 	QStringList strListReal;
 	int listSz = 0;
 
-//	qreal fullLength = fm.width(cellStr); // нужно проверить, влезает ли текст в сейку..
+//	uorNumber fullLength = fm.width(cellStr); // нужно проверить, влезает ли текст в сейку..
 	QString nextStr, curStr;
 	if (pos != -1 || tb == uoCTB_Transfer){
 		// Значит надо рубить
@@ -1051,18 +1481,74 @@ qreal uoReportDoc::doFormatCellText(uoCell* cell, QFont* font, QFontMetricsF& fm
 		strListReal << cellStr;
 	}
 
-	qreal maxRowLength = 0.0;
+	uorNumber maxRowLength = uorNumberNull;
 	for (int i = 0; i < strListReal.size(); ++i){
 		nextStr = strListReal.at(i);
-		maxRowLength = qMax(maxRowLength, fm.width(nextStr));
+		maxRowLength = qMax(maxRowLength, (uorNumber)fm.width(nextStr));
 	}
 
 	cell->setMaxRowLength(maxRowLength, this);
 	cell->applyTrPoint(m_pointBlock, strListReal, this);
-	cellHeight = fm.height() * strListReal.size();
+	cellHeight = (uorNumber)(fm.height() * strListReal.size());
+	bool hasJoin = cell->isUnionHas();
 	cell->m_height = cellHeight;
+	if (hasJoin){
+		cellHeight = fm.height();
+		if (cell->unionRow() == 1){
+			cellHeight = cell->m_height;// если объединение включает 1 строку, почему бы и не растянуть?
+		}
+	}
+
 	return cellHeight;
 }
+
+bool uoReportDoc::enableFormating(const bool format)
+{
+	bool old = m_formatEnable;
+	m_formatEnable = format;
+	return old;
+};
+
+/// Нужно расчитать высоту и ширину ректа объединения ячейки...
+void uoReportDoc::doCalculateCellUnionSizeHW(uoCell* psCell)
+{
+	if (!psCell)
+		return;
+	uoCell* cell = psCell;
+
+	QRect cellRect;
+	uoCellsJoinType unionType = cell->unionType();
+	if (unionType == uoCJT_Unknown) {
+		return;
+	}
+	if (unionType == uoCJT_BackPoint) {
+		cellRect = cell->getCellJoinRect();
+		cell = getCell(cellRect.top(), cellRect.left(), false);
+		if (!cell)
+			return;
+	}
+	cellRect = cell->getCellJoinRect();
+	unionType = cell->unionType();
+	if (unionType == uoCJT_Normal || unionType == uoCJT_TextToCol) {
+		uoCellJoin* cJoin =  cell->cellJoin();
+		if (!cJoin)
+			return;
+		int rowCntr = 0, colCntr = 0;
+		cJoin->m_height = uorNumberNull;
+		cJoin->m_width = uorNumberNull;
+		for (rowCntr = cellRect.top(); rowCntr <= cellRect.bottom() ;rowCntr++){
+			if (!getScaleHide(uorRhtRowsHeader, rowCntr))
+				cJoin->m_height += getScaleSize(uorRhtRowsHeader, rowCntr);
+
+		}
+		for (colCntr = cellRect.left(); colCntr <= cellRect.right() ;colCntr++){
+			if (!getScaleHide(uorRhtColumnHeader, colCntr))
+			cJoin->m_width += getScaleSize(uorRhtColumnHeader, colCntr);
+		}
+	}
+}
+
+
 /**
 	Просчитаем для строки максимальную длину, которую хочет её текст.
 */
@@ -1071,21 +1557,26 @@ void uoReportDoc::doFormatRowLRMaxLng(uoRow* row)
 	if (!row)
 		return;
 	// Посчитаем для строки лефты, райты.
-	row->m_lengthMaxToLeft = 0.0;
-	row->m_lengthMaxToRight = 0.0;
-	row->m_lengthFromCell = 0.0;
+	row->m_lengthMaxToLeft = uorNumberNull;
+	row->m_lengthMaxToRight = uorNumberNull;
+	row->m_lengthFromCell = uorNumberNull;
+	row->m_unionCount = 0;
 
-	QMap<int, qreal> mapColSize;
-	QMap<int, qreal> mapColToLeng;
+	QMap<int, uorNumber> mapColSize;
+	QMap<int, uorNumber> mapColToLeng;
+	QList<int> hashNomUnion;
+	QRect curentUnion;
 	mapColSize[0] = 0;
 	mapColToLeng[0] = 0;
 
 	int cellNo = 0, cellNoLast = 0;
-	qreal collSize = 0.0, collSizeAll = 0.0, collSizeAllTmp = 0.0, textCellMaxLeng = 0.0;
+	uorNumber collSize = uorNumberNull, collSizeAll = uorNumberNull, collSizeAllTmp = uorNumberNull, textCellMaxLeng = uorNumberNull;
 
 	uoHorAlignment textHorAl = uoHA_Unknown;
+	uoCellsJoinType unionType ;
 
 	uoCell* cell = row->getFirst();
+	QList<uoCell*> unionCells;
 	while(cell){
 		cellNo = cell->number();
 		while(cellNoLast < cellNo){
@@ -1104,17 +1595,47 @@ void uoReportDoc::doFormatRowLRMaxLng(uoRow* row)
 			textHorAl = cell->getAlignmentHor();
 			if (textHorAl == uoHA_Left){
 				collSizeAllTmp = textCellMaxLeng + mapColToLeng[cellNo-1];
-				collSizeAllTmp = qMax(0.0, collSizeAllTmp);
+				collSizeAllTmp = qMax(uorNumberNull, collSizeAllTmp);
 				row->m_lengthMaxToRight = qMax(row->m_lengthMaxToRight, collSizeAllTmp);
 			} else if (textHorAl == uoHA_Right){
 				collSizeAllTmp = textCellMaxLeng - mapColToLeng[cellNo];
-				collSizeAllTmp = qMax(0.0, collSizeAllTmp);
+				collSizeAllTmp = qMax(uorNumberNull, collSizeAllTmp);
 				row->m_lengthMaxToLeft = qMax(row->m_lengthMaxToLeft, collSizeAllTmp);
+			}
+		}
+		if (cell->isUnionHas()) {
+			// Нужно считать только уникальные объединения
+			unionType = cell->unionType();
+			if (unionType == uoCJT_Normal || unionType == uoCJT_TextToCol){
+				row->m_unionCount += 1;
+				unionCells.append(cell); // Что-бы не сбить выборку итератора, он самопальный.
+			} else if (unionType == uoCJT_BackPoint){
+				curentUnion = cell->getCellJoinRect();
+				if (curentUnion.left() != 0){
+					if (cellNo == curentUnion.left())
+						row->m_unionCount += 1;
+						unionCells.append(cell); // Что-бы не сбить выборку итератора, он самопальный.
+				}
 			}
 		}
 		cell = row->getNext();
 	}
-
+	while(!unionCells.isEmpty()){
+		cell = unionCells.takeFirst();
+		if (cell->isUnionHas()) {
+			// Нужно считать только уникальные объединения
+			unionType = cell->unionType();
+			if (unionType == uoCJT_Normal || unionType == uoCJT_TextToCol){
+				doCalculateCellUnionSizeHW(cell);
+			} else if (unionType == uoCJT_BackPoint){
+				curentUnion = cell->getCellJoinRect();
+				if (curentUnion.left() != 0){
+					if (cellNo == curentUnion.left())
+						doCalculateCellUnionSizeHW(cell);
+				}
+			}
+		}
+	}
 }
 
 
@@ -1133,15 +1654,17 @@ void uoReportDoc::doFormatRow(uoRow* row, int nmForCol /* = -1*/ )
 	*/
 	if (!row)
 		return;
+	if (!m_formatEnable)
+		return;
 	QList<int> cellsNumbers = row->getItemNumList();
-	qreal rowMinSize = m_headerV->getDefSizeItem();
-	qreal rowRealSize = rowMinSize;
+	uorNumber rowMinSize = m_headerRow->getDefSizeItem();
+	uorNumber rowRealSize = rowMinSize;
 	int nmRow = row->number();
 	if (cellsNumbers.isEmpty())	{
 		// если мы удалили все содержимое, строку надо форматнуть, если её размер отличается от дефолтного
-		if(!m_headerV->getFixed(nmRow)){
-			if (m_headerV->getSize(nmRow) != rowMinSize) {
-				m_headerV->setSize(nmRow,rowMinSize);
+		if(!m_headerRow->getFixed(nmRow)){
+			if (m_headerRow->getSize(nmRow) != rowMinSize) {
+				m_headerRow->setSize(nmRow,rowMinSize);
 			}
 		}
 		return;
@@ -1154,30 +1677,48 @@ void uoReportDoc::doFormatRow(uoRow* row, int nmForCol /* = -1*/ )
 	int cellNextNo = -1;
 
 	int cellCounts = cellsNumbers.size();
-	qreal collSize = 0.0; //getScaleSize(uorRhtRowsHeader
+	uorNumber collSize = uorNumberNull; //getScaleSize(uorRhtRowsHeader
+	uorNumber collsSizeTS = uorNumberNull; //getScaleSize(uorRhtRowsHeader
 
-	qreal cellHeight = 0;
+	uorNumber cellHeight = 0;
 	uoCellTextBehavior textBehav = uoCTB_Auto;
 	uoHorAlignment textHorAl = uoHA_Left;
+	bool hasUnion = false;
+	uoCellsJoinType unionType = uoCJT_Unknown;
+	int unionCols = 0;
 
 	bool collBeFormated = false;
 
-	if(nmForCol<=0)
+	if(nmForCol<=0) {
 		collBeFormated = true;
+		row->m_lengthMaxOver = uorNumberNull;
+	}
 
 	for (int i = 0; i<cellCounts; i++){
 		cellCurNo = cellsNumbers.at(i);
 		cell = row->getItem(cellCurNo, false);
+		hasUnion = false;
+		unionCols = 0;
 
 		collSize = getScaleSize(uorRhtColumnHeader,cellCurNo);
+		collsSizeTS = collSize;
 
-		if (nmForCol != -1 && nmForCol != cellCurNo) {
+		if ((nmForCol != -1 && nmForCol != cellCurNo) || (!cell)) {
 			// нужно еще проверить ячейки на объединение...
-			rowRealSize = qMax(cell->m_height,rowRealSize);
+			if (cell)
+				rowRealSize = qMax(cell->m_height,rowRealSize);
 			rowRealSize = qMax(rowRealSize, rowMinSize);
 			continue;
 		}
-		cell->m_height = 0.0;
+		unionType = cell->unionType();
+		if (unionType == uoCJT_BackPoint){
+			continue;
+		}
+		hasUnion = (unionType == uoCJT_Unknown); hasUnion = !hasUnion;
+		if (hasUnion)
+			unionCols = cell->unionCol();
+
+		cell->m_height = uorNumberNull;
 
 		collBeFormated = true;
 		cellNextNo = cellCurNo;
@@ -1199,33 +1740,42 @@ void uoReportDoc::doFormatRow(uoRow* row, int nmForCol /* = -1*/ )
 
 			// тут уже можно хотя бы посчитать минимальную высоту строки. что и делаем...
 			QFontMetricsF fm(*font);
-			rowMinSize = qMax(rowMinSize, (qreal)fm.height());
+			rowMinSize = qMax(rowMinSize, (uorNumber)fm.height());
 
-			// а тут можно переформатировать текст
-			if (cellNextNo != -1 && textBehav == uoCTB_Auto) {
-				if (textHorAl == uoHA_Center){
-					if ((cellPrevNo != -1) && (cellNextNo != -1)) {
-						collSize = getScalesSize(uorRhtColumnHeader, qMin(cellPrevNo+1, cellCurNo), qMax(cellCurNo,cellNextNo-1), true);
-					} else if (cellNextNo != -1){
-						collSize = getScalesSize(uorRhtColumnHeader, cellCurNo, qMax(cellCurNo,cellNextNo-1), true);
-					} else if (cellPrevNo != -1){
-						collSize = getScalesSize(uorRhtColumnHeader, qMin(cellPrevNo+1, cellCurNo), cellCurNo, true);
-					}
-				} else if (textHorAl == uoHA_Left) {
-					if (cellNextNo != -1) {
-						collSize = getScalesSize(uorRhtColumnHeader, cellCurNo, qMax(cellCurNo,cellNextNo-1), true);
-					} else {
-						collSize = getScalesSize(uorRhtColumnHeader, cellCurNo, cellCurNo, true);
-					}
-				} else if (textHorAl == uoHA_Right) {
-					if (cellPrevNo != -1) {
-						collSize = getScalesSize(uorRhtColumnHeader, qMin(cellPrevNo+1, cellCurNo), cellCurNo, true);
-					} else {
-						collSize = getScalesSize(uorRhtColumnHeader, cellCurNo, cellCurNo, true);
+			if (hasUnion){
+				collsSizeTS = getScalesSize(uorRhtColumnHeader, cellCurNo, cellCurNo + unionCols - 1, true);
+			} else {
+				// а тут можно переформатировать текст
+				if (cellNextNo != -1 && textBehav == uoCTB_Auto) {
+					if (textHorAl == uoHA_Center){
+						if ((cellPrevNo != -1) && (cellNextNo != -1)) {
+							collsSizeTS = getScalesSize(uorRhtColumnHeader, qMin(cellPrevNo+1, cellCurNo), qMax(cellCurNo,cellNextNo-1), true);
+						} else if (cellNextNo != -1){
+							collsSizeTS = getScalesSize(uorRhtColumnHeader, cellCurNo, qMax(cellCurNo,cellNextNo-1), true);
+						} else if (cellPrevNo != -1){
+							collsSizeTS = getScalesSize(uorRhtColumnHeader, qMin(cellPrevNo+1, cellCurNo), cellCurNo, true);
+						}
+					} else if (textHorAl == uoHA_Left) {
+						if (cellNextNo != -1) {
+							collsSizeTS = getScalesSize(uorRhtColumnHeader, cellCurNo, qMax(cellCurNo,cellNextNo-1), true);
+						} else {
+							collsSizeTS = getScalesSize(uorRhtColumnHeader, cellCurNo, cellCurNo, true);
+						}
+					} else if (textHorAl == uoHA_Right) {
+						if (cellPrevNo != -1) {
+							collsSizeTS = getScalesSize(uorRhtColumnHeader, qMin(cellPrevNo+1, cellCurNo), cellCurNo, true);
+						} else {
+							collsSizeTS = getScalesSize(uorRhtColumnHeader, cellCurNo, cellCurNo, true);
+						}
 					}
 				}
 			}
-			cellHeight = doFormatCellText(cell, font, fm, collSize);
+			cellHeight = doFormatCellText(cell, font, fm, collsSizeTS);
+			if (cell->getMaxRowLength()>collSize){
+				row->m_lengthMaxOver = qMax(row->m_lengthMaxOver, cell->getMaxRowLength() - collSize);
+			}
+
+
 
 			rowRealSize = qMax(cellHeight,rowRealSize);
 			rowRealSize = qMax(rowRealSize, rowMinSize);
@@ -1246,8 +1796,8 @@ void uoReportDoc::doFormatRow(uoRow* row, int nmForCol /* = -1*/ )
 		*/
 		cellPrevNo = cellCurNo; // должно быть вконце....
 	}
-	if (collBeFormated && !m_headerV->getFixed(nmRow)) {
-		m_headerV->setSize(nmRow,rowRealSize);
+	if (collBeFormated && !m_headerRow->getFixed(nmRow)) {
+		m_headerRow->setSize(nmRow,rowRealSize);
 	}
 	doFormatRowLRMaxLng(row);
 
@@ -1266,9 +1816,10 @@ void uoReportDoc::doFormatRow(int nmRow, int nmForCol)
 }
 
 /// Форматирование документа..
+///\todo 1 имплементировать форматирование по переданному m_selections после установки/изменения свойств.
 void uoReportDoc::doFormatDoc(int nmRow /*= -1*/, int nmForCol /*= -1*/)
 {
-	if (m_rows->getCountItem() <=0 && m_headerH->getCountItem() <=0 && 	m_headerV->getCountItem() <= 0)
+	if (m_rows->getCountItem() <=0 && m_headerCol->getCountItem() <=0 && 	m_headerRow->getCountItem() <= 0)
 		return;
 	bool recalcCntRowCol = false;
 
@@ -1294,12 +1845,56 @@ void uoReportDoc::doFormatDoc(int nmRow /*= -1*/, int nmForCol /*= -1*/)
 					m_colCount = qMax(row->getMaxNo(), m_colCount);
 				}
 			}
+			qApp->processEvents(/*QEventLoop::ExcludeUserInputEvents*/);
 		}
 	}
 }
 
+/// Форматирование с передачей selection, полезно на случай установки свойств.
+void uoReportDoc::doFormatDocWithSelection(uoReportSelection * selection)
+{
+	if (!selection)
+		return;
+	if (m_rows->getCountItem() <=0 && m_headerCol->getCountItem() <=0 && 	m_headerRow->getCountItem() <= 0)
+		return;
+	int nmRow = 0, nmCol = 0;
+
+	/*
+		это была неплохая оптимизация, есть маленькие баги,
+		обструкт не принимался, видно неправильно с селекшионз работает,
+		ну да пока отложу, как ника 2 ночи О_о...
+	*/
+
+	uorSelectionType selMode = selection->selectionType();
+//	uoRow* row = NULL;
+	if (selMode == uoRst_Unknown || selMode == uoRst_Cell) {
+		selection->currentCell(nmRow, nmCol);
+		doFormatDoc(nmRow, nmCol);
+	} else if (selMode == uoRst_Column || selMode == uoRst_Columns) {
+		for(int i = 1; i<=m_colCount; i++){
+			if (selection->isColSelect(i))
+				doFormatDoc(-1, i);
+		}
+
+
+	} else if (selMode == uoRst_Row || selMode == uoRst_Rows) {
+		for(int i = 1; i<=m_rowCount; i++){
+			if (selection->isRowSelect(i))
+				doFormatDoc(i, -1);
+		}
+
+	} else if (selMode == uoRst_Cells) {
+		QRect cb = selection->getSelectionBound();
+		for(int i = cb.top(); i<=cb.bottom(); i++){
+			if (selection->isRowSelect(i) || selection->isRowPartlySelect(i))
+				doFormatDoc(i, -1);
+		}
+	}
+}
+
+
 /// Установить текст в ячейку
-void uoReportDoc::setCellText(const int row, const int col, const QString text)
+void uoReportDoc::setCellText(const int& row, const int& col, const QString& text, uorCellTextType type)
 {
 	if (m_undoManager->isCollectChanges()){
 		QString oldText = m_rows->getText(row, col);
@@ -1309,36 +1904,41 @@ void uoReportDoc::setCellText(const int row, const int col, const QString text)
 	++m_changes;
 	onAccessRowOrCol(row, uorRhtRowsHeader, true);
 	onAccessRowOrCol(col, uorRhtColumnHeader, true);
-	if (!m_formatStoped)
+	if (m_formatEnable)
 		doFormatRow(row, col);
 }
 
 /// Установить выравнивание текста в ячейке
-void uoReportDoc::setCellTextAlignment(const int posY, const int posX, uoVertAlignment va,  uoHorAlignment ha, uoCellTextBehavior tb)
+void uoReportDoc::setCellTextAlignment(const int rowNo, const int colNo, uoVertAlignment va,  uoHorAlignment ha, uoCellTextBehavior tb)
 {
-	uoCell* cell = m_rows->getCell(posY, posX, true);
+	uoCell* cell = m_rows->getCell(rowNo, colNo, true);
 	if (cell){
 		cell->setAlignment(va,  ha, tb, this);
 		++m_changes;
-		doFormatRow(posY, posX);
+		doFormatRow(rowNo, colNo);
 	}
 }
 
-QString uoReportDoc::getCellText(const int row, const int col){
+QString uoReportDoc::getCellText(const int& row, const int& col, uorCellTextType type){
 	return 	m_rows->getText(row, col);
 }
 
-uoCell* uoReportDoc::getCell(const int posY, const int posX, bool needCreate, bool provideProp){
-	uoCell* cell = m_rows->getCell(posY, posX, needCreate);
+uoCell* uoReportDoc::getCell(const int& rowNo, const int& colNo, bool needCreate, bool provideProp){
+	uoCell* cell = m_rows->getCell(rowNo, colNo, needCreate);
 	if (cell && provideProp)
 		cell->provideAllProps(this, provideProp);
 	if (needCreate){
-		onAccessRowOrCol(posY, uorRhtRowsHeader, true);
-		onAccessRowOrCol(posX, uorRhtColumnHeader, true);
+		onAccessRowOrCol(rowNo, uorRhtRowsHeader, true);
+		onAccessRowOrCol(colNo, uorRhtColumnHeader, true);
 	}
 	return cell;
 }
 
+uoRow* uoReportDoc::getRow(const int& rowNum)
+{
+	Q_ASSERT(rowNum);
+	return m_rows->getRow(rowNum, false);
+}
 
 /**
 	Вычислим нормальный рект для страницы с учетом настроек страницы
@@ -1356,15 +1956,12 @@ bool uoReportDoc::updatePageRectPrint()
 	bool debug_this = true;
 	m_pagesSetings->normalize();
 
-	qreal scaleFactor = m_pagesSetings->scale();
-	qreal scaleFactorO = 1 / scaleFactor;
+	uorNumber scaleFactor = m_pagesSetings->scale();
+	uorNumber scaleFactorO = 1 / scaleFactor;
 	/*
 		тут одна тонкость: если в параметрах страницы стоит "по ширине листа",
 		тогда scaleFactor надо пересчитать в зависимости от ширины листа вправо.
 	*/
-	const bool toWidthOfSheet = m_pagesSetings->widthOfSheet();
-
-
 	int pogreshn = 20;
 
 	pPrinter->setPageSize(m_pagesSetings->m_paperSize);
@@ -1373,7 +1970,7 @@ bool uoReportDoc::updatePageRectPrint()
 	QRect pageRect = pPrinter->pageRect();
 	m_paperRectPrint = pPrinter->paperRect();
 	int pDpi = pPrinter->resolution();
-	qreal kDpi = pDpi / 25.4; /// точек в милиметре.
+	uorNumber kDpi = (uorNumber)(pDpi / 25.4); /// точек в милиметре.
 
 	int fldSz = m_pagesSetings->m_fieldLeft + m_pagesSetings->m_fieldRight;
 	fldSz = int(fldSz * kDpi);
@@ -1446,8 +2043,6 @@ bool uoReportDoc::updatePageRectPrint()
 	}
 	m_pageRectPrint.adjust(-1,-1,1,1);
 
-	m_pageRectPrint.setBottom(m_pageRectPrint.bottom()*scaleFactorO);
-	m_pageRectPrint.setRight(m_pageRectPrint.right()*scaleFactorO);
 	if (debug_this) {
 		qDebug() << QString::fromUtf8("Расчет ректов страницы ++{");
 		qDebug() << "scaleFactor" << scaleFactor;
@@ -1467,8 +2062,7 @@ void uoReportDoc::updatePageSegmentList()
 	bool debug_this = false;
 	while (!m_segmentList.isEmpty())     delete m_segmentList.takeFirst();
 
-	qreal scaleFactor = m_pagesSetings->scale();
-	qreal scaleFactorO = 1 / scaleFactor;
+	uorNumber scaleFactor = m_pagesSetings->scale();
 	/*
 		тут одна тонкость: если в параметрах страницы стоит "по ширине листа",
 		тогда scaleFactor надо пересчитать в зависимости от ширины листа вправо.
@@ -1488,7 +2082,7 @@ void uoReportDoc::updatePageSegmentList()
 		ОК. решил проблему в функции форматирования строки.doFormatRowLRMaxLng(row);
 	*/
 
-	qreal rigthLengMax = 0.0;
+	uorNumber rigthLengMax = uorNumberNull;
 	uoRow* row = m_rows->getFirst();
 	m_rowCount = m_colCount = 0; // подпересчитаем.
 	while(row){
@@ -1499,9 +2093,9 @@ void uoReportDoc::updatePageSegmentList()
 	}
 
 	int nmColCntr = 0;
-	qreal offset = 0.0;
-	qreal pageWidth = pageRectPrintCpy.width();
-	qreal nmColWidth = 0.0, nmColsWidth = 0.0, nmColsWidthAll = 0.0;
+	uorNumber offset = uorNumberNull;
+	uorNumber pageWidth = uorNumberNull;
+	uorNumber nmColWidth = uorNumberNull, nmColsWidth = uorNumberNull, nmColsWidthAll = uorNumberNull;
 
 	if (toWidthOfSheet){
 		for (nmColCntr=1; (nmColsWidthAll < rigthLengMax || nmColCntr<=m_colCount); nmColCntr++)
@@ -1510,18 +2104,16 @@ void uoReportDoc::updatePageSegmentList()
 			nmColsWidthAll += nmColWidth;
 		}
 		scaleFactor = pageRectPrintCpy.width() / nmColsWidthAll;
-		scaleFactor = qMax(0.1, scaleFactor);
+		scaleFactor = qMax((uorNumber)0.1, scaleFactor);
 		m_pagesSetings->setScale(scaleFactor);
-		if (scaleFactor != 1.0){
-			m_pagesSetings->transformPageRect(m_pageRectPrint);
-		}
 		segment->m_segmWidth = nmColsWidthAll;
 		segment->m_colEnd = nmColCntr;
 		return;
 	}
+	pageWidth = pageRectPrintCpy.width();
 	if (scaleFactor != 1.0){
-		m_pagesSetings->transformPageRect(m_pageRectPrint);
 		pageRectPrintCpy = m_pageRectPrint;
+		m_pagesSetings->transformPageRect(pageRectPrintCpy);
 		pageRectPrintCpy.adjust(2,2,-2,-2); // нужно правильно печатать толстые рамки, иначе края режутся.
 		pageWidth = pageRectPrintCpy.width();
 	}
@@ -1534,7 +2126,8 @@ void uoReportDoc::updatePageSegmentList()
 	{
 		// не учитывается если колонка больше ширины страницы :(
 		nmColWidth = getScaleSize(uorRhtColumnHeader, nmColCntr);
-		nmColWidth = nmColWidth * scaleFactorO;
+		// Если мы увеличили размер страницы, согласно масштаба, то нафига уменьшать размеры
+		nmColWidth = nmColWidth; // * scaleFactorO;
 
 		nmColsWidthAll += nmColWidth ;
 		if (debug_this) {			qDebug() << " col  # " << nmColCntr << " ColWidth " << nmColWidth << "nmColsWidthAll"<<nmColsWidthAll;		}
@@ -1545,9 +2138,9 @@ void uoReportDoc::updatePageSegmentList()
 		} else {
 			nmColsWidth = nmColWidth;
 			if (nmColsWidth>=pageWidth){
-				offset = 0.0;
+				offset = uorNumberNull;
 				do {
-					if (segment->m_segmWidth > 0.0){
+					if (segment->m_segmWidth > uorNumberNull){
 						segment = new uorPageColSegment(++m_pagesColumnTotal,nmColCntr,nmColCntr);
 						m_segmentList.append(segment);
 					}
@@ -1587,10 +2180,17 @@ void uoReportDoc::updatePageSegmentList()
 	}
 }
 /**
-	для того, что-бы updatePageRectPrint увидел масштаб страницы...
+	Устанавливаем матрицу ячеек.
 */
-void uoReportDoc::updateScaleFactor()
-{}
+void 	uoReportDoc::setCellMatrix(uoCellMatrix* matrix)
+{
+	if (m_matrixCell){
+		delete m_matrixCell;
+		m_matrixCell = 0;
+	}
+	m_matrixCell = matrix;
+}
+
 
 /**
 	Сформируем список пространств-страниц для печати.
@@ -1605,13 +2205,6 @@ uorAresList* uoReportDoc::getPageList()
 		return NULL;
 	}
 
-	const bool toWidthOfSheet = m_pagesSetings->widthOfSheet();
-	if (toWidthOfSheet){
-		// для того, что-бы updatePageRectPrint увидел масштаб страницы...
-		updateScaleFactor();
-	}
-
-
 	if (!updatePageRectPrint()){
 		// страницу расчитали
 		return NULL;
@@ -1624,10 +2217,13 @@ uorAresList* uoReportDoc::getPageList()
 
 
 	bool debug_this = true;
-	qreal scaleFactor = m_pagesSetings->scale();
+	uorNumber scaleFactor = m_pagesSetings->scale();
 
 	QRect pageRectPrintCpy = m_pageRectPrint;
-	pageRectPrintCpy.adjust(2,2,-2,-2);
+	if (scaleFactor != 1.0){
+		m_pagesSetings->transformPageRect(pageRectPrintCpy);
+	}
+	pageRectPrintCpy.adjust(2,2,-2,-2); // нужно правильно печатать толстые рамки, иначе края режутся.
 
 
 	int pageCnt = 0;
@@ -1638,9 +2234,9 @@ uorAresList* uoReportDoc::getPageList()
 	uorReportPrintArea* areaBaseLast = NULL;
 
 	int pagesColumnCurent = 1;
-	qreal pageHeightCntr = 0.0;
-	qreal rowsHeight = 0.0;
-	qreal offset = 0.0;
+	uorNumber pageHeightCntr = uorNumberNull;
+	uorNumber rowsHeight = uorNumberNull;
+	uorNumber offset = uorNumberNull;
 
 
 	QString cellText;
@@ -1649,46 +2245,45 @@ uorAresList* uoReportDoc::getPageList()
 		areaPrint = new uorReportPrintArea;
 		segment = m_segmentList.at(pagesColumnCurent-1);
 		m_pageList->append(areaPrint);
-		areaPrint->m_firstVisible_ColLeft 	= segment->m_colStart;
-		areaPrint->m_lastVisibleCol 		= segment->m_colEnd;
-		areaPrint->m_firstVisible_RowTop 	= 1;
-		areaPrint->m_lastVisibleRow 		= 1;
+		areaPrint->setFirstVisible_ColLeft(segment->m_colStart);
+		areaPrint->setLastVisibleCol(segment->m_colEnd);
+		areaPrint->setFirstVisible_RowTop(1);
+		areaPrint->setLastVisibleRow(1);
 		areaPrint->m_pageColumn 			= segment->m_segmentNom;
-		areaPrint->m_shift_ColLeft 			= segment->m_offsetStart;
+		areaPrint->setShift_ColLeft(segment->m_offsetStart);
 		areaPrint->m_pageNumber 			= m_pageList->count();
 		areaPrint->m_segment 				= segment;
 		areaPrint->m_area.setTopLeft(pageRectPrintCpy.topLeft());
 		areaPrint->m_area.setWidth(qMin(pageRectPrintCpy.width(),int(segment->m_segmWidth)));
 		areaPrint->m_area.setHeight(pageRectPrintCpy.height());
-		pageHeightCntr = 0.0;
+		pageHeightCntr = uorNumberNull;
 
 		for (int nRow = 1; nRow<= m_rowCount; nRow++)
 		{
 			rowsHeight = getScaleSize(uorRhtRowsHeader, nRow);
-//			rowsHeight = rowsHeight * scaleFactor;
 
 			if ((pageHeightCntr + rowsHeight) <= pageRectPrintCpy.height()){
 				// высота строки нормальная для страницы..
-				areaPrint->m_lastVisibleRow = nRow;
+				areaPrint->setLastVisibleRow(nRow);
 				pageHeightCntr += rowsHeight;
 				areaPrint->m_area.setHeight(pageHeightCntr);
 			} else {
 
 				if (rowsHeight>pageRectPrintCpy.height()){
 					// Упс, высота строки превышает высоту страницы О_о. Бум резать... папазжа...
-					offset = 0.0;
+					offset = uorNumberNull;
 					do {
 						offset += pageRectPrintCpy.height();
 						areaPrint = new uorReportPrintArea;
 						m_pageList->append(areaPrint);
 						areaPrint->m_pageNumber 			= m_pageList->count();
-						areaPrint->m_firstVisible_RowTop 	= nRow;
-						areaPrint->m_lastVisibleRow 		= nRow;
-						areaPrint->m_firstVisible_ColLeft 	= segment->m_colStart;
-						areaPrint->m_lastVisibleCol 		= segment->m_colEnd;
+						areaPrint->setFirstVisible_RowTop(nRow);
+						areaPrint->setLastVisibleRow(nRow);
+						areaPrint->setFirstVisible_ColLeft(segment->m_colStart);
+						areaPrint->setLastVisibleCol(segment->m_colEnd);
 						areaPrint->m_pageColumn 			= segment->m_segmentNom;
-						areaPrint->m_shift_ColLeft 			= segment->m_offsetStart;
-						areaPrint->m_shift_RowTop 			= offset;
+						areaPrint->setShift_ColLeft(segment->m_offsetStart);
+						areaPrint->setShift_RowTop(offset);
 						areaPrint->m_area.setTopLeft(pageRectPrintCpy.topLeft());
 						areaPrint->m_area.setWidth(qMin(pageRectPrintCpy.width(),int(segment->m_segmWidth)));
 						areaPrint->m_area.setHeight(pageHeightCntr);
@@ -1703,12 +2298,12 @@ uorAresList* uoReportDoc::getPageList()
 					areaPrint = new uorReportPrintArea;
 					m_pageList->append(areaPrint);
 					areaPrint->m_pageNumber 			= m_pageList->count();
-					areaPrint->m_firstVisible_RowTop 	= nRow;
-					areaPrint->m_lastVisibleRow 		= nRow;
-					areaPrint->m_firstVisible_ColLeft 	= segment->m_colStart;
-					areaPrint->m_lastVisibleCol 		= segment->m_colEnd;
+					areaPrint->setFirstVisible_RowTop(nRow);
+					areaPrint->setLastVisibleRow(nRow);
+					areaPrint->setFirstVisible_ColLeft(segment->m_colStart);
+					areaPrint->setLastVisibleCol(segment->m_colEnd);
 					areaPrint->m_pageColumn 			= segment->m_segmentNom;
-					areaPrint->m_shift_ColLeft 			= segment->m_offsetStart;
+					areaPrint->setShift_ColLeft(segment->m_offsetStart);
 					areaPrint->m_area.setTopLeft(pageRectPrintCpy.topLeft());
 					areaPrint->m_area.setWidth(qMin(pageRectPrintCpy.width(),int(segment->m_segmWidth)));
 
@@ -1734,18 +2329,18 @@ uorAresList* uoReportDoc::getPageList()
 			if (areaPrint){
 				if (true) {
 					qDebug() << "Page №: " << areaPrint->m_pageNumber
-					<< "rows" << areaPrint->m_firstVisible_RowTop << " - " << areaPrint->m_lastVisibleRow << " - " <<areaPrint->m_shift_RowTop
-					<< "cols" << areaPrint->m_firstVisible_ColLeft << " - " << areaPrint->m_lastVisibleCol<< " - " <<areaPrint->m_shift_ColLeft
+					<< "rows" << areaPrint->firstVisible_RowTop() << " - " << areaPrint->lastVisibleRow() << " - " <<areaPrint->shift_RowTop()
+					<< "cols" << areaPrint->firstVisible_ColLeft() << " - " << areaPrint->lastVisibleCol()<< " - " <<areaPrint->shift_ColLeft()
 					<< "m_area" << areaPrint->m_area
 					<< "m_pageColumn" << areaPrint->m_pageColumn;
 				} else {
 					qDebug() << "\t" << areaPrint->m_pageNumber << "\t"
-					<< areaPrint->m_firstVisible_RowTop << "\t"
-					<< areaPrint->m_lastVisibleRow << "\t"
-					<< areaPrint->m_shift_RowTop << "\t"
-					<< areaPrint->m_firstVisible_ColLeft << "\t"
-					<< areaPrint->m_lastVisibleCol << "\t"
-					<< areaPrint->m_shift_ColLeft << "\t"
+					<< areaPrint->firstVisible_RowTop() << "\t"
+					<< areaPrint->lastVisibleRow() << "\t"
+					<< areaPrint->shift_RowTop() << "\t"
+					<< areaPrint->firstVisible_ColLeft() << "\t"
+					<< areaPrint->lastVisibleCol() << "\t"
+					<< areaPrint->shift_ColLeft() << "\t"
 					<< areaPrint->m_pageColumn; // << "\t"
 				}
 			}
@@ -1807,10 +2402,10 @@ bool uoReportDoc::printDoc(const bool updPrintSourse, QWidget* qwidg)
 		pageNomFrom = pPrinter->fromPage();
 		pageNomTo = pPrinter->toPage();
 	}
-	qreal scaleFactor = m_pagesSetings->scale();
+	uorNumber scaleFactor = m_pagesSetings->scale();
 	qDebug() << QString("bool uoReportDoc::printDoc scaleFactor = %1").arg(scaleFactor);
 
-    QPainter painter;
+    uoPainter painter;
     painter.begin(pPrinter);
     painter.scale(scaleFactor,scaleFactor);
     bool firstPage = true;
@@ -1847,12 +2442,153 @@ bool uoReportDoc::printDoc(const bool updPrintSourse, QWidget* qwidg)
 	return true;
 }
 
-bool uoReportDoc::getScaleHide(uoRptHeaderType hType, int nom){
+bool uoReportDoc::getScaleHide(const uoRptHeaderType& hType, const int& nom){
 	if (hType == uorRhtRowsHeader)
-		return m_headerV->getHide(nom);
+		return m_headerRow->getHide(nom);
 	else
-		return m_headerH->getHide(nom);
+		return m_headerCol->getHide(nom);
 }
+bool uoReportDoc::getRowHide(const int& rowNom){
+	return m_headerRow->getHide(rowNom);
+}
+bool uoReportDoc::getColHide(const int& colNom){
+	return m_headerCol->getHide(colNom);
+}
+
+bool uoReportDoc::joinCells(QRect& joinRect, bool join /* = true*/){
+	bool retVal = false;
+	if (joinRect.width()>1 || joinRect.height()>0)
+		return joinCells(joinRect.left(), joinRect.top(), joinRect.right(), joinRect.bottom(), join);
+	return retVal;
+}
+
+
+bool uoReportDoc::joinCells(int colSt, int rowSt, int colEnd, int rowEnd, bool join /* = true*/)
+{
+	Q_ASSERT(colSt);
+	Q_ASSERT(colEnd);
+	Q_ASSERT(colSt<=colEnd);
+	Q_ASSERT(rowSt);
+	Q_ASSERT(rowEnd);
+	Q_ASSERT(rowSt<=rowEnd);
+
+	QList<uoCell*> listSell;
+	uoCell* curCell = 0;
+
+//	bool mayBeJoin = true;
+//	bool needUnJoin = false; // Если все выделенные ячейки объединены, тогда от нас хотят UnJoin
+
+	int joinCount = 0;
+	int countCells = (colEnd - colSt + 1) * (rowEnd - rowSt + 1);
+
+	bool brokenCell = false; // Ошибка
+
+	/*	true - объединить, false - разьединить.
+		фишка в том, что мы не можем объединить уже объединенные и
+		разьединить не объединенные. По этому будем решать по месту,
+		какая операция предстоит.
+	*/
+
+	bool curentOper = join;
+	uoCellJoin* cellJoinItem = 0;
+
+	for (int cellOper = 0; cellOper<2; cellOper++){
+		/*	первая операция проверка возможности объединения
+			вторая само объединение	*/
+
+		///\todo - продолжать тут. кончил 03.12.2009 01:39
+		for (int rowCntr = rowSt; rowCntr <= rowEnd; rowCntr++){
+			for (int colCntr = colSt; colCntr <= colEnd; colCntr++){
+				curCell = getCell(rowCntr, colCntr, true,true);
+
+				if (cellOper == 0) {
+					// цикл проверки.
+					if (!curCell) {
+						brokenCell = true;
+						break;
+					}
+
+					if (curCell->isUnionHas()){
+						joinCount += 1;
+					}
+				} else if (cellOper == 1) {
+					// Цикл объединения/разьединения...
+					if (curentOper) {
+						// Объединяем...
+						if (curCell->isUnionHas()){
+							cellJoinItem = curCell->deleteCellJoin();
+						} else {
+							cellJoinItem = getCellJoinStruct();
+						}
+						if (cellJoinItem){
+							if (rowCntr == rowSt && colCntr == colSt) {
+								// Первая ячейка объединения.
+								cellJoinItem->m_JoinType = uoCJT_Normal;
+								cellJoinItem->m_col = colEnd - colSt + 1;
+								cellJoinItem->m_row = rowEnd - rowSt + 1;
+								cellJoinItem->m_cellRect = QRect(colSt,rowSt, cellJoinItem->m_col, cellJoinItem->m_row);
+							} else {
+								clearCell(curCell);
+								cellJoinItem->m_JoinType = uoCJT_BackPoint;
+								cellJoinItem->m_col = colSt;
+								cellJoinItem->m_row = rowSt;
+								cellJoinItem->m_cellRect = QRect(colSt,rowSt, cellJoinItem->m_col, cellJoinItem->m_row);
+							}
+
+							curCell->setCellJoin(cellJoinItem, this);
+						} else {
+							brokenCell = true;
+						}
+					} else {
+						// разьединяем
+						if (curCell->isUnionHas()){
+							saveCellJoin(curCell->deleteCellJoin());
+						}
+					}
+				}
+			}
+			if (brokenCell)
+				break;
+		}
+		if (cellOper == 0){
+			if ((countCells == joinCount) && curentOper){
+				// у нас комманда на объединение, а все ячейки объединены.
+				curentOper = false;
+			} else if ((countCells != joinCount && joinCount>0) && curentOper){
+				// Если операция - объединить, но мы находим объединенные ячейки в выделении, то прерываем операцию.
+				brokenCell = true;
+				return false;
+			}
+		}
+	}
+	return !brokenCell;
+}
+
+/// Получить первую ячейку объединения, если оно есть, или вернуть текущую, переданную.
+uoCell* uoReportDoc::getFirstUnionCell(uoCell* curCell, int rowNo)
+{
+	uoCell* retCell = curCell;
+	if (curCell){
+		if (curCell->joinType() == uoCJT_BackPoint){
+			QPoint curCellPnt = curCell->getFirstUnionCellPoint(rowNo);
+			retCell = getCell(curCellPnt.y(), curCellPnt.x(), true, true);
+		}
+	}
+	return retCell;
+}
+
+/// Очистка ячейки
+void uoReportDoc::clearCell(uoCell* cell) {
+	if (cell->m_textProp){
+		m_pointBlock->savePoint(cell->m_textBoundary);
+		cell->m_textBoundary = NULL;
+		cell->m_maxRowLen = uorNumberNull;
+	}
+	cell->setText("", this);
+	m_cellTextDecorList.saveItem(cell->m_textProp); cell->m_textProp = 0;
+	m_cellBordPropList.saveItem(cell->m_borderProp); cell->m_borderProp = 0;
+}
+
 
 /// присоединим вьюв..
 void uoReportDoc::attachView(uoReportCtrl* rCtrl, bool autoConnect){
@@ -1953,11 +2689,31 @@ uorBorderPropBase* uoReportDoc::getNewBordProp()
 
 
 /// Создаем новую uoCellJoin
-uoCellJoin* uoReportDoc::getCellJoin()
+uoCellJoin* uoReportDoc::getCellJoinStruct()
 {
 	return m_cellJoinCash.getItem();
 }
 
+/// Если текущая ячейка участник объединения, возвращает рект объединения.
+QRect uoReportDoc::getCellJoinRect(QPoint curCell)
+{
+	QRect rctVal;
+	uorZeroRectI(rctVal);
+	uoCell* cell = getCell(curCell.y(), curCell.x());
+	uoCell* cell2 = 0;
+	if (cell){
+		if (cell->isUnionHas()){
+			rctVal = cell->m_ceelJoin->m_cellRect;
+			if (cell->joinType() == uoCJT_BackPoint){
+				cell2 = getCell(cell->m_ceelJoin->m_row, cell->m_ceelJoin->m_col);
+				if (cell2){
+					rctVal = cell2->m_ceelJoin->m_cellRect;
+				}
+			}
+		}
+	}
+	return rctVal;
+}
 /// Утилизируем uoCellJoin
 void uoReportDoc::saveCellJoin(uoCellJoin* cellJItem)
 {
@@ -1987,26 +2743,26 @@ void uoReportDoc::test(){
     bool printAll = true;
 	bool printCurent = true;
 
-	qreal sz = 17;
+	uorNumber sz = 17;
 
     qDebug()<<"Start test class \"uoReportDocBody\"";
     qDebug()<<"{";
 	if (false || printAll) {
 		setScaleSize(uorRhtRowsHeader, 2, 15);
-		setScaleSize(uorRhtRowsHeader, 4, 18); if (printCurent) m_headerV->printToDebug();
-		setScaleSize(uorRhtRowsHeader, 3, 19); if (printCurent) m_headerV->printToDebug();
-		setScaleSize(uorRhtRowsHeader, 5, 25); if (printCurent) m_headerV->printToDebug();
-		setScaleSize(uorRhtRowsHeader, 2, sz); if (printCurent) m_headerV->printToDebug();
-		setScaleSize(uorRhtRowsHeader, 1, sz); if (printCurent) m_headerV->printToDebug();
-		setScaleSize(uorRhtRowsHeader, 7, 11); if (printCurent) m_headerV->printToDebug();
+		setScaleSize(uorRhtRowsHeader, 4, 18); if (printCurent) m_headerRow->printToDebug();
+		setScaleSize(uorRhtRowsHeader, 3, 19); if (printCurent) m_headerRow->printToDebug();
+		setScaleSize(uorRhtRowsHeader, 5, 25); if (printCurent) m_headerRow->printToDebug();
+		setScaleSize(uorRhtRowsHeader, 2, sz); if (printCurent) m_headerRow->printToDebug();
+		setScaleSize(uorRhtRowsHeader, 1, sz); if (printCurent) m_headerRow->printToDebug();
+		setScaleSize(uorRhtRowsHeader, 7, 11); if (printCurent) m_headerRow->printToDebug();
 
 		toDebugTest(getScaleSize(uorRhtRowsHeader, 1) == sz, &nTestOk, &nTestAll, "getScaleSize(uorRhtRowsHeader, 1) == sz");
 		toDebugTest(getScaleSize(uorRhtRowsHeader, 2) == sz, &nTestOk, &nTestAll, "getScaleSize(uorRhtRowsHeader, 2) == sz");
-		qDebug() << " size " << m_headerV->getCountItem();
-		qDebug() << " m_headerV->deleteItem(2,2); ";
-		m_headerV->deleteItem(2,2);
-		qDebug() << " size " << m_headerV->getCountItem();
-		m_headerV->printToDebug();
+		qDebug() << " size " << m_headerRow->getCountItem();
+		qDebug() << " m_headerRow->deleteItem(2,2); ";
+		m_headerRow->deleteItem(2,2);
+		qDebug() << " size " << m_headerRow->getCountItem();
+		m_headerRow->printToDebug();
 	}
 
 

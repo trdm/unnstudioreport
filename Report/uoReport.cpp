@@ -10,6 +10,8 @@
 #include "uoReportDoc.h"
 #include "uoSpanTree.h"
 #include "uoReportDocBody.h"
+#include "uoNumVector2.h"
+#include "uoNumVector.h"
 
 #include "QDebug"
 #include "QPrinter"
@@ -17,6 +19,7 @@
 
 
 namespace uoReport {
+
 
 /**
 	\class uoReportTest - класс обобщенного тестирования
@@ -82,6 +85,124 @@ void uoReportTest::exploreQPrinter()
 
 }
 
+
+struct uorTestEnumStru
+{
+	uorTestEnumStru(int nom)
+		:m_nomber(nom)
+		{};
+
+	int m_nomber;
+};
+
+
+
+class uorTectRow : public uoNumVector2<uorTestEnumStru>
+{
+	public:
+	uorTectRow(){}
+	virtual~uorTectRow(){}
+	virtual void onDeleteItem(uorTestEnumStru* delItem);
+	virtual void onCreateItem(uorTestEnumStru* crItem);
+
+};
+
+
+void uorTectRow::onDeleteItem(uorTestEnumStru* delItem)
+{}
+void uorTectRow::onCreateItem(uorTestEnumStru* crItem)
+{}
+
+void uoReportTest::testuoNumVector2()
+{
+	uorTectRow stru_map;
+}
+
+struct uoTestStru {
+	uoTestStru(int no = 0):m_nom(no) {}
+	int m_nom;
+	QString m_srt;
+	int number() {return m_nom;}
+	void setNumber(int nom) {m_nom = nom;};
+};
+
+
+bool uoReportTest::testuoNumVector3()
+{
+	uoTestStru* item = 0;
+	uoNumVector<uoTestStru>* massive = new uoNumVector<uoTestStru>;
+	int rowCount = massive->getCountItem();
+	item = massive->getItem(1, true);
+	item = massive->getItem(10, true);
+	rowCount = massive->getCountItem();
+	delete massive;
+
+
+
+	return true;
+}
+
+
+bool uorRangesExtract(QList<int>& listFrom, QList<QPoint*>& listTo )
+{
+	bool retVal = true;
+
+	if (listFrom.isEmpty())
+		return retVal;
+	QPoint* point = new QPoint;
+
+	int posStart = -1, posEnd = -1, posCur = -1, cntItem = listFrom.size();
+	if (cntItem == 1) {
+		posStart = posEnd = listFrom.at(0);
+		point->setX(posStart);
+		point->setY(posStart);
+		listTo.append(point);
+		return true;
+	}
+
+	int cnter = 0;
+	int lastProcPosStart = -1; // Последняя обработанная позиция
+
+	QList<int>::const_iterator it = listFrom.constBegin();
+	while(it != listFrom.constEnd()){
+		++cnter;
+		posCur = *it;
+		if (posStart == -1){
+			posStart = posEnd = posCur;
+		} else {
+			if (posCur == (posEnd + 1)){
+				posEnd = posCur;
+			} else {
+				point = new QPoint(posStart, posEnd);
+				listTo.append(point);
+				lastProcPosStart = posStart;
+				posStart = posEnd = posCur;
+			}
+		}
+		it++;
+	}
+
+	if (lastProcPosStart != posStart){
+		point = new QPoint(posStart, posEnd);
+		listTo.append(point);
+	}
+	return retVal;
+}
+
+void uorRangesClear(QList<QPoint*>& listTo)
+{
+	if (listTo.isEmpty())
+		return;
+	while(!listTo.isEmpty())
+		delete listTo.takeFirst();
+}
+
+void uorZeroRectI(QRect& rct){
+	rct.setLeft(0);	rct.setTop(0);	rct.setRight(0);	rct.setBottom(0);
+}
+void uorZeroRectF(uorRect& rct){
+	rct.setLeft(0);	rct.setTop(0);	rct.setRight(0);	rct.setBottom(0);
+}
 
 /// Общая процедура запуска тестирования классов наймспейса "uoReport"
 void uoRunTest(){

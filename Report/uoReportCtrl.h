@@ -19,6 +19,7 @@
 #include <QPen>
 #include <QContextMenuEvent>
 #include <QScrollBar>
+#include <QShortcut>
 #include "uoReport.h"
 #include "uoReportDocBody.h"
 #include "uoReportViewIteract.h"
@@ -26,6 +27,8 @@
 #include "uoReportPropEditor.h"
 #include "uoReportCtrlItems.h"
 #include "uorReportAreas.h"
+#include "uoPainter.h"
+
 
 class uoReportDoc;
 class uoReportUndo;
@@ -38,6 +41,8 @@ class uoReportCtrl;
 class uoReportDrawHelper;
 class uorPagePrintSetings;
 class uorPageSetup;
+class uorMimeData;
+
 
 namespace uoReport {
 
@@ -151,12 +156,13 @@ class uoReportCtrl : public QWidget
 		bool mousePressEventForGroup(QMouseEvent *event, bool isDoubleClick = false);
 		bool mousePressEventForSection(QMouseEvent *event, bool isDoubleClick = false);
 		bool mousePressEventForDataArea(QMouseEvent *event, bool isDoubleClick = false);
-		bool findScaleLocation(qreal posX, qreal posY, int &scaleNo, uoRptHeaderType rht);
+		bool findScaleLocation(uorNumber posX, uorNumber posY, int &scaleNo, uoRptHeaderType rht);
 
-		uorSparesType findPointLocation(qreal posX, qreal posY);
+		uorSparesType findPointLocation(uorNumber posX, uorNumber posY);
 
-		uorBorderLocType  scaleLocationInBorder(qreal pos, QRectF rect, uoRptHeaderType rht);
+		uorBorderLocType  scaleLocationInBorder(uorNumber pos, uorRect rect, uoRptHeaderType rht);
 		void keyPressEventMoveCursor ( QKeyEvent * event );
+		void keyPressEventShortcut ( QKeyEvent * event );
 		void updateThis();
 
 		int m_freezUpdate;	/// заморозить посылку сообщений на перерисовку
@@ -165,7 +171,7 @@ class uoReportCtrl : public QWidget
 		uorSparesType 	m_curMouseSparesType;
 		int 			m_curMouseSparesNo;
 		uoRptHeaderType m_curMouseSparesRht;
-		QRectF			m_curMouseSparesRect;
+		uorRect			m_curMouseSparesRect;
 		/**
 			последняя позиция мышки в которой было иницировано действие нажатием левой клавишы.
 			Например иницировано начало выделения или изменения размера ячейки.
@@ -179,9 +185,10 @@ class uoReportCtrl : public QWidget
 
 		QPoint 	m_curentCell; ///< Текущая ячейка вьюва. есть всегда. Даже когда работаем с картинками.
 		QRect 	m_curentCellRect; ///< Текущая ячейка вьюва. есть всегда. Даже когда работаем с картинками.
-		void	setCurentCell(int x, int y, bool ensureVisible = false);
-		QRect 	getCellRect(const int& posY, const int& posX);
-		QPoint 	getCellFromPosition(const qreal& posY, const qreal& posX);
+		void	checkCurentCell(int& col, int& row, int& colsJn, int& rowsJn);
+		void	setCurentCell(const int& colTmp, const int& rowTmp, bool ensureVisible = false);
+		QRect 	getCellRect(const int& rowNo, const int& colNo, bool ifJoinGetFull = false);
+		QPoint 	getCellFromPosition(const uorNumber& posY, const uorNumber& posX);
 		bool 	curentCellVisible();
 
 	public slots:
@@ -192,24 +199,33 @@ class uoReportCtrl : public QWidget
 		void	doScrollAction(int act, uoRptHeaderType rht);
 		void 	scrollView(int dx, int dy);
 
+		// тут получаем комманды от меню
+		void 	onCopy();
+		void 	onPaste();
+		void 	onCut();
+
 	signals:
-		void onColumnSizeChange(const int& nmColl, const qreal& nmLen);
+		void onColumnSizeChange(const int& nmColl, const uorNumber& nmLen);
 		void onSelectionChange();
 		void onCurentCellChange(const QPoint& oldPoint, const QPoint& newPoint);
 		void onStateModeChange(const uoReportStateMode& oMode, const uoReportStateMode& nMode);
 
 	public:
 		//-------- draw section ----------------
-		void drawDataArea(QPainter& painter, uorReportAreaBase& drArea);
+		void drawDataArea(uoPainter& painter, uorReportAreaBase& drArea);
 		void initDrawInstruments();
     protected:
-		void drawWidget(QPainter& painter);
-		void drawHeaderControlContour(QPainter& painter);
-		void drawHeaderControlGroup(QPainter& painter);
-		void drawHeaderControl(QPainter& painter);
-		void drawDataAreaResizeRuler(QPainter& painter);
-		void drawCell(QPainter& painter, uoCell* cell, QRectF& rectCell, uoReportDoc* doc, bool isSell);
-		void drawSpliter(QPainter& painter);
+		void drawWidget(uoPainter& painter);
+		void drawHeaderControlContour(uoPainter& painter);
+		void drawHeaderControlGroup(uoPainter& painter);
+		void drawHeaderControl(uoPainter& painter);
+		void drawDataAreaResizeRuler(uoPainter& painter);
+		void drawCell(uoPainter& painter, uoCell* cell, uorRect& rectCell, uoReportDoc* doc, bool isSell);
+		void drawSpliter(uoPainter& painter);
+		void drawCurentCell(uoPainter& painter);
+		void drawAfterDataErea(uoPainter& painter);
+
+		bool getOffsetFromLastArea(uoRptHeaderType& rht, uorNumber& offset);
 		uoReportDrawHelper* m_drawHelper;
 
 		/**
@@ -220,17 +236,26 @@ class uoReportCtrl : public QWidget
 			y - кол-во фиксированных колонок
 		*/
 		uorFixationTypes m_fixationType;
-		QPointF	m_fixationPoint;
+		uorPoint	m_fixationPoint;
 		int 	m_fixedRow;
 		int 	m_fixedCol;
 		uorReportViewArea m_areas[4];
-		uorReportViewArea m_areaMain;	///<главная область отчета.
+		uorReportViewArea m_areaMain;		///<главная область отчета.
+		uorReportViewArea m_areaMainCopy;	///<Копия области отчета для определения отрисовки.
+		int  m_dirtyDrawErea;
 
-		qreal m_charWidthPlus; 	///< Опорная ширина символа "+" в текушем шрифте.
-		qreal m_charHeightPlus; ///< Опорная высота символа "+" в текушем шрифте.
+		/* Данные для оптимизации расшифровки */
+		uorSelectionType m_cashDrawSellType; //= m_selections->selectionType();
+		long m_cashDrawMaVer; 	 //= m_areaMain.changesVer();
+		long m_cashDrawDocVer; 	 //= m_doc.changesVer();
+		void checkRedrawOption();
 
-		qreal m_scaleFactor;	///< Положительный соэффициент масштаба виджета, если он > 0, тогда виджет крупнее, если меньше, виджет мельче.
-		qreal m_scaleFactorO;	///< обратная величина фактора. для пересчетов смещений.
+
+		uorNumber m_charWidthPlus; 	///< Опорная ширина символа "+" в текушем шрифте.
+		uorNumber m_charHeightPlus; ///< Опорная высота символа "+" в текушем шрифте.
+
+		uorNumber m_scaleFactor;	///< Положительный соэффициент масштаба виджета, если он > 0, тогда виджет крупнее, если меньше, виджет мельче.
+		uorNumber m_scaleFactorO;	///< обратная величина фактора. для пересчетов смещений.
 
 	private:
 		void 		initControls(QWidget *parent);
@@ -272,17 +297,17 @@ class uoReportCtrl : public QWidget
 	protected:
 		void 	recalcFixationPointStart();
 
-		qreal 	getWidhtWidget(); 	///< Ширина с учетом масштаба
-		qreal 	getHeightWidget();	///< Высота с учетом масштаба
+		uorNumber 	getWidhtWidget(); 	///< Ширина с учетом масштаба
+		uorNumber 	getHeightWidget();	///< Высота с учетом масштаба
 
-		bool 	rowVisible(int nmRow) const;
-		bool 	colVisible(int nmCol) const;
+		bool 	rowVisible(const int& nmRow) const;
+		bool 	colVisible(const int& nmCol) const;
 
 		void 	recalcHeadersRects();
 		void 	recalcFixedAreasRects();
 		void 	recalcGroupSectionRects(uoRptHeaderType rht = uorRhtUnknown);
-		qreal 	getLengthOfScale(uoRptHeaderType rht, int start, int stop);
-		int  	recalcVisibleScales(uoRptHeaderType rht);
+		uorNumber 	getLengthOfScale(const uoRptHeaderType& rht, const int& start, const int& stop);
+		int  	recalcVisibleScales(const uoRptHeaderType& rht);
 		void 	calcGroupItemPosition(uoRptGroupItem* grItem, uoRptHeaderType rht);
 
 		void 	dropGropItemToCache();
@@ -329,7 +354,7 @@ class uoReportCtrl : public QWidget
 		void onGroupHide();
 
 		void onOutToDebug();
-		void onSetScaleFactor(const qreal sFactor);
+		void onSetScaleFactor(const uorNumber sFactor);
 
 		void onSectionInclude();
 		void onSectionExclude();
@@ -353,6 +378,13 @@ class uoReportCtrl : public QWidget
 
 		void onShowPreview();
 		void onShowPagesSetings();
+
+		void onLoadTXT();
+		void onCreateMatrix();
+		void onOptionsShow();
+
+		void onCellJoin();
+
 	private:
 		void onRowColGroupOperation(const uorRCGroupOperationType& opertn);
 		void onRowColGroupOperation2(const uorRCGroupOperationType& opertn);
@@ -363,32 +395,38 @@ class uoReportCtrl : public QWidget
 		void onSpanInclude(uoRptSpanType spType);
 		void onSpanExclude(uoRptSpanType spType);
 
-		void onAccessRowOrCol(int nom, uoRptHeaderType rht); ///< при доступе к строке или столбцу вьюва...
+		void onAccessRowOrCol(const int& nom, const uoRptHeaderType& rht); ///< при доступе к строке или столбцу вьюва...
 		void onAccessRowCol(int nmRow = 0, int nmCol = 0); ///< при доступе к строке или столбцу вьюва...
 		void doChangeVirtualSize(uoRptHeaderType rht, int changeCnt); ///< обработать смену виртуального размера
 
 	private:
 		/// данные/ректы для областей....
-		QRectF m_rectGroupV;		///< Вертикальные группировки
-		QRectF m_rectGroupH;		///< Горизонтальные группировки
-		QRectF m_rectSectionV;		///< Вертикальные секции
-		QRectF m_rectSectionH;		///< Горизонтальные секции
-		QRectF m_rectRulerV;		///< Вертикальная линейка
-		QRectF m_rectRulerH;		///< Горизонтальная линейка
-		QRectF m_rectRuleCorner;	///< Верхний корнер-виджет слева от горизонтальной и сверху от вертикальной линейки
-		QRectF m_rectAll;			///< Полный регион
-		QRectF m_rectDataRegion;		///< Регион данных.
-		QRectF m_rectDataRegionFrame;	///< Рамка региона данных. А то что-то тоскливо выглядит...
+		uorRect m_rectGroupRow;		///< Вертикальные группировки
+		uorRect m_rectGroupCol;		///< Горизонтальные группировки
+		uorRect m_rectSectionRow;		///< Вертикальные секции
+		uorRect m_rectSectionCol;		///< Горизонтальные секции
+		uorRect m_rectRulerRow;		///< Вертикальная линейка
+		uorRect m_rectRulerCol;		///< Горизонтальная линейка
+		uorRect m_rectRuleCorner;	///< Верхний корнер-виджет слева от горизонтальной и сверху от вертикальной линейки
+		uorRect m_rectAll;			///< Полный регион
+		uorRect m_rectDataRegion;		///< Регион данных.
+		uorRect m_rectDataRegionFrame;	///< Рамка региона данных. А то что-то тоскливо выглядит...
+		QSize  m_lastSize;
 
 		uoReportDoc* 	m_rptDoc;
 		QImage 			m_imageView;
+		QImage 			m_imageViewCopy;
 		int 			m_drawToImage;
+		int 			m_paintLocker;
+		bool			m_directDraw;	///< прамое рисование с пом. WinAPI или XLIb если такое возможно.
 
 		int  m_maxVisibleLineNumberCnt; ///< Количество символов в максимальной видимой строке таблицы. Это нужно для вычисления ширины вертикальной линейки.
 
 		bool m_showGroup;
 		bool m_showSection;
 		bool m_showRuler;
+
+		bool m_saveWithSelection;
 
 		bool m_showGrid;
 		bool m_showFrame;
@@ -402,6 +440,7 @@ class uoReportCtrl : public QWidget
 		uoReportViewIteract* m_iteractView;
 		uoReportSelection* 	 m_selections;
 
+		QList<QShortcut*>	m_shortcutList;
 
 		// группа контролирующая положение вьюва и его размеры/свойства.
 		int m_rowsInPage; 		///< строк на страницу
@@ -435,7 +474,7 @@ class uoReportCtrl : public QWidget
 		int m_pageHeight;	///< Высота страницы в строках стандартного размера
 
 	public slots:
-		void changeDocSize(qreal sizeV, qreal sizeH);
+		void changeDocSize(uorNumber sizeV, uorNumber sizeH);
 
 };
 

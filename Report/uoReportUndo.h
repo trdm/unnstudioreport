@@ -11,7 +11,7 @@
 #include <QList>
 
 #include "uoReportDoc.h"
-//class uoReportDoc;
+#include "uoReportLoader.h"
 
 namespace uoReport {
 
@@ -42,11 +42,12 @@ struct uoRUndo01 : public uoRUndoUnit
 		int m_row;
 		int m_col;
 		QString m_text;
+		uorCellTextType m_textType;
 	public:
 
-	uoRUndo01(int row, int col, QString text)
+	uoRUndo01(int row, int col, QString text, uorCellTextType type = uorCTT_Text)
 		:uoRUndoUnit()
-		,m_row(row), m_col(col),m_text(text){};
+		,m_row(row), m_col(col),m_text(text),m_textType(type){};
 
 	virtual ~uoRUndo01(){};
 	virtual QString toString();
@@ -59,11 +60,11 @@ struct uoRUndo01 : public uoRUndoUnit
 	\struct uoRUndo01 - класс комманды отмены/повтора размера котонок или строк.
 	\brief класс комманды отмены/повтора редактирования uoHeaderScale
 
-	uoHeaderScale* m_headerV; ///< Вертикальный заголовок
-	uoHeaderScale* m_headerH; ///< Горизонтальный заголовок
+	uoHeaderScale* m_headerRow; ///< Вертикальный заголовок
+	uoHeaderScale* m_headerCol; ///< Горизонтальный заголовок
 	struct uoRptNumLine.
-		qreal _size;
-		qreal _sizeDef;
+		uorNumber _size;
+		uorNumber _sizeDef;
 		bool _hiden;
 		bool _fixed;
 
@@ -79,7 +80,7 @@ struct uoRUndo02 : public uoRUndoUnit
 		{
 			bool 	mu_fixed;
 			bool 	mu_hiden;
-			qreal 	mu_size;
+			uorNumber 	mu_size;
 		};
 	public:
 
@@ -134,12 +135,15 @@ class uoReportUndo
 		bool undoAvailability();
 		bool redoAvailability();
 
+		void save(uoReportLoader* loader);
+
 		void clear();
 		void traceToDebug();
 
 	public:
 		void doTextChange(QString oldText, int row, int col);
-		void doScaleResize(uoRptHeaderType hType, int nomRC, qreal oldSize);
+		void doDecodeChange(QString oldText, int row, int col);
+		void doScaleResize(uoRptHeaderType hType, int nomRC, uorNumber oldSize);
 
 
 };

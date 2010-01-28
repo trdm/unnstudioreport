@@ -328,7 +328,6 @@ bool uoTextFontPropTab::eventFilter(QObject* pObj, QEvent* pEvent)
 
 int uoTextFontPropTab::findFontItem(QString& fontName)
 {
-	///\todo доделать поиск наиболее подходящего итема....
 
 	int retVal = -1;
 	if (fontName.isEmpty())
@@ -581,7 +580,9 @@ uorPropDlg::uorPropDlg(QWidget *parent, uoReportPropEditor* pe)
 
 uorPropDlg::~uorPropDlg()
 {
-	propFrame->clear();
+#if (QT_VERSION > 0x040201)
+	propFrame->clear(); //if (QT_VERSION > 0x040201)
+#endif
 	m_tabsUsing.clear();
 	delete	m_tabTxt;
 	delete	m_tabLayot;
@@ -666,7 +667,9 @@ void uorPropDlg::addTab(QWidget* tab, const QString& label, uorPropertyTabType t
 }
 void uorPropDlg::clearTabs()
 {
-	propFrame->clear();
+#if QT_VERSION > 0x040201
+	propFrame->clear(); //if (QT_VERSION > 0x040201)
+#endif
 	m_tabsUsing.clear();
 }
 

@@ -47,13 +47,13 @@ void uorPagePrintSetings::clear()
 	m_scopeVal = 100;
 
 	m_titleTopSize = m_titleBotSize = 10;
-	m_scaleFactor = 1.0;
+	m_scaleFactor = (uorNumber)1.0;
 }
 
-void uorPagePrintSetings::setScale(qreal scale)
+void uorPagePrintSetings::setScale(uorNumber scale)
 {
-	m_scaleFactor = qMax(0.1, scale);
- 	m_scopeVal = 100 * m_scaleFactor;
+	m_scaleFactor = qMax((uorNumber)0.1, scale);
+ 	m_scopeVal = int(100.0 * m_scaleFactor);
 }
 
 void uorPagePrintSetings::setScope(int sType, int sVal)
@@ -79,7 +79,7 @@ void uorPagePrintSetings::setScope(int sType, int sVal)
 			break;
 		}
 	}
-	m_scaleFactor = qreal(m_scopeVal) / 100;
+	m_scaleFactor = uorNumber(m_scopeVal) / 100;
 //	qDebug() << QString("m_scopeType = %1, m_scopeVal = %2, m_scaleFactor = %3").arg(m_scopeType).arg(m_scopeVal).arg(m_scaleFactor);
 }
 
@@ -87,11 +87,11 @@ void uorPagePrintSetings::transformPageRect(QRect& rect)
 {
 	if (m_scaleFactor != 1.0) {
 		int pos = 0;
-		qreal scaleFactorO = 1 / m_scaleFactor;
-		pos = rect.top();	pos = int(qreal(pos)*scaleFactorO);		rect.setTop(pos);
-		pos = rect.left();	pos = int(qreal(pos)*scaleFactorO);		rect.setLeft(pos);
-		pos = rect.bottom();	pos = int(qreal(pos)*scaleFactorO);	rect.setBottom(pos);
-		pos = rect.right();	pos = int(qreal(pos)*scaleFactorO);		rect.setRight(pos);
+		uorNumber scaleFactorO = 1 / m_scaleFactor;
+		pos = rect.top();	pos = int(uorNumber(pos)*scaleFactorO);		rect.setTop(pos);
+		pos = rect.left();	pos = int(uorNumber(pos)*scaleFactorO);		rect.setLeft(pos);
+		pos = rect.bottom();	pos = int(uorNumber(pos)*scaleFactorO);	rect.setBottom(pos);
+		pos = rect.right();	pos = int(uorNumber(pos)*scaleFactorO);		rect.setRight(pos);
 	}
 }
 

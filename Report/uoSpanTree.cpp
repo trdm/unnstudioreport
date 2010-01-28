@@ -55,12 +55,13 @@ bool sortSpanList(uoLineSpan* s1, uoLineSpan* s2)
     - onLineExclude 	- слот исключения строк из спана.
 */
 
-uoSpanTree::uoSpanTree(QObject *parent)
+uoSpanTree::uoSpanTree(QObject *parent, uoSpanTreeType type)
 	:QObject(parent)
 	,_firstChild(new spanList)
 	,_startGrpList(0)
 	,_lastAddedSpan(0)
 	,_possibleOnlyOne(false)
+	,m_type(type)
 {
 	_lastSpanId = _maxLevel = _count = 0;
 	_freezeComputeLevel = _foldExclude = false;
@@ -104,7 +105,7 @@ bool uoSpanTree::canAddSpanToChilds(int start, int stop, spanList* list)
 		if (spn->isIntersect(start, stop))
 			return false;
 		if (spn->isInSide(start, stop)) {
-			return canAddSpanToChilds(start, stop, spn->_child);
+			return canAddSpanToChilds(start, stop, spn->m_child);
 		}
 	}
 	return true;
@@ -126,7 +127,7 @@ bool uoSpanTree::possiblyAddSpan(int start, int stop)
 		if (spn->isIntersect(start, stop))
 			return false;
 		if (spn->isInSide(start, stop)) {
-			return canAddSpanToChilds(start, stop, spn->_child);
+			return canAddSpanToChilds(start, stop, spn->m_child);
 		}
 	}
 	return true;
@@ -161,7 +162,7 @@ bool uoSpanTree::addSpanTo(int start, int stop, spanList* list)
 			spn = list->at(i);
 			if (spn->isInSide(start, stop)) {
 				needInsertHere = false;
-				return addSpanTo(start, stop, spn->_child);
+				return addSpanTo(start, stop, spn->m_child);
 			}
 		}
 	}
@@ -170,7 +171,7 @@ bool uoSpanTree::addSpanTo(int start, int stop, spanList* list)
 		++_lastSpanId;
 		spn->setId(_lastSpanId);
 		_lastAddedSpan = spn;
-		spn->_child = new spanList;
+		spn->m_child = new spanList;
 		++_count;
 		if (listContainChild(list, start, stop)){
 			uoLineSpan* spn2 = NULL;
@@ -179,7 +180,7 @@ bool uoSpanTree::addSpanTo(int start, int stop, spanList* list)
 				spn2 = *iterB;
 				if (spn->isInSide(spn2->m_start, spn2->m_end) && spn != spn2) {
 					iterB = list->erase(iterB);
-					spn->_child->append(spn2);
+					spn->m_child->append(spn2);
 					continue;
 				}
 				iterB++;
@@ -213,7 +214,7 @@ bool uoSpanTree::addSpan(int start, int stop, QString name)
 		return false;
 	rezu = addSpan(start, stop, false);
 	if (rezu) {
-		_lastAddedSpan->_name = name;
+		_lastAddedSpan->m_name = name;
 	}
 	return rezu;
 }
@@ -238,8 +239,8 @@ void uoSpanTree::onProcessAll(uoSpanTreeScan* scanObj, spanList* list)
 	for (int i = 0; i<visitList->size(); i++) {
 		spn = visitList->at(i);
 		needProcChild = scanObj->visitSpan(spn);
-		if (spn->_child && needProcChild) {
-			onProcessAll(scanObj, spn->_child);
+		if (spn->m_child && needProcChild) {
+			onProcessAll(scanObj, spn->m_child);
 		}
 		scanObj->visitSpanAfter(spn);
 		if(scanObj->breakProcess())
@@ -304,8 +305,8 @@ void uoSpanTree::onLinesDelete(int lineStart, int count, spanList* list)
 			spnProcessing = false;
 
 			if (lineIn != 0) {
-				if (spn->_child) {
-					onLinesDelete(lineStart, count, spn->_child);
+				if (spn->m_child) {
+					onLinesDelete(lineStart, count, spn->m_child);
 					spnProcessing = true;
 				}
 
@@ -320,8 +321,8 @@ void uoSpanTree::onLinesDelete(int lineStart, int count, spanList* list)
 			}
 			if (lineAbove>0) {
 				spn->moveTo(-lineAbove);
-				if (spn->_child && !spnProcessing)
-					onLinesDelete(lineStart, count, spn->_child);
+				if (spn->m_child && !spnProcessing)
+					onLinesDelete(lineStart, count, spn->m_child);
 			}
 
 		}
@@ -360,17 +361,17 @@ void uoSpanTree::onLinesAdd(int lineStart, int lineEnd, spanList* list, int move
 		spn = list->at(y);
 		if (moveTo) {
 			spn->moveTo(lineEnd - lineStart + 1);
-			onLinesAdd(lineStart, lineEnd, spn->_child, moveTo);
+			onLinesAdd(lineStart, lineEnd, spn->m_child, moveTo);
 		} else {
 			linesAbove 	= spn->getAbove(lineStart, lineEnd);
 			linesIn 	= spn->getIntersectCount(lineStart, lineEnd);
 			if((linesAbove && linesIn) || linesAbove ) {
 				moveTo = lineEnd - lineStart + 1;
 				spn->moveTo(moveTo);
-				onLinesAdd(lineStart, lineEnd, spn->_child, moveTo);
+				onLinesAdd(lineStart, lineEnd, spn->m_child, moveTo);
 			} else if (linesIn) {
 				spn->extendTo(lineEnd - lineStart + 1);
-				onLinesAdd(lineStart, lineEnd, spn->_child, moveTo);
+				onLinesAdd(lineStart, lineEnd, spn->m_child, moveTo);
 			}
 		}
 	}
@@ -405,7 +406,7 @@ bool uoSpanTree::setSectionName(int perId, const QString& name)
 {
 	uoLineSpan* spn = getSpanById(perId);
 	if (spn)
-		spn->_name = name;
+		spn->m_name = name;
 	return spn ? true:false;
 
 }
@@ -467,8 +468,8 @@ int uoSpanTree::onLineExclude(int lineStart, int lineCnt, spanList* list)
 		// ПС. вообще-то шагать тогда надо было так: list->end(); >> iter--; >> list->begin()
 		// но пока не вижу надобности....
 
-		if (spn->_child)
-			retval = onLineExclude(lineStart, lineCnt, spn->_child);
+		if (spn->m_child)
+			retval = onLineExclude(lineStart, lineCnt, spn->m_child);
 
 		if (retval>0)
 			break;
@@ -567,8 +568,8 @@ int uoSpanTree::computeLevel(spanList* list, int level)
 				spn = curList->at(i);
 				++_count;
 				spn->m_level = level;
-				if (spn->_child) {
-					computeLevel(spn->_child, level);
+				if (spn->m_child) {
+					computeLevel(spn->m_child, level);
 				}
 			}
 			qSort(curList->begin(), curList->end(), sortSpanList);
@@ -606,11 +607,11 @@ spanList* uoSpanTree::getSpanListScan(int startLine, int endLine, spanList* from
 		}
 		if (truSpan) {
 			list->append(spn);
-			if (spn->_child) {
+			if (spn->m_child) {
 				if (spn->m_folded && _foldExclude) {
 				} else
-				if (!spn->_child->isEmpty()) {
-					getSpanListScan(startLine, endLine, spn->_child, list);
+				if (!spn->m_child->isEmpty()) {
+					getSpanListScan(startLine, endLine, spn->m_child, list);
 				}
 			}
 		}
@@ -647,9 +648,9 @@ int uoSpanTree::printToDebug(spanList* list, int level)
 				lCount++;
 				retVal++;
 				spn = curList->at(i);
-				qDebug()<<"level: "<<level<<": ("<<spn->m_start<<"/"<<spn->m_end<<") name: "<<spn->_name << " ID: "<< spn->m_id;
-				if (spn->_child) {
-					retVal = retVal + printToDebug(spn->_child, level);
+				qDebug()<<"level: "<<level<<": ("<<spn->m_start<<"/"<<spn->m_end<<") name: "<<spn->m_name << " ID: "<< spn->m_id;
+				if (spn->m_child) {
+					retVal = retVal + printToDebug(spn->m_child, level);
 				}
 			}
 		}
@@ -666,6 +667,46 @@ int uoSpanTree::getLevel() {
 /// Возвращает количество спанов в дереве...
 int uoSpanTree::getSize(){
 	return _count;
+}
+/// Копирование дерева...
+bool uoSpanTree::copyFrom(uoSpanTree* fromSTree, int posBegin, int posEnd, int offset)
+{
+	bool retVal = true;
+
+	const spanList* list = fromSTree->getSpanList(posBegin, posEnd);
+
+	uoLineSpan *spn;
+
+	for (int i=0; i<list->size(); i++){
+		spn = list->at(i);
+		if (m_type == uorStt_Group){
+			addSpan(spn->m_start+offset, spn->m_end+offset, spn->m_folded);
+		} else if (m_type == uorStt_Section){
+			addSpan(spn->m_start+offset, spn->m_end+offset, spn->m_name);
+		}
+	}
+	delete list;
+
+	return retVal;
+}
+
+/// Копирование дерева по списку строк/колонок.
+bool uoSpanTree::copyFrom(uoSpanTree* fromSTree, QList<int>& listRc, int offset)
+{
+	bool retVal = true;
+	if (listRc.isEmpty())
+		return true;
+	QList<QPoint*> listTo;
+	if (uorRangesExtract(listRc,listTo)){
+		QPoint* point;
+		foreach ( point, listTo )
+		{
+			copyFrom(fromSTree, point->x(), point->y(), offset);
+		}
+		uorRangesClear(listTo);
+	}
+
+	return retVal;
 }
 
 static void toDebugTest(bool resComp, int *testOkCnt, int *testAll, const char* str)

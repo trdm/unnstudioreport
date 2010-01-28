@@ -27,15 +27,15 @@ struct uoRptGroupItem {
 		,m_sizeTail(0)
 		,m_tailPosIsAbs(false)
 		{}
-	QRectF 	m_rectIteract; 	///< область "кнопки" свертки/развертки структуры.
+	uorRect 	m_rectIteract; 	///< область "кнопки" свертки/развертки структуры.
 	bool m_folded; 			///< уровень группировки.
 	int m_level; 			///< уровень группировки.
 	int m_start; 			///< Начало диапазона.
 	int m_end;				///< Конец диапазона.
 	int m_id;				///< Идентификатор гроуп итема.
-	qreal	m_rectEndPos; 	///< Координаты правой|нижней стороны ректа. для расчета длины линии группировки.
-	qreal	m_rectMidlePos; 	///< Координаты середины правой|нижней стороны ректа для вычерчивания горизонтальной линии группировки.
-	qreal m_sizeTail;		///< Размер "хвоста" группировки.
+	uorNumber	m_rectEndPos; 	///< Координаты правой|нижней стороны ректа. для расчета длины линии группировки.
+	uorNumber	m_rectMidlePos; 	///< Координаты середины правой|нижней стороны ректа для вычерчивания горизонтальной линии группировки.
+	uorNumber 	m_sizeTail;		///< Размер "хвоста" группировки.
 	bool 	m_tailPosIsAbs;	///< Размер "хвоста" указан относительно левой или верхней сторони ректа группировок
 
 	/// копируем данные из uoLineSpan
@@ -55,18 +55,18 @@ struct uoRptGroupItem {
 		m_start = -1;
 		m_end = -1;
 		m_id = -1;
-		m_rectEndPos = 0.0;
-		m_rectMidlePos = 0.0;
-		m_sizeTail = 0.0;
-		m_rectIteract.setTop(0.0);
-		m_rectIteract.setRight(0.0);
-		m_rectIteract.setBottom(0.0);
-		m_rectIteract.setLeft(0.0);
+		m_rectEndPos = uorNumberNull;
+		m_rectMidlePos = uorNumberNull;
+		m_sizeTail = uorNumberNull;
+		m_rectIteract.setTop(uorNumberNull);
+		m_rectIteract.setRight(uorNumberNull);
+		m_rectIteract.setBottom(uorNumberNull);
+		m_rectIteract.setLeft(uorNumberNull);
 	}
 };
 
 typedef QList<uoRptGroupItem*> uoRptGroupItemList;
-typedef QMap<int, qreal> rptScalePositionMap; ///< словарь смещений ячеек линеек.
+typedef QMap<int, uorNumber> rptScalePositionMap; ///< словарь смещений ячеек линеек.
 
 /**
 	\struct uoRptSectionItem - структура для сохранения гуи-координат и атрибутов секции отчета.
@@ -81,7 +81,7 @@ struct uoRptSectionItem
 		,m_id(-1)
 		,m_nameSections(0)
 		{}
-	QRectF 	m_rectView; 		///< область "кнопки" свертки/развертки структуры.
+	uorRect 	m_rectView; ///< область отрисовки текста.
 	int 	m_level; 		///< уровень группировки.
 	int 	m_start; 		///< Начало диапазона.
 	int 	m_end;			///< Конец диапазона.
@@ -95,7 +95,7 @@ struct uoRptSectionItem
 		m_end 	= spn->getEnd();
 
 		m_level	= spn->getLevel();
-		m_nameSections	= spn->_name;
+		m_nameSections	= spn->m_name;
 
 		m_id 	= spn->getId();
 	}
@@ -108,10 +108,10 @@ struct uoRptSectionItem
 		m_id = -1;
 		m_nameSections = "";
 		m_selected = false;
-		m_rectView.setTop(0.0);
-		m_rectView.setRight(0.0);
-		m_rectView.setBottom(0.0);
-		m_rectView.setLeft(0.0);
+		m_rectView.setTop(uorNumberNull);
+		m_rectView.setRight(uorNumberNull);
+		m_rectView.setBottom(uorNumberNull);
+		m_rectView.setLeft(uorNumberNull);
 	}
 };
 

@@ -35,8 +35,10 @@ uoReportPreviewDlg::uoReportPreviewDlg(QWidget *parent)
 
 	QGridLayout* t_gridLayout = new QGridLayout;
 	t_gridLayout->setSpacing(0);
+//#if (QT_VERSION > 0x040201)
 	t_gridLayout->setHorizontalSpacing(0);
 	t_gridLayout->setContentsMargins(0, 0, 0, 0);
+//#endif
 	m_frame->setLayout(t_gridLayout);
 	t_gridLayout->addWidget(m_scrollArea);
 	//QObject::
@@ -118,10 +120,9 @@ void uoReportPreviewDlg::paintPreview()
 	}
 	if (!area)
 		return;
-	bool debug_this = false;
 	QPixmap pixmap(m_paperRectPrint.size());
 
-    QPainter painter;
+    uoPainter painter;
     uorPagePrintSetings* pSet =  m_Doc->pagesSetings();
     painter.begin(&pixmap);
 
@@ -131,7 +132,7 @@ void uoReportPreviewDlg::paintPreview()
 	drawHelper->initDrawInstruments();
 
 	drawHelper->drawFields(painter);
-	qreal scaleFactor = pSet->scale();
+	uorNumber scaleFactor = pSet->scale();
 //	if(scaleFactor != 1.0)		scaleFactor = 1/scaleFactor;
 	qDebug() << QString("void uoReportPreviewDlg::paintPreview scaleFactor = %1").arg(scaleFactor);
 	painter.scale(scaleFactor,scaleFactor);

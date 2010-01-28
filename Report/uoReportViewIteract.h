@@ -9,6 +9,7 @@
 #define UOREPORTVIEWITERACT_H
 
 #include <QAction>
+#include <QShortcut>
 #include "uoReport.h"
 #include "uoReportCtrl.h"
 #include "ui_uoInputId.h"
@@ -46,7 +47,9 @@ class uoReportViewIteract : public QObject
 		void refreshActions(uoReportCtrl* rCtrl);
 
 		QAction* m_actCut;
-		QAction* m_actRemember;
+		QAction* m_actCopy;
+		QAction* m_actPaste;
+
 		QAction* m_actDelete;
 		QAction* m_actAdd;
 		QAction* m_actClear;
@@ -91,6 +94,8 @@ class uoReportViewIteract : public QObject
 		QAction* m_actScope300;
 
 		QAction* m_actOutToDebug;
+		QAction* m_actCreateMatrix;
+		QAction* m_actOptions;
 
 		QAction* m_actRowCol_Delete;
 		QAction* m_actRowCol_Add;
@@ -100,20 +105,24 @@ class uoReportViewIteract : public QObject
 		QAction* m_actSave;
 		QAction* m_actSaveAs;
 		QAction* m_actLoad;
+		QAction* m_actLoad_TXT;
+
 
 		QAction* m_actUndo;
 		QAction* m_actRedo;
+		QAction* m_actJoin;
 
 		QAction* m_showProp;
 		QAction* m_showPreview;
 		QAction* m_showPageSettings;
 
-		void setCheckedState(qreal scaleFactor);
+		void setCheckedState(uorNumber scaleFactor);
 		bool chooseSaveFilePathAndFormat(QString& filePath, uoRptStoreFormat& frmt, QWidget* wi);
 		bool chooseLoadFilePathAndFormat(QString& filePath, uoRptStoreFormat& frmt, QWidget* wi);
+		bool chooseLoadTxtFilePath(QString& filePath, QWidget* wi);
 
 	signals:
-		void onScaleChange(const qreal scaleFact);
+		void onScaleChange(const uorNumber scaleFact);
 
 	private slots:
 		void onScale25();
@@ -127,6 +136,9 @@ class uoReportViewIteract : public QObject
 		void onScale300();
 	public:
 		bool inputSectionName(QString& name, QWidget* wi);
+inline 	bool shortkatUse() {return m_shortkatUse; };
+	private:
+		bool m_shortkatUse;
 
 };
 

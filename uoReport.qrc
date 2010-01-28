@@ -1,6 +1,6 @@
 <RCC>
     <qresource prefix="/" >
-	<file>image/apply.png</file>
+        <file>image/apply.png</file>
         <file>image/cancel_16x16.png</file>
         <file>image/clear_left_16x16.png</file>
         <file>image/copy.png</file>
@@ -12,6 +12,7 @@
         <file>image/open.png</file>
         <file>image/paste.png</file>
         <file>image/portrait.png</file>
+        <file>image/report.png</file>
         <file>image/settings_24x24.png</file>
     </qresource>
 </RCC>

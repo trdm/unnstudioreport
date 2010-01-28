@@ -17,8 +17,15 @@ uoRUndoUnit::~uoRUndoUnit()
 bool uoRUndo01::undo(uoReportDoc* doc){
 	if(!doc)
 		return false;
-	QString txt = doc->getCellText(m_row, m_col);
-	doc->setCellText(m_row, m_col, m_text);
+
+	QString txt;
+	if (m_textType == uorCTT_Text) {
+		txt = doc->getCellText(m_row, m_col);
+		doc->setCellText(m_row, m_col, m_text);
+	} else if (m_textType == uorCTT_Decode) {
+		txt = doc->getCellText(m_row, m_col);
+		doc->setCellText(m_row, m_col, m_text);
+	}
 	m_text = txt;
 	return true;
 }
@@ -50,7 +57,7 @@ bool uoRUndo02::undo(uoReportDoc* doc)
 			break;
 		}
 		case uorHSCT_Size:	{
-			qreal old = doc->getScaleSize(m_hType,m_row_or_col);
+			uorNumber old = doc->getScaleSize(m_hType,m_row_or_col);
 			doc->setScaleSize(m_hType,m_row_or_col,mu_size);
 			mu_size = old;
 			break;
@@ -68,13 +75,6 @@ bool uoRUndo02::redo(uoReportDoc* doc)
 
 QString uoRUndo02::toString()
 {
-//	switch(m_changeType)
-//	{
-//		case uorHSCT_Size:
-//		{
-//			return QString("set to row/col %1/%2 text: ''%3''").arg(m_row).arg(m_col).arg(m_text);
-//		}
-//	}
 	return QString("set ????");
 }
 
@@ -193,6 +193,11 @@ void uoReportUndo::enableCollectChanges(const bool& enable)
 bool uoReportUndo::undoAvailability(){	return !m_undoStack.isEmpty();}
 bool uoReportUndo::redoAvailability(){	return !m_redoStack.isEmpty();}
 
+void uoReportUndo::save(uoReportLoader* loader)
+{
+	//loader->
+}
+
 void uoReportUndo::pushUndo(uoRUndoUnit* unit)
 {
 	if (m_undoStack.size()>m_maxUndoCount)	{
@@ -235,7 +240,19 @@ void uoReportUndo::doTextChange(QString oldText, int row, int col)
 	}
 }
 
-void uoReportUndo::doScaleResize(uoRptHeaderType hType, int nomRC, qreal oldSize)
+void uoReportUndo::doDecodeChange(QString oldText, int row, int col)
+{
+	if (!m_collectChanges)
+		return;
+	uoRUndo01* undo = new uoRUndo01(row, col, oldText, uorCTT_Decode);
+	if (undo){
+		pushUndo(undo);
+	}
+
+}
+
+
+void uoReportUndo::doScaleResize(uoRptHeaderType hType, int nomRC, uorNumber oldSize)
 {
 	if (!m_collectChanges)
 		return;

@@ -9,6 +9,11 @@
 *
 ***************************************/
 
+#include <QList>
+#include <QPoint>
+#include <QRect>
+#include <QRectF>
+class uoPainter;
 
 namespace uoReport {
 
@@ -17,16 +22,38 @@ namespace uoReport {
 // На глазок вроде ничего..
 #define UORPT_SCALE_SIZE_DEF_VERTICAL 	15.0
 #define UORPT_SCALE_SIZE_DEF_HORIZONTAL 60.0
+#define UORPT_SCALE_FOLD_ITEM_SIZE 	10.0
 
-#define uoReportVersion "0.2"
+#define uoReportVersion "0.3"
 /*
-	Старые версии: 0.1
+	Старые версии:
+	0.1 - выбросить поддержку
+	0.2 - Сепаратор был "#" стал ";"
+
 */
-#define rptSize qreal
-#define rptSizeNull 0.0
+#define uorNumberFloat 1
+
+#ifdef uorNumberFloat
+	#define uorNumber qreal
+	#define uorNumberNull 0.0
+	#define uorRect QRectF
+	#define uorPoint QPointF
+#else // UNICODE
+	#define uorNumber int
+	#define uorNumberNull 0
+	#define uorRect QRect
+	#define uorPoint QPoint
+#endif
 
 #define TEXT_TR_POINT_ARR_SIZE 400
-#define UNDO_COMMAND_MAX_COUNT 50
+
+//, а не много ли 5000?
+#define UNDO_COMMAND_MAX_COUNT 5000
+
+// Ограничение по байтам, надо будет ввести.
+#define UNDO_COMMAND_MAX_COUNT_RAW_LEN 50000
+
+#define UOR_MIME_XML_DATA "uoReportXmlData"
 
 
 
@@ -37,10 +64,8 @@ namespace uoReport {
 */
 #define UORPT_DRAG_AREA_SIZE 2.0
 #define UORPT_STANDART_OFFSET_TEXT 2.0
-#define UORPT_LENGTH_TEXT_H_SECTION 7
+#define UORPT_LENGTH_TEXT_H_SECTION 5
 #define UORPT_VIEW_SCROLL_KOEFF 2
-
-#define rptRect QRectF
 
 /*
 	(примечание)
@@ -48,15 +73,16 @@ namespace uoReport {
 	Cell - ячейка основного поля, \n чисто для изучения английского :)
 */
 
-class uoReportManager;
-struct uoEnumeratedItem;
-struct uoLineSpan;
-struct uoRptNumLine;
-class uoHeaderScale;
-class uoReportDocFontColl;
-class uoSpanTree;
-struct uorPagePrintSetings;
+class 	uoReportManager;
+struct 	uoEnumeratedItem;
+struct 	uoLineSpan;
+struct 	uoRptNumLine;
+class 	uoHeaderScale;
+class 	uoReportDocFontColl;
+class 	uoSpanTree;
+struct 	uorPagePrintSetings;
 class uoReportDoc;
+class uorMimeData;
 class uoReportCtrlMesFilter;
 class uoReportCtrl;
 class uoReportView;
@@ -65,6 +91,7 @@ class uoReportDrawHelper;
 struct uoTextTrPointCash;
 class uoReportDocBody;
 template <typename T> class uoNumVector;
+template <typename T> class uoNumVector2;
 template <typename T> class uoCacheItemizer;
 class uoReportLoader;
 class uoReportLoaderXML;
@@ -93,7 +120,21 @@ class 	uoRow;
 struct 	uoRUndoUnit;
 struct 	uoRUndo01;
 class 	uoReportUndo;
+struct uorTestEnumStru;
 
+typedef QList<uoLineSpan*> spanList;
+typedef QList<uoLineSpan*>::const_iterator  spanList_iterConst;
+typedef QList<uoLineSpan*>::iterator  spanList_iter;
+class uoCellMatrix;
+
+
+/// Тип дерева лайн-спанов
+enum uoSpanTreeType
+{
+	uorStt_Unknown = 0
+	, uorStt_Group	 ///<Это группы
+	, uorStt_Section ///<Это секции
+};
 
 ///\enum uoIntersectMode - варианты перечения отрезков
 enum uoIntersectMode {
@@ -119,6 +160,14 @@ enum uoRptHeaderType {
 	  uorRhtUnknown = 0
 	, uorRhtRowsHeader = 1
 	, uorRhtColumnHeader = 2
+};
+/// Тип текста ячейки, необходим для компактности класса Undo
+enum uorCellTextType
+{
+	uorCTT_Unknown = 0
+	, uorCTT_Text // текст
+	, uorCTT_Decode // расшифровка
+	, uorCTT_Comment // Примечание
 };
 
 enum uoSearchDirection {
@@ -146,8 +195,10 @@ enum uoScaleSizePolicy
 enum uoRptStoreFormat {
 	  uoRsf_Unknown = 0
 	, uoRsf_XML = 1
-	, uoRsf_Binary = 2
-	, uoRsf_HTML = 3
+	, uoRsf_XML_Mime = 2 ///< для обеспечения обмена (копирование, драг-дроп)
+	, uoRsf_Binary = 3
+	, uoRsf_HTML = 4
+	, uoRsf_TXL = 5
 };
 /**
 	\enum uorFixationTypes - тип фиксации областей отчета при просмотре
@@ -221,7 +272,7 @@ enum uorSelectionType {
 	, uoRst_Rows			///< Выделены строки
 	, uoRst_Cell			///< Выделена ячейка
 	, uoRst_Cells			///< Выделены ячейки
-	, uoRst_Mixed			///< Миксированное выделение(ячеек?).
+	, uoRst_Mixed			///< Миксированное выделение(ячеек? угу).
 };
 
 ///\enum uorBorderLocType - расположения бордюра
@@ -334,6 +385,13 @@ enum uoCellTextType {
 	, uoCTT_Templ 	///< Шаблон. должен быть разобран и интерпретирован.
 };
 
+enum uoCellTextFlag
+{
+	uoCTF_Unknown = 0
+	, uoCTF_ContainsTab 		= 0x0001 /// Содержит '\t'
+	, uoCTF_ContainsLineBreak 	= 0x0002 /// Содержит '\n'
+};
+
 
 /**
 	\enum uoCellBorderType - тип линии бордюра, просто повторение Qt::PenStyle
@@ -357,10 +415,10 @@ enum uoCellBorderType {
 	<pre>
 	<b> uoCJT_BackPoint </b> - Указатель назад: необходим в объединенных ячейках указатель на стартовую. Вот это он и есть.
 	т.е. значения (m_Coord1 и m_Coord2) означают:
-		m_row - порядковый номер строки этой ячейки в объдинении;
-		m_col - порядковый номер столбца этой ячейки в объдинении.
+		m_row - номер строки первой ячейки в объдинении (левой верхней);
+		m_col - номер столбца первой ячейки в объдинении (левой верхней).
 
-	<b>uoCJT_Formal</b> - Формальное объединение, означает что ячейки НЕ ОБЪЕДИНЕНЫ, но текст выравнивается
+	<b>uoCJT_TextToCol</b> - Формальное объединение, означает что ячейки НЕ ОБЪЕДИНЕНЫ, но текст выравнивается
 	т.е. значения (m_Coord1 и m_Coord2) означают:
 		m_row = количество строк в объединении,
 		m_col = количество столбцов в объединении
@@ -374,35 +432,48 @@ enum uoCellBorderType {
            1  2  3  4  5  6  7
         1 [ ][ ][ ][ ][ ][ ][ ]
         2 [ ][ ][ ][ ][ ][ ][ ]
-        3 [ ][ ][*][*][ ][ ][ ]
-        4 [ ][ ][*][*][ ][ ][ ]
-        5 [ ][ ][*][*][ ][ ][ ]
+        3 [ ][ ][ ][*][*][ ][ ]
+        4 [ ][ ][ ][*][*][ ][ ]
+        5 [ ][ ][ ][*][*][ ][ ]
         6 [ ][ ][ ][ ][ ][ ][ ]
         7 [ ][ ][ ][ ][ ][ ][ ]
 
-		Объединены ячейки R3C3:R5C4
-		в ячейке R3C3
+		Объединены ячейки R3C4:R5C5
+		в ячейке R3C4
 		uoCellJoin->m_JoinType = uoCJT_Normal;
 		uoCellJoin->m_row = 3;
 		uoCellJoin->m_col = 2;
 
-		в ячейке R3C4
-		uoCellJoin->m_JoinType = uoCJT_BackPoint;
-		uoCellJoin->m_row = 1;
-		uoCellJoin->m_col = 2;
-
-		в ячейке R5C4
+		в ячейке R3C5
 		uoCellJoin->m_JoinType = uoCJT_BackPoint;
 		uoCellJoin->m_row = 3;
-		uoCellJoin->m_col = 2;
-		примечание: нумерация начинается с 1 (с единицы).
+		uoCellJoin->m_col = 4;
+
+		в ячейке R5C5
+		uoCellJoin->m_JoinType = uoCJT_BackPoint;
+		uoCellJoin->m_row = 3;
+		uoCellJoin->m_col = 4;
 		</pre>
 */
 enum uoCellsJoinType{
-	  uoCJT_Unknown = 0 // Нет объединения
-	, uoCJT_BackPoint 	// Абстрактное объединение
-	, uoCJT_Normal 		// Нормальное объединение
-	, uoCJT_Formal 		// Формальное объединение
+	  uoCJT_Unknown 	= 0 // Нет объединения
+	, uoCJT_BackPoint	= 1 // Абстрактное объединение
+	, uoCJT_Normal 		= 2	// Нормальное объединение
+	, uoCJT_TextToCol 		= 3 // Формальное объединение
+};
+/**
+	\enum uorDrawEreaDirty - области отчета требующие перерисовки.
+*/
+enum uorDirtyDrawErea
+{
+	uorDDE_Unknown 			= 0x0000 ///< Все области.
+	, uorDDE_Group 			= 0x0001 ///< Группы
+	, uorDDE_Section 		= 0x0002 ///< Секции
+	, uorDDE_Ruler 			= 0x0004 ///< Линейка
+	, uorDDE_DA_Data 		= 0x0008 ///< Данные
+	, uorDDE_DA_Selection	= 0x0010 ///< Секции
+	, uorDDE_DataArea 		= uorDDE_DA_Data | uorDDE_DA_Selection ///< Поле данных
+	, uorDDE_All = uorDDE_Group | uorDDE_Section | uorDDE_Ruler | uorDDE_DataArea ///< Все
 };
 
 /**
@@ -473,15 +544,31 @@ typedef enum uorRCGroupOperationType
 	, uorRCGroupOT_SetAutoSize = 4
 };
 
+enum uorStoreOperation
+{
+	uorSO_Unknown = 0
+	, uorSO_LoadFromFile
+	, uorSO_SaveToFile
+	, uorSO_SaveToBArray
+	, uorSO_LoadFromBArray
+};
+
 
 /// Запуск тестов для элементов отчета...
 extern void uoRunTest();
+extern bool uorRangesExtract(QList<int>& listFrom, QList<QPoint*>& listTo );
+extern void uorRangesClear(QList<QPoint*>& listTo);
+extern void uorZeroRectI(QRect& rct);
+extern void uorZeroRectF(uorRect& rct);
+
 
 class uoReportTest {
 	public:
 		uoReportTest();
 		~uoReportTest();
 		void exploreQPrinter();
+		void testuoNumVector2();
+		bool testuoNumVector3();
 };
 
 } // namespace uoReport

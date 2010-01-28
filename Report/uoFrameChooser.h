@@ -9,6 +9,7 @@
 #define UOFRAMECHOOSER_H
 
 #include <QWidget>
+#include <QFrame>
 #define FRAMECHOOSER_LINEITEM_WIDHT 27
 #define FRAMECHOOSER_LINEITEM_COUNT 6
 #include "uoReport.h"

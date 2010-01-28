@@ -10,21 +10,21 @@
 #include "uoReportDocBody.h"
 #include "uoReportCtrl.h"
 
+
 namespace uoReport {
 
-
-inline void zeroQRectF(QRectF& rct) { rct.setLeft(0);	rct.setTop(0);	rct.setRight(0);	rct.setBottom(0); }
+QString g_textTextWithLineBreak;
 
 uoReportDrawHelper::uoReportDrawHelper()
 {
-	//ctor
-	zeroQRectF(m_rectCurCell);
+	m_directDraw = false;
+	uorZeroRectF(m_rectCurCell);
 }
 
 uoReportDrawHelper::uoReportDrawHelper(uoReportDoc* doc)
 	: m_doc(doc)
 {
-
+	m_directDraw = false;
 	clear();
 }
 
@@ -72,6 +72,11 @@ void uoReportDrawHelper::initDrawInstruments(QWidget* wi, QPalette* pal)
    	brCol.setAlpha(124);
    	m_brushSelection.setColor(brCol);
 
+	m_brushDarkPhone = palette_c.brush(QPalette::WindowText /*Qt::white*/);
+   	brCol = m_brushDarkPhone.color();
+   	brCol.setAlpha(124);
+   	m_brushDarkPhone.setColor(brCol);
+
 	m_penText.setColor(palette_c.color(curColGrp, QPalette::WindowText));
 	m_penNoPen.setColor(palette_c.color(curColGrp, QPalette::Window));
 	m_penWhiteText.setColor(palette_c.color(curColGrp, QPalette::Base));
@@ -81,40 +86,125 @@ void uoReportDrawHelper::initDrawInstruments(QWidget* wi, QPalette* pal)
 
 }
 
-void uoReportDrawHelper::drawTest(QPainter& painter, qreal offset)
+
+void uoReportDrawHelper::clipRect(uoPainter& painter, uorRect& rect)
 {
-	QLineF line(200.0-offset, 200.0+offset, 300.0-offset, 300.0+offset);
-	painter.drawLine(line);
+	#ifdef Q_OS_WIN
+	if (m_directDraw) {
+		//m_rgnCreated
+	} else {
+
+	}
+	#else
+		painter.drawText(rectCpyCell,flags,text);
+	#endif
+
+}
+
+
+void uoReportDrawHelper::drawText(uoPainter& painter, uorRect& rectCpyCell, QString& text, uoCell* cell)
+{
+	int flags = cell->getAlignment();
+	QFont* font = 0;
+	QPen oldPen = painter.pen();
+
+	font = cell->getFont(m_doc);
+	uorTextDecor* textProp = cell->getTextProp(m_doc);
+
+	#ifdef Q_OS_WIN
+		if (m_directDraw) {
+			rectCpyCell.adjust(0,1,0,0);
+			HFONT oldFont;
+			HFONT curFont;
+
+			if (textProp) {
+				int fSize = (int)textProp->m_fontSz;
+				fSize = -MulDiv(fSize, GetDeviceCaps(m_hdc, LOGPIXELSY), 72);
+				curFont = CreateFont(fSize, 0, 0, 0, FW_NORMAL, 0, 0, 0,0, 0, 0, 0,VARIABLE_PITCH | FF_SWISS, TEXT("Arial"));
+				oldFont = (HFONT)SelectObject(m_hdc, curFont);
+			}
+			RECT r;
+			SetRect(&r, (int)rectCpyCell.left(), (int)rectCpyCell.top(), (int)rectCpyCell.right(), (int)rectCpyCell.bottom());
+
+			wchar_t *we = new wchar_t[text.size()+1];
+			text.toWCharArray(we);
+			we[text.size()] = 0;
+			DrawText(m_hdc, we, -1, &r,0);
+			delete[] we;
+			if (textProp) {
+				SelectObject(m_hdc, oldFont);
+			}
+			DeleteObject(curFont);
+		} else {
+			if (true) {
+				painter.drawText(rectCpyCell,flags,text);
+
+			} else {
+				// Текст под углом от Виктора ICQ: 177287
+				// Пример: "@-90@текст"
+
+				QRectF rRect = rectCpyCell;
+				QRegExp reRegExp("^@(.*)@");
+				reRegExp.indexIn(text);
+				double dAngle = reRegExp.cap(1).toDouble();
+				qreal realRectHeight = rRect.height();
+				qreal realRectWidth = rRect.width();
+				if(dAngle != .0){
+					text.replace(reRegExp.cap(0), "");
+					if(((dAngle > 0) && (dAngle < 180)) || ((dAngle > -360) && (dAngle < -180))){
+							rRect.setX(rRect.x() + realRectHeight);
+						}else{
+							rRect.setY(rRect.y() + realRectHeight);
+					}
+					rRect.setHeight(realRectHeight);
+					rRect.setWidth(realRectWidth);
+					painter.save();
+					painter.translate(rRect.x(), rRect.y());
+					painter.rotate(dAngle);
+					painter.drawText(0, 0, rRect.width(), rRect.height(), flags, text);
+					painter.restore();
+				} else {
+					painter.drawText(rectCpyCell,flags,text);
+				}
+
+			}
+
+		}
+	#else
+		painter.drawText(rectCpyCell,flags,text);
+	#endif
+
 }
 
 /// Отрисовка ячейки таблицы
-void uoReportDrawHelper::drawCell(QPainter& painter, uoCell* cell,QRectF& rectCell, uoReportDoc* doc, bool isSell, uorReportAreaBase& drArea)
+void uoReportDrawHelper::drawCell(uoPainter& painter, uoCell* cell,uorRect& rectCell, uoReportDoc* doc, const bool& isSell, uorReportAreaBase& drArea)
 {
 	if (!cell)
 		return;
 
-	QRectF mainArea = drArea.m_area;
+	uorRect mainArea = drArea.m_area;
 
-	QString text = cell->getTextWithLineBreak(m_showInvisiblChar);
+	static QString text = "";
+	text = cell->getTextWithLineBreak(m_showInvisiblChar);
 	if (!text.isEmpty()) {
 
 
 		uoCellTextBehavior textBhv = cell->getTextBehavior();
 		uoCellTextType textTp = cell->getTextType();
 
+		uorRect rectCpyCell = rectCell;
 
-		text = text.replace('\t', " ");
-		painter.save();
-		QRectF rectCpyCell = rectCell;
-
-		qreal adj = UORPT_STANDART_OFFSET_TEXT;
-		rectCpyCell.adjust(adj,0,-adj,0); /// иначе текст перекрывается..
+		uorNumber adj = (uorNumber)UORPT_STANDART_OFFSET_TEXT;
+		rectCpyCell.adjust(adj,uorNumberNull,-adj,uorNumberNull); /// иначе текст перекрывается..
 
 		int flags = cell->getAlignment();
+		QFont* font = 0;
 		QPen oldPen = painter.pen();
-		QFont* font = cell->getFont(doc);
+
+		font = cell->getFont(doc);
 		if (font)
 			painter.setFont(*font);
+
 		painter.setPen(m_penText);
 		/*
 			тут интересная байда. если текст длинен, тогда он может печататься и
@@ -123,7 +213,7 @@ void uoReportDrawHelper::drawCell(QPainter& painter, uoCell* cell,QRectF& rectCe
 			Очевидным ответом будет расширение ректа в стророну выравнивания на длинну строки...
 		*/
 
-		qreal maxRowLendht = cell->getMaxRowLength();
+		uorNumber maxRowLendht = cell->getMaxRowLength();
 		QString addChrs;
 
 		if (uoCTT_Templ == textTp )	{
@@ -136,15 +226,15 @@ void uoReportDrawHelper::drawCell(QPainter& painter, uoCell* cell,QRectF& rectCe
 		if (!addChrs.isEmpty() && font)
 		{
 			QFontMetricsF fm(*font);
-			maxRowLendht += fm.width(addChrs);
+			maxRowLendht += (uorNumber)fm.width(addChrs);
 		}
 
-		qreal diffSize = maxRowLendht - rectCpyCell.width();
+		uorNumber diffSize = maxRowLendht - rectCpyCell.width();
 		if (diffSize > 1.0 /*&& textTp == uoCTT_Text*/){
 
 			if (textBhv == uoCTB_Auto){
 				uoHorAlignment ha = cell->getAlignmentHor();
-				qreal pointPos = 0.0, diffSize = maxRowLendht - rectCpyCell.width();
+				uorNumber pointPos = uorNumberNull, diffSize = maxRowLendht - rectCpyCell.width();
 				switch (ha){
 					case uoHA_Left:
 					{
@@ -187,18 +277,120 @@ void uoReportDrawHelper::drawCell(QPainter& painter, uoCell* cell,QRectF& rectCe
 				}
 			}
 		}
+// На пиксмапе не пашет :((((
+		drawText(painter, rectCpyCell, text, cell);
 
-
-		painter.drawText(rectCpyCell,flags,text);
 		painter.setPen(oldPen);
-		painter.restore();
 	}
 }
 
+/// Отрисовка выделения на поле данных
+void uoReportDrawHelper::drawDataAreaSelection(uoPainter& painter, uorReportAreaBase& drArea)
+{
+	uoReportDoc* doc =  getDoc();
+	if (!doc)
+		return;
+
+	uorRect rectCell;
+	uorZeroRectF(rectCell);
+
+	bool isSell = false;
+	bool isHide = false;
+
+	uorRect drawingRect = drArea.m_area;
+
+	int rowCur = drArea.firstVisible_RowTop();
+	int colCur = 1;
+
+	if (drArea.m_areaType == 2)		drawingRect.adjust(-2,-2,2,2);
+
+	painter.setClipRect(drawingRect); // Устанавливаем область прорисовки. Будем рисовать только в ней.
+
+	if (drArea.m_areaType == 2)	{
+		drawingRect.adjust(2,2,-2,-2);
+		colCur = drArea.firstVisible_ColLeft();
+	}
+
+	uorNumber rowsLenCur = drawingRect.top() - drArea.shift_RowTop(); // + 1 * m_scaleFactorO;
+	uorNumber rowsLensPage = drawingRect.bottom();
+
+	uorNumber colsLenCur = drawingRect.left() - drArea.shift_ColLeft();
+	uorNumber colsLensPage = drawingRect.right();
+	rectCell.setTop(rowsLenCur);
+	rectCell.setLeft(drawingRect.left() - drArea.shift_ColLeft());
+
+	/* надо изменить логику перерисовки по строкам.
+	причина: можем не прорисовать длинные строки, которые начинаются за
+	видимыми областями и прорисовываются на видимой */
+
+	uorNumber sz = uorNumberNull;
+
+	do {
+		// строки, строки, строки и строки =============
+		while((isHide = doc->getScaleHide(uorRhtRowsHeader, rowCur))){
+			++rowCur;
+		}
+		sz = doc->getScaleSize(uorRhtRowsHeader, rowCur);
+		if (sz == uorNumberNull) {
+			++rowCur;
+			continue;
+		}
+		if (drArea.m_areaType == 2) {
+			// эта область типа uorReportPrintArea, тут вывод ограничен строкой и столбцом.
+			if (drArea.lastVisibleRow() < rowCur)
+				break;
+		}
+		rowsLenCur = rowsLenCur + sz;
+		rectCell.setBottom(rowsLenCur);
+		colCur = drArea.firstVisible_ColLeft();
+
+		colCur = drArea.firstVisible_ColLeft();
+		colsLenCur = drawingRect.left() - drArea.shift_ColLeft();
+		rectCell.setLeft(colsLenCur);
+
+		do {// столбцы
 
 
-/// Отрисовка поля данных.
-void uoReportDrawHelper::drawDataArea(QPainter& painter, uorReportAreaBase& drArea)
+			while((isHide = doc->getScaleHide(uorRhtColumnHeader, colCur))){
+				++colCur;
+			}
+			if (drArea.m_areaType == 2 && drArea.lastVisibleCol() < colCur) {
+				break; // эта область типа uorReportPrintArea, тут вывод ограничен строкой и столбцом.
+			}
+
+			sz = doc->getScaleSize(uorRhtColumnHeader, colCur);
+
+			colsLenCur += sz;
+			rectCell.setRight(colsLenCur);
+
+			// а вот если ячейка - текущая?
+
+			isSell = false;
+			if (m_selections)	isSell = m_selections->isCellSelect(rowCur,colCur);
+
+			if (isSell) {
+				rectCell.adjust(-1,-1,-1,-1);
+				painter.fillRect(rectCell, m_brushSelection);
+				rectCell.adjust(1,1,1,1);
+			}
+
+			// тут уже идет вычисление нового ректа для следующей  ячейки.
+
+			rectCell.setLeft(rectCell.right());
+			colCur = colCur + 1;
+			if (colsLenCur >= colsLensPage)
+				break;
+
+		} while(true /*colsLenCur < colsLensPage*/);
+
+		rectCell.setTop(rectCell.bottom());
+		rowCur = rowCur + 1;
+	} while(rowsLenCur < rowsLensPage);
+
+}
+
+/// Отрисовка поля данных, без выделения.
+void uoReportDrawHelper::drawDataArea(uoPainter& painter, uorReportAreaBase& drArea)
 {
 	/*	попробуем порисовать основное поле с данными...
 		вот тут нужен такой фокус, необходимо научиться рисовать
@@ -207,17 +399,19 @@ void uoReportDrawHelper::drawDataArea(QPainter& painter, uorReportAreaBase& drAr
 	uoReportDoc* doc =  getDoc();
 	if (!doc)
 		return;
-
+#ifdef Q_OS_WIN
+	if (m_directDraw) {		m_hdc = painter.paintEngine()->getDC();	}
+#endif
 
 
 	m_penText.setStyle(Qt::SolidLine);
 	painter.setPen(m_penText);
 
-	//drawTest(painter, 60);
-
-	QRectF rectCell;
-	QRectF rectCellCur; // ячейка на которой курсор стоит...
-	zeroQRectF(rectCell);
+	uorRect rectCell;
+	uorRect rectCellCur; 	// экранная область текущей ясейки.
+	uorRect rectCellToPaint; // отрисовываемая область.
+	uorZeroRectF(rectCell);
+	uorZeroRectF(rectCellToPaint);
 
 	bool isSell = false;
 	bool isHide = false;
@@ -225,104 +419,177 @@ void uoReportDrawHelper::drawDataArea(QPainter& painter, uorReportAreaBase& drAr
 	// нарисуем рамку области данных, т.к. потом будем рисовать линии на ней в этой процедурине.
 	// painter.drawRect(m_rectDataRegionFrame);
 
-	QRectF drawingRect = drArea.m_area;
+	uorRect drawingRect = drArea.m_area;
 
 	painter.fillRect(drawingRect, m_brushBase);
 	QPen oldPen = painter.pen();
 	painter.setPen(m_penGrey);
-	/*
-		при рисовании на пиксмепе почему-то если используется
-		painter.setClipRect(drawingRect);
-		тогда не рисуется вообще О_о
-	*/
-	int rowCur = drArea.m_firstVisible_RowTop;
-	int colCur = 1; //drArea.m_firstVisible_ColLeft;
+
+	int rowCur = drArea.firstVisible_RowTop();
+	int colCur = 1; //drArea.firstVisible_ColLeft();
+	int colCurFirst = 1; //drArea.firstVisible_ColLeft();
 
 	int colPrev = -1;
 	if (drArea.m_areaType == 2)		drawingRect.adjust(-2,-2,2,2);
 
-	painter.setClipRect(drawingRect); // Устанавливаем область прорисовки. Будем рисовать только в ней.
+
+	#ifdef Q_OS_WIN
+		if (m_directDraw) {
+		m_hdc = painter.paintEngine()->getDC();
+		m_hrgn = CreateRectRgn((int)drawingRect.left(),
+		(int)drawingRect.top(),
+        (int)drawingRect.right(),
+        (int)drawingRect.bottom());
+		SelectClipRgn(m_hdc, m_hrgn);
+		} else {
+			painter.setClipRect(drawingRect); // Устанавливаем область прорисовки. Будем рисовать только в ней.
+		}
+	#else
+		painter.setClipRect(drawingRect); // Устанавливаем область прорисовки. Будем рисовать только в ней.
+	#endif
+
 
 	if (drArea.m_areaType == 2)	{
 		drawingRect.adjust(2,2,-2,-2);
-		colCur = drArea.m_firstVisible_ColLeft;
+		colCur = drArea.firstVisible_ColLeft();
 	}
 
-	qreal rowsLenCur = drawingRect.top() - drArea.m_shift_RowTop; // + 1 * m_scaleFactorO;
-	qreal rowsLensPage = drawingRect.bottom();
+	uorNumber rowsLenCur = drawingRect.top() - drArea.shift_RowTop(); // + 1 * m_scaleFactorO;
+	uorNumber rowsLensPage = drawingRect.bottom();
 
-	qreal colsLenCur = drawingRect.left() - drArea.m_shift_ColLeft;
-	qreal colsLensPage = drawingRect.right();
+	uorNumber colsLenCur = drawingRect.left() - drArea.shift_ColLeft();
+	uorNumber colsLensPage = drawingRect.right();
 	rectCell.setTop(rowsLenCur);
-	rectCell.setLeft(drawingRect.left() - drArea.m_shift_ColLeft);
+	rectCell.setLeft(drawingRect.left() - drArea.shift_ColLeft());
 	QString cellTest;
-	uoCell* curCell = NULL;
+	uoCell* curCell = 0;
+	uoCell* curCellPaint = 0; // отрисовываемая ячейка.
+	uoRow* curRow = 0;
 
 	/* надо изменить логику перерисовки по строкам.
 	причина: можем не прорисовать длинные строки, которые начинаются за
 	видимыми областями и прорисовываются на видимой */
 
-	qreal leftInvOffset = 0.0; // скока у нас слева скрыто.
-	for(int t = 1; t<drArea.m_firstVisible_ColLeft; t++)
+	uorNumber leftInvOffset = uorNumberNull; // скока у нас слева скрыто.
+	uorNumber sizeCol = uorNumberNull; // скока у нас слева скрыто, но содержит текст, который необходимо отпечатать
+	for(int t = 1; t<drArea.firstVisible_ColLeft(); t++)
 	{
 		if (!doc->getScaleHide(uorRhtColumnHeader, t))
 			leftInvOffset += doc->getScaleSize(uorRhtColumnHeader, t);
 	}
 
-	qreal sz = 0.0;
+	uorNumber sz = uorNumberNull;
+	uorNumber lengthMaxOver = uorNumberNull;
+	bool hasUnion = false;
+	bool needDrawCell = true;
+	uoCellUnionRect* cellURect = 0;
+	uoCellJoin* cellJoinItem = 0;
+	QList<uoCellUnionRect*> cellUnionList;
+	QList<uoCellUnionRect*>::iterator cellUnionListIt;
+
+	uoCell* vect[100];
+	memset(vect,0,sizeof(uoCell*)*100);
+	bool getFromCache = false;
+	int cacheColStart = 0, cacheColEnd = 0;
+	int cycleDrwText = 1, cycleDrwBorder = 0;
+
+	bool debugThis = false;
+	bool textDraw = true;
+
 
 	uoHorAlignment hCellAllign = uoHA_Unknown;
+	///\todo - отладить прорисовку >> D:\Мои документы\Win_Мои_документы2\Мои рисунки\unNStudio\report\ba\report_bag_001.bmp
 
-	do {	// строки, строки, строки и строки =============
+	do {
+		// строки, строки, строки и строки =============
 		while((isHide = doc->getScaleHide(uorRhtRowsHeader, rowCur))){
 			++rowCur;
 		}
 		sz = doc->getScaleSize(uorRhtRowsHeader, rowCur);
-		if (sz == 0.0) {
+		if (sz == uorNumberNull) {
 			++rowCur;
 			continue;
 		}
 		if (drArea.m_areaType == 2) {
 			// эта область типа uorReportPrintArea, тут вывод ограничен строкой и столбцом.
-			if (drArea.m_lastVisibleRow < rowCur)
+			if (drArea.lastVisibleRow() < rowCur)
 				break;
 		}
 		rowsLenCur = rowsLenCur + sz;
 		rectCell.setBottom(rowsLenCur);
+		curRow = doc->getRow(rowCur);
+		lengthMaxOver = uorNumberNull;
+		if (curRow)
+			lengthMaxOver = curRow->m_lengthMaxOver;
 
-		colCur = drArea.m_firstVisible_ColLeft;
-		for ( int i = 0; i < 2; i++) {
-			// 2 цикла нужны для того, что-бы первый раз отрисовать рамки, а на второй текст.
-			if (i == 0) {
-				colCur = drArea.m_firstVisible_ColLeft;
-				colsLenCur = drawingRect.left() - drArea.m_shift_ColLeft;
-			} else if (i == 1) {
-				colCur = 1;
-				colsLenCur = -leftInvOffset + drawingRect.left() - drArea.m_shift_ColLeft;
+		colCur = drArea.firstVisible_ColLeft();
+		// 2 цикла нужны для того, что-бы первый раз отрисовать рамки, а на второй текст.
+		//cycleCounter =
+		for ( int cycleCounter = cycleDrwBorder; cycleCounter < 2; cycleCounter++) {
+			///\todo - надо свести к 1-му циклу.... ибо пипец.... и продумать нормальную прорисовку
+			if (cycleCounter == cycleDrwBorder) {
+				colCur = drArea.firstVisible_ColLeft();
+				colsLenCur = drawingRect.left() - drArea.shift_ColLeft();
+			} else if (cycleCounter == cycleDrwText) {
+				colCur = 1; // Для длинных строк, которые пересекают несколько ячеек.
+				colsLenCur = -leftInvOffset + drawingRect.left() - drArea.shift_ColLeft(); // leftInvOffsetRow
+				if (lengthMaxOver <= uorNumberNull){
+					colCur = drArea.firstVisible_ColLeft();
+					colsLenCur = drawingRect.left() - drArea.shift_ColLeft();
+				} else {
+					colCur = drArea.firstVisible_ColLeft();
+					colsLenCur = drawingRect.left() - drArea.shift_ColLeft();
+					if (colCur>1) {
+						while(lengthMaxOver>0 && colCur>1){
+							colCur = colCur - 1;
+							if (!doc->getScaleHide(uorRhtColumnHeader, colCur)){
+								sizeCol = doc->getScaleSize(uorRhtColumnHeader, colCur);
+								colsLenCur = colsLenCur-sizeCol;
+								lengthMaxOver = lengthMaxOver - sizeCol;
+							}
+						}
+						colCur = qMax(1, colCur);
+					}
+
+				}
+			}
+			if (debugThis && cycleCounter == cycleDrwText){
+				colCurFirst = colCur;
 			}
 			rectCell.setLeft(colsLenCur);
+			if (cycleCounter == cycleDrwBorder) {
+				memset(vect,0,sizeof(uoCell*)*100);
+				cacheColStart = colCur; // , casheColEnd = 0
+			}
+			textDraw = false;
 
 			do {// столбцы
 
-				curCell = doc->getCell(rowCur,colCur,false);
-				while((isHide = doc->getScaleHide(uorRhtColumnHeader, colCur))){
-					if (i == 1) {
-						/* даже если ячейка скрытая, то она может содержать текст, хвост которого
-						необходимо будет отобразить.*/
-						curCell = doc->getCell(rowCur,colCur,false);
-						if (curCell){
+				hasUnion = false;
+				needDrawCell = true;
+				curCell = 0;
 
-						}
-					}
+				while((isHide = doc->getScaleHide(uorRhtColumnHeader, colCur))){
 					++colCur;
 				}
-				if (drArea.m_areaType == 2 && drArea.m_lastVisibleCol < colCur) {
-					if (i == 0) {
-						// эта область типа uorReportPrintArea, тут вывод ограничен строкой и столбцом.
-						break;
-					} else if (i == 1){
-						// тут не печатаем текст, который имеет выравнивание по левому краю и по центру.
-						if (curCell){
+
+				getFromCache = false;
+				if (cycleCounter == cycleDrwText && colCur<100 && colCur>= cacheColStart && cacheColEnd >= colCur){
+					getFromCache = true;
+				}
+
+				if (!getFromCache){
+					if (curRow)		curCell = curRow->getCell(colCur,false);
+					if (colCur<100)	vect[colCur] = curCell;
+				} else {
+					curCell = vect[colCur];
+				}
+
+				if (drArea.m_areaType == 2 && drArea.lastVisibleCol() < colCur) {
+					if (cycleCounter == cycleDrwBorder) {
+						break; // эта область типа uorReportPrintArea, тут вывод ограничен строкой и столбцом.
+					} else if (cycleCounter == cycleDrwText){
+						if (curCell){		// тут не печатаем текст, который имеет выравнивание по левому краю и по центру.
 							hCellAllign = curCell->getAlignmentHor();
 							if (uoHA_Left == hCellAllign || hCellAllign == uoHA_Center)
 								break;
@@ -334,75 +601,125 @@ void uoReportDrawHelper::drawDataArea(QPainter& painter, uorReportAreaBase& drAr
 
 				colsLenCur += sz;
 				rectCell.setRight(colsLenCur);
-				// а вот если ячейка - текущая?
-				if (m_curentCell.x() == colCur && m_curentCell.y() == rowCur){
-					rectCellCur = rectCell;				/// у бля....
+
+
+				cellURect = 0;
+				hasUnion = false;
+				if (curCell) {
+					hasUnion = curCell->isUnionHas();
+					if (!textDraw)
+						textDraw = (curCell->m_maxRowLen > 1);
 				}
-				isSell = false;
-				if (m_selections)	isSell = m_selections->isCellSelect(rowCur,colCur);
 
-				if (i == 0) {
-					if (isSell) {
-						rectCell.adjust(-1,-1,-1,-1);
-						painter.fillRect(rectCell, m_brushSelection);
-						rectCell.adjust(1,1,1,1);
-					}
-
-					if (m_showGrid){
-						// draw,  draw,  draw,  draw,  aw, aw, aw, aw, aw, wu-u-u-u-u-u
-						if (isSell) {
-							painter.setPen(m_penWhiteText);
-						} else {
-							painter.setPen(m_penGrey);
+				rectCellToPaint = rectCell;
+				// если есть объединение, нужно вычислить рект, он отличается от ректа ячейки.
+				if (hasUnion){
+					needDrawCell = false;
+					if (curCell){
+						// проанализируем на участие в объединени
+						// надо найти калькулируемый рект и увеличить его на высоту и ирину ячейки
+						if (curCell->isFirstOfUnionCell()) {
+							needDrawCell = true;
+							cellJoinItem = curCell->cellJoin();
+							if (cellJoinItem) {
+								rectCellToPaint.setRight(rectCellToPaint.left() + cellJoinItem->m_width);
+								rectCellToPaint.setBottom(rectCellToPaint.top() + cellJoinItem->m_height);
+							}
 						}
-						/* проблема, если рисовать ячейку цельняком, то закрашивается рамка верхней.
-						лучше рисанем без верхней рамки... уберем левую вертикалку, мешает.*/
-						//painter.drawLine(rectCell.topLeft(), rectCell.bottomLeft());
-						painter.drawLine(rectCell.bottomLeft(), rectCell.bottomRight() );
-						painter.drawLine(rectCell.bottomRight(), rectCell.topRight() );
-
-					}
-					if (curCell){
-						curCell->drawBorder(painter, rectCell);
-					}
-
-				} else {
-
-					if (curCell){
-						drawCell(painter, curCell, rectCell, doc, isSell, drArea);
 					}
 				}
+				// а вот если ячейка - текущая?
+				if (cycleCounter==cycleDrwBorder){
+					if (m_curentCell.x() == colCur && m_curentCell.y() == rowCur){
+						rectCellCur = rectCellToPaint;				/// у бля....
+					}
+				}
+
+
+				isSell = false;
+
+				if (needDrawCell) {
+					if (cycleCounter == cycleDrwBorder) {
+
+						if (m_showGrid){
+							// draw,  draw,  draw,  draw,  aw, aw, aw, aw, aw, wu-u-u-u-u-u
+							if (isSell) {
+								painter.setPen(m_penWhiteText);
+							} else {
+								painter.setPen(m_penGrey);
+							}
+							/* проблема, если рисовать ячейку цельняком, то закрашивается рамка верхней.
+							лучше рисанем без верхней рамки... уберем левую вертикалку, мешает.*/
+							//painter.drawLine(rectCell.topLeft(), rectCell.bottomLeft());
+							painter.drawLine(rectCellToPaint.bottomLeft(), rectCellToPaint.bottomRight() );
+
+							if (cellURect || !hasUnion){
+								// либо последняя правая при объединении, либо рисуем
+								painter.drawLine(rectCellToPaint.bottomRight(), rectCellToPaint.topRight() );
+							}
+
+						}
+						if (curCell){
+							curCell->drawBorder(painter, rectCellToPaint);
+						}
+
+					} else {
+
+						if (curCell){
+							drawCell(painter, curCell, rectCellToPaint, doc, isSell, drArea);
+						}
+					}
+				}
+
+				// тут уже идет вычисление нового ректа для следующей  ячейки.
 
 				rectCell.setLeft(rectCell.right());
 				colPrev = colCur;
 				colCur = colCur + 1;
-				if (i==0){
+				if (cycleCounter==cycleDrwBorder){
+					cacheColEnd = colCur;
 					if (colsLenCur >= colsLensPage)
 						break;
-				} else if (i==1){
+				} else if (cycleCounter==cycleDrwText){
 					if (colCur > doc->getColCount())
 						break;
+					if (lengthMaxOver <= uorNumberNull){
+						if (colCur == drArea.lastVisibleCol() + 1)
+							break;
+					} else if (lengthMaxOver < colsLenCur - drawingRect.width()){
+						break;
+					}
+
 				}
 
 			} while(true /*colsLenCur < colsLensPage*/);
+			if (debugThis && cycleCounter == cycleDrwText && textDraw){
+				qDebug() << "Draw text- first col: " << colCurFirst << "last col: " << colCur << " colsLenCur: " << colsLenCur  << " colsLenCur: " << colsLenCur;
+
+			}
+
 		}
 		rectCell.setTop(rectCell.bottom());
 		rowCur = rowCur + 1;
 	} while(rowsLenCur < rowsLensPage);
 
-	if (!rectCellCur.isNull() && m_showCurCell){
-		int wp = m_penText.width();
-		m_penText.setWidth(2);
-		painter.setPen(m_penText);
-		painter.drawRect(rectCellCur);
-		m_penText.setWidth(wp);
-	}
 	painter.setPen(oldPen);
+	#ifdef Q_OS_WIN
+		if (m_directDraw) {
+			SelectClipRgn(m_hdc, 0);
+			painter.paintEngine()->releaseDC(m_hdc);
+		}
+	#endif
+
+
+	while (!cellUnionList.isEmpty()){
+		delete cellUnionList.takeFirst();
+	}
 }
 /**
 	Специально для предварительного просмотра, прорисуем поля отчета.
 */
-void uoReportDrawHelper::drawFields(QPainter& painter)
+void uoReportDrawHelper::drawFields(uoPainter& painter)
 {
 	if (!m_doc)
 		return;

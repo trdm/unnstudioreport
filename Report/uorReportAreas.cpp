@@ -17,13 +17,61 @@ uorReportAreaBase::uorReportAreaBase()
 uorReportAreaBase::~uorReportAreaBase()
 {}
 
+void uorReportAreaBase::setShift_RowTop(const uorNumber& val) 	{
+	if (int(m_shift_RowTop) != int(val))
+		change();
+	m_shift_RowTop = val;
+}
+void uorReportAreaBase::setShift_ColLeft(const uorNumber& val) 	{
+	if (int(m_shift_ColLeft) != int(val))
+		change();
+	m_shift_ColLeft = val;
+}
+
+void uorReportAreaBase::setFirstVisible_RowTop(const int& val ) {
+	if(val != m_firstVisible_RowTop)
+		change();
+	m_firstVisible_RowTop = val;
+}
+
+void uorReportAreaBase::setFirstVisible_ColLeft(const int& val ) {
+	if (m_firstVisible_ColLeft != val)
+		change();
+	m_firstVisible_ColLeft = val;
+}
+
+void uorReportAreaBase::setLastVisibleRow(const int& val ) {
+	if (m_lastVisibleRow != val)
+		change();
+	m_lastVisibleRow = val;
+}
+
+void uorReportAreaBase::setLastVisibleCol(const int& val ) {
+	if (m_lastVisibleCol != val)
+		change();
+	m_lastVisibleCol = val;
+}
+
+void uorReportAreaBase::copyTo(uorReportAreaBase& target){
+	target.m_area 		= m_area;
+	target.m_areaType 	= m_areaType;
+	target.m_changes 	= m_changes;
+	target.m_shift_RowTop 		= m_shift_RowTop;
+	target.m_shift_ColLeft 		= m_shift_ColLeft;
+	target.m_firstVisible_RowTop= m_firstVisible_RowTop;
+	target.m_firstVisible_ColLeft= m_firstVisible_ColLeft;
+	target.m_lastVisibleRow 	= m_lastVisibleRow;
+	target.m_lastVisibleCol 	= m_lastVisibleCol;
+}
+
 void uorReportAreaBase::clear()
 {
-	m_shift_ColLeft = m_shift_RowTop = 0.0;
+	m_shift_ColLeft = m_shift_RowTop = uorNumberNull;
     m_firstVisible_RowTop = m_firstVisible_ColLeft = 0;
 	m_lastVisibleRow = m_lastVisibleCol = 0;
-	m_area = QRectF(0.0, 0.0, 0.0, 0.0);
+	m_area = uorRect(uorNumberNull, uorNumberNull, uorNumberNull, uorNumberNull);
 	m_areaType = 1;
+	m_changes = 0;
 
 }
 
@@ -48,16 +96,16 @@ uorPageColSegment::uorPageColSegment()
 	: m_segmentNom(0)
 	, m_colStart(0)
 	, m_colEnd(0)
-	, m_offsetStart(0.0)
-	, m_segmWidth(0.0)
+	, m_offsetStart(uorNumberNull)
+	, m_segmWidth(uorNumberNull)
 {}
 
 uorPageColSegment::uorPageColSegment(int segmNo, int colS, int colN)
 	: m_segmentNom(segmNo)
 	, m_colStart(colS)
 	, m_colEnd(colN)
-	, m_offsetStart(0.0)
-	, m_segmWidth(0.0)
+	, m_offsetStart(uorNumberNull)
+	, m_segmWidth(uorNumberNull)
 {}
 uorPageColSegment::~uorPageColSegment()
 {}
@@ -70,6 +118,7 @@ uorReportViewArea::uorReportViewArea()
 	,m_sectItemList(new uoRptSectionItemList)
 {
 	clear();
+	m_changes = -1;
 }
 uorReportViewArea::uorReportViewArea(const uorReportViewArea& re)
 	:uorReportAreaBase()
@@ -111,4 +160,19 @@ void uorReportViewArea::clear()
 	uorReportAreaBase::clear();
 }
 
+QString uorReportViewArea::toDebug()
+{
+	QString str = QString(
+	"first_Row = %1 last_Row = %3 "
+	"first_Col = %2 last_Col = %4 "
+	"shift_RowTop = %5 shift_ColLeft = %6")
+	.arg(m_firstVisible_RowTop)
+	.arg(m_firstVisible_ColLeft)
+	.arg(m_lastVisibleRow)
+	.arg(m_lastVisibleCol)
+	.arg(m_shift_RowTop)
+	.arg(m_shift_ColLeft)
+	;
+	return str;
+}
 } // namespace uoReport

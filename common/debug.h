@@ -27,7 +27,7 @@
 
 
 // Стандартный обработчик отладочных сообщений
- void DebugMsgHandler(QtMsgType type, const char *msg);
+void DebugMsgHandler(QtMsgType type, const char *msg);
 
 void InstallMsgHandler(const char *fileName);
 

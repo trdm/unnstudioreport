@@ -6,6 +6,7 @@
 *
 ***************************************/
 #include "uoReportViewIteract.h"
+#include "uoReportLoader.h"
 #include <QFileDialog>
 #include <QMessageBox>
 
@@ -25,6 +26,7 @@ uoReportViewIteract::uoReportViewIteract(QObject* parent)
 	: QObject(parent)
 {
 	//ctor
+	m_shortkatUse = false;
 }
 
 uoReportViewIteract::~uoReportViewIteract()
@@ -36,7 +38,8 @@ uoReportViewIteract::~uoReportViewIteract()
 void uoReportViewIteract::createActions()
 {
 	m_actCut 		= new QAction(QString::fromUtf8("Вырезать"),this);
-	m_actRemember 	= new QAction(QString::fromUtf8("Запомнить"),this);
+	m_actCopy 		= new QAction(QString::fromUtf8("Копировать"),this);
+	m_actPaste 		= new QAction(QString::fromUtf8("Вставить"),this);
 	m_actDelete 	= new QAction(QString::fromUtf8("Удалить"),this);
 	m_actAdd 		= new QAction(QString::fromUtf8("Добавить"),this);
 	m_actClear 		= new QAction(QString::fromUtf8("Очистить"),this);
@@ -81,9 +84,9 @@ void uoReportViewIteract::createActions()
 	m_actScope250 = new QAction(QString::fromUtf8("250%"),this); m_actScope250->setCheckable(true);
 	m_actScope300 = new QAction(QString::fromUtf8("300%"),this); m_actScope300->setCheckable(true);
 
-	m_actSave 	= new QAction(QString::fromUtf8("Сохранить"),this);
+	m_actSave 	= new QAction(QString::fromUtf8("Сохранить"),this); m_actSave->setShortcut(QKeySequence(QKeySequence::Save));
 	m_actSaveAs = new QAction(QString::fromUtf8("Сохранить как.."),this);
-	m_actLoad 	= new QAction(QString::fromUtf8("Открыть"),this);
+	m_actLoad 	= new QAction(QString::fromUtf8("Открыть"),this); m_actLoad->setShortcut(QKeySequence(QKeySequence::Open));
 
 	m_showProp 	= new QAction(QString::fromUtf8("Свойства..."),this);
 
@@ -92,8 +95,12 @@ void uoReportViewIteract::createActions()
 	m_actRow_AutoSize 	= new QAction(QString::fromUtf8("Авторазмер"),this);
 	m_actRowCol_SetSize = new QAction(QString::fromUtf8("Установить размер"),this);
 
-
 	m_actProperty	= new QAction(QString::fromUtf8("Свойства"),this);
+
+	m_actCreateMatrix = new QAction(QString::fromUtf8("Создать матрицу"),this);
+	m_actOptions = new QAction(QString::fromUtf8("Опции..."),this);
+	m_actLoad_TXT = new QAction(QString::fromUtf8("Загрузить текст"),this);
+
 
 	connect(m_actScope25, SIGNAL(triggered()), this, SLOT(onScale25()));
 	connect(m_actScope50, SIGNAL(triggered()), this, SLOT(onScale50()));
@@ -107,6 +114,7 @@ void uoReportViewIteract::createActions()
 
 	m_actUndo  	= new QAction(QString::fromUtf8("Отмена"),this);
 	m_actRedo	= new QAction(QString::fromUtf8("Повторить"),this);
+	m_actJoin	= new QAction(QString::fromUtf8("Объединить"),this);
 
 	m_showPreview	= new QAction(QString::fromUtf8("Предварительный просмотр"),this);
 	m_showPageSettings = new QAction(QString::fromUtf8("Страница"),this);
@@ -148,6 +156,8 @@ void uoReportViewIteract::connectActions(uoReportCtrl* rCtrl)
 	connect(m_actUndo, 			SIGNAL(triggered()), rCtrl, SLOT(onUndo()));
 	connect(m_actRedo, 			SIGNAL(triggered()), rCtrl, SLOT(onRedo()));
 
+	connect(m_actJoin, 			SIGNAL(triggered()), rCtrl, SLOT(onCellJoin()));
+
 	connect(m_actRowCol_Delete, 	SIGNAL(triggered()), rCtrl, SLOT(onRowColDelete()));
 	connect(m_actRowCol_Add, 		SIGNAL(triggered()), rCtrl, SLOT(onRowColAdd()));
 	connect(m_actRow_AutoSize, 		SIGNAL(triggered()), rCtrl, SLOT(onRowAutoSize()));
@@ -157,6 +167,33 @@ void uoReportViewIteract::connectActions(uoReportCtrl* rCtrl)
 	connect(m_showPageSettings, 		SIGNAL(triggered()), rCtrl, SLOT(onShowPagesSetings()));
 
 	connect(m_showProp, 		SIGNAL(triggered()), rCtrl, SLOT(propertyEditorShowActivate()));
+
+	connect(m_actCreateMatrix, 	SIGNAL(triggered()), rCtrl, SLOT(onCreateMatrix()));
+	connect(m_actOptions, 		SIGNAL(triggered()), rCtrl, SLOT(onOptionsShow()));
+	connect(m_actLoad_TXT, 		SIGNAL(triggered()), rCtrl, SLOT(onLoadTXT()));
+
+	connect(m_actCut, 		SIGNAL(triggered()), rCtrl, SLOT(onCut()));
+	connect(m_actPaste, 	SIGNAL(triggered()), rCtrl, SLOT(onPaste()));
+	connect(m_actCopy, 	SIGNAL(triggered()), rCtrl, SLOT(onCopy()));
+	if (m_shortkatUse) {
+		QShortcut* shcut = 0;
+		shcut = new QShortcut(QKeySequence(QKeySequence::Open),rCtrl);
+		connect(shcut, SIGNAL(activated()), rCtrl, SLOT(onLoad()));
+		m_actLoad->setShortcut(QKeySequence(QKeySequence::Open));
+
+		// Дубляж клавишь сделан намеренно, ибо на винде у меня после QKeySequence::Copy не работает Ctrl+Insert
+		shcut = new QShortcut(QKeySequence(QKeySequence::Copy),rCtrl);	connect(shcut, SIGNAL(activated()), rCtrl, SLOT(onCopy()));
+		m_actCopy->setShortcut(QKeySequence(QKeySequence::Copy));
+
+		shcut = new QShortcut(QKeySequence(Qt::CTRL + Qt::Key_Insert),rCtrl);	connect(shcut, SIGNAL(activated()), rCtrl, SLOT(onCopy()));
+		shcut = new QShortcut(QKeySequence(QKeySequence::Paste),rCtrl);	connect(shcut, SIGNAL(activated()), rCtrl, SLOT(onPaste()));
+		shcut = new QShortcut(QKeySequence(Qt::SHIFT + Qt::Key_Insert),rCtrl);	connect(shcut, SIGNAL(activated()), rCtrl, SLOT(onPaste()));
+		m_actPaste->setShortcut(QKeySequence(QKeySequence::Paste));
+
+		shcut = new QShortcut(QKeySequence(QKeySequence::Undo),rCtrl);	connect(shcut, SIGNAL(activated()), rCtrl, SLOT(onUndo())); m_actUndo->setShortcut(QKeySequence(QKeySequence::Undo));
+		shcut = new QShortcut(QKeySequence(QKeySequence::Redo),rCtrl);	connect(shcut, SIGNAL(activated()), rCtrl, SLOT(onRedo()));	m_actRedo->setShortcut(QKeySequence(QKeySequence::Redo));
+	}
+
 }
 
 
@@ -164,7 +201,8 @@ void uoReportViewIteract::refreshActions(uoReportCtrl* rCtrl)
 {
 	if (!rCtrl){
 		m_actCut->setEnabled(false);
-		m_actRemember->setEnabled(false);
+		m_actCopy->setEnabled(false);
+		m_actPaste->setEnabled(false);
 		m_actDelete->setEnabled(false);
 		m_actAdd->setEnabled(false);
 		m_actClear->setEnabled(false);
@@ -225,7 +263,7 @@ void uoReportViewIteract::refreshActions(uoReportCtrl* rCtrl)
 	}
 
 	bool enabl = rCtrl->m_selections->isTrueForSections();
-	uorSelectionType selMode = rCtrl->m_selections->getSelectionType();
+	uorSelectionType selMode = rCtrl->m_selections->selectionType();
 	m_actRowCol_Delete->setEnabled(enabl);
 	m_actRowCol_Add->setEnabled(enabl);
 	m_actRow_AutoSize->setEnabled(false);
@@ -244,7 +282,7 @@ void uoReportViewIteract::refreshActions(uoReportCtrl* rCtrl)
 
 
 }
-void uoReportViewIteract::setCheckedState(qreal scaleFactor){
+void uoReportViewIteract::setCheckedState(uorNumber scaleFactor){
 	m_actScope25->setChecked(false);
 	m_actScope50->setChecked(false);
 	m_actScope75->setChecked(false);
@@ -266,6 +304,25 @@ void uoReportViewIteract::setCheckedState(qreal scaleFactor){
 	else if (scaleFactor == 3.0) 	{		m_actScope300->setChecked(true);	}
 }
 
+bool uoReportViewIteract::chooseLoadTxtFilePath(QString& filePath, QWidget* wi)
+{
+	QString filePathThis = filePath;
+	if (filePathThis.isEmpty()){
+		filePathThis = "report.txt";
+	}
+
+	QString fileName = QFileDialog::getOpenFileName(0,
+						 tr("Load txt.."),
+						 filePathThis,
+						 tr("Txt Files (*.txt)"));
+	if (!fileName.isEmpty()){
+		filePath = fileName;
+		return true;
+	}
+	return false;
+
+}
+
 /// Выбрать имя файла и формат для считывания
 bool uoReportViewIteract::chooseLoadFilePathAndFormat(QString& filePath, uoRptStoreFormat& frmt, QWidget* wi)
 {
@@ -273,16 +330,17 @@ bool uoReportViewIteract::chooseLoadFilePathAndFormat(QString& filePath, uoRptSt
 	if (filePathThis.isEmpty()){
 		filePathThis = "report.xml";
 	}
+	QString filter;
+	QMap<uoRptStoreFormat,QString> map = uoReportLoader::getAviableLoadFormat(filter);
 
 	QString fileName = QFileDialog::getOpenFileName(0,
 						 tr("Load report.."),
 						 filePathThis,
-						 tr("XML Files (*.xml)"));
+						 filter //tr("XML Files (*.xml)")
+						 );
 	if (!fileName.isEmpty()){
-		frmt = uoRsf_Unknown;
-		if (fileName.endsWith(QString(".xml"), Qt::CaseInsensitive)){
-			frmt = uoRsf_XML;
-		} else {
+		frmt = uoReportLoader::getFormatByName(fileName);
+		if (uoRsf_Unknown == frmt){
 			QMessageBox::information(wi, tr("Attention"), tr("Not correct file name"));
 			return false;
 		}
@@ -303,18 +361,20 @@ bool uoReportViewIteract::chooseSaveFilePathAndFormat(QString& filePath, uoRptSt
 
 	QFileDialog::Options options;
 
+	QString filter;
+	QMap<uoRptStoreFormat,QString> map = uoReportLoader::getAviableStoreFormat(filter);
+
 	QString selectedFilter;
 	QString fileName = QFileDialog::getSaveFileName(wi,
 						 tr("Save report.."),
 						 filePath,
-						 tr("XML Files (*.xml);*.xml"),
+						 filter,
 						 &selectedFilter,
 						 options);
+
 	if (!fileName.isEmpty()){
-		frmt = uoRsf_Unknown;
-		if (fileName.endsWith(QString(".xml"), Qt::CaseInsensitive)){
-			frmt = uoRsf_XML;
-		} else {
+		frmt = uoReportLoader::getFormatByName(fileName);
+		if (uoRsf_Unknown == frmt){
 			QMessageBox::information(wi, tr("Attention"), tr("Not correct file name"));
 			return false;
 		}
@@ -322,6 +382,7 @@ bool uoReportViewIteract::chooseSaveFilePathAndFormat(QString& filePath, uoRptSt
 		filePath = fileName;
 		return true;
 	}
+
 	return false;
 }
 
@@ -343,15 +404,15 @@ bool uoReportViewIteract::inputSectionName(QString& name, QWidget* wi)
 }
 
 
-void uoReportViewIteract::onScale25(){	emit onScaleChange(0.25);}
-void uoReportViewIteract::onScale50(){	emit onScaleChange(0.5);}
-void uoReportViewIteract::onScale75(){	emit onScaleChange(0.75);}
-void uoReportViewIteract::onScale100(){	emit onScaleChange(1);}
-void uoReportViewIteract::onScale125(){	emit onScaleChange(1.25);}
-void uoReportViewIteract::onScale150(){	emit onScaleChange(1.5);}
-void uoReportViewIteract::onScale200(){	emit onScaleChange(2);}
-void uoReportViewIteract::onScale250(){	emit onScaleChange(2.5);}
-void uoReportViewIteract::onScale300(){	emit onScaleChange(3.0);}
+void uoReportViewIteract::onScale25(){	emit onScaleChange((uorNumber)0.25);}
+void uoReportViewIteract::onScale50(){	emit onScaleChange((uorNumber)0.5);}
+void uoReportViewIteract::onScale75(){	emit onScaleChange((uorNumber)0.75);}
+void uoReportViewIteract::onScale100(){	emit onScaleChange((uorNumber)1);}
+void uoReportViewIteract::onScale125(){	emit onScaleChange((uorNumber)1.25);}
+void uoReportViewIteract::onScale150(){	emit onScaleChange((uorNumber)1.5);}
+void uoReportViewIteract::onScale200(){	emit onScaleChange((uorNumber)2);}
+void uoReportViewIteract::onScale250(){	emit onScaleChange((uorNumber)2.5);}
+void uoReportViewIteract::onScale300(){	emit onScaleChange((uorNumber)3.0);}
 
 
 } //namespace uoReport

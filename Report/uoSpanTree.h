@@ -22,26 +22,26 @@ struct uoLineSpan{
 
 	int m_start, m_end, m_level, m_id;
 	bool m_folded;
-	QList<uoLineSpan*>* _child;
-	QString _name;
+	QList<uoLineSpan*>* m_child;
+	QString m_name;
 
 	public:
 		uoLineSpan()
-			:m_start(-1)	, m_end(-1)	,m_level(-1)	,m_folded(false),_child(0)
+			:m_start(-1)	, m_end(-1)	,m_level(-1)	,m_folded(false),m_child(0)
 			{}
 
 		uoLineSpan(int s1, int s2)
-			: m_start(s1), m_end(s2)	,m_level(-1)	,m_folded(false),_child(0)
+			: m_start(s1), m_end(s2)	,m_level(-1)	,m_folded(false),m_child(0)
 			{}
 
 		int getStart() 	{ return m_start;}
 		int getEnd() 	{ return m_end;	}
 		int getLevel() 	{ return m_level;	}
 		int getChildCount() {
-			if (!_child) {
+			if (!m_child) {
 				return 0;
 			} else {
-				return _child->size();
+				return m_child->size();
 			}
 		}
 		bool getFolded() { return m_folded;	}
@@ -57,8 +57,8 @@ struct uoLineSpan{
 
 		void clearChilds() {
 			uoLineSpan* spn = NULL;
-			while (!_child->isEmpty()) {
-				spn = _child->takeFirst();
+			while (!m_child->isEmpty()) {
+				spn = m_child->takeFirst();
 				spn->clearChilds();
 				delete spn;
 			}
@@ -212,8 +212,8 @@ class uoSpanScaner01 : public uoSpanTreeScan
 		virtual ~uoSpanScaner01() {}
 
 		virtual bool visitSpan(uoLineSpan* curSpan)	{
-			if (!curSpan->_name.isEmpty()){
-				int comp = QString::compare(curSpan->_name, m_strName, Qt::CaseInsensitive);
+			if (!curSpan->m_name.isEmpty()){
+				int comp = QString::compare(curSpan->m_name, m_strName, Qt::CaseInsensitive);
 				if (comp == 0)
 				{
 					// нашли одинаковый.
@@ -244,7 +244,7 @@ class uoSpanScanerCommon : public uoSpanTreeScan
 		virtual ~uoSpanScanerCommon() {}
 
 		virtual bool visitSpan(uoLineSpan* curSpan)	{
-			if (!curSpan->_name.isEmpty())
+			if (!curSpan->m_name.isEmpty())
 			{
 				switch(m_type)
 				{
@@ -391,7 +391,7 @@ class uoSTScan_FoldPerId : public uoSpanTreeScan
 };
 
 
-
+class uoSpanTree;
 
 ///\class uoSpanTree - класс дерева отрезков.
 ///\brief Класс дерева отрезков. Обслуживает иерархию отрезков посредством свох операций.
@@ -399,7 +399,7 @@ class uoSpanTree : public QObject
 {
     Q_OBJECT
 	public:
-		uoSpanTree(QObject *parent = 0);
+		uoSpanTree(QObject *parent = 0, uoSpanTreeType type = uorStt_Unknown);
 		~uoSpanTree();
 
 
@@ -410,6 +410,9 @@ class uoSpanTree : public QObject
 		bool addSpan(int start, int stop, QString name);
 		int  getLevel();
 		int  getSize();
+
+		bool copyFrom(uoSpanTree* fromSTree, int posBegin = -1, int posEnd = -1, int offset = 0);
+		bool copyFrom(uoSpanTree* fromSTree, QList<int>& listRc, int offset = 0);
 
 		// настройки
 		bool setCanOnlyOne(bool canOO, bool destroy = false);
@@ -466,6 +469,7 @@ class uoSpanTree : public QObject
 		spanList* _firstChild;
 		QList<int>* _startGrpList;
 		uoLineSpan* _lastAddedSpan;
+		uoSpanTreeType m_type;
 
 		bool _foldExclude; /// При выборке спанов исключать зафолденные.
 

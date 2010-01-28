@@ -531,7 +531,9 @@ bool uoColorChooser::eventFilter ( QObject * watched, QEvent * event )
 {
 	switch(event->type()){
 		case QEvent::MouseButtonPress:
-		case QEvent::NonClientAreaMouseButtonPress:
+#if (QT_VERSION > 0x040201)
+		case QEvent::NonClientAreaMouseButtonPress: //if (QT_VERSION > 0x040201)
+#endif
 		{
 			if (popupVisible()){
 				QMouseEvent *m = static_cast<QMouseEvent *>(event);

@@ -11,6 +11,7 @@
 
 #include <QPrinter>
 #include <QRect>
+#include "uoReport.h"
 
 namespace uoReport {
 
@@ -40,7 +41,7 @@ struct uorPagePrintSetings {
 	int m_scopeType;
 	int m_scopeVal;
 	void setScope(int sType = 1 , int sVal = 100);
-	void setScale(qreal scale = 1.0);
+	void setScale(uorNumber scale = 1.0);
 inline const
 	bool widthOfSheet() const { return m_scopeType == 2 ? true : false; }
 
@@ -49,11 +50,11 @@ inline const
 		крупнее, если меньше, виджет мельче.
 		Высчитываются, если установлен  m_scopeType
 	*/
-	qreal m_scaleFactor;
+	uorNumber m_scaleFactor;
 inline
-	qreal scale() {
+	uorNumber scale() {
 		if (m_scopeType == 1){
-			return qreal(m_scopeVal)/100;
+			return uorNumber(m_scopeVal)/100;
 		}
 		return m_scaleFactor;
 	}
