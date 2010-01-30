@@ -1,0 +1,185 @@
+<ui version="4.0" >
+ <class>uorOptionsDlgUi</class>
+ <widget class="QDialog" name="uorOptionsDlgUi" >
+  <property name="windowModality" >
+   <enum>Qt::WindowModal</enum>
+  </property>
+  <property name="geometry" >
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>400</width>
+    <height>252</height>
+   </rect>
+  </property>
+  <property name="sizePolicy" >
+   <sizepolicy vsizetype="Fixed" hsizetype="Fixed" >
+    <horstretch>0</horstretch>
+    <verstretch>0</verstretch>
+   </sizepolicy>
+  </property>
+  <property name="windowTitle" >
+   <string>Options...</string>
+  </property>
+  <property name="windowIcon" >
+   <iconset resource="../uoReport.qrc" >:/image/report.png</iconset>
+  </property>
+  <widget class="QLabel" name="label" >
+   <property name="geometry" >
+    <rect>
+     <x>10</x>
+     <y>10</y>
+     <width>91</width>
+     <height>16</height>
+    </rect>
+   </property>
+   <property name="text" >
+    <string>&lt;html>&lt;head>&lt;meta name="qrichtext" content="1" />&lt;style type="text/css">
+p, li { white-space: pre-wrap; }
+&lt;/style>&lt;/head>&lt;body style=" font-family:'MS Shell Dlg 2'; font-size:8.25pt; font-weight:400; font-style:normal;">
+&lt;p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">&lt;span style=" font-size:8pt; font-weight:600;">Report options&lt;/span>&lt;/p>&lt;/body>&lt;/html></string>
+   </property>
+  </widget>
+  <widget class="QCheckBox" name="m_saveWithSelection" >
+   <property name="geometry" >
+    <rect>
+     <x>10</x>
+     <y>40</y>
+     <width>151</width>
+     <height>19</height>
+    </rect>
+   </property>
+   <property name="text" >
+    <string>Save with selection</string>
+   </property>
+  </widget>
+  <widget class="QDialogButtonBox" name="buttonBox" >
+   <property name="geometry" >
+    <rect>
+     <x>310</x>
+     <y>10</y>
+     <width>81</width>
+     <height>61</height>
+    </rect>
+   </property>
+   <property name="orientation" >
+    <enum>Qt::Vertical</enum>
+   </property>
+   <property name="standardButtons" >
+    <set>QDialogButtonBox::Cancel|QDialogButtonBox::NoButton|QDialogButtonBox::Ok</set>
+   </property>
+  </widget>
+  <widget class="Line" name="line" >
+   <property name="geometry" >
+    <rect>
+     <x>12</x>
+     <y>24</y>
+     <width>285</width>
+     <height>16</height>
+    </rect>
+   </property>
+   <property name="orientation" >
+    <enum>Qt::Horizontal</enum>
+   </property>
+  </widget>
+  <widget class="QTextEdit" name="m_DebugInfoText" >
+   <property name="geometry" >
+    <rect>
+     <x>2</x>
+     <y>120</y>
+     <width>393</width>
+     <height>130</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QLabel" name="m_DebugInfoLabel" >
+   <property name="geometry" >
+    <rect>
+     <x>8</x>
+     <y>100</y>
+     <width>154</width>
+     <height>16</height>
+    </rect>
+   </property>
+   <property name="font" >
+    <font>
+     <pointsize>8</pointsize>
+     <weight>75</weight>
+     <bold>true</bold>
+    </font>
+   </property>
+   <property name="frameShape" >
+    <enum>QFrame::NoFrame</enum>
+   </property>
+   <property name="frameShadow" >
+    <enum>QFrame::Plain</enum>
+   </property>
+   <property name="text" >
+    <string>Debug info</string>
+   </property>
+  </widget>
+  <widget class="QCheckBox" name="m_saveWithUndoStack" >
+   <property name="geometry" >
+    <rect>
+     <x>10</x>
+     <y>60</y>
+     <width>151</width>
+     <height>19</height>
+    </rect>
+   </property>
+   <property name="text" >
+    <string>Save with undo stack</string>
+   </property>
+  </widget>
+  <widget class="QCheckBox" name="m_directDrawFlag" >
+   <property name="geometry" >
+    <rect>
+     <x>12</x>
+     <y>80</y>
+     <width>151</width>
+     <height>19</height>
+    </rect>
+   </property>
+   <property name="text" >
+    <string>direct draw</string>
+   </property>
+  </widget>
+ </widget>
+ <resources>
+  <include location="../uoReport.qrc" />
+ </resources>
+ <connections>
+  <connection>
+   <sender>buttonBox</sender>
+   <signal>accepted()</signal>
+   <receiver>uorOptionsDlgUi</receiver>
+   <slot>accept()</slot>
+   <hints>
+    <hint type="sourcelabel" >
+     <x>248</x>
+     <y>254</y>
+    </hint>
+    <hint type="destinationlabel" >
+     <x>157</x>
+     <y>274</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>buttonBox</sender>
+   <signal>rejected()</signal>
+   <receiver>uorOptionsDlgUi</receiver>
+   <slot>reject()</slot>
+   <hints>
+    <hint type="sourcelabel" >
+     <x>316</x>
+     <y>260</y>
+    </hint>
+    <hint type="destinationlabel" >
+     <x>286</x>
+     <y>274</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+</ui>
