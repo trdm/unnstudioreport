@@ -1,0 +1,140 @@
+Простые партии товаров упр/фин.				
+01.11.2009 - 13.11.2009				
+ По пустой фирме. По номенклатурным позициям из группы &quot;мобильные телефоны Nokia&quot;. По всем контрагентам. По всем поставщикам.				
+Менеджер:  Дмитрий_Трошин (19.11.09 22:29:05)				
+				
+				
+Поставщик / Товар		Кон. ост 	Приход	Расход
+Поставщики		5'885'132.86 	1'121.00	6'047.26
+  Товар		5'885'132.86 	1'121.00	6'047.26
+    Бюрократ		75'996.97 		
+      АЙ-ТИ ООО		62'684.91 		
+	Мобильные телефоны	62'684.91 		
+	  мобильные телефоны Nokia	62'684.91 		
+	    Nokia 6600f mysterious black	62'684.91 		
+      ПРОЭКТ-СТОЛИЦА ООО		13'312.06 		
+	Мобильные телефоны	13'312.06 		
+	  мобильные телефоны Nokia	13'312.06 		
+	    Nokia 6600f mysterious black	-15'671.23 		
+	    Nokia 6600s black blue	8'435.25 		
+	    Nokia N79 grey brown	20'548.03 		
+    Биамонт ООО		22'243.20 		
+	Мобильные телефоны	22'243.20 		
+	  мобильные телефоны Nokia	22'243.20 		
+	    Nokia 2600 midnight blue	-4'128.00 		
+	    Nokia 3610f blue	4'963.20 		
+	    Nokia 5220 red	0.00 		
+	    Nokia 6300 black silver			
+	    Nokia 7210sn blue	-3'744.00 		
+	    Nokia N73-1 Music black	8'928.00 		
+	    Nokia N85-1 cooper	16'224.00 		
+    Деловой Партнер ООО		257'100.00 		
+	Мобильные телефоны	257'100.00 		
+	  мобильные телефоны Nokia	257'100.00 		
+	    Nokia 3610f blue	36'000.00 		
+	    Nokia 5610 pink	15'000.00 		
+	    Nokia 6500 classic silver	77'000.00 		
+	    Nokia 6600f ocean blue	80'500.00 		
+	    Nokia 6600f sophisticated	48'600.00 		
+    Мобайл Груп ООО		89'770.00 						
+	Мобильные телефоны	89'770.00 		
+	  мобильные телефоны Nokia	89'770.00 		
+	    Nokia 3610f blue	13'500.00 		
+	    Nokia 5610 red	8'100.00 		
+	    Nokia 6120c white	6'950.00 		
+	    Nokia E65-1 mocca silver	22'440.00 		
+	    Nokia E65-1 soft black	7'480.00 		
+	    Nokia N85-1 cooper	31'300.00 		
+    ТелеЛогистика ООО		5'420'772.69 	1'121.00	6'047.26
+	Мобильные телефоны	5'420'772.69 	1'121.00	6'047.26
+	  мобильные телефоны Nokia	5'420'772.69 	1'121.00	6'047.26
+	    Nokia 1200 black	1'121.00 	1'121.00	
+	    Nokia 1202 black	123'310.00 		1'121.00
+	    Nokia 1209 blue	25'969.44 		
+	    Nokia 1209 gray	24'705.66 		
+	    Nokia 1600 black	1'342.00 		
+	    Nokia 1661 black	23'541.00 		
+	    Nokia 1680 black	20'093.05 		
+	    Nokia 2600 midnight blue	153'970.81 		4'926.26
+	    Nokia 2600 sand gold	96'564.77 		
+	    Nokia 2630 black	30'608.26 		
+	    Nokia 2680 blue	22'584.52 		
+	    Nokia 2680 light pink	6'452.72 		
+	    Nokia 2680 orange	12'680.00 		
+	    Nokia 2680 slate grey	9'679.08 		
+	    Nokia 2680 violet	6'452.72 		
+	    Nokia 2760 sand gold	26'571.72 		
+	    Nokia 2760 smoky grey	150'430.26 		
+	    Nokia 2760 velvet red	7'875.09 		
+	    Nokia 3110 black	191'018.40 		
+	    Nokia 3120c graphite	50'480.00 		
+	    Nokia 3600s charcoal grey	12'567.70 		
+	    Nokia 3600s pink	39'382.85 		
+	    Nokia 3600s plum	52'561.20 		
+	    Nokia 5000 black	57'763.36 		
+	    Nokia 5000 neon blue	10'060.68 		
+	    Nokia 5000 perfect purple	17'041.56 		
+	    Nokia 5030 red	11'290.24 		
+	    Nokia 5130 blue	97'321.68 		
+	    Nokia 5130 red	55'745.56 		
+	    Nokia 5220 blue	48'395.34 		
+	    Nokia 5220 red	21'509.04 		
+	    Nokia 5310 black	31'801.00 		
+	    Nokia 5310 warrior blue	19'080.60 		
+	    Nokia 5800 black	53'200.00 		
+	    Nokia 5800 blue	13'714.90 		
+	    Nokia 5800 WH700 black	14'547.51 		
+	    Nokia 5800 WH700 blue	78'403.92 		
+	    Nokia 5800 WH700 red	65'336.60 		
+	    Nokia 6300 black	220'039.64 		
+	    Nokia 6300 black silver	175'434.00 		
+	    Nokia 6300 chocco	66'189.04 		
+	    Nokia 6300 red	358'685.60 		
+	    Nokia 6300 white	11'068.40 		
+	    Nokia 6303 black	137'314.24 		
+	    Nokia 6303 steel silver	125'155.52 		
+	    Nokia 6500 classic black	191'548.88 		
+	    Nokia 6500 classic bronze	167'385.18 		
+	    Nokia 6500 slider black	33'208.18 		
+	    Nokia 6500 slider silver	50'308.18 		
+	    Nokia 6600f mysterious black	80'000.00 		
+	    Nokia 6600s black blue	79'650.00 		
+	    Nokia 6600s black magenta	145'544.00 		
+	    Nokia 6650 black	72'043.72 		
+	    Nokia 6650 red	72'043.72 		
+	    Nokia 7070 black blue	42'728.95 		
+	    Nokia 7070 black pink	25'394.52 		
+	    Nokia 7100sn black	52'217.40 		
+	    Nokia 7100sn blue	90'251.44 		
+	    Nokia 7100sn red	79'751.32 		
+	    Nokia 7210sn blue	76'358.75 		
+	    Nokia 7210sn pink	54'091.20 		
+	    Nokia 7310 blue pink	16'248.60 		
+	    Nokia 7310 blue+green	80'356.38 		
+	    Nokia 7510sn brown+blue	13'621.21 		
+	    Nokia 7510sn red+green	27'517.60 		
+	    Nokia 7610SN gun metal/B/R	15'694.00 		
+	    Nokia 7610SN white/L/B	23'541.00 		
+	    Nokia 8800 Arte	33'500.00 		
+	    Nokia E51-1 black steel	16'605.90 		
+	    Nokia E63 ultra blue	28'343.37 		
+	    Nokia E66-1 grey steel	179'514.82 		
+	    Nokia E66-1 white steel	163'304.46 		
+	    Nokia E71-1 black	15'050.00 		
+	    Nokia E71-1 grey steel	61'091.52 		
+	    Nokia E75-1 red	37'698.64 		
+	    Nokia N78 black	17'171.84 		
+	    Nokia N79 black	38'161.20 		
+	    Nokia N82-1 black	13'113.58 		
+	    Nokia N85-1 cherry black	48'950.40 		
+	    Nokia N95-2 8Gb warm black	88'002.05 		
+	    Nokia N96 16Gb black	40'000.00 		
+	    Nokia N97 black	223'020.00 		
+	    Nokia N97 white	148'680.00 		
+    Центр дистрибьюции ООО		19'250.00 		
+	Мобильные телефоны	19'250.00 		
+	  мобильные телефоны Nokia	19'250.00 		
+	    Nokia 7100sn blue	10'200.00 		
+	    Nokia 2760 smoky grey	2'550.00 		
+	Итого:	5'885'132.86	1'121.00	6'047.26
+	

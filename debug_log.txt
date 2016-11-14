@@ -1,0 +1,5 @@
+Debug: Load m_version "0.3" 
+Debug: QTemporaryFile.fileName() "T:/Temp/TempSys/qt_temp.Hp2152" 
+Debug: Load m_version "0.3" 
+Debug: QTemporaryFile.fileName() "T:/Temp/TempSys/qt_temp.gq2152" 
+Debug: Load m_version "0.3" 

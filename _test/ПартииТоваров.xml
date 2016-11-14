@@ -1,0 +1,1149 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Doc type = "uoReportDocXML" version = "0.3">
+<DocSize>
+	<Sizes row = "141" col = "9" sizeV = "2148" sizeH = "813" />
+	<SizesV sizeV = "378" sizeH = "813" />
+	<DefSizes row = "15" col = "60"/>
+</DocSize>
+<Groups type = "1" count = "9">
+	<Group start = "10" end = "14" folded="1"/>
+	<Group start = "15" end = "20" folded="1"/>
+	<Group start = "21" end = "30" folded="1"/>
+	<Group start = "31" end = "38" folded="1"/>
+	<Group start = "39" end = "47" folded="1"/>
+	<Group start = "48" end = "133" folded="1"/>
+	<Group start = "134" end = "139" folded="0"/>
+	<Group start = "135" end = "139" folded="0"/>
+	<Group start = "136" end = "139" folded="0"/>
+</Groups>
+<Scales type = "2" count = "4">
+	<Scale no = "1" hide = "0" size="58" fixed="0"/>
+	<Scale no = "2" hide = "0" size="287" fixed="0"/>
+	<Scale no = "3" hide = "0" size="92" fixed="0"/>
+	<Scale no = "6" hide = "0" size="76" fixed="0"/>
+</Scales>
+<Scales type = "1" count = "140">
+	<Scale no = "1" hide = "0" size="20" fixed="0"/>
+	<Scale no = "2" hide = "0" size="15" fixed="0"/>
+	<Scale no = "3" hide = "0" size="28" fixed="0"/>
+	<Scale no = "4" hide = "0" size="15" fixed="0"/>
+	<Scale no = "5" hide = "0" size="15" fixed="0"/>
+	<Scale no = "6" hide = "0" size="15" fixed="0"/>
+	<Scale no = "7" hide = "0" size="15" fixed="0"/>
+	<Scale no = "8" hide = "0" size="15" fixed="0"/>
+	<Scale no = "9" hide = "0" size="15" fixed="0"/>
+	<Scale no = "10" hide = "0" size="15" fixed="0"/>
+	<Scale no = "11" hide = "1" size="15" fixed="0"/>
+	<Scale no = "12" hide = "1" size="15" fixed="0"/>
+	<Scale no = "13" hide = "1" size="15" fixed="0"/>
+	<Scale no = "14" hide = "1" size="15" fixed="0"/>
+	<Scale no = "15" hide = "0" size="15" fixed="0"/>
+	<Scale no = "16" hide = "1" size="15" fixed="0"/>
+	<Scale no = "17" hide = "1" size="15" fixed="0"/>
+	<Scale no = "18" hide = "1" size="15" fixed="0"/>
+	<Scale no = "19" hide = "1" size="15" fixed="0"/>
+	<Scale no = "20" hide = "1" size="15" fixed="0"/>
+	<Scale no = "21" hide = "0" size="15" fixed="0"/>
+	<Scale no = "22" hide = "1" size="15" fixed="0"/>
+	<Scale no = "23" hide = "1" size="15" fixed="0"/>
+	<Scale no = "24" hide = "1" size="15" fixed="0"/>
+	<Scale no = "25" hide = "1" size="15" fixed="0"/>
+	<Scale no = "26" hide = "1" size="15" fixed="0"/>
+	<Scale no = "27" hide = "1" size="15" fixed="0"/>
+	<Scale no = "28" hide = "1" size="15" fixed="0"/>
+	<Scale no = "29" hide = "1" size="15" fixed="0"/>
+	<Scale no = "30" hide = "1" size="15" fixed="0"/>
+	<Scale no = "31" hide = "0" size="15" fixed="0"/>
+	<Scale no = "32" hide = "1" size="15" fixed="0"/>
+	<Scale no = "33" hide = "1" size="15" fixed="0"/>
+	<Scale no = "34" hide = "1" size="15" fixed="0"/>
+	<Scale no = "35" hide = "1" size="15" fixed="0"/>
+	<Scale no = "36" hide = "1" size="15" fixed="0"/>
+	<Scale no = "37" hide = "1" size="15" fixed="0"/>
+	<Scale no = "38" hide = "1" size="15" fixed="0"/>
+	<Scale no = "39" hide = "0" size="15" fixed="0"/>
+	<Scale no = "40" hide = "1" size="15" fixed="0"/>
+	<Scale no = "41" hide = "1" size="15" fixed="0"/>
+	<Scale no = "42" hide = "1" size="15" fixed="0"/>
+	<Scale no = "43" hide = "1" size="15" fixed="0"/>
+	<Scale no = "44" hide = "1" size="15" fixed="0"/>
+	<Scale no = "45" hide = "1" size="15" fixed="0"/>
+	<Scale no = "46" hide = "1" size="15" fixed="0"/>
+	<Scale no = "47" hide = "1" size="15" fixed="0"/>
+	<Scale no = "48" hide = "0" size="15" fixed="0"/>
+	<Scale no = "49" hide = "1" size="15" fixed="0"/>
+	<Scale no = "50" hide = "1" size="15" fixed="0"/>
+	<Scale no = "51" hide = "1" size="15" fixed="0"/>
+	<Scale no = "52" hide = "1" size="15" fixed="0"/>
+	<Scale no = "53" hide = "1" size="15" fixed="0"/>
+	<Scale no = "54" hide = "1" size="15" fixed="0"/>
+	<Scale no = "55" hide = "1" size="15" fixed="0"/>
+	<Scale no = "56" hide = "1" size="15" fixed="0"/>
+	<Scale no = "57" hide = "1" size="15" fixed="0"/>
+	<Scale no = "58" hide = "1" size="15" fixed="0"/>
+	<Scale no = "59" hide = "1" size="15" fixed="0"/>
+	<Scale no = "60" hide = "1" size="15" fixed="0"/>
+	<Scale no = "61" hide = "1" size="15" fixed="0"/>
+	<Scale no = "62" hide = "1" size="15" fixed="0"/>
+	<Scale no = "63" hide = "1" size="15" fixed="0"/>
+	<Scale no = "64" hide = "1" size="15" fixed="0"/>
+	<Scale no = "65" hide = "1" size="15" fixed="0"/>
+	<Scale no = "66" hide = "1" size="15" fixed="0"/>
+	<Scale no = "67" hide = "1" size="15" fixed="0"/>
+	<Scale no = "68" hide = "1" size="15" fixed="0"/>
+	<Scale no = "69" hide = "1" size="15" fixed="0"/>
+	<Scale no = "70" hide = "1" size="15" fixed="0"/>
+	<Scale no = "71" hide = "1" size="15" fixed="0"/>
+	<Scale no = "72" hide = "1" size="15" fixed="0"/>
+	<Scale no = "73" hide = "1" size="15" fixed="0"/>
+	<Scale no = "74" hide = "1" size="15" fixed="0"/>
+	<Scale no = "75" hide = "1" size="15" fixed="0"/>
+	<Scale no = "76" hide = "1" size="15" fixed="0"/>
+	<Scale no = "77" hide = "1" size="15" fixed="0"/>
+	<Scale no = "78" hide = "1" size="15" fixed="0"/>
+	<Scale no = "79" hide = "1" size="15" fixed="0"/>
+	<Scale no = "80" hide = "1" size="15" fixed="0"/>
+	<Scale no = "81" hide = "1" size="15" fixed="0"/>
+	<Scale no = "82" hide = "1" size="15" fixed="0"/>
+	<Scale no = "83" hide = "1" size="15" fixed="0"/>
+	<Scale no = "84" hide = "1" size="15" fixed="0"/>
+	<Scale no = "85" hide = "1" size="15" fixed="0"/>
+	<Scale no = "86" hide = "1" size="15" fixed="0"/>
+	<Scale no = "87" hide = "1" size="15" fixed="0"/>
+	<Scale no = "88" hide = "1" size="15" fixed="0"/>
+	<Scale no = "89" hide = "1" size="15" fixed="0"/>
+	<Scale no = "90" hide = "1" size="15" fixed="0"/>
+	<Scale no = "91" hide = "1" size="15" fixed="0"/>
+	<Scale no = "92" hide = "1" size="15" fixed="0"/>
+	<Scale no = "93" hide = "1" size="15" fixed="0"/>
+	<Scale no = "94" hide = "1" size="15" fixed="0"/>
+	<Scale no = "95" hide = "1" size="15" fixed="0"/>
+	<Scale no = "96" hide = "1" size="15" fixed="0"/>
+	<Scale no = "97" hide = "1" size="15" fixed="0"/>
+	<Scale no = "98" hide = "1" size="15" fixed="0"/>
+	<Scale no = "99" hide = "1" size="15" fixed="0"/>
+	<Scale no = "100" hide = "1" size="15" fixed="0"/>
+	<Scale no = "101" hide = "1" size="15" fixed="0"/>
+	<Scale no = "102" hide = "1" size="15" fixed="0"/>
+	<Scale no = "103" hide = "1" size="15" fixed="0"/>
+	<Scale no = "104" hide = "1" size="15" fixed="0"/>
+	<Scale no = "105" hide = "1" size="15" fixed="0"/>
+	<Scale no = "106" hide = "1" size="15" fixed="0"/>
+	<Scale no = "107" hide = "1" size="15" fixed="0"/>
+	<Scale no = "108" hide = "1" size="15" fixed="0"/>
+	<Scale no = "109" hide = "1" size="15" fixed="0"/>
+	<Scale no = "110" hide = "1" size="15" fixed="0"/>
+	<Scale no = "111" hide = "1" size="15" fixed="0"/>
+	<Scale no = "112" hide = "1" size="15" fixed="0"/>
+	<Scale no = "113" hide = "1" size="15" fixed="0"/>
+	<Scale no = "114" hide = "1" size="15" fixed="0"/>
+	<Scale no = "115" hide = "1" size="15" fixed="0"/>
+	<Scale no = "116" hide = "1" size="15" fixed="0"/>
+	<Scale no = "117" hide = "1" size="15" fixed="0"/>
+	<Scale no = "118" hide = "1" size="15" fixed="0"/>
+	<Scale no = "119" hide = "1" size="15" fixed="0"/>
+	<Scale no = "120" hide = "1" size="15" fixed="0"/>
+	<Scale no = "121" hide = "1" size="15" fixed="0"/>
+	<Scale no = "122" hide = "1" size="15" fixed="0"/>
+	<Scale no = "123" hide = "1" size="15" fixed="0"/>
+	<Scale no = "124" hide = "1" size="15" fixed="0"/>
+	<Scale no = "125" hide = "1" size="15" fixed="0"/>
+	<Scale no = "126" hide = "1" size="15" fixed="0"/>
+	<Scale no = "127" hide = "1" size="15" fixed="0"/>
+	<Scale no = "128" hide = "1" size="15" fixed="0"/>
+	<Scale no = "129" hide = "1" size="15" fixed="0"/>
+	<Scale no = "130" hide = "1" size="15" fixed="0"/>
+	<Scale no = "131" hide = "1" size="15" fixed="0"/>
+	<Scale no = "132" hide = "1" size="15" fixed="0"/>
+	<Scale no = "133" hide = "1" size="15" fixed="0"/>
+	<Scale no = "134" hide = "0" size="15" fixed="0"/>
+	<Scale no = "135" hide = "0" size="15" fixed="0"/>
+	<Scale no = "136" hide = "0" size="15" fixed="0"/>
+	<Scale no = "137" hide = "0" size="15" fixed="0"/>
+	<Scale no = "138" hide = "0" size="15" fixed="0"/>
+	<Scale no = "138" hide = "0" size="15" fixed="0"/>
+	<Scale no = "141" hide = "0" size="15" fixed="0"/>
+</Scales>
+<Rows count = "140">
+	<RowItem no = "1" cellCnt = "5" LMaxToRight = "291" LMaxToLeft = "0" LFromCell = "557" lengthMaxOver = "233" >
+		<Cell no = "1" font="0;12;1;0;0;-1;-1"  textAtr="1;1;1;1"   border="-1;-1;-1;-1;-1"  >Простые партии товаров упр/фин.</Cell>
+		<Cell no = "2" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="-1;-1;-1;-1;-1"  ></Cell>
+		<Cell no = "3" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="-1;-1;-1;-1;-1"  ></Cell>
+		<Cell no = "4" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="-1;-1;-1;-1;-1"  ></Cell>
+		<Cell no = "5" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="-1;-1;-1;-1;-1"  ></Cell>
+	</RowItem>
+	<RowItem no = "2" cellCnt = "5" LMaxToRight = "122" LMaxToLeft = "0" LFromCell = "557" lengthMaxOver = "64" >
+		<Cell no = "1" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="-1;-1;-1;-1;-1"   join="2;1;2" >01.11.2009 - 13.11.2009</Cell>
+		<Cell no = "2" font="0;0;0;0;0;-1;-1"  textAtr="1;1;0;1"   border="-1;-1;-1;-1;-1"   join="1;2;1" ></Cell>
+		<Cell no = "3" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="-1;-1;-1;-1;-1"  ></Cell>
+		<Cell no = "4" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="-1;-1;-1;-1;-1"  ></Cell>
+		<Cell no = "5" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="-1;-1;-1;-1;-1"  ></Cell>
+	</RowItem>
+	<RowItem no = "3" cellCnt = "5" LMaxToRight = "622" LMaxToLeft = "0" LFromCell = "557" lengthMaxOver = "564" >
+		<Cell no = "1" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;4"   border="-1;-1;-1;-1;-1"   join="2;1;6" > По пустой фирме. По номенклатурным позициям из группы "мобильные телефоны Nokia". По всем контрагентам. По всем поставщикам.</Cell>
+		<Cell no = "2" font="0;0;0;0;0;-1;-1"  textAtr="1;1;0;1"   border="-1;-1;-1;-1;-1"   join="1;3;1" ></Cell>
+		<Cell no = "3" font="0;0;0;0;0;-1;-1"  textAtr="1;1;0;1"   border="-1;-1;-1;-1;-1"   join="1;3;1" ></Cell>
+		<Cell no = "4" font="0;0;0;0;0;-1;-1"  textAtr="1;1;0;1"   border="-1;-1;-1;-1;-1"   join="1;3;1" ></Cell>
+		<Cell no = "5" font="0;0;0;0;0;-1;-1"  textAtr="1;1;0;1"   border="-1;-1;-1;-1;-1"   join="1;3;1" ></Cell>
+	</RowItem>
+	<RowItem no = "4" cellCnt = "5" LMaxToRight = "253" LMaxToLeft = "0" LFromCell = "557" lengthMaxOver = "195" >
+		<Cell no = "1" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;4"   border="-1;-1;-1;-1;-1"   join="2;1;2" >Менеджер:  Дмитрий_Трошин (19.11.09 22:29:05)</Cell>
+		<Cell no = "2" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="6;6;6;6;-1"   join="1;4;1" ></Cell>
+		<Cell no = "3" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="-1;-1;-1;-1;-1"  ></Cell>
+		<Cell no = "4" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="-1;-1;-1;-1;-1"  ></Cell>
+		<Cell no = "5" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="-1;-1;-1;-1;-1"  ></Cell>
+	</RowItem>
+	<RowItem no = "5" cellCnt = "5" LMaxToRight = "0" LMaxToLeft = "0" LFromCell = "557" lengthMaxOver = "0" >
+		<Cell no = "1" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="-1;-1;-1;-1;-1"  ></Cell>
+		<Cell no = "2" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="-1;-1;-1;-1;-1"  ></Cell>
+		<Cell no = "3" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="-1;-1;-1;-1;-1"  ></Cell>
+		<Cell no = "4" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="-1;-1;-1;-1;-1"  ></Cell>
+		<Cell no = "5" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="-1;-1;-1;-1;-1"  ></Cell>
+	</RowItem>
+	<RowItem no = "6" cellCnt = "5" LMaxToRight = "0" LMaxToLeft = "0" LFromCell = "557" lengthMaxOver = "0" >
+		<Cell no = "1" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="-1;-1;-1;-1;-1"  ></Cell>
+		<Cell no = "2" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="-1;-1;-1;-1;-1"  ></Cell>
+		<Cell no = "3" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="-1;-1;-1;-1;-1"  ></Cell>
+		<Cell no = "4" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="-1;-1;-1;-1;-1"  ></Cell>
+		<Cell no = "5" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="-1;-1;-1;-1;-1"  ></Cell>
+	</RowItem>
+	<RowItem no = "7" cellCnt = "5" LMaxToRight = "0" LMaxToLeft = "0" LFromCell = "557" lengthMaxOver = "39" >
+		<Cell no = "1" font="0;8;0;0;0;-1;-1"  textAtr="2;2;1;1"   border="6;6;6;6;-1"   join="2;1;2" >Поставщик / Товар</Cell>
+		<Cell no = "2" font="0;0;0;0;0;-1;-1"  textAtr="1;1;0;1"   border="-1;-1;-1;-1;-1"   join="1;7;1" ></Cell>
+		<Cell no = "3" font="0;8;0;0;0;-1;-1"  textAtr="2;2;1;1"   border="6;6;6;6;-1"  >Кон. ост</Cell>
+		<Cell no = "4" font="0;8;0;0;0;-1;-1"  textAtr="2;2;1;1"   border="6;6;6;6;-1"  >Приход</Cell>
+		<Cell no = "5" font="0;8;0;0;0;-1;-1"  textAtr="2;2;1;1"   border="6;6;6;6;-1"  >Расход</Cell>
+	</RowItem>
+	<RowItem no = "8" cellCnt = "5" LMaxToRight = "63" LMaxToLeft = "0" LFromCell = "557" lengthMaxOver = "5" >
+		<Cell no = "1" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="1;1;1;1;-1"   join="2;1;2" >Поставщики</Cell>
+		<Cell no = "2" font="0;0;0;0;0;-1;-1"  textAtr="1;1;0;1"   border="-1;-1;-1;-1;-1"   join="1;8;1" ></Cell>
+		<Cell no = "3" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  >5'885'132.86</Cell>
+		<Cell no = "4" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  >1'121.00</Cell>
+		<Cell no = "5" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  >6'047.26</Cell>
+	</RowItem>
+	<RowItem no = "9" cellCnt = "5" LMaxToRight = "0" LMaxToLeft = "0" LFromCell = "557" lengthMaxOver = "0" >
+		<Cell no = "1" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="1;1;1;1;-1"   join="2;1;2" >  Товар</Cell>
+		<Cell no = "2" font="0;0;0;0;0;-1;-1"  textAtr="1;1;0;1"   border="-1;-1;-1;-1;-1"   join="1;9;1" ></Cell>
+		<Cell no = "3" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  >5'885'132.86</Cell>
+		<Cell no = "4" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  >1'121.00</Cell>
+		<Cell no = "5" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  >6'047.26</Cell>
+	</RowItem>
+	<RowItem no = "10" cellCnt = "5" LMaxToRight = "63" LMaxToLeft = "0" LFromCell = "557" lengthMaxOver = "5" >
+		<Cell no = "1" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="1;1;1;1;-1"   join="2;1;2" >    Бюрократ</Cell>
+		<Cell no = "2" font="0;0;0;0;0;-1;-1"  textAtr="1;1;0;1"   border="-1;-1;-1;-1;-1"   join="1;10;1" ></Cell>
+		<Cell no = "3" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  >75'996.97</Cell>
+		<Cell no = "4" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  ></Cell>
+		<Cell no = "5" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  ></Cell>
+	</RowItem>
+	<RowItem no = "11" cellCnt = "5" LMaxToRight = "76" LMaxToLeft = "0" LFromCell = "557" lengthMaxOver = "18" >
+		<Cell no = "1" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="1;1;1;1;-1"   join="2;1;2" >      АЙ-ТИ ООО</Cell>
+		<Cell no = "2" font="0;0;0;0;0;-1;-1"  textAtr="1;1;0;1"   border="-1;-1;-1;-1;-1"   join="1;11;1" ></Cell>
+		<Cell no = "3" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  >62'684.91</Cell>
+		<Cell no = "4" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  ></Cell>
+		<Cell no = "5" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  ></Cell>
+	</RowItem>
+	<RowItem no = "12" cellCnt = "5" LMaxToRight = "0" LMaxToLeft = "0" LFromCell = "557" lengthMaxOver = "0" >
+		<Cell no = "1" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="1;1;1;1;-1"  ></Cell>
+		<Cell no = "2" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="1;1;1;1;-1"  >Мобильные телефоны</Cell>
+		<Cell no = "3" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  >62'684.91</Cell>
+		<Cell no = "4" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  ></Cell>
+		<Cell no = "5" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  ></Cell>
+	</RowItem>
+	<RowItem no = "13" cellCnt = "5" LMaxToRight = "0" LMaxToLeft = "0" LFromCell = "557" lengthMaxOver = "0" >
+		<Cell no = "1" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="1;1;1;1;-1"  ></Cell>
+		<Cell no = "2" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="1;1;1;1;-1"  >  мобильные телефоны Nokia</Cell>
+		<Cell no = "3" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  >62'684.91</Cell>
+		<Cell no = "4" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  ></Cell>
+		<Cell no = "5" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  ></Cell>
+	</RowItem>
+	<RowItem no = "14" cellCnt = "5" LMaxToRight = "0" LMaxToLeft = "0" LFromCell = "557" lengthMaxOver = "0" >
+		<Cell no = "1" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="1;1;1;1;-1"  ></Cell>
+		<Cell no = "2" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="1;1;1;1;-1"  >    Nokia 6600f mysterious black</Cell>
+		<Cell no = "3" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  >62'684.91</Cell>
+		<Cell no = "4" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  ></Cell>
+		<Cell no = "5" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  ></Cell>
+	</RowItem>
+	<RowItem no = "15" cellCnt = "5" LMaxToRight = "140" LMaxToLeft = "0" LFromCell = "557" lengthMaxOver = "82" >
+		<Cell no = "1" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="1;1;1;1;-1"   join="2;1;2" >      ПРОЭКТ-СТОЛИЦА ООО</Cell>
+		<Cell no = "2" font="0;0;0;0;0;-1;-1"  textAtr="1;1;0;1"   border="-1;-1;-1;-1;-1"   join="1;15;1" ></Cell>
+		<Cell no = "3" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  >13'312.06</Cell>
+		<Cell no = "4" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  ></Cell>
+		<Cell no = "5" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  ></Cell>
+	</RowItem>
+	<RowItem no = "16" cellCnt = "5" LMaxToRight = "0" LMaxToLeft = "0" LFromCell = "557" lengthMaxOver = "0" >
+		<Cell no = "1" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="1;1;1;1;-1"  ></Cell>
+		<Cell no = "2" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="1;1;1;1;-1"  >Мобильные телефоны</Cell>
+		<Cell no = "3" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  >13'312.06</Cell>
+		<Cell no = "4" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  ></Cell>
+		<Cell no = "5" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  ></Cell>
+	</RowItem>
+	<RowItem no = "17" cellCnt = "5" LMaxToRight = "0" LMaxToLeft = "0" LFromCell = "557" lengthMaxOver = "0" >
+		<Cell no = "1" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="1;1;1;1;-1"  ></Cell>
+		<Cell no = "2" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="1;1;1;1;-1"  >  мобильные телефоны Nokia</Cell>
+		<Cell no = "3" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  >13'312.06</Cell>
+		<Cell no = "4" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  ></Cell>
+		<Cell no = "5" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  ></Cell>
+	</RowItem>
+	<RowItem no = "18" cellCnt = "5" LMaxToRight = "0" LMaxToLeft = "0" LFromCell = "557" lengthMaxOver = "0" >
+		<Cell no = "1" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="1;1;1;1;-1"  ></Cell>
+		<Cell no = "2" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="1;1;1;1;-1"  >    Nokia 6600f mysterious black</Cell>
+		<Cell no = "3" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  >-15'671.23</Cell>
+		<Cell no = "4" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  ></Cell>
+		<Cell no = "5" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  ></Cell>
+	</RowItem>
+	<RowItem no = "19" cellCnt = "5" LMaxToRight = "0" LMaxToLeft = "0" LFromCell = "557" lengthMaxOver = "0" >
+		<Cell no = "1" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="1;1;1;1;-1"  ></Cell>
+		<Cell no = "2" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="1;1;1;1;-1"  >    Nokia 6600s black blue</Cell>
+		<Cell no = "3" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  >8'435.25</Cell>
+		<Cell no = "4" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  ></Cell>
+		<Cell no = "5" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  ></Cell>
+	</RowItem>
+	<RowItem no = "20" cellCnt = "5" LMaxToRight = "0" LMaxToLeft = "0" LFromCell = "557" lengthMaxOver = "0" >
+		<Cell no = "1" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="1;1;1;1;-1"  ></Cell>
+		<Cell no = "2" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="1;1;1;1;-1"  >    Nokia N79 grey brown</Cell>
+		<Cell no = "3" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  >20'548.03</Cell>
+		<Cell no = "4" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  ></Cell>
+		<Cell no = "5" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  ></Cell>
+	</RowItem>
+	<RowItem no = "21" cellCnt = "5" LMaxToRight = "81" LMaxToLeft = "0" LFromCell = "557" lengthMaxOver = "23" >
+		<Cell no = "1" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="1;1;1;1;-1"   join="2;1;2" >    Биамонт ООО</Cell>
+		<Cell no = "2" font="0;0;0;0;0;-1;-1"  textAtr="1;1;0;1"   border="-1;-1;-1;-1;-1"   join="1;21;1" ></Cell>
+		<Cell no = "3" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  >22'243.20</Cell>
+		<Cell no = "4" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  ></Cell>
+		<Cell no = "5" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  ></Cell>
+	</RowItem>
+	<RowItem no = "22" cellCnt = "5" LMaxToRight = "0" LMaxToLeft = "0" LFromCell = "557" lengthMaxOver = "0" >
+		<Cell no = "1" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="1;1;1;1;-1"  ></Cell>
+		<Cell no = "2" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="1;1;1;1;-1"  >Мобильные телефоны</Cell>
+		<Cell no = "3" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  >22'243.20</Cell>
+		<Cell no = "4" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  ></Cell>
+		<Cell no = "5" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  ></Cell>
+	</RowItem>
+	<RowItem no = "23" cellCnt = "5" LMaxToRight = "0" LMaxToLeft = "0" LFromCell = "557" lengthMaxOver = "0" >
+		<Cell no = "1" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="1;1;1;1;-1"  ></Cell>
+		<Cell no = "2" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="1;1;1;1;-1"  >  мобильные телефоны Nokia</Cell>
+		<Cell no = "3" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  >22'243.20</Cell>
+		<Cell no = "4" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  ></Cell>
+		<Cell no = "5" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  ></Cell>
+	</RowItem>
+	<RowItem no = "24" cellCnt = "5" LMaxToRight = "0" LMaxToLeft = "0" LFromCell = "557" lengthMaxOver = "0" >
+		<Cell no = "1" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="1;1;1;1;-1"  ></Cell>
+		<Cell no = "2" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="1;1;1;1;-1"  >    Nokia 2600 midnight blue</Cell>
+		<Cell no = "3" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  >-4'128.00</Cell>
+		<Cell no = "4" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  ></Cell>
+		<Cell no = "5" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  ></Cell>
+	</RowItem>
+	<RowItem no = "25" cellCnt = "5" LMaxToRight = "0" LMaxToLeft = "0" LFromCell = "557" lengthMaxOver = "0" >
+		<Cell no = "1" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="1;1;1;1;-1"  ></Cell>
+		<Cell no = "2" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="1;1;1;1;-1"  >    Nokia 3610f blue</Cell>
+		<Cell no = "3" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  >4'963.20</Cell>
+		<Cell no = "4" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  ></Cell>
+		<Cell no = "5" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  ></Cell>
+	</RowItem>
+	<RowItem no = "26" cellCnt = "5" LMaxToRight = "0" LMaxToLeft = "0" LFromCell = "557" lengthMaxOver = "0" >
+		<Cell no = "1" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="1;1;1;1;-1"  ></Cell>
+		<Cell no = "2" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="1;1;1;1;-1"  >    Nokia 5220 red</Cell>
+		<Cell no = "3" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  >0.00</Cell>
+		<Cell no = "4" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  ></Cell>
+		<Cell no = "5" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  ></Cell>
+	</RowItem>
+	<RowItem no = "27" cellCnt = "5" LMaxToRight = "0" LMaxToLeft = "0" LFromCell = "557" lengthMaxOver = "0" >
+		<Cell no = "1" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="1;1;1;1;-1"  ></Cell>
+		<Cell no = "2" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="1;1;1;1;-1"  >    Nokia 6300 black silver</Cell>
+		<Cell no = "3" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  ></Cell>
+		<Cell no = "4" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  ></Cell>
+		<Cell no = "5" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  ></Cell>
+	</RowItem>
+	<RowItem no = "28" cellCnt = "5" LMaxToRight = "0" LMaxToLeft = "0" LFromCell = "557" lengthMaxOver = "0" >
+		<Cell no = "1" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="1;1;1;1;-1"  ></Cell>
+		<Cell no = "2" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="1;1;1;1;-1"  >    Nokia 7210sn blue</Cell>
+		<Cell no = "3" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  >-3'744.00</Cell>
+		<Cell no = "4" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  ></Cell>
+		<Cell no = "5" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  ></Cell>
+	</RowItem>
+	<RowItem no = "29" cellCnt = "5" LMaxToRight = "0" LMaxToLeft = "0" LFromCell = "557" lengthMaxOver = "0" >
+		<Cell no = "1" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="1;1;1;1;-1"  ></Cell>
+		<Cell no = "2" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="1;1;1;1;-1"  >    Nokia N73-1 Music black</Cell>
+		<Cell no = "3" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  >8'928.00</Cell>
+		<Cell no = "4" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  ></Cell>
+		<Cell no = "5" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  ></Cell>
+	</RowItem>
+	<RowItem no = "30" cellCnt = "5" LMaxToRight = "0" LMaxToLeft = "0" LFromCell = "557" lengthMaxOver = "0" >
+		<Cell no = "1" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="1;1;1;1;-1"  ></Cell>
+		<Cell no = "2" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="1;1;1;1;-1"  >    Nokia N85-1 cooper</Cell>
+		<Cell no = "3" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  >16'224.00</Cell>
+		<Cell no = "4" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  ></Cell>
+		<Cell no = "5" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  ></Cell>
+	</RowItem>
+	<RowItem no = "31" cellCnt = "5" LMaxToRight = "129" LMaxToLeft = "0" LFromCell = "557" lengthMaxOver = "71" >
+		<Cell no = "1" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="1;1;1;1;-1"   join="2;1;2" >    Деловой Партнер ООО</Cell>
+		<Cell no = "2" font="0;0;0;0;0;-1;-1"  textAtr="1;1;0;1"   border="-1;-1;-1;-1;-1"   join="1;31;1" ></Cell>
+		<Cell no = "3" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  >257'100.00</Cell>
+		<Cell no = "4" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  ></Cell>
+		<Cell no = "5" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  ></Cell>
+	</RowItem>
+	<RowItem no = "32" cellCnt = "5" LMaxToRight = "0" LMaxToLeft = "0" LFromCell = "557" lengthMaxOver = "0" >
+		<Cell no = "1" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="1;1;1;1;-1"  ></Cell>
+		<Cell no = "2" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="1;1;1;1;-1"  >Мобильные телефоны</Cell>
+		<Cell no = "3" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  >257'100.00</Cell>
+		<Cell no = "4" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  ></Cell>
+		<Cell no = "5" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  ></Cell>
+	</RowItem>
+	<RowItem no = "33" cellCnt = "5" LMaxToRight = "0" LMaxToLeft = "0" LFromCell = "557" lengthMaxOver = "0" >
+		<Cell no = "1" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="1;1;1;1;-1"  ></Cell>
+		<Cell no = "2" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="1;1;1;1;-1"  >  мобильные телефоны Nokia</Cell>
+		<Cell no = "3" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  >257'100.00</Cell>
+		<Cell no = "4" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  ></Cell>
+		<Cell no = "5" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  ></Cell>
+	</RowItem>
+	<RowItem no = "34" cellCnt = "5" LMaxToRight = "0" LMaxToLeft = "0" LFromCell = "557" lengthMaxOver = "0" >
+		<Cell no = "1" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="1;1;1;1;-1"  ></Cell>
+		<Cell no = "2" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="1;1;1;1;-1"  >    Nokia 3610f blue</Cell>
+		<Cell no = "3" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  >36'000.00</Cell>
+		<Cell no = "4" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  ></Cell>
+		<Cell no = "5" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  ></Cell>
+	</RowItem>
+	<RowItem no = "35" cellCnt = "5" LMaxToRight = "0" LMaxToLeft = "0" LFromCell = "557" lengthMaxOver = "0" >
+		<Cell no = "1" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="1;1;1;1;-1"  ></Cell>
+		<Cell no = "2" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="1;1;1;1;-1"  >    Nokia 5610 pink</Cell>
+		<Cell no = "3" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  >15'000.00</Cell>
+		<Cell no = "4" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  ></Cell>
+		<Cell no = "5" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  ></Cell>
+	</RowItem>
+	<RowItem no = "36" cellCnt = "5" LMaxToRight = "0" LMaxToLeft = "0" LFromCell = "557" lengthMaxOver = "0" >
+		<Cell no = "1" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="1;1;1;1;-1"  ></Cell>
+		<Cell no = "2" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="1;1;1;1;-1"  >    Nokia 6500 classic silver</Cell>
+		<Cell no = "3" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  >77'000.00</Cell>
+		<Cell no = "4" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  ></Cell>
+		<Cell no = "5" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  ></Cell>
+	</RowItem>
+	<RowItem no = "37" cellCnt = "5" LMaxToRight = "0" LMaxToLeft = "0" LFromCell = "557" lengthMaxOver = "0" >
+		<Cell no = "1" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="1;1;1;1;-1"  ></Cell>
+		<Cell no = "2" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="1;1;1;1;-1"  >    Nokia 6600f ocean blue</Cell>
+		<Cell no = "3" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  >80'500.00</Cell>
+		<Cell no = "4" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  ></Cell>
+		<Cell no = "5" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  ></Cell>
+	</RowItem>
+	<RowItem no = "38" cellCnt = "5" LMaxToRight = "0" LMaxToLeft = "0" LFromCell = "557" lengthMaxOver = "0" >
+		<Cell no = "1" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="1;1;1;1;-1"  ></Cell>
+		<Cell no = "2" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="1;1;1;1;-1"  >    Nokia 6600f sophisticated</Cell>
+		<Cell no = "3" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  >48'600.00</Cell>
+		<Cell no = "4" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  ></Cell>
+		<Cell no = "5" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  ></Cell>
+	</RowItem>
+	<RowItem no = "39" cellCnt = "6" LMaxToRight = "104" LMaxToLeft = "0" LFromCell = "813" lengthMaxOver = "46" >
+		<Cell no = "1" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="1;1;1;1;-1"   join="2;1;2" >    Мобайл Груп ООО</Cell>
+		<Cell no = "2" font="0;0;0;0;0;-1;-1"  textAtr="1;1;0;1"   border="-1;-1;-1;-1;-1"   join="1;39;1" ></Cell>
+		<Cell no = "3" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  >89'770.00</Cell>
+		<Cell no = "4" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  ></Cell>
+		<Cell no = "5" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  ></Cell>
+		<Cell no = "9" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="-1;-1;-1;-1;-1"  ></Cell>
+	</RowItem>
+	<RowItem no = "40" cellCnt = "5" LMaxToRight = "0" LMaxToLeft = "0" LFromCell = "557" lengthMaxOver = "0" >
+		<Cell no = "1" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="1;1;1;1;-1"  ></Cell>
+		<Cell no = "2" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="1;1;1;1;-1"  >Мобильные телефоны</Cell>
+		<Cell no = "3" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  >89'770.00</Cell>
+		<Cell no = "4" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  ></Cell>
+		<Cell no = "5" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  ></Cell>
+	</RowItem>
+	<RowItem no = "41" cellCnt = "5" LMaxToRight = "0" LMaxToLeft = "0" LFromCell = "557" lengthMaxOver = "0" >
+		<Cell no = "1" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="1;1;1;1;-1"  ></Cell>
+		<Cell no = "2" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="1;1;1;1;-1"  >  мобильные телефоны Nokia</Cell>
+		<Cell no = "3" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  >89'770.00</Cell>
+		<Cell no = "4" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  ></Cell>
+		<Cell no = "5" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  ></Cell>
+	</RowItem>
+	<RowItem no = "42" cellCnt = "5" LMaxToRight = "0" LMaxToLeft = "0" LFromCell = "557" lengthMaxOver = "0" >
+		<Cell no = "1" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="1;1;1;1;-1"  ></Cell>
+		<Cell no = "2" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="1;1;1;1;-1"  >    Nokia 3610f blue</Cell>
+		<Cell no = "3" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  >13'500.00</Cell>
+		<Cell no = "4" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  ></Cell>
+		<Cell no = "5" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  ></Cell>
+	</RowItem>
+	<RowItem no = "43" cellCnt = "5" LMaxToRight = "0" LMaxToLeft = "0" LFromCell = "557" lengthMaxOver = "0" >
+		<Cell no = "1" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="1;1;1;1;-1"  ></Cell>
+		<Cell no = "2" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="1;1;1;1;-1"  >    Nokia 5610 red</Cell>
+		<Cell no = "3" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  >8'100.00</Cell>
+		<Cell no = "4" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  ></Cell>
+		<Cell no = "5" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  ></Cell>
+	</RowItem>
+	<RowItem no = "44" cellCnt = "5" LMaxToRight = "0" LMaxToLeft = "0" LFromCell = "557" lengthMaxOver = "0" >
+		<Cell no = "1" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="1;1;1;1;-1"  ></Cell>
+		<Cell no = "2" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="1;1;1;1;-1"  >    Nokia 6120c white</Cell>
+		<Cell no = "3" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  >6'950.00</Cell>
+		<Cell no = "4" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  ></Cell>
+		<Cell no = "5" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  ></Cell>
+	</RowItem>
+	<RowItem no = "45" cellCnt = "5" LMaxToRight = "0" LMaxToLeft = "0" LFromCell = "557" lengthMaxOver = "0" >
+		<Cell no = "1" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="1;1;1;1;-1"  ></Cell>
+		<Cell no = "2" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="1;1;1;1;-1"  >    Nokia E65-1 mocca silver</Cell>
+		<Cell no = "3" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  >22'440.00</Cell>
+		<Cell no = "4" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  ></Cell>
+		<Cell no = "5" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  ></Cell>
+	</RowItem>
+	<RowItem no = "46" cellCnt = "5" LMaxToRight = "0" LMaxToLeft = "0" LFromCell = "557" lengthMaxOver = "0" >
+		<Cell no = "1" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="1;1;1;1;-1"  ></Cell>
+		<Cell no = "2" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="1;1;1;1;-1"  >    Nokia E65-1 soft black</Cell>
+		<Cell no = "3" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  >7'480.00</Cell>
+		<Cell no = "4" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  ></Cell>
+		<Cell no = "5" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  ></Cell>
+	</RowItem>
+	<RowItem no = "47" cellCnt = "5" LMaxToRight = "0" LMaxToLeft = "0" LFromCell = "557" lengthMaxOver = "0" >
+		<Cell no = "1" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="1;1;1;1;-1"  ></Cell>
+		<Cell no = "2" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="1;1;1;1;-1"  >    Nokia N85-1 cooper</Cell>
+		<Cell no = "3" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  >31'300.00</Cell>
+		<Cell no = "4" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  ></Cell>
+		<Cell no = "5" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  ></Cell>
+	</RowItem>
+	<RowItem no = "48" cellCnt = "5" LMaxToRight = "116" LMaxToLeft = "0" LFromCell = "557" lengthMaxOver = "58" >
+		<Cell no = "1" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="1;1;1;1;-1"   join="2;1;2" >    ТелеЛогистика ООО</Cell>
+		<Cell no = "2" font="0;0;0;0;0;-1;-1"  textAtr="1;1;0;1"   border="-1;-1;-1;-1;-1"   join="1;48;1" ></Cell>
+		<Cell no = "3" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  >5'420'772.69</Cell>
+		<Cell no = "4" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  >1'121.00</Cell>
+		<Cell no = "5" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  >6'047.26</Cell>
+	</RowItem>
+	<RowItem no = "49" cellCnt = "5" LMaxToRight = "0" LMaxToLeft = "0" LFromCell = "557" lengthMaxOver = "0" >
+		<Cell no = "1" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="1;1;1;1;-1"  ></Cell>
+		<Cell no = "2" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="1;1;1;1;-1"  >Мобильные телефоны</Cell>
+		<Cell no = "3" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  >5'420'772.69</Cell>
+		<Cell no = "4" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  >1'121.00</Cell>
+		<Cell no = "5" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  >6'047.26</Cell>
+	</RowItem>
+	<RowItem no = "50" cellCnt = "5" LMaxToRight = "0" LMaxToLeft = "0" LFromCell = "557" lengthMaxOver = "0" >
+		<Cell no = "1" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="1;1;1;1;-1"  ></Cell>
+		<Cell no = "2" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="1;1;1;1;-1"  >  мобильные телефоны Nokia</Cell>
+		<Cell no = "3" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  >5'420'772.69</Cell>
+		<Cell no = "4" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  >1'121.00</Cell>
+		<Cell no = "5" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  >6'047.26</Cell>
+	</RowItem>
+	<RowItem no = "51" cellCnt = "5" LMaxToRight = "0" LMaxToLeft = "0" LFromCell = "557" lengthMaxOver = "0" >
+		<Cell no = "1" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="1;1;1;1;-1"  ></Cell>
+		<Cell no = "2" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="1;1;1;1;-1"  >    Nokia 1200 black</Cell>
+		<Cell no = "3" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  >1'121.00</Cell>
+		<Cell no = "4" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  >1'121.00</Cell>
+		<Cell no = "5" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  ></Cell>
+	</RowItem>
+	<RowItem no = "52" cellCnt = "5" LMaxToRight = "0" LMaxToLeft = "0" LFromCell = "557" lengthMaxOver = "0" >
+		<Cell no = "1" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="1;1;1;1;-1"  ></Cell>
+		<Cell no = "2" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="1;1;1;1;-1"  >    Nokia 1202 black</Cell>
+		<Cell no = "3" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  >123'310.00</Cell>
+		<Cell no = "4" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  ></Cell>
+		<Cell no = "5" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  >1'121.00</Cell>
+	</RowItem>
+	<RowItem no = "53" cellCnt = "5" LMaxToRight = "0" LMaxToLeft = "0" LFromCell = "557" lengthMaxOver = "0" >
+		<Cell no = "1" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="1;1;1;1;-1"  ></Cell>
+		<Cell no = "2" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="1;1;1;1;-1"  >    Nokia 1209 blue</Cell>
+		<Cell no = "3" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  >25'969.44</Cell>
+		<Cell no = "4" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  ></Cell>
+		<Cell no = "5" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  ></Cell>
+	</RowItem>
+	<RowItem no = "54" cellCnt = "5" LMaxToRight = "0" LMaxToLeft = "0" LFromCell = "557" lengthMaxOver = "0" >
+		<Cell no = "1" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="1;1;1;1;-1"  ></Cell>
+		<Cell no = "2" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="1;1;1;1;-1"  >    Nokia 1209 gray</Cell>
+		<Cell no = "3" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  >24'705.66</Cell>
+		<Cell no = "4" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  ></Cell>
+		<Cell no = "5" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  ></Cell>
+	</RowItem>
+	<RowItem no = "55" cellCnt = "5" LMaxToRight = "0" LMaxToLeft = "0" LFromCell = "557" lengthMaxOver = "0" >
+		<Cell no = "1" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="1;1;1;1;-1"  ></Cell>
+		<Cell no = "2" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="1;1;1;1;-1"  >    Nokia 1600 black</Cell>
+		<Cell no = "3" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  >1'342.00</Cell>
+		<Cell no = "4" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  ></Cell>
+		<Cell no = "5" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  ></Cell>
+	</RowItem>
+	<RowItem no = "56" cellCnt = "5" LMaxToRight = "0" LMaxToLeft = "0" LFromCell = "557" lengthMaxOver = "0" >
+		<Cell no = "1" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="1;1;1;1;-1"  ></Cell>
+		<Cell no = "2" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="1;1;1;1;-1"  >    Nokia 1661 black</Cell>
+		<Cell no = "3" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  >23'541.00</Cell>
+		<Cell no = "4" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  ></Cell>
+		<Cell no = "5" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  ></Cell>
+	</RowItem>
+	<RowItem no = "57" cellCnt = "5" LMaxToRight = "0" LMaxToLeft = "0" LFromCell = "557" lengthMaxOver = "0" >
+		<Cell no = "1" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="1;1;1;1;-1"  ></Cell>
+		<Cell no = "2" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="1;1;1;1;-1"  >    Nokia 1680 black</Cell>
+		<Cell no = "3" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  >20'093.05</Cell>
+		<Cell no = "4" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  ></Cell>
+		<Cell no = "5" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  ></Cell>
+	</RowItem>
+	<RowItem no = "58" cellCnt = "5" LMaxToRight = "0" LMaxToLeft = "0" LFromCell = "557" lengthMaxOver = "0" >
+		<Cell no = "1" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="1;1;1;1;-1"  ></Cell>
+		<Cell no = "2" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="1;1;1;1;-1"  >    Nokia 2600 midnight blue</Cell>
+		<Cell no = "3" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  >153'970.81</Cell>
+		<Cell no = "4" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  ></Cell>
+		<Cell no = "5" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  >4'926.26</Cell>
+	</RowItem>
+	<RowItem no = "59" cellCnt = "5" LMaxToRight = "0" LMaxToLeft = "0" LFromCell = "557" lengthMaxOver = "0" >
+		<Cell no = "1" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="1;1;1;1;-1"  ></Cell>
+		<Cell no = "2" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="1;1;1;1;-1"  >    Nokia 2600 sand gold</Cell>
+		<Cell no = "3" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  >96'564.77</Cell>
+		<Cell no = "4" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  ></Cell>
+		<Cell no = "5" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  ></Cell>
+	</RowItem>
+	<RowItem no = "60" cellCnt = "5" LMaxToRight = "0" LMaxToLeft = "0" LFromCell = "557" lengthMaxOver = "0" >
+		<Cell no = "1" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="1;1;1;1;-1"  ></Cell>
+		<Cell no = "2" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="1;1;1;1;-1"  >    Nokia 2630 black</Cell>
+		<Cell no = "3" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  >30'608.26</Cell>
+		<Cell no = "4" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  ></Cell>
+		<Cell no = "5" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  ></Cell>
+	</RowItem>
+	<RowItem no = "61" cellCnt = "5" LMaxToRight = "0" LMaxToLeft = "0" LFromCell = "557" lengthMaxOver = "0" >
+		<Cell no = "1" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="1;1;1;1;-1"  ></Cell>
+		<Cell no = "2" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="1;1;1;1;-1"  >    Nokia 2680 blue</Cell>
+		<Cell no = "3" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  >22'584.52</Cell>
+		<Cell no = "4" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  ></Cell>
+		<Cell no = "5" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  ></Cell>
+	</RowItem>
+	<RowItem no = "62" cellCnt = "5" LMaxToRight = "0" LMaxToLeft = "0" LFromCell = "557" lengthMaxOver = "0" >
+		<Cell no = "1" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="1;1;1;1;-1"  ></Cell>
+		<Cell no = "2" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="1;1;1;1;-1"  >    Nokia 2680 light pink</Cell>
+		<Cell no = "3" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  >6'452.72</Cell>
+		<Cell no = "4" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  ></Cell>
+		<Cell no = "5" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  ></Cell>
+	</RowItem>
+	<RowItem no = "63" cellCnt = "5" LMaxToRight = "0" LMaxToLeft = "0" LFromCell = "557" lengthMaxOver = "0" >
+		<Cell no = "1" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="1;1;1;1;-1"  ></Cell>
+		<Cell no = "2" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="1;1;1;1;-1"  >    Nokia 2680 orange</Cell>
+		<Cell no = "3" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  >12'680.00</Cell>
+		<Cell no = "4" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  ></Cell>
+		<Cell no = "5" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  ></Cell>
+	</RowItem>
+	<RowItem no = "64" cellCnt = "5" LMaxToRight = "0" LMaxToLeft = "0" LFromCell = "557" lengthMaxOver = "0" >
+		<Cell no = "1" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="1;1;1;1;-1"  ></Cell>
+		<Cell no = "2" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="1;1;1;1;-1"  >    Nokia 2680 slate grey</Cell>
+		<Cell no = "3" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  >9'679.08</Cell>
+		<Cell no = "4" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  ></Cell>
+		<Cell no = "5" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  ></Cell>
+	</RowItem>
+	<RowItem no = "65" cellCnt = "5" LMaxToRight = "0" LMaxToLeft = "0" LFromCell = "557" lengthMaxOver = "0" >
+		<Cell no = "1" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="1;1;1;1;-1"  ></Cell>
+		<Cell no = "2" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="1;1;1;1;-1"  >    Nokia 2680 violet</Cell>
+		<Cell no = "3" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  >6'452.72</Cell>
+		<Cell no = "4" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  ></Cell>
+		<Cell no = "5" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  ></Cell>
+	</RowItem>
+	<RowItem no = "66" cellCnt = "5" LMaxToRight = "0" LMaxToLeft = "0" LFromCell = "557" lengthMaxOver = "0" >
+		<Cell no = "1" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="1;1;1;1;-1"  ></Cell>
+		<Cell no = "2" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="1;1;1;1;-1"  >    Nokia 2760 sand gold</Cell>
+		<Cell no = "3" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  >26'571.72</Cell>
+		<Cell no = "4" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  ></Cell>
+		<Cell no = "5" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  ></Cell>
+	</RowItem>
+	<RowItem no = "67" cellCnt = "5" LMaxToRight = "0" LMaxToLeft = "0" LFromCell = "557" lengthMaxOver = "0" >
+		<Cell no = "1" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="1;1;1;1;-1"  ></Cell>
+		<Cell no = "2" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="1;1;1;1;-1"  >    Nokia 2760 smoky grey</Cell>
+		<Cell no = "3" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  >150'430.26</Cell>
+		<Cell no = "4" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  ></Cell>
+		<Cell no = "5" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  ></Cell>
+	</RowItem>
+	<RowItem no = "68" cellCnt = "5" LMaxToRight = "0" LMaxToLeft = "0" LFromCell = "557" lengthMaxOver = "0" >
+		<Cell no = "1" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="1;1;1;1;-1"  ></Cell>
+		<Cell no = "2" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="1;1;1;1;-1"  >    Nokia 2760 velvet red</Cell>
+		<Cell no = "3" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  >7'875.09</Cell>
+		<Cell no = "4" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  ></Cell>
+		<Cell no = "5" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  ></Cell>
+	</RowItem>
+	<RowItem no = "69" cellCnt = "5" LMaxToRight = "0" LMaxToLeft = "0" LFromCell = "557" lengthMaxOver = "0" >
+		<Cell no = "1" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="1;1;1;1;-1"  ></Cell>
+		<Cell no = "2" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="1;1;1;1;-1"  >    Nokia 3110 black</Cell>
+		<Cell no = "3" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  >191'018.40</Cell>
+		<Cell no = "4" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  ></Cell>
+		<Cell no = "5" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  ></Cell>
+	</RowItem>
+	<RowItem no = "70" cellCnt = "5" LMaxToRight = "0" LMaxToLeft = "0" LFromCell = "557" lengthMaxOver = "0" >
+		<Cell no = "1" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="1;1;1;1;-1"  ></Cell>
+		<Cell no = "2" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="1;1;1;1;-1"  >    Nokia 3120c graphite</Cell>
+		<Cell no = "3" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  >50'480.00</Cell>
+		<Cell no = "4" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  ></Cell>
+		<Cell no = "5" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  ></Cell>
+	</RowItem>
+	<RowItem no = "71" cellCnt = "5" LMaxToRight = "0" LMaxToLeft = "0" LFromCell = "557" lengthMaxOver = "0" >
+		<Cell no = "1" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="1;1;1;1;-1"  ></Cell>
+		<Cell no = "2" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="1;1;1;1;-1"  >    Nokia 3600s charcoal grey</Cell>
+		<Cell no = "3" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  >12'567.70</Cell>
+		<Cell no = "4" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  ></Cell>
+		<Cell no = "5" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  ></Cell>
+	</RowItem>
+	<RowItem no = "72" cellCnt = "5" LMaxToRight = "0" LMaxToLeft = "0" LFromCell = "557" lengthMaxOver = "0" >
+		<Cell no = "1" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="1;1;1;1;-1"  ></Cell>
+		<Cell no = "2" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="1;1;1;1;-1"  >    Nokia 3600s pink</Cell>
+		<Cell no = "3" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  >39'382.85</Cell>
+		<Cell no = "4" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  ></Cell>
+		<Cell no = "5" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  ></Cell>
+	</RowItem>
+	<RowItem no = "73" cellCnt = "5" LMaxToRight = "0" LMaxToLeft = "0" LFromCell = "557" lengthMaxOver = "0" >
+		<Cell no = "1" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="1;1;1;1;-1"  ></Cell>
+		<Cell no = "2" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="1;1;1;1;-1"  >    Nokia 3600s plum</Cell>
+		<Cell no = "3" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  >52'561.20</Cell>
+		<Cell no = "4" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  ></Cell>
+		<Cell no = "5" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  ></Cell>
+	</RowItem>
+	<RowItem no = "74" cellCnt = "5" LMaxToRight = "0" LMaxToLeft = "0" LFromCell = "557" lengthMaxOver = "0" >
+		<Cell no = "1" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="1;1;1;1;-1"  ></Cell>
+		<Cell no = "2" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="1;1;1;1;-1"  >    Nokia 5000 black</Cell>
+		<Cell no = "3" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  >57'763.36</Cell>
+		<Cell no = "4" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  ></Cell>
+		<Cell no = "5" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  ></Cell>
+	</RowItem>
+	<RowItem no = "75" cellCnt = "5" LMaxToRight = "0" LMaxToLeft = "0" LFromCell = "557" lengthMaxOver = "0" >
+		<Cell no = "1" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="1;1;1;1;-1"  ></Cell>
+		<Cell no = "2" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="1;1;1;1;-1"  >    Nokia 5000 neon blue</Cell>
+		<Cell no = "3" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  >10'060.68</Cell>
+		<Cell no = "4" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  ></Cell>
+		<Cell no = "5" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  ></Cell>
+	</RowItem>
+	<RowItem no = "76" cellCnt = "5" LMaxToRight = "0" LMaxToLeft = "0" LFromCell = "557" lengthMaxOver = "0" >
+		<Cell no = "1" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="1;1;1;1;-1"  ></Cell>
+		<Cell no = "2" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="1;1;1;1;-1"  >    Nokia 5000 perfect purple</Cell>
+		<Cell no = "3" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  >17'041.56</Cell>
+		<Cell no = "4" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  ></Cell>
+		<Cell no = "5" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  ></Cell>
+	</RowItem>
+	<RowItem no = "77" cellCnt = "5" LMaxToRight = "0" LMaxToLeft = "0" LFromCell = "557" lengthMaxOver = "0" >
+		<Cell no = "1" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="1;1;1;1;-1"  ></Cell>
+		<Cell no = "2" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="1;1;1;1;-1"  >    Nokia 5030 red</Cell>
+		<Cell no = "3" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  >11'290.24</Cell>
+		<Cell no = "4" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  ></Cell>
+		<Cell no = "5" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  ></Cell>
+	</RowItem>
+	<RowItem no = "78" cellCnt = "5" LMaxToRight = "0" LMaxToLeft = "0" LFromCell = "557" lengthMaxOver = "0" >
+		<Cell no = "1" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="1;1;1;1;-1"  ></Cell>
+		<Cell no = "2" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="1;1;1;1;-1"  >    Nokia 5130 blue</Cell>
+		<Cell no = "3" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  >97'321.68</Cell>
+		<Cell no = "4" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  ></Cell>
+		<Cell no = "5" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  ></Cell>
+	</RowItem>
+	<RowItem no = "79" cellCnt = "5" LMaxToRight = "0" LMaxToLeft = "0" LFromCell = "557" lengthMaxOver = "0" >
+		<Cell no = "1" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="1;1;1;1;-1"  ></Cell>
+		<Cell no = "2" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="1;1;1;1;-1"  >    Nokia 5130 red</Cell>
+		<Cell no = "3" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  >55'745.56</Cell>
+		<Cell no = "4" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  ></Cell>
+		<Cell no = "5" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  ></Cell>
+	</RowItem>
+	<RowItem no = "80" cellCnt = "5" LMaxToRight = "0" LMaxToLeft = "0" LFromCell = "557" lengthMaxOver = "0" >
+		<Cell no = "1" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="1;1;1;1;-1"  ></Cell>
+		<Cell no = "2" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="1;1;1;1;-1"  >    Nokia 5220 blue</Cell>
+		<Cell no = "3" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  >48'395.34</Cell>
+		<Cell no = "4" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  ></Cell>
+		<Cell no = "5" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  ></Cell>
+	</RowItem>
+	<RowItem no = "81" cellCnt = "5" LMaxToRight = "0" LMaxToLeft = "0" LFromCell = "557" lengthMaxOver = "0" >
+		<Cell no = "1" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="1;1;1;1;-1"  ></Cell>
+		<Cell no = "2" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="1;1;1;1;-1"  >    Nokia 5220 red</Cell>
+		<Cell no = "3" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  >21'509.04</Cell>
+		<Cell no = "4" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  ></Cell>
+		<Cell no = "5" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  ></Cell>
+	</RowItem>
+	<RowItem no = "82" cellCnt = "5" LMaxToRight = "0" LMaxToLeft = "0" LFromCell = "557" lengthMaxOver = "0" >
+		<Cell no = "1" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="1;1;1;1;-1"  ></Cell>
+		<Cell no = "2" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="1;1;1;1;-1"  >    Nokia 5310 black</Cell>
+		<Cell no = "3" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  >31'801.00</Cell>
+		<Cell no = "4" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  ></Cell>
+		<Cell no = "5" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  ></Cell>
+	</RowItem>
+	<RowItem no = "83" cellCnt = "5" LMaxToRight = "0" LMaxToLeft = "0" LFromCell = "557" lengthMaxOver = "0" >
+		<Cell no = "1" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="1;1;1;1;-1"  ></Cell>
+		<Cell no = "2" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="1;1;1;1;-1"  >    Nokia 5310 warrior blue</Cell>
+		<Cell no = "3" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  >19'080.60</Cell>
+		<Cell no = "4" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  ></Cell>
+		<Cell no = "5" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  ></Cell>
+	</RowItem>
+	<RowItem no = "84" cellCnt = "5" LMaxToRight = "0" LMaxToLeft = "0" LFromCell = "557" lengthMaxOver = "0" >
+		<Cell no = "1" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="1;1;1;1;-1"  ></Cell>
+		<Cell no = "2" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="1;1;1;1;-1"  >    Nokia 5800 black</Cell>
+		<Cell no = "3" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  >53'200.00</Cell>
+		<Cell no = "4" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  ></Cell>
+		<Cell no = "5" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  ></Cell>
+	</RowItem>
+	<RowItem no = "85" cellCnt = "5" LMaxToRight = "0" LMaxToLeft = "0" LFromCell = "557" lengthMaxOver = "0" >
+		<Cell no = "1" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="1;1;1;1;-1"  ></Cell>
+		<Cell no = "2" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="1;1;1;1;-1"  >    Nokia 5800 blue</Cell>
+		<Cell no = "3" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  >13'714.90</Cell>
+		<Cell no = "4" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  ></Cell>
+		<Cell no = "5" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  ></Cell>
+	</RowItem>
+	<RowItem no = "86" cellCnt = "5" LMaxToRight = "0" LMaxToLeft = "0" LFromCell = "557" lengthMaxOver = "0" >
+		<Cell no = "1" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="1;1;1;1;-1"  ></Cell>
+		<Cell no = "2" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="1;1;1;1;-1"  >    Nokia 5800 WH700 black</Cell>
+		<Cell no = "3" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  >14'547.51</Cell>
+		<Cell no = "4" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  ></Cell>
+		<Cell no = "5" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  ></Cell>
+	</RowItem>
+	<RowItem no = "87" cellCnt = "5" LMaxToRight = "0" LMaxToLeft = "0" LFromCell = "557" lengthMaxOver = "0" >
+		<Cell no = "1" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="1;1;1;1;-1"  ></Cell>
+		<Cell no = "2" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="1;1;1;1;-1"  >    Nokia 5800 WH700 blue</Cell>
+		<Cell no = "3" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  >78'403.92</Cell>
+		<Cell no = "4" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  ></Cell>
+		<Cell no = "5" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  ></Cell>
+	</RowItem>
+	<RowItem no = "88" cellCnt = "5" LMaxToRight = "0" LMaxToLeft = "0" LFromCell = "557" lengthMaxOver = "0" >
+		<Cell no = "1" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="1;1;1;1;-1"  ></Cell>
+		<Cell no = "2" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="1;1;1;1;-1"  >    Nokia 5800 WH700 red</Cell>
+		<Cell no = "3" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  >65'336.60</Cell>
+		<Cell no = "4" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  ></Cell>
+		<Cell no = "5" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  ></Cell>
+	</RowItem>
+	<RowItem no = "89" cellCnt = "5" LMaxToRight = "0" LMaxToLeft = "0" LFromCell = "557" lengthMaxOver = "0" >
+		<Cell no = "1" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="1;1;1;1;-1"  ></Cell>
+		<Cell no = "2" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="1;1;1;1;-1"  >    Nokia 6300 black</Cell>
+		<Cell no = "3" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  >220'039.64</Cell>
+		<Cell no = "4" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  ></Cell>
+		<Cell no = "5" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  ></Cell>
+	</RowItem>
+	<RowItem no = "90" cellCnt = "5" LMaxToRight = "0" LMaxToLeft = "0" LFromCell = "557" lengthMaxOver = "0" >
+		<Cell no = "1" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="1;1;1;1;-1"  ></Cell>
+		<Cell no = "2" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="1;1;1;1;-1"  >    Nokia 6300 black silver</Cell>
+		<Cell no = "3" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  >175'434.00</Cell>
+		<Cell no = "4" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  ></Cell>
+		<Cell no = "5" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  ></Cell>
+	</RowItem>
+	<RowItem no = "91" cellCnt = "5" LMaxToRight = "0" LMaxToLeft = "0" LFromCell = "557" lengthMaxOver = "0" >
+		<Cell no = "1" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="1;1;1;1;-1"  ></Cell>
+		<Cell no = "2" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="1;1;1;1;-1"  >    Nokia 6300 chocco</Cell>
+		<Cell no = "3" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  >66'189.04</Cell>
+		<Cell no = "4" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  ></Cell>
+		<Cell no = "5" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  ></Cell>
+	</RowItem>
+	<RowItem no = "92" cellCnt = "5" LMaxToRight = "0" LMaxToLeft = "0" LFromCell = "557" lengthMaxOver = "0" >
+		<Cell no = "1" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="1;1;1;1;-1"  ></Cell>
+		<Cell no = "2" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="1;1;1;1;-1"  >    Nokia 6300 red</Cell>
+		<Cell no = "3" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  >358'685.60</Cell>
+		<Cell no = "4" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  ></Cell>
+		<Cell no = "5" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  ></Cell>
+	</RowItem>
+	<RowItem no = "93" cellCnt = "5" LMaxToRight = "0" LMaxToLeft = "0" LFromCell = "557" lengthMaxOver = "0" >
+		<Cell no = "1" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="1;1;1;1;-1"  ></Cell>
+		<Cell no = "2" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="1;1;1;1;-1"  >    Nokia 6300 white</Cell>
+		<Cell no = "3" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  >11'068.40</Cell>
+		<Cell no = "4" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  ></Cell>
+		<Cell no = "5" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  ></Cell>
+	</RowItem>
+	<RowItem no = "94" cellCnt = "5" LMaxToRight = "0" LMaxToLeft = "0" LFromCell = "557" lengthMaxOver = "0" >
+		<Cell no = "1" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="1;1;1;1;-1"  ></Cell>
+		<Cell no = "2" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="1;1;1;1;-1"  >    Nokia 6303 black</Cell>
+		<Cell no = "3" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  >137'314.24</Cell>
+		<Cell no = "4" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  ></Cell>
+		<Cell no = "5" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  ></Cell>
+	</RowItem>
+	<RowItem no = "95" cellCnt = "5" LMaxToRight = "0" LMaxToLeft = "0" LFromCell = "557" lengthMaxOver = "0" >
+		<Cell no = "1" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="1;1;1;1;-1"  ></Cell>
+		<Cell no = "2" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="1;1;1;1;-1"  >    Nokia 6303 steel silver</Cell>
+		<Cell no = "3" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  >125'155.52</Cell>
+		<Cell no = "4" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  ></Cell>
+		<Cell no = "5" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  ></Cell>
+	</RowItem>
+	<RowItem no = "96" cellCnt = "5" LMaxToRight = "0" LMaxToLeft = "0" LFromCell = "557" lengthMaxOver = "0" >
+		<Cell no = "1" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="1;1;1;1;-1"  ></Cell>
+		<Cell no = "2" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="1;1;1;1;-1"  >    Nokia 6500 classic black</Cell>
+		<Cell no = "3" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  >191'548.88</Cell>
+		<Cell no = "4" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  ></Cell>
+		<Cell no = "5" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  ></Cell>
+	</RowItem>
+	<RowItem no = "97" cellCnt = "5" LMaxToRight = "0" LMaxToLeft = "0" LFromCell = "557" lengthMaxOver = "0" >
+		<Cell no = "1" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="1;1;1;1;-1"  ></Cell>
+		<Cell no = "2" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="1;1;1;1;-1"  >    Nokia 6500 classic bronze</Cell>
+		<Cell no = "3" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  >167'385.18</Cell>
+		<Cell no = "4" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  ></Cell>
+		<Cell no = "5" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  ></Cell>
+	</RowItem>
+	<RowItem no = "98" cellCnt = "5" LMaxToRight = "0" LMaxToLeft = "0" LFromCell = "557" lengthMaxOver = "0" >
+		<Cell no = "1" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="1;1;1;1;-1"  ></Cell>
+		<Cell no = "2" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="1;1;1;1;-1"  >    Nokia 6500 slider black</Cell>
+		<Cell no = "3" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  >33'208.18</Cell>
+		<Cell no = "4" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  ></Cell>
+		<Cell no = "5" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  ></Cell>
+	</RowItem>
+	<RowItem no = "99" cellCnt = "5" LMaxToRight = "0" LMaxToLeft = "0" LFromCell = "557" lengthMaxOver = "0" >
+		<Cell no = "1" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="1;1;1;1;-1"  ></Cell>
+		<Cell no = "2" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="1;1;1;1;-1"  >    Nokia 6500 slider silver</Cell>
+		<Cell no = "3" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  >50'308.18</Cell>
+		<Cell no = "4" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  ></Cell>
+		<Cell no = "5" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  ></Cell>
+	</RowItem>
+	<RowItem no = "100" cellCnt = "5" LMaxToRight = "0" LMaxToLeft = "0" LFromCell = "557" lengthMaxOver = "0" >
+		<Cell no = "1" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="1;1;1;1;-1"  ></Cell>
+		<Cell no = "2" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="1;1;1;1;-1"  >    Nokia 6600f mysterious black</Cell>
+		<Cell no = "3" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  >80'000.00</Cell>
+		<Cell no = "4" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  ></Cell>
+		<Cell no = "5" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  ></Cell>
+	</RowItem>
+	<RowItem no = "101" cellCnt = "5" LMaxToRight = "0" LMaxToLeft = "0" LFromCell = "557" lengthMaxOver = "0" >
+		<Cell no = "1" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="1;1;1;1;-1"  ></Cell>
+		<Cell no = "2" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="1;1;1;1;-1"  >    Nokia 6600s black blue</Cell>
+		<Cell no = "3" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  >79'650.00</Cell>
+		<Cell no = "4" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  ></Cell>
+		<Cell no = "5" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  ></Cell>
+	</RowItem>
+	<RowItem no = "102" cellCnt = "5" LMaxToRight = "0" LMaxToLeft = "0" LFromCell = "557" lengthMaxOver = "0" >
+		<Cell no = "1" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="1;1;1;1;-1"  ></Cell>
+		<Cell no = "2" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="1;1;1;1;-1"  >    Nokia 6600s black magenta</Cell>
+		<Cell no = "3" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  >145'544.00</Cell>
+		<Cell no = "4" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  ></Cell>
+		<Cell no = "5" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  ></Cell>
+	</RowItem>
+	<RowItem no = "103" cellCnt = "5" LMaxToRight = "0" LMaxToLeft = "0" LFromCell = "557" lengthMaxOver = "0" >
+		<Cell no = "1" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="1;1;1;1;-1"  ></Cell>
+		<Cell no = "2" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="1;1;1;1;-1"  >    Nokia 6650 black</Cell>
+		<Cell no = "3" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  >72'043.72</Cell>
+		<Cell no = "4" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  ></Cell>
+		<Cell no = "5" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  ></Cell>
+	</RowItem>
+	<RowItem no = "104" cellCnt = "5" LMaxToRight = "0" LMaxToLeft = "0" LFromCell = "557" lengthMaxOver = "0" >
+		<Cell no = "1" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="1;1;1;1;-1"  ></Cell>
+		<Cell no = "2" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="1;1;1;1;-1"  >    Nokia 6650 red</Cell>
+		<Cell no = "3" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  >72'043.72</Cell>
+		<Cell no = "4" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  ></Cell>
+		<Cell no = "5" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  ></Cell>
+	</RowItem>
+	<RowItem no = "105" cellCnt = "5" LMaxToRight = "0" LMaxToLeft = "0" LFromCell = "557" lengthMaxOver = "0" >
+		<Cell no = "1" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="1;1;1;1;-1"  ></Cell>
+		<Cell no = "2" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="1;1;1;1;-1"  >    Nokia 7070 black blue</Cell>
+		<Cell no = "3" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  >42'728.95</Cell>
+		<Cell no = "4" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  ></Cell>
+		<Cell no = "5" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  ></Cell>
+	</RowItem>
+	<RowItem no = "106" cellCnt = "5" LMaxToRight = "0" LMaxToLeft = "0" LFromCell = "557" lengthMaxOver = "0" >
+		<Cell no = "1" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="1;1;1;1;-1"  ></Cell>
+		<Cell no = "2" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="1;1;1;1;-1"  >    Nokia 7070 black pink</Cell>
+		<Cell no = "3" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  >25'394.52</Cell>
+		<Cell no = "4" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  ></Cell>
+		<Cell no = "5" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  ></Cell>
+	</RowItem>
+	<RowItem no = "107" cellCnt = "5" LMaxToRight = "0" LMaxToLeft = "0" LFromCell = "557" lengthMaxOver = "0" >
+		<Cell no = "1" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="1;1;1;1;-1"  ></Cell>
+		<Cell no = "2" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="1;1;1;1;-1"  >    Nokia 7100sn black</Cell>
+		<Cell no = "3" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  >52'217.40</Cell>
+		<Cell no = "4" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  ></Cell>
+		<Cell no = "5" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  ></Cell>
+	</RowItem>
+	<RowItem no = "108" cellCnt = "5" LMaxToRight = "0" LMaxToLeft = "0" LFromCell = "557" lengthMaxOver = "0" >
+		<Cell no = "1" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="1;1;1;1;-1"  ></Cell>
+		<Cell no = "2" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="1;1;1;1;-1"  >    Nokia 7100sn blue</Cell>
+		<Cell no = "3" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  >90'251.44</Cell>
+		<Cell no = "4" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  ></Cell>
+		<Cell no = "5" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  ></Cell>
+	</RowItem>
+	<RowItem no = "109" cellCnt = "5" LMaxToRight = "0" LMaxToLeft = "0" LFromCell = "557" lengthMaxOver = "0" >
+		<Cell no = "1" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="1;1;1;1;-1"  ></Cell>
+		<Cell no = "2" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="1;1;1;1;-1"  >    Nokia 7100sn red</Cell>
+		<Cell no = "3" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  >79'751.32</Cell>
+		<Cell no = "4" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  ></Cell>
+		<Cell no = "5" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  ></Cell>
+	</RowItem>
+	<RowItem no = "110" cellCnt = "5" LMaxToRight = "0" LMaxToLeft = "0" LFromCell = "557" lengthMaxOver = "0" >
+		<Cell no = "1" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="1;1;1;1;-1"  ></Cell>
+		<Cell no = "2" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="1;1;1;1;-1"  >    Nokia 7210sn blue</Cell>
+		<Cell no = "3" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  >76'358.75</Cell>
+		<Cell no = "4" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  ></Cell>
+		<Cell no = "5" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  ></Cell>
+	</RowItem>
+	<RowItem no = "111" cellCnt = "5" LMaxToRight = "0" LMaxToLeft = "0" LFromCell = "557" lengthMaxOver = "0" >
+		<Cell no = "1" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="1;1;1;1;-1"  ></Cell>
+		<Cell no = "2" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="1;1;1;1;-1"  >    Nokia 7210sn pink</Cell>
+		<Cell no = "3" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  >54'091.20</Cell>
+		<Cell no = "4" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  ></Cell>
+		<Cell no = "5" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  ></Cell>
+	</RowItem>
+	<RowItem no = "112" cellCnt = "5" LMaxToRight = "0" LMaxToLeft = "0" LFromCell = "557" lengthMaxOver = "0" >
+		<Cell no = "1" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="1;1;1;1;-1"  ></Cell>
+		<Cell no = "2" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="1;1;1;1;-1"  >    Nokia 7310 blue pink</Cell>
+		<Cell no = "3" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  >16'248.60</Cell>
+		<Cell no = "4" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  ></Cell>
+		<Cell no = "5" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  ></Cell>
+	</RowItem>
+	<RowItem no = "113" cellCnt = "5" LMaxToRight = "0" LMaxToLeft = "0" LFromCell = "557" lengthMaxOver = "0" >
+		<Cell no = "1" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="1;1;1;1;-1"  ></Cell>
+		<Cell no = "2" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="1;1;1;1;-1"  >    Nokia 7310 blue+green</Cell>
+		<Cell no = "3" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  >80'356.38</Cell>
+		<Cell no = "4" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  ></Cell>
+		<Cell no = "5" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  ></Cell>
+	</RowItem>
+	<RowItem no = "114" cellCnt = "5" LMaxToRight = "0" LMaxToLeft = "0" LFromCell = "557" lengthMaxOver = "0" >
+		<Cell no = "1" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="1;1;1;1;-1"  ></Cell>
+		<Cell no = "2" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="1;1;1;1;-1"  >    Nokia 7510sn brown+blue</Cell>
+		<Cell no = "3" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  >13'621.21</Cell>
+		<Cell no = "4" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  ></Cell>
+		<Cell no = "5" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  ></Cell>
+	</RowItem>
+	<RowItem no = "115" cellCnt = "5" LMaxToRight = "0" LMaxToLeft = "0" LFromCell = "557" lengthMaxOver = "0" >
+		<Cell no = "1" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="1;1;1;1;-1"  ></Cell>
+		<Cell no = "2" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="1;1;1;1;-1"  >    Nokia 7510sn red+green</Cell>
+		<Cell no = "3" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  >27'517.60</Cell>
+		<Cell no = "4" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  ></Cell>
+		<Cell no = "5" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  ></Cell>
+	</RowItem>
+	<RowItem no = "116" cellCnt = "5" LMaxToRight = "0" LMaxToLeft = "0" LFromCell = "557" lengthMaxOver = "0" >
+		<Cell no = "1" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="1;1;1;1;-1"  ></Cell>
+		<Cell no = "2" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="1;1;1;1;-1"  >    Nokia 7610SN gun metal/B/R</Cell>
+		<Cell no = "3" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  >15'694.00</Cell>
+		<Cell no = "4" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  ></Cell>
+		<Cell no = "5" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  ></Cell>
+	</RowItem>
+	<RowItem no = "117" cellCnt = "5" LMaxToRight = "0" LMaxToLeft = "0" LFromCell = "557" lengthMaxOver = "0" >
+		<Cell no = "1" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="1;1;1;1;-1"  ></Cell>
+		<Cell no = "2" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="1;1;1;1;-1"  >    Nokia 7610SN white/L/B</Cell>
+		<Cell no = "3" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  >23'541.00</Cell>
+		<Cell no = "4" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  ></Cell>
+		<Cell no = "5" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  ></Cell>
+	</RowItem>
+	<RowItem no = "118" cellCnt = "5" LMaxToRight = "0" LMaxToLeft = "0" LFromCell = "557" lengthMaxOver = "0" >
+		<Cell no = "1" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="1;1;1;1;-1"  ></Cell>
+		<Cell no = "2" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="1;1;1;1;-1"  >    Nokia 8800 Arte</Cell>
+		<Cell no = "3" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  >33'500.00</Cell>
+		<Cell no = "4" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  ></Cell>
+		<Cell no = "5" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  ></Cell>
+	</RowItem>
+	<RowItem no = "119" cellCnt = "5" LMaxToRight = "0" LMaxToLeft = "0" LFromCell = "557" lengthMaxOver = "0" >
+		<Cell no = "1" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="1;1;1;1;-1"  ></Cell>
+		<Cell no = "2" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="1;1;1;1;-1"  >    Nokia E51-1 black steel</Cell>
+		<Cell no = "3" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  >16'605.90</Cell>
+		<Cell no = "4" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  ></Cell>
+		<Cell no = "5" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  ></Cell>
+	</RowItem>
+	<RowItem no = "120" cellCnt = "5" LMaxToRight = "0" LMaxToLeft = "0" LFromCell = "557" lengthMaxOver = "0" >
+		<Cell no = "1" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="1;1;1;1;-1"  ></Cell>
+		<Cell no = "2" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="1;1;1;1;-1"  >    Nokia E63 ultra blue</Cell>
+		<Cell no = "3" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  >28'343.37</Cell>
+		<Cell no = "4" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  ></Cell>
+		<Cell no = "5" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  ></Cell>
+	</RowItem>
+	<RowItem no = "121" cellCnt = "5" LMaxToRight = "0" LMaxToLeft = "0" LFromCell = "557" lengthMaxOver = "0" >
+		<Cell no = "1" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="1;1;1;1;-1"  ></Cell>
+		<Cell no = "2" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="1;1;1;1;-1"  >    Nokia E66-1 grey steel</Cell>
+		<Cell no = "3" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  >179'514.82</Cell>
+		<Cell no = "4" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  ></Cell>
+		<Cell no = "5" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  ></Cell>
+	</RowItem>
+	<RowItem no = "122" cellCnt = "5" LMaxToRight = "0" LMaxToLeft = "0" LFromCell = "557" lengthMaxOver = "0" >
+		<Cell no = "1" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="1;1;1;1;-1"  ></Cell>
+		<Cell no = "2" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="1;1;1;1;-1"  >    Nokia E66-1 white steel</Cell>
+		<Cell no = "3" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  >163'304.46</Cell>
+		<Cell no = "4" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  ></Cell>
+		<Cell no = "5" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  ></Cell>
+	</RowItem>
+	<RowItem no = "123" cellCnt = "5" LMaxToRight = "0" LMaxToLeft = "0" LFromCell = "557" lengthMaxOver = "0" >
+		<Cell no = "1" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="1;1;1;1;-1"  ></Cell>
+		<Cell no = "2" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="1;1;1;1;-1"  >    Nokia E71-1 black</Cell>
+		<Cell no = "3" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  >15'050.00</Cell>
+		<Cell no = "4" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  ></Cell>
+		<Cell no = "5" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  ></Cell>
+	</RowItem>
+	<RowItem no = "124" cellCnt = "5" LMaxToRight = "0" LMaxToLeft = "0" LFromCell = "557" lengthMaxOver = "0" >
+		<Cell no = "1" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="1;1;1;1;-1"  ></Cell>
+		<Cell no = "2" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="1;1;1;1;-1"  >    Nokia E71-1 grey steel</Cell>
+		<Cell no = "3" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  >61'091.52</Cell>
+		<Cell no = "4" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  ></Cell>
+		<Cell no = "5" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  ></Cell>
+	</RowItem>
+	<RowItem no = "125" cellCnt = "5" LMaxToRight = "0" LMaxToLeft = "0" LFromCell = "557" lengthMaxOver = "0" >
+		<Cell no = "1" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="1;1;1;1;-1"  ></Cell>
+		<Cell no = "2" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="1;1;1;1;-1"  >    Nokia E75-1 red</Cell>
+		<Cell no = "3" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  >37'698.64</Cell>
+		<Cell no = "4" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  ></Cell>
+		<Cell no = "5" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  ></Cell>
+	</RowItem>
+	<RowItem no = "126" cellCnt = "5" LMaxToRight = "0" LMaxToLeft = "0" LFromCell = "557" lengthMaxOver = "0" >
+		<Cell no = "1" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="1;1;1;1;-1"  ></Cell>
+		<Cell no = "2" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="1;1;1;1;-1"  >    Nokia N78 black</Cell>
+		<Cell no = "3" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  >17'171.84</Cell>
+		<Cell no = "4" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  ></Cell>
+		<Cell no = "5" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  ></Cell>
+	</RowItem>
+	<RowItem no = "127" cellCnt = "5" LMaxToRight = "0" LMaxToLeft = "0" LFromCell = "557" lengthMaxOver = "0" >
+		<Cell no = "1" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="1;1;1;1;-1"  ></Cell>
+		<Cell no = "2" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="1;1;1;1;-1"  >    Nokia N79 black</Cell>
+		<Cell no = "3" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  >38'161.20</Cell>
+		<Cell no = "4" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  ></Cell>
+		<Cell no = "5" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  ></Cell>
+	</RowItem>
+	<RowItem no = "128" cellCnt = "5" LMaxToRight = "0" LMaxToLeft = "0" LFromCell = "557" lengthMaxOver = "0" >
+		<Cell no = "1" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="1;1;1;1;-1"  ></Cell>
+		<Cell no = "2" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="1;1;1;1;-1"  >    Nokia N82-1 black</Cell>
+		<Cell no = "3" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  >13'113.58</Cell>
+		<Cell no = "4" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  ></Cell>
+		<Cell no = "5" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  ></Cell>
+	</RowItem>
+	<RowItem no = "129" cellCnt = "5" LMaxToRight = "0" LMaxToLeft = "0" LFromCell = "557" lengthMaxOver = "0" >
+		<Cell no = "1" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="1;1;1;1;-1"  ></Cell>
+		<Cell no = "2" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="1;1;1;1;-1"  >    Nokia N85-1 cherry black</Cell>
+		<Cell no = "3" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  >48'950.40</Cell>
+		<Cell no = "4" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  ></Cell>
+		<Cell no = "5" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  ></Cell>
+	</RowItem>
+	<RowItem no = "130" cellCnt = "5" LMaxToRight = "0" LMaxToLeft = "0" LFromCell = "557" lengthMaxOver = "0" >
+		<Cell no = "1" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="1;1;1;1;-1"  ></Cell>
+		<Cell no = "2" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="1;1;1;1;-1"  >    Nokia N95-2 8Gb warm black</Cell>
+		<Cell no = "3" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  >88'002.05</Cell>
+		<Cell no = "4" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  ></Cell>
+		<Cell no = "5" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  ></Cell>
+	</RowItem>
+	<RowItem no = "131" cellCnt = "5" LMaxToRight = "0" LMaxToLeft = "0" LFromCell = "557" lengthMaxOver = "0" >
+		<Cell no = "1" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="1;1;1;1;-1"  ></Cell>
+		<Cell no = "2" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="1;1;1;1;-1"  >    Nokia N96 16Gb black</Cell>
+		<Cell no = "3" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  >40'000.00</Cell>
+		<Cell no = "4" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  ></Cell>
+		<Cell no = "5" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  ></Cell>
+	</RowItem>
+	<RowItem no = "132" cellCnt = "5" LMaxToRight = "0" LMaxToLeft = "0" LFromCell = "557" lengthMaxOver = "0" >
+		<Cell no = "1" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="1;1;1;1;-1"  ></Cell>
+		<Cell no = "2" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="1;1;1;1;-1"  >    Nokia N97 black</Cell>
+		<Cell no = "3" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  >223'020.00</Cell>
+		<Cell no = "4" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  ></Cell>
+		<Cell no = "5" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  ></Cell>
+	</RowItem>
+	<RowItem no = "133" cellCnt = "5" LMaxToRight = "0" LMaxToLeft = "0" LFromCell = "557" lengthMaxOver = "0" >
+		<Cell no = "1" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="1;1;1;1;-1"  ></Cell>
+		<Cell no = "2" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="1;1;1;1;-1"  >    Nokia N97 white</Cell>
+		<Cell no = "3" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  >148'680.00</Cell>
+		<Cell no = "4" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  ></Cell>
+		<Cell no = "5" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  ></Cell>
+	</RowItem>
+	<RowItem no = "134" cellCnt = "5" LMaxToRight = "165" LMaxToLeft = "0" LFromCell = "557" lengthMaxOver = "107" >
+		<Cell no = "1" font="0;8;1;0;0;-1;-1"  textAtr="1;1;1;1"   border="1;1;1;1;-1"   join="2;1;2" >    Центр дистрибьюции ООО</Cell>
+		<Cell no = "2" font="0;0;0;0;0;-1;-1"  textAtr="1;1;0;1"   border="-1;-1;-1;-1;-1"   join="1;134;1" ></Cell>
+		<Cell no = "3" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  >19'250.00</Cell>
+		<Cell no = "4" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  ></Cell>
+		<Cell no = "5" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  ></Cell>
+	</RowItem>
+	<RowItem no = "135" cellCnt = "5" LMaxToRight = "0" LMaxToLeft = "0" LFromCell = "557" lengthMaxOver = "0" >
+		<Cell no = "1" font="0;8;1;0;0;-1;-1"  textAtr="1;1;1;1"   border="1;1;1;1;-1"  ></Cell>
+		<Cell no = "2" font="0;8;1;0;0;-1;-1"  textAtr="1;1;1;1"   border="1;1;1;1;-1"  >Мобильные телефоны</Cell>
+		<Cell no = "3" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  >19'250.00</Cell>
+		<Cell no = "4" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  ></Cell>
+		<Cell no = "5" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  ></Cell>
+	</RowItem>
+	<RowItem no = "136" cellCnt = "5" LMaxToRight = "0" LMaxToLeft = "0" LFromCell = "557" lengthMaxOver = "0" >
+		<Cell no = "1" font="0;8;1;0;0;-1;-1"  textAtr="1;1;1;1"   border="1;1;1;1;-1"  ></Cell>
+		<Cell no = "2" font="0;8;1;0;0;-1;-1"  textAtr="1;1;1;1"   border="1;1;1;1;-1"  >  мобильные телефоны Nokia</Cell>
+		<Cell no = "3" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  >19'250.00</Cell>
+		<Cell no = "4" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  ></Cell>
+		<Cell no = "5" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  ></Cell>
+	</RowItem>
+	<RowItem no = "137" cellCnt = "5" LMaxToRight = "0" LMaxToLeft = "0" LFromCell = "557" lengthMaxOver = "0" >
+		<Cell no = "1" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="1;1;1;1;-1"  ></Cell>
+		<Cell no = "2" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="1;1;1;1;-1"  >    Nokia 7100sn blue</Cell>
+		<Cell no = "3" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  >10'200.00</Cell>
+		<Cell no = "4" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  ></Cell>
+		<Cell no = "5" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  ></Cell>
+	</RowItem>
+	<RowItem no = "138" cellCnt = "5" LMaxToRight = "0" LMaxToLeft = "0" LFromCell = "557" lengthMaxOver = "0" >
+		<Cell no = "1" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="1;1;1;1;-1"  ></Cell>
+		<Cell no = "2" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="1;1;1;1;-1"  >    Nokia 2760 smoky grey</Cell>
+		<Cell no = "3" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  >2'550.00</Cell>
+		<Cell no = "4" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  ></Cell>
+		<Cell no = "5" font="0;8;0;0;0;-1;-1"  textAtr="3;3;1;1"   border="1;1;1;1;-1"  ></Cell>
+	</RowItem>
+	<RowItem no = "139" cellCnt = "5" LMaxToRight = "0" LMaxToLeft = "0" LFromCell = "557" lengthMaxOver = "0" >
+		<Cell no = "1" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="-1;-1;-1;-1;-1"  ></Cell>
+		<Cell no = "2" font="0;8;1;0;0;-1;-1"  textAtr="3;1;1;1"   border="-1;-1;-1;-1;-1"  >Итого:</Cell>
+		<Cell no = "3" font="0;8;0;0;0;-1;-1"  textAtr="3;1;1;1"   border="6;6;6;6;-1"  >5'885'132.86</Cell>
+		<Cell no = "4" font="0;8;0;0;0;-1;-1"  textAtr="3;1;1;1"   border="6;6;6;6;-1"  >1'121.00</Cell>
+		<Cell no = "5" font="0;8;0;0;0;-1;-1"  textAtr="3;1;1;1"   border="6;6;6;6;-1"  >6'047.26</Cell>
+	</RowItem>
+	<RowItem no = "141" cellCnt = "1" LMaxToRight = "0" LMaxToLeft = "0" LFromCell = "345" lengthMaxOver = "0" >
+		<Cell no = "2" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="-1;-1;-1;-1;-1"  ></Cell>
+	</RowItem>
+	</Rows>
+	<Fonts count = "1">
+		<Font name = "MS Shell Dlg 2" />
+	</Fonts>
+</Doc>

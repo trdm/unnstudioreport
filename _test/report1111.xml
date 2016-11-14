@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Doc type = "uoReportDocXML" version = "0.3">
+<DocSize>
+	<Sizes row = "0" col = "0" sizeV = "0" sizeH = "0" />
+	<SizesV sizeV = "0" sizeH = "0" />
+	<DefSizes row = "15" col = "60"/>
+</DocSize>
+	<Fonts count = "2">
+		<Font name = "MS Shell Dlg 2" />
+		<Font name = "Tahoma" />
+	</Fonts>
+</Doc>

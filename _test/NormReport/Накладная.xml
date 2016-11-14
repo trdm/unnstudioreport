@@ -1,0 +1,1178 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Doc type = "uoReportDocXML" version = "0.3">
+<DocSize>
+	<Sizes row = "77" col = "12" sizeV = "1169" sizeH = "917" />
+	<SizesV sizeV = "1169" sizeH = "917" />
+	<DefSizes row = "15" col = "60"/>
+</DocSize>
+<Groups type = "1" count = "2">
+	<Group start = "4" end = "10" folded="0"/>
+	<Group start = "12" end = "63" folded="0"/>
+</Groups>
+<Scales type = "2" count = "2">
+	<Scale no = "3" hide = "0" size="146" fixed="0"/>
+	<Scale no = "4" hide = "0" size="171" fixed="0"/>
+</Scales>
+<Scales type = "1" count = "77">
+	<Scale no = "1" hide = "0" size="15" fixed="0"/>
+	<Scale no = "2" hide = "0" size="15" fixed="0"/>
+	<Scale no = "3" hide = "0" size="15" fixed="0"/>
+	<Scale no = "4" hide = "0" size="19" fixed="0"/>
+	<Scale no = "5" hide = "0" size="15" fixed="0"/>
+	<Scale no = "6" hide = "0" size="15" fixed="0"/>
+	<Scale no = "7" hide = "0" size="15" fixed="0"/>
+	<Scale no = "8" hide = "0" size="15" fixed="0"/>
+	<Scale no = "9" hide = "0" size="15" fixed="0"/>
+	<Scale no = "10" hide = "0" size="15" fixed="0"/>
+	<Scale no = "11" hide = "0" size="15" fixed="0"/>
+	<Scale no = "12" hide = "0" size="25" fixed="1"/>
+	<Scale no = "13" hide = "0" size="15" fixed="0"/>
+	<Scale no = "14" hide = "0" size="15" fixed="0"/>
+	<Scale no = "15" hide = "0" size="15" fixed="0"/>
+	<Scale no = "16" hide = "0" size="15" fixed="0"/>
+	<Scale no = "17" hide = "0" size="15" fixed="0"/>
+	<Scale no = "18" hide = "0" size="15" fixed="0"/>
+	<Scale no = "19" hide = "0" size="15" fixed="0"/>
+	<Scale no = "20" hide = "0" size="15" fixed="0"/>
+	<Scale no = "21" hide = "0" size="15" fixed="0"/>
+	<Scale no = "22" hide = "0" size="15" fixed="0"/>
+	<Scale no = "23" hide = "0" size="15" fixed="0"/>
+	<Scale no = "24" hide = "0" size="15" fixed="0"/>
+	<Scale no = "25" hide = "0" size="15" fixed="0"/>
+	<Scale no = "26" hide = "0" size="15" fixed="0"/>
+	<Scale no = "27" hide = "0" size="15" fixed="0"/>
+	<Scale no = "28" hide = "0" size="15" fixed="0"/>
+	<Scale no = "29" hide = "0" size="15" fixed="0"/>
+	<Scale no = "30" hide = "0" size="15" fixed="0"/>
+	<Scale no = "31" hide = "0" size="15" fixed="0"/>
+	<Scale no = "32" hide = "0" size="15" fixed="0"/>
+	<Scale no = "33" hide = "0" size="15" fixed="0"/>
+	<Scale no = "34" hide = "0" size="15" fixed="0"/>
+	<Scale no = "35" hide = "0" size="15" fixed="0"/>
+	<Scale no = "36" hide = "0" size="15" fixed="0"/>
+	<Scale no = "37" hide = "0" size="15" fixed="0"/>
+	<Scale no = "38" hide = "0" size="15" fixed="0"/>
+	<Scale no = "39" hide = "0" size="15" fixed="0"/>
+	<Scale no = "40" hide = "0" size="15" fixed="0"/>
+	<Scale no = "41" hide = "0" size="15" fixed="0"/>
+	<Scale no = "42" hide = "0" size="15" fixed="0"/>
+	<Scale no = "43" hide = "0" size="15" fixed="0"/>
+	<Scale no = "44" hide = "0" size="15" fixed="0"/>
+	<Scale no = "45" hide = "0" size="15" fixed="0"/>
+	<Scale no = "46" hide = "0" size="15" fixed="0"/>
+	<Scale no = "47" hide = "0" size="15" fixed="0"/>
+	<Scale no = "48" hide = "0" size="15" fixed="0"/>
+	<Scale no = "49" hide = "0" size="15" fixed="0"/>
+	<Scale no = "50" hide = "0" size="15" fixed="0"/>
+	<Scale no = "51" hide = "0" size="15" fixed="0"/>
+	<Scale no = "52" hide = "0" size="15" fixed="0"/>
+	<Scale no = "53" hide = "0" size="15" fixed="0"/>
+	<Scale no = "54" hide = "0" size="15" fixed="0"/>
+	<Scale no = "55" hide = "0" size="15" fixed="0"/>
+	<Scale no = "56" hide = "0" size="15" fixed="0"/>
+	<Scale no = "57" hide = "0" size="15" fixed="0"/>
+	<Scale no = "58" hide = "0" size="15" fixed="0"/>
+	<Scale no = "59" hide = "0" size="15" fixed="0"/>
+	<Scale no = "60" hide = "0" size="15" fixed="0"/>
+	<Scale no = "61" hide = "0" size="15" fixed="0"/>
+	<Scale no = "62" hide = "0" size="15" fixed="0"/>
+	<Scale no = "63" hide = "0" size="15" fixed="0"/>
+	<Scale no = "64" hide = "0" size="15" fixed="0"/>
+	<Scale no = "65" hide = "0" size="15" fixed="0"/>
+	<Scale no = "66" hide = "0" size="15" fixed="0"/>
+	<Scale no = "67" hide = "0" size="15" fixed="0"/>
+	<Scale no = "68" hide = "0" size="15" fixed="0"/>
+	<Scale no = "69" hide = "0" size="15" fixed="0"/>
+	<Scale no = "70" hide = "0" size="15" fixed="0"/>
+	<Scale no = "71" hide = "0" size="15" fixed="0"/>
+	<Scale no = "72" hide = "0" size="15" fixed="0"/>
+	<Scale no = "73" hide = "0" size="15" fixed="0"/>
+	<Scale no = "74" hide = "0" size="15" fixed="0"/>
+	<Scale no = "75" hide = "0" size="15" fixed="0"/>
+	<Scale no = "76" hide = "0" size="15" fixed="0"/>
+	<Scale no = "77" hide = "0" size="15" fixed="0"/>
+</Scales>
+<Rows count = "77">
+	<RowItem no = "1" cellCnt = "12" LMaxToRight = "0" LMaxToLeft = "0" LFromCell = "917" lengthMaxOver = "0" >
+		<Cell no = "1" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+		<Cell no = "2" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+		<Cell no = "3" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+		<Cell no = "4" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+		<Cell no = "5" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+		<Cell no = "6" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+		<Cell no = "7" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+		<Cell no = "8" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+		<Cell no = "9" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+		<Cell no = "10" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+		<Cell no = "11" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+		<Cell no = "12" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+	</RowItem>
+	<RowItem no = "2" cellCnt = "12" LMaxToRight = "915" LMaxToLeft = "0" LFromCell = "917" lengthMaxOver = "855" >
+		<Cell no = "1" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" >ИП Репта А.Г. ИНН/КПП 616800420054/0 св-во 61 №003327755  от  27.02.04 сч. 40802810622630000163 в РОСТОВСКИЙ ФИЛИАЛ АКБ"АБСОЛЮТ БАНК" (ЗАО) в Г.РОСТОВ-НА-ДОНУ</Cell>
+		<Cell no = "2" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+		<Cell no = "3" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+		<Cell no = "4" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+		<Cell no = "5" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+		<Cell no = "6" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+		<Cell no = "7" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+		<Cell no = "8" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+		<Cell no = "9" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+		<Cell no = "10" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+		<Cell no = "11" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+		<Cell no = "12" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+	</RowItem>
+	<RowItem no = "3" cellCnt = "12" LMaxToRight = "0" LMaxToLeft = "0" LFromCell = "917" lengthMaxOver = "0" >
+		<Cell no = "1" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+		<Cell no = "2" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+		<Cell no = "3" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+		<Cell no = "4" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+		<Cell no = "5" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+		<Cell no = "6" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+		<Cell no = "7" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+		<Cell no = "8" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+		<Cell no = "9" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+		<Cell no = "10" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+		<Cell no = "11" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+		<Cell no = "12" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+	</RowItem>
+	<RowItem no = "4" cellCnt = "12" LMaxToRight = "390" LMaxToLeft = "0" LFromCell = "917" lengthMaxOver = "330" >
+		<Cell no = "1" font = "0;11;1;1;1;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" >Расходная накладная № Р-00000552 от 31.03.06</Cell>
+		<Cell no = "2" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+		<Cell no = "3" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+		<Cell no = "4" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+		<Cell no = "5" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+		<Cell no = "6" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+		<Cell no = "7" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+		<Cell no = "8" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+		<Cell no = "9" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+		<Cell no = "10" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+		<Cell no = "11" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+		<Cell no = "12" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+	</RowItem>
+	<RowItem no = "5" cellCnt = "12" LMaxToRight = "0" LMaxToLeft = "0" LFromCell = "917" lengthMaxOver = "0" >
+		<Cell no = "1" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+		<Cell no = "2" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+		<Cell no = "3" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+		<Cell no = "4" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+		<Cell no = "5" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+		<Cell no = "6" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+		<Cell no = "7" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+		<Cell no = "8" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+		<Cell no = "9" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+		<Cell no = "10" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+		<Cell no = "11" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+		<Cell no = "12" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+	</RowItem>
+	<RowItem no = "6" cellCnt = "12" LMaxToRight = "146" LMaxToLeft = "0" LFromCell = "917" lengthMaxOver = "86" >
+		<Cell no = "1" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" >Покупатель: Сбитнева И. Д.</Cell>
+		<Cell no = "2" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+		<Cell no = "3" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+		<Cell no = "4" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+		<Cell no = "5" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+		<Cell no = "6" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+		<Cell no = "7" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+		<Cell no = "8" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+		<Cell no = "9" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+		<Cell no = "10" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+		<Cell no = "11" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+		<Cell no = "12" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+	</RowItem>
+	<RowItem no = "7" cellCnt = "12" LMaxToRight = "924" LMaxToLeft = "0" LFromCell = "917" lengthMaxOver = "223" >
+		<Cell no = "1" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" >Основание: Счет на оплату  № Р-00000755 от 31.03.06</Cell>
+		<Cell no = "2" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+		<Cell no = "3" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+		<Cell no = "4" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+		<Cell no = "5" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+		<Cell no = "6" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+		<Cell no = "7" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+		<Cell no = "8" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+		<Cell no = "9" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+		<Cell no = "10" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+		<Cell no = "11" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" >Дата курса:</Cell>
+		<Cell no = "12" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" >31.03.2006</Cell>
+	</RowItem>
+	<RowItem no = "8" cellCnt = "12" LMaxToRight = "66" LMaxToLeft = "0" LFromCell = "917" lengthMaxOver = "6" >
+		<Cell no = "1" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" >Через кого:  </Cell>
+		<Cell no = "2" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+		<Cell no = "3" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+		<Cell no = "4" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+		<Cell no = "5" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+		<Cell no = "6" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+		<Cell no = "7" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+		<Cell no = "8" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+		<Cell no = "9" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+		<Cell no = "10" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+		<Cell no = "11" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+		<Cell no = "12" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+	</RowItem>
+	<RowItem no = "9" cellCnt = "12" LMaxToRight = "314" LMaxToLeft = "0" LFromCell = "917" lengthMaxOver = "254" >
+		<Cell no = "1" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" >Доверенность №____________ от _________________2001г.</Cell>
+		<Cell no = "2" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+		<Cell no = "3" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+		<Cell no = "4" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+		<Cell no = "5" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+		<Cell no = "6" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+		<Cell no = "7" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+		<Cell no = "8" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+		<Cell no = "9" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+		<Cell no = "10" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+		<Cell no = "11" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+		<Cell no = "12" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+	</RowItem>
+	<RowItem no = "10" cellCnt = "12" LMaxToRight = "0" LMaxToLeft = "0" LFromCell = "917" lengthMaxOver = "0" >
+		<Cell no = "1" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" >Вольта</Cell>
+		<Cell no = "2" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+		<Cell no = "3" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+		<Cell no = "4" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+		<Cell no = "5" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+		<Cell no = "6" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+		<Cell no = "7" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+		<Cell no = "8" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+		<Cell no = "9" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+		<Cell no = "10" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+		<Cell no = "11" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+		<Cell no = "12" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+	</RowItem>
+	<RowItem no = "11" cellCnt = "12" LMaxToRight = "0" LMaxToLeft = "0" LFromCell = "917" lengthMaxOver = "0" >
+		<Cell no = "1" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+		<Cell no = "2" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+		<Cell no = "3" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+		<Cell no = "4" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+		<Cell no = "5" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+		<Cell no = "6" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+		<Cell no = "7" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+		<Cell no = "8" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+		<Cell no = "9" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+		<Cell no = "10" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+		<Cell no = "11" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+		<Cell no = "12" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+	</RowItem>
+	<RowItem no = "12" cellCnt = "12" LMaxToRight = "0" LMaxToLeft = "0" LFromCell = "917" lengthMaxOver = "0" >
+		<Cell no = "1" font = "0;8;1;0;0;-1;-1"  textAtr = "2;2;1;4"   border = "6;6;6;6;-1" >№</Cell>
+		<Cell no = "2" font = "0;8;1;0;0;-1;-1"  textAtr = "2;2;1;4"   border = "6;6;6;6;-1" >Код</Cell>
+		<Cell no = "3" font = "0;8;1;0;0;-1;-1"  textAtr = "2;2;1;4"   border = "6;6;6;6;-1" >Вид товара</Cell>
+		<Cell no = "4" font = "0;8;1;0;0;-1;-1"  textAtr = "2;2;1;4"   border = "6;6;6;6;-1" >Наименование товара</Cell>
+		<Cell no = "5" font = "0;8;1;0;0;-1;-1"  textAtr = "2;2;1;4"   border = "6;6;6;6;-1" >S/N</Cell>
+		<Cell no = "6" font = "0;8;1;0;0;-1;-1"  textAtr = "2;2;1;4"   border = "6;6;6;6;-1" >Цена</Cell>
+		<Cell no = "7" font = "0;8;1;0;0;-1;-1"  textAtr = "2;2;1;4"   border = "6;6;6;6;-1" >Скидка</Cell>
+		<Cell no = "8" font = "0;8;1;0;0;-1;-1"  textAtr = "2;2;1;4"   border = "6;6;6;6;-1" >Цена п/ск</Cell>
+		<Cell no = "9" font = "0;8;1;0;0;-1;-1"  textAtr = "2;2;1;4"   border = "6;6;6;6;-1" >Кол-во</Cell>
+		<Cell no = "10" font = "0;8;1;0;0;-1;-1"  textAtr = "2;2;1;4"   border = "6;6;6;6;-1" >Ед.</Cell>
+		<Cell no = "11" font = "0;8;1;0;0;-1;-1"  textAtr = "2;2;1;4"   border = "6;6;6;6;-1" >Сумма</Cell>
+		<Cell no = "12" font = "0;8;1;0;0;-1;-1"  textAtr = "2;2;1;4"   border = "6;6;6;6;-1" >НП</Cell>
+	</RowItem>
+	<RowItem no = "13" cellCnt = "12" LMaxToRight = "0" LMaxToLeft = "0" LFromCell = "917" lengthMaxOver = "0" >
+		<Cell no = "1" font = "0;8;0;0;0;-1;-1"  textAtr = "3;2;1;1"   border = "1;1;1;1;-1" >1</Cell>
+		<Cell no = "2" font = "0;8;0;0;0;-1;-1"  textAtr = "3;2;1;1"   border = "1;1;1;1;-1" >30238</Cell>
+		<Cell no = "3" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;4"   border = "1;1;1;1;-1" >микрофон</Cell>
+		<Cell no = "4" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;4"   border = "1;1;1;1;-1" >BBK DM100</Cell>
+		<Cell no = "5" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "1;1;1;1;-1" ></Cell>
+		<Cell no = "6" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >112.43</Cell>
+		<Cell no = "7" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >-</Cell>
+		<Cell no = "8" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >112.43</Cell>
+		<Cell no = "9" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >2</Cell>
+		<Cell no = "10" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >шт.</Cell>
+		<Cell no = "11" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >224.86</Cell>
+		<Cell no = "12" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" ></Cell>
+	</RowItem>
+	<RowItem no = "14" cellCnt = "12" LMaxToRight = "0" LMaxToLeft = "0" LFromCell = "917" lengthMaxOver = "0" >
+		<Cell no = "1" font = "0;8;0;0;0;-1;-1"  textAtr = "3;2;1;1"   border = "1;1;1;1;-1" >2</Cell>
+		<Cell no = "2" font = "0;8;0;0;0;-1;-1"  textAtr = "3;2;1;1"   border = "1;1;1;1;-1" >30240</Cell>
+		<Cell no = "3" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;4"   border = "1;1;1;1;-1" >микрофон</Cell>
+		<Cell no = "4" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;4"   border = "1;1;1;1;-1" >BBK DM120</Cell>
+		<Cell no = "5" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "1;1;1;1;-1" ></Cell>
+		<Cell no = "6" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >129.73</Cell>
+		<Cell no = "7" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >-</Cell>
+		<Cell no = "8" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >129.73</Cell>
+		<Cell no = "9" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >1</Cell>
+		<Cell no = "10" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >шт.</Cell>
+		<Cell no = "11" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >129.73</Cell>
+		<Cell no = "12" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" ></Cell>
+	</RowItem>
+	<RowItem no = "15" cellCnt = "12" LMaxToRight = "0" LMaxToLeft = "0" LFromCell = "917" lengthMaxOver = "0" >
+		<Cell no = "1" font = "0;8;0;0;0;-1;-1"  textAtr = "3;2;1;1"   border = "1;1;1;1;-1" >3</Cell>
+		<Cell no = "2" font = "0;8;0;0;0;-1;-1"  textAtr = "3;2;1;1"   border = "1;1;1;1;-1" >03063</Cell>
+		<Cell no = "3" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;4"   border = "1;1;1;1;-1" >MP- плеер</Cell>
+		<Cell no = "4" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;4"   border = "1;1;1;1;-1" >BBK PV300S blue</Cell>
+		<Cell no = "5" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "1;1;1;1;-1" ></Cell>
+		<Cell no = "6" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >1'556.76</Cell>
+		<Cell no = "7" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >-</Cell>
+		<Cell no = "8" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >1'556.76</Cell>
+		<Cell no = "9" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >1</Cell>
+		<Cell no = "10" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >шт.</Cell>
+		<Cell no = "11" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >1'556.76</Cell>
+		<Cell no = "12" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" ></Cell>
+	</RowItem>
+	<RowItem no = "16" cellCnt = "12" LMaxToRight = "0" LMaxToLeft = "0" LFromCell = "917" lengthMaxOver = "0" >
+		<Cell no = "1" font = "0;8;0;0;0;-1;-1"  textAtr = "3;2;1;1"   border = "1;1;1;1;-1" >4</Cell>
+		<Cell no = "2" font = "0;8;0;0;0;-1;-1"  textAtr = "3;2;1;1"   border = "1;1;1;1;-1" >08434</Cell>
+		<Cell no = "3" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;4"   border = "1;1;1;1;-1" >MP- плеер</Cell>
+		<Cell no = "4" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;4"   border = "1;1;1;1;-1" >BBK PV430T black</Cell>
+		<Cell no = "5" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "1;1;1;1;-1" ></Cell>
+		<Cell no = "6" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >2'104.50</Cell>
+		<Cell no = "7" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >-</Cell>
+		<Cell no = "8" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >2'104.50</Cell>
+		<Cell no = "9" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >1</Cell>
+		<Cell no = "10" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >шт.</Cell>
+		<Cell no = "11" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >2'104.50</Cell>
+		<Cell no = "12" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" ></Cell>
+	</RowItem>
+	<RowItem no = "17" cellCnt = "12" LMaxToRight = "0" LMaxToLeft = "0" LFromCell = "917" lengthMaxOver = "0" >
+		<Cell no = "1" font = "0;8;0;0;0;-1;-1"  textAtr = "3;2;1;1"   border = "1;1;1;1;-1" >5</Cell>
+		<Cell no = "2" font = "0;8;0;0;0;-1;-1"  textAtr = "3;2;1;1"   border = "1;1;1;1;-1" >09599</Cell>
+		<Cell no = "3" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;4"   border = "1;1;1;1;-1" >видеокамера</Cell>
+		<Cell no = "4" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;4"   border = "1;1;1;1;-1" >Canon MV-800i</Cell>
+		<Cell no = "5" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "1;1;1;1;-1" ></Cell>
+		<Cell no = "6" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >8'729.08</Cell>
+		<Cell no = "7" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >-</Cell>
+		<Cell no = "8" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >8'729.08</Cell>
+		<Cell no = "9" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >2</Cell>
+		<Cell no = "10" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >шт.</Cell>
+		<Cell no = "11" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >17'458.16</Cell>
+		<Cell no = "12" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" ></Cell>
+	</RowItem>
+	<RowItem no = "18" cellCnt = "12" LMaxToRight = "0" LMaxToLeft = "0" LFromCell = "917" lengthMaxOver = "0" >
+		<Cell no = "1" font = "0;8;0;0;0;-1;-1"  textAtr = "3;2;1;1"   border = "1;1;1;1;-1" >6</Cell>
+		<Cell no = "2" font = "0;8;0;0;0;-1;-1"  textAtr = "3;2;1;1"   border = "1;1;1;1;-1" >09070</Cell>
+		<Cell no = "3" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;4"   border = "1;1;1;1;-1" >цифровая фотокамера</Cell>
+		<Cell no = "4" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;4"   border = "1;1;1;1;-1" >Canon PowerShot A520</Cell>
+		<Cell no = "5" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "1;1;1;1;-1" ></Cell>
+		<Cell no = "6" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >5'611.82</Cell>
+		<Cell no = "7" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >-</Cell>
+		<Cell no = "8" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >5'611.82</Cell>
+		<Cell no = "9" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >3</Cell>
+		<Cell no = "10" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >шт.</Cell>
+		<Cell no = "11" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >16'835.46</Cell>
+		<Cell no = "12" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" ></Cell>
+	</RowItem>
+	<RowItem no = "19" cellCnt = "12" LMaxToRight = "0" LMaxToLeft = "0" LFromCell = "917" lengthMaxOver = "0" >
+		<Cell no = "1" font = "0;8;0;0;0;-1;-1"  textAtr = "3;2;1;1"   border = "1;1;1;1;-1" >7</Cell>
+		<Cell no = "2" font = "0;8;0;0;0;-1;-1"  textAtr = "3;2;1;1"   border = "1;1;1;1;-1" >20904</Cell>
+		<Cell no = "3" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;4"   border = "1;1;1;1;-1" >цифровая фотокамера</Cell>
+		<Cell no = "4" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;4"   border = "1;1;1;1;-1" >Canon PowerShot A610</Cell>
+		<Cell no = "5" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "1;1;1;1;-1" ></Cell>
+		<Cell no = "6" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >7'836.96</Cell>
+		<Cell no = "7" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >-</Cell>
+		<Cell no = "8" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >7'836.96</Cell>
+		<Cell no = "9" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >3</Cell>
+		<Cell no = "10" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >шт.</Cell>
+		<Cell no = "11" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >23'510.88</Cell>
+		<Cell no = "12" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" ></Cell>
+	</RowItem>
+	<RowItem no = "20" cellCnt = "12" LMaxToRight = "0" LMaxToLeft = "0" LFromCell = "917" lengthMaxOver = "0" >
+		<Cell no = "1" font = "0;8;0;0;0;-1;-1"  textAtr = "3;2;1;1"   border = "1;1;1;1;-1" >8</Cell>
+		<Cell no = "2" font = "0;8;0;0;0;-1;-1"  textAtr = "3;2;1;1"   border = "1;1;1;1;-1" >09891</Cell>
+		<Cell no = "3" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;4"   border = "1;1;1;1;-1" >штатив</Cell>
+		<Cell no = "4" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;4"   border = "1;1;1;1;-1" >ERA ECP-0040</Cell>
+		<Cell no = "5" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "1;1;1;1;-1" ></Cell>
+		<Cell no = "6" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >38.92</Cell>
+		<Cell no = "7" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >-</Cell>
+		<Cell no = "8" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >38.92</Cell>
+		<Cell no = "9" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >5</Cell>
+		<Cell no = "10" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >шт.</Cell>
+		<Cell no = "11" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >194.60</Cell>
+		<Cell no = "12" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" ></Cell>
+	</RowItem>
+	<RowItem no = "21" cellCnt = "12" LMaxToRight = "0" LMaxToLeft = "0" LFromCell = "917" lengthMaxOver = "0" >
+		<Cell no = "1" font = "0;8;0;0;0;-1;-1"  textAtr = "3;2;1;1"   border = "1;1;1;1;-1" >9</Cell>
+		<Cell no = "2" font = "0;8;0;0;0;-1;-1"  textAtr = "3;2;1;1"   border = "1;1;1;1;-1" >06665</Cell>
+		<Cell no = "3" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;4"   border = "1;1;1;1;-1" >штатив</Cell>
+		<Cell no = "4" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;4"   border = "1;1;1;1;-1" >ERA ECSA-3710</Cell>
+		<Cell no = "5" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "1;1;1;1;-1" ></Cell>
+		<Cell no = "6" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >454.35</Cell>
+		<Cell no = "7" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >-</Cell>
+		<Cell no = "8" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >454.35</Cell>
+		<Cell no = "9" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >1</Cell>
+		<Cell no = "10" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >шт.</Cell>
+		<Cell no = "11" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >454.35</Cell>
+		<Cell no = "12" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" ></Cell>
+	</RowItem>
+	<RowItem no = "22" cellCnt = "12" LMaxToRight = "0" LMaxToLeft = "0" LFromCell = "917" lengthMaxOver = "0" >
+		<Cell no = "1" font = "0;8;0;0;0;-1;-1"  textAtr = "3;2;1;1"   border = "1;1;1;1;-1" >10</Cell>
+		<Cell no = "2" font = "0;8;0;0;0;-1;-1"  textAtr = "3;2;1;1"   border = "1;1;1;1;-1" >30392</Cell>
+		<Cell no = "3" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;4"   border = "1;1;1;1;-1" >штатив</Cell>
+		<Cell no = "4" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;4"   border = "1;1;1;1;-1" >ERA ECSA-3730</Cell>
+		<Cell no = "5" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "1;1;1;1;-1" ></Cell>
+		<Cell no = "6" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >635.68</Cell>
+		<Cell no = "7" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >-</Cell>
+		<Cell no = "8" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >635.68</Cell>
+		<Cell no = "9" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >4</Cell>
+		<Cell no = "10" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >шт.</Cell>
+		<Cell no = "11" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >2'542.72</Cell>
+		<Cell no = "12" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" ></Cell>
+	</RowItem>
+	<RowItem no = "23" cellCnt = "12" LMaxToRight = "0" LMaxToLeft = "0" LFromCell = "917" lengthMaxOver = "0" >
+		<Cell no = "1" font = "0;8;0;0;0;-1;-1"  textAtr = "3;2;1;1"   border = "1;1;1;1;-1" >11</Cell>
+		<Cell no = "2" font = "0;8;0;0;0;-1;-1"  textAtr = "3;2;1;1"   border = "1;1;1;1;-1" >30072</Cell>
+		<Cell no = "3" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;4"   border = "1;1;1;1;-1" >цифровая фотокамера</Cell>
+		<Cell no = "4" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;4"   border = "1;1;1;1;-1" >Panasonic DMC-FX9GC--R red</Cell>
+		<Cell no = "5" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "1;1;1;1;-1" ></Cell>
+		<Cell no = "6" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >9'230.76</Cell>
+		<Cell no = "7" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >-</Cell>
+		<Cell no = "8" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >9'230.76</Cell>
+		<Cell no = "9" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >1</Cell>
+		<Cell no = "10" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >шт.</Cell>
+		<Cell no = "11" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >9'230.76</Cell>
+		<Cell no = "12" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" ></Cell>
+	</RowItem>
+	<RowItem no = "24" cellCnt = "12" LMaxToRight = "0" LMaxToLeft = "0" LFromCell = "917" lengthMaxOver = "0" >
+		<Cell no = "1" font = "0;8;0;0;0;-1;-1"  textAtr = "3;2;1;1"   border = "1;1;1;1;-1" >12</Cell>
+		<Cell no = "2" font = "0;8;0;0;0;-1;-1"  textAtr = "3;2;1;1"   border = "1;1;1;1;-1" >30090</Cell>
+		<Cell no = "3" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;4"   border = "1;1;1;1;-1" >цифровая фотокамера</Cell>
+		<Cell no = "4" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;4"   border = "1;1;1;1;-1" >Panasonic DMC-FZ30GC-K black</Cell>
+		<Cell no = "5" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "1;1;1;1;-1" ></Cell>
+		<Cell no = "6" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >16'864.84</Cell>
+		<Cell no = "7" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >-</Cell>
+		<Cell no = "8" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >16'864.84</Cell>
+		<Cell no = "9" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >1</Cell>
+		<Cell no = "10" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >шт.</Cell>
+		<Cell no = "11" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >16'864.84</Cell>
+		<Cell no = "12" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" ></Cell>
+	</RowItem>
+	<RowItem no = "25" cellCnt = "12" LMaxToRight = "0" LMaxToLeft = "0" LFromCell = "917" lengthMaxOver = "0" >
+		<Cell no = "1" font = "0;8;0;0;0;-1;-1"  textAtr = "3;2;1;1"   border = "1;1;1;1;-1" >13</Cell>
+		<Cell no = "2" font = "0;8;0;0;0;-1;-1"  textAtr = "3;2;1;1"   border = "1;1;1;1;-1" >09086</Cell>
+		<Cell no = "3" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;4"   border = "1;1;1;1;-1" >цифровая фотокамера</Cell>
+		<Cell no = "4" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;4"   border = "1;1;1;1;-1" >Panasonic DMC-FZ5GC-K black</Cell>
+		<Cell no = "5" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "1;1;1;1;-1" ></Cell>
+		<Cell no = "6" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >11'254.32</Cell>
+		<Cell no = "7" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >-</Cell>
+		<Cell no = "8" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >11'254.32</Cell>
+		<Cell no = "9" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >2</Cell>
+		<Cell no = "10" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >шт.</Cell>
+		<Cell no = "11" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >22'508.64</Cell>
+		<Cell no = "12" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" ></Cell>
+	</RowItem>
+	<RowItem no = "26" cellCnt = "12" LMaxToRight = "0" LMaxToLeft = "0" LFromCell = "917" lengthMaxOver = "0" >
+		<Cell no = "1" font = "0;8;0;0;0;-1;-1"  textAtr = "3;2;1;1"   border = "1;1;1;1;-1" >14</Cell>
+		<Cell no = "2" font = "0;8;0;0;0;-1;-1"  textAtr = "3;2;1;1"   border = "1;1;1;1;-1" >30179</Cell>
+		<Cell no = "3" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;4"   border = "1;1;1;1;-1" >цифровая фотокамера</Cell>
+		<Cell no = "4" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;4"   border = "1;1;1;1;-1" >Panasonic DMC-LX1GC-K black</Cell>
+		<Cell no = "5" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "1;1;1;1;-1" ></Cell>
+		<Cell no = "6" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >14'177.52</Cell>
+		<Cell no = "7" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >-</Cell>
+		<Cell no = "8" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >14'177.52</Cell>
+		<Cell no = "9" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >1</Cell>
+		<Cell no = "10" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >шт.</Cell>
+		<Cell no = "11" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >14'177.52</Cell>
+		<Cell no = "12" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" ></Cell>
+	</RowItem>
+	<RowItem no = "27" cellCnt = "12" LMaxToRight = "0" LMaxToLeft = "0" LFromCell = "917" lengthMaxOver = "0" >
+		<Cell no = "1" font = "0;8;0;0;0;-1;-1"  textAtr = "3;2;1;1"   border = "1;1;1;1;-1" >15</Cell>
+		<Cell no = "2" font = "0;8;0;0;0;-1;-1"  textAtr = "3;2;1;1"   border = "1;1;1;1;-1" >09088</Cell>
+		<Cell no = "3" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;4"   border = "1;1;1;1;-1" >цифровая фотокамера</Cell>
+		<Cell no = "4" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;4"   border = "1;1;1;1;-1" >Panasonic DMC-LZ2GC-K black</Cell>
+		<Cell no = "5" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "1;1;1;1;-1" ></Cell>
+		<Cell no = "6" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >8'184.96</Cell>
+		<Cell no = "7" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >-</Cell>
+		<Cell no = "8" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >8'184.96</Cell>
+		<Cell no = "9" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >1</Cell>
+		<Cell no = "10" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >шт.</Cell>
+		<Cell no = "11" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >8'184.96</Cell>
+		<Cell no = "12" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" ></Cell>
+	</RowItem>
+	<RowItem no = "28" cellCnt = "12" LMaxToRight = "0" LMaxToLeft = "0" LFromCell = "917" lengthMaxOver = "0" >
+		<Cell no = "1" font = "0;8;0;0;0;-1;-1"  textAtr = "3;2;1;1"   border = "1;1;1;1;-1" >16</Cell>
+		<Cell no = "2" font = "0;8;0;0;0;-1;-1"  textAtr = "3;2;1;1"   border = "1;1;1;1;-1" >08644</Cell>
+		<Cell no = "3" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;4"   border = "1;1;1;1;-1" >видеокамера</Cell>
+		<Cell no = "4" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;4"   border = "1;1;1;1;-1" >Panasonic NV-GS150GC-S</Cell>
+		<Cell no = "5" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "1;1;1;1;-1" ></Cell>
+		<Cell no = "6" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >18'123.84</Cell>
+		<Cell no = "7" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >-</Cell>
+		<Cell no = "8" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >18'123.84</Cell>
+		<Cell no = "9" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >1</Cell>
+		<Cell no = "10" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >шт.</Cell>
+		<Cell no = "11" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >18'123.84</Cell>
+		<Cell no = "12" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" ></Cell>
+	</RowItem>
+	<RowItem no = "29" cellCnt = "12" LMaxToRight = "0" LMaxToLeft = "0" LFromCell = "917" lengthMaxOver = "0" >
+		<Cell no = "1" font = "0;8;0;0;0;-1;-1"  textAtr = "3;2;1;1"   border = "1;1;1;1;-1" >17</Cell>
+		<Cell no = "2" font = "0;8;0;0;0;-1;-1"  textAtr = "3;2;1;1"   border = "1;1;1;1;-1" >09054</Cell>
+		<Cell no = "3" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;4"   border = "1;1;1;1;-1" >видеокамера</Cell>
+		<Cell no = "4" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;4"   border = "1;1;1;1;-1" >Panasonic NV-GS250GC-S silver</Cell>
+		<Cell no = "5" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "1;1;1;1;-1" ></Cell>
+		<Cell no = "6" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >24'682.15</Cell>
+		<Cell no = "7" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >-</Cell>
+		<Cell no = "8" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >24'682.15</Cell>
+		<Cell no = "9" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >2</Cell>
+		<Cell no = "10" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >шт.</Cell>
+		<Cell no = "11" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >49'364.30</Cell>
+		<Cell no = "12" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" ></Cell>
+	</RowItem>
+	<RowItem no = "30" cellCnt = "12" LMaxToRight = "0" LMaxToLeft = "0" LFromCell = "917" lengthMaxOver = "0" >
+		<Cell no = "1" font = "0;8;0;0;0;-1;-1"  textAtr = "3;2;1;1"   border = "1;1;1;1;-1" >18</Cell>
+		<Cell no = "2" font = "0;8;0;0;0;-1;-1"  textAtr = "3;2;1;1"   border = "1;1;1;1;-1" >09053</Cell>
+		<Cell no = "3" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;4"   border = "1;1;1;1;-1" >видеокамера</Cell>
+		<Cell no = "4" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;4"   border = "1;1;1;1;-1" >Panasonic NV-GS35GC-S silver</Cell>
+		<Cell no = "5" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "1;1;1;1;-1" ></Cell>
+		<Cell no = "6" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >10'753.14</Cell>
+		<Cell no = "7" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >-</Cell>
+		<Cell no = "8" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >10'753.14</Cell>
+		<Cell no = "9" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >2</Cell>
+		<Cell no = "10" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >шт.</Cell>
+		<Cell no = "11" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >21'506.28</Cell>
+		<Cell no = "12" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" ></Cell>
+	</RowItem>
+	<RowItem no = "31" cellCnt = "12" LMaxToRight = "0" LMaxToLeft = "0" LFromCell = "917" lengthMaxOver = "0" >
+		<Cell no = "1" font = "0;8;0;0;0;-1;-1"  textAtr = "3;2;1;1"   border = "1;1;1;1;-1" >19</Cell>
+		<Cell no = "2" font = "0;8;0;0;0;-1;-1"  textAtr = "3;2;1;1"   border = "1;1;1;1;-1" >08646</Cell>
+		<Cell no = "3" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;4"   border = "1;1;1;1;-1" >видеокамера</Cell>
+		<Cell no = "4" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;4"   border = "1;1;1;1;-1" >Panasonic NV-GS400GC-S silver</Cell>
+		<Cell no = "5" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "1;1;1;1;-1" ></Cell>
+		<Cell no = "6" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >31'650.49</Cell>
+		<Cell no = "7" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >-</Cell>
+		<Cell no = "8" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >31'650.49</Cell>
+		<Cell no = "9" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >1</Cell>
+		<Cell no = "10" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >шт.</Cell>
+		<Cell no = "11" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >31'650.49</Cell>
+		<Cell no = "12" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" ></Cell>
+	</RowItem>
+	<RowItem no = "32" cellCnt = "12" LMaxToRight = "0" LMaxToLeft = "0" LFromCell = "917" lengthMaxOver = "0" >
+		<Cell no = "1" font = "0;8;0;0;0;-1;-1"  textAtr = "3;2;1;1"   border = "1;1;1;1;-1" >20</Cell>
+		<Cell no = "2" font = "0;8;0;0;0;-1;-1"  textAtr = "3;2;1;1"   border = "1;1;1;1;-1" >08647</Cell>
+		<Cell no = "3" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;4"   border = "1;1;1;1;-1" >видеокамера</Cell>
+		<Cell no = "4" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;4"   border = "1;1;1;1;-1" >Panasonic NV-GS75GC-S silver</Cell>
+		<Cell no = "5" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "1;1;1;1;-1" ></Cell>
+		<Cell no = "6" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >14'908.32</Cell>
+		<Cell no = "7" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >-</Cell>
+		<Cell no = "8" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >14'908.32</Cell>
+		<Cell no = "9" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >2</Cell>
+		<Cell no = "10" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >шт.</Cell>
+		<Cell no = "11" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >29'816.64</Cell>
+		<Cell no = "12" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" ></Cell>
+	</RowItem>
+	<RowItem no = "33" cellCnt = "12" LMaxToRight = "0" LMaxToLeft = "0" LFromCell = "917" lengthMaxOver = "0" >
+		<Cell no = "1" font = "0;8;0;0;0;-1;-1"  textAtr = "3;2;1;1"   border = "1;1;1;1;-1" >21</Cell>
+		<Cell no = "2" font = "0;8;0;0;0;-1;-1"  textAtr = "3;2;1;1"   border = "1;1;1;1;-1" >04729</Cell>
+		<Cell no = "3" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;4"   border = "1;1;1;1;-1" >часы - приемник</Cell>
+		<Cell no = "4" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;4"   border = "1;1;1;1;-1" >Panasonic RC-Q720EP-K black</Cell>
+		<Cell no = "5" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "1;1;1;1;-1" ></Cell>
+		<Cell no = "6" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >634.23</Cell>
+		<Cell no = "7" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >-</Cell>
+		<Cell no = "8" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >634.23</Cell>
+		<Cell no = "9" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >1</Cell>
+		<Cell no = "10" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >шт.</Cell>
+		<Cell no = "11" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >634.23</Cell>
+		<Cell no = "12" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" ></Cell>
+	</RowItem>
+	<RowItem no = "34" cellCnt = "12" LMaxToRight = "0" LMaxToLeft = "0" LFromCell = "917" lengthMaxOver = "0" >
+		<Cell no = "1" font = "0;8;0;0;0;-1;-1"  textAtr = "3;2;1;1"   border = "1;1;1;1;-1" >22</Cell>
+		<Cell no = "2" font = "0;8;0;0;0;-1;-1"  textAtr = "3;2;1;1"   border = "1;1;1;1;-1" >04730</Cell>
+		<Cell no = "3" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;4"   border = "1;1;1;1;-1" >часы - приемник</Cell>
+		<Cell no = "4" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;4"   border = "1;1;1;1;-1" >Panasonic RC-Q720EP-S silver</Cell>
+		<Cell no = "5" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "1;1;1;1;-1" ></Cell>
+		<Cell no = "6" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >634.23</Cell>
+		<Cell no = "7" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >-</Cell>
+		<Cell no = "8" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >634.23</Cell>
+		<Cell no = "9" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >2</Cell>
+		<Cell no = "10" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >шт.</Cell>
+		<Cell no = "11" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >1'268.46</Cell>
+		<Cell no = "12" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" ></Cell>
+	</RowItem>
+	<RowItem no = "35" cellCnt = "12" LMaxToRight = "0" LMaxToLeft = "0" LFromCell = "917" lengthMaxOver = "0" >
+		<Cell no = "1" font = "0;8;0;0;0;-1;-1"  textAtr = "3;2;1;1"   border = "1;1;1;1;-1" >23</Cell>
+		<Cell no = "2" font = "0;8;0;0;0;-1;-1"  textAtr = "3;2;1;1"   border = "1;1;1;1;-1" >05480</Cell>
+		<Cell no = "3" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;4"   border = "1;1;1;1;-1" >наушники</Cell>
+		<Cell no = "4" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;4"   border = "1;1;1;1;-1" >Panasonic RP-HV103GU-K black</Cell>
+		<Cell no = "5" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "1;1;1;1;-1" ></Cell>
+		<Cell no = "6" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >76.00</Cell>
+		<Cell no = "7" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >-</Cell>
+		<Cell no = "8" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >76.00</Cell>
+		<Cell no = "9" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >1</Cell>
+		<Cell no = "10" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >шт.</Cell>
+		<Cell no = "11" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >76.00</Cell>
+		<Cell no = "12" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" ></Cell>
+	</RowItem>
+	<RowItem no = "36" cellCnt = "12" LMaxToRight = "0" LMaxToLeft = "0" LFromCell = "917" lengthMaxOver = "0" >
+		<Cell no = "1" font = "0;8;0;0;0;-1;-1"  textAtr = "3;2;1;1"   border = "1;1;1;1;-1" >24</Cell>
+		<Cell no = "2" font = "0;8;0;0;0;-1;-1"  textAtr = "3;2;1;1"   border = "1;1;1;1;-1" >01229</Cell>
+		<Cell no = "3" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;4"   border = "1;1;1;1;-1" >наушники</Cell>
+		<Cell no = "4" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;4"   border = "1;1;1;1;-1" >Panasonic RP-HV152GU-K black</Cell>
+		<Cell no = "5" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "1;1;1;1;-1" ></Cell>
+		<Cell no = "6" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >89.37</Cell>
+		<Cell no = "7" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >-</Cell>
+		<Cell no = "8" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >89.37</Cell>
+		<Cell no = "9" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >1</Cell>
+		<Cell no = "10" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >шт.</Cell>
+		<Cell no = "11" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >89.37</Cell>
+		<Cell no = "12" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" ></Cell>
+	</RowItem>
+	<RowItem no = "37" cellCnt = "12" LMaxToRight = "0" LMaxToLeft = "0" LFromCell = "917" lengthMaxOver = "0" >
+		<Cell no = "1" font = "0;8;0;0;0;-1;-1"  textAtr = "3;2;1;1"   border = "1;1;1;1;-1" >25</Cell>
+		<Cell no = "2" font = "0;8;0;0;0;-1;-1"  textAtr = "3;2;1;1"   border = "1;1;1;1;-1" >30384</Cell>
+		<Cell no = "3" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;4"   border = "1;1;1;1;-1" >микрофон</Cell>
+		<Cell no = "4" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;4"   border = "1;1;1;1;-1" >Panasonic RP-VK21E-K black</Cell>
+		<Cell no = "5" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "1;1;1;1;-1" ></Cell>
+		<Cell no = "6" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >227.81</Cell>
+		<Cell no = "7" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >-</Cell>
+		<Cell no = "8" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >227.81</Cell>
+		<Cell no = "9" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >1</Cell>
+		<Cell no = "10" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >шт.</Cell>
+		<Cell no = "11" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >227.81</Cell>
+		<Cell no = "12" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" ></Cell>
+	</RowItem>
+	<RowItem no = "38" cellCnt = "12" LMaxToRight = "0" LMaxToLeft = "0" LFromCell = "917" lengthMaxOver = "0" >
+		<Cell no = "1" font = "0;8;0;0;0;-1;-1"  textAtr = "3;2;1;1"   border = "1;1;1;1;-1" >26</Cell>
+		<Cell no = "2" font = "0;8;0;0;0;-1;-1"  textAtr = "3;2;1;1"   border = "1;1;1;1;-1" >01527</Cell>
+		<Cell no = "3" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;4"   border = "1;1;1;1;-1" >диктофон</Cell>
+		<Cell no = "4" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;4"   border = "1;1;1;1;-1" >Panasonic RQ-L11GC-S silver</Cell>
+		<Cell no = "5" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "1;1;1;1;-1" ></Cell>
+		<Cell no = "6" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >603.29</Cell>
+		<Cell no = "7" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >-</Cell>
+		<Cell no = "8" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >603.29</Cell>
+		<Cell no = "9" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >3</Cell>
+		<Cell no = "10" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >шт.</Cell>
+		<Cell no = "11" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >1'809.87</Cell>
+		<Cell no = "12" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" ></Cell>
+	</RowItem>
+	<RowItem no = "39" cellCnt = "12" LMaxToRight = "0" LMaxToLeft = "0" LFromCell = "917" lengthMaxOver = "0" >
+		<Cell no = "1" font = "0;8;0;0;0;-1;-1"  textAtr = "3;2;1;1"   border = "1;1;1;1;-1" >27</Cell>
+		<Cell no = "2" font = "0;8;0;0;0;-1;-1"  textAtr = "3;2;1;1"   border = "1;1;1;1;-1" >09164</Cell>
+		<Cell no = "3" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;4"   border = "1;1;1;1;-1" >MP- плеер</Cell>
+		<Cell no = "4" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;4"   border = "1;1;1;1;-1" >Panasonic SL-CT582VEE-H grey</Cell>
+		<Cell no = "5" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "1;1;1;1;-1" ></Cell>
+		<Cell no = "6" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >2'046.84</Cell>
+		<Cell no = "7" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >-</Cell>
+		<Cell no = "8" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >2'046.84</Cell>
+		<Cell no = "9" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >3</Cell>
+		<Cell no = "10" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >шт.</Cell>
+		<Cell no = "11" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >6'140.52</Cell>
+		<Cell no = "12" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" ></Cell>
+	</RowItem>
+	<RowItem no = "40" cellCnt = "12" LMaxToRight = "0" LMaxToLeft = "0" LFromCell = "917" lengthMaxOver = "0" >
+		<Cell no = "1" font = "0;8;0;0;0;-1;-1"  textAtr = "3;2;1;1"   border = "1;1;1;1;-1" >28</Cell>
+		<Cell no = "2" font = "0;8;0;0;0;-1;-1"  textAtr = "3;2;1;1"   border = "1;1;1;1;-1" >01571</Cell>
+		<Cell no = "3" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;4"   border = "1;1;1;1;-1" >наушники</Cell>
+		<Cell no = "4" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;4"   border = "1;1;1;1;-1" >Philips SBC HE035/00</Cell>
+		<Cell no = "5" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "1;1;1;1;-1" ></Cell>
+		<Cell no = "6" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >61.39</Cell>
+		<Cell no = "7" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >-</Cell>
+		<Cell no = "8" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >61.39</Cell>
+		<Cell no = "9" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >1</Cell>
+		<Cell no = "10" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >шт.</Cell>
+		<Cell no = "11" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >61.39</Cell>
+		<Cell no = "12" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" ></Cell>
+	</RowItem>
+	<RowItem no = "41" cellCnt = "12" LMaxToRight = "0" LMaxToLeft = "0" LFromCell = "917" lengthMaxOver = "0" >
+		<Cell no = "1" font = "0;8;0;0;0;-1;-1"  textAtr = "3;2;1;1"   border = "1;1;1;1;-1" >29</Cell>
+		<Cell no = "2" font = "0;8;0;0;0;-1;-1"  textAtr = "3;2;1;1"   border = "1;1;1;1;-1" >09939</Cell>
+		<Cell no = "3" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;4"   border = "1;1;1;1;-1" >наушники</Cell>
+		<Cell no = "4" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;4"   border = "1;1;1;1;-1" >Philips SBC HE255/00</Cell>
+		<Cell no = "5" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "1;1;1;1;-1" ></Cell>
+		<Cell no = "6" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >102.34</Cell>
+		<Cell no = "7" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >-</Cell>
+		<Cell no = "8" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >102.34</Cell>
+		<Cell no = "9" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >3</Cell>
+		<Cell no = "10" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >шт.</Cell>
+		<Cell no = "11" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >307.02</Cell>
+		<Cell no = "12" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" ></Cell>
+	</RowItem>
+	<RowItem no = "42" cellCnt = "12" LMaxToRight = "0" LMaxToLeft = "0" LFromCell = "917" lengthMaxOver = "0" >
+		<Cell no = "1" font = "0;8;0;0;0;-1;-1"  textAtr = "3;2;1;1"   border = "1;1;1;1;-1" >30</Cell>
+		<Cell no = "2" font = "0;8;0;0;0;-1;-1"  textAtr = "3;2;1;1"   border = "1;1;1;1;-1" >02027</Cell>
+		<Cell no = "3" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;4"   border = "1;1;1;1;-1" >наушники</Cell>
+		<Cell no = "4" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;4"   border = "1;1;1;1;-1" >Philips SBC HP195/00</Cell>
+		<Cell no = "5" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "1;1;1;1;-1" ></Cell>
+		<Cell no = "6" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >192.29</Cell>
+		<Cell no = "7" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >-</Cell>
+		<Cell no = "8" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >192.29</Cell>
+		<Cell no = "9" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >2</Cell>
+		<Cell no = "10" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >шт.</Cell>
+		<Cell no = "11" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >384.58</Cell>
+		<Cell no = "12" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" ></Cell>
+	</RowItem>
+	<RowItem no = "43" cellCnt = "12" LMaxToRight = "0" LMaxToLeft = "0" LFromCell = "917" lengthMaxOver = "0" >
+		<Cell no = "1" font = "0;8;0;0;0;-1;-1"  textAtr = "3;2;1;1"   border = "1;1;1;1;-1" >31</Cell>
+		<Cell no = "2" font = "0;8;0;0;0;-1;-1"  textAtr = "3;2;1;1"   border = "1;1;1;1;-1" >02028</Cell>
+		<Cell no = "3" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;4"   border = "1;1;1;1;-1" >наушники</Cell>
+		<Cell no = "4" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;4"   border = "1;1;1;1;-1" >Philips SBC HP200/00</Cell>
+		<Cell no = "5" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "1;1;1;1;-1" ></Cell>
+		<Cell no = "6" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >285.41</Cell>
+		<Cell no = "7" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >-</Cell>
+		<Cell no = "8" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >285.41</Cell>
+		<Cell no = "9" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >1</Cell>
+		<Cell no = "10" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >шт.</Cell>
+		<Cell no = "11" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >285.41</Cell>
+		<Cell no = "12" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" ></Cell>
+	</RowItem>
+	<RowItem no = "44" cellCnt = "12" LMaxToRight = "0" LMaxToLeft = "0" LFromCell = "917" lengthMaxOver = "0" >
+		<Cell no = "1" font = "0;8;0;0;0;-1;-1"  textAtr = "3;2;1;1"   border = "1;1;1;1;-1" >32</Cell>
+		<Cell no = "2" font = "0;8;0;0;0;-1;-1"  textAtr = "3;2;1;1"   border = "1;1;1;1;-1" >02029</Cell>
+		<Cell no = "3" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;4"   border = "1;1;1;1;-1" >наушники</Cell>
+		<Cell no = "4" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;4"   border = "1;1;1;1;-1" >Philips SBC HP250/00 TV</Cell>
+		<Cell no = "5" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "1;1;1;1;-1" ></Cell>
+		<Cell no = "6" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >397.84</Cell>
+		<Cell no = "7" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >-</Cell>
+		<Cell no = "8" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >397.84</Cell>
+		<Cell no = "9" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >3</Cell>
+		<Cell no = "10" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >шт.</Cell>
+		<Cell no = "11" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >1'193.52</Cell>
+		<Cell no = "12" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" ></Cell>
+	</RowItem>
+	<RowItem no = "45" cellCnt = "12" LMaxToRight = "0" LMaxToLeft = "0" LFromCell = "917" lengthMaxOver = "0" >
+		<Cell no = "1" font = "0;8;0;0;0;-1;-1"  textAtr = "3;2;1;1"   border = "1;1;1;1;-1" >33</Cell>
+		<Cell no = "2" font = "0;8;0;0;0;-1;-1"  textAtr = "3;2;1;1"   border = "1;1;1;1;-1" >03313</Cell>
+		<Cell no = "3" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;4"   border = "1;1;1;1;-1" >микрофон</Cell>
+		<Cell no = "4" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;4"   border = "1;1;1;1;-1" >Philips SBC MD110/00</Cell>
+		<Cell no = "5" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "1;1;1;1;-1" ></Cell>
+		<Cell no = "6" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >229.82</Cell>
+		<Cell no = "7" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >-</Cell>
+		<Cell no = "8" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >229.82</Cell>
+		<Cell no = "9" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >2</Cell>
+		<Cell no = "10" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >шт.</Cell>
+		<Cell no = "11" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >459.64</Cell>
+		<Cell no = "12" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" ></Cell>
+	</RowItem>
+	<RowItem no = "46" cellCnt = "12" LMaxToRight = "0" LMaxToLeft = "0" LFromCell = "917" lengthMaxOver = "0" >
+		<Cell no = "1" font = "0;8;0;0;0;-1;-1"  textAtr = "3;2;1;1"   border = "1;1;1;1;-1" >34</Cell>
+		<Cell no = "2" font = "0;8;0;0;0;-1;-1"  textAtr = "3;2;1;1"   border = "1;1;1;1;-1" >03314</Cell>
+		<Cell no = "3" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;4"   border = "1;1;1;1;-1" >микрофон</Cell>
+		<Cell no = "4" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;4"   border = "1;1;1;1;-1" >Philips SBC MD150/00</Cell>
+		<Cell no = "5" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "1;1;1;1;-1" ></Cell>
+		<Cell no = "6" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >287.28</Cell>
+		<Cell no = "7" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >-</Cell>
+		<Cell no = "8" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >287.28</Cell>
+		<Cell no = "9" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >1</Cell>
+		<Cell no = "10" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >шт.</Cell>
+		<Cell no = "11" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >287.28</Cell>
+		<Cell no = "12" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" ></Cell>
+	</RowItem>
+	<RowItem no = "47" cellCnt = "12" LMaxToRight = "0" LMaxToLeft = "0" LFromCell = "917" lengthMaxOver = "0" >
+		<Cell no = "1" font = "0;8;0;0;0;-1;-1"  textAtr = "3;2;1;1"   border = "1;1;1;1;-1" >35</Cell>
+		<Cell no = "2" font = "0;8;0;0;0;-1;-1"  textAtr = "3;2;1;1"   border = "1;1;1;1;-1" >08988</Cell>
+		<Cell no = "3" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;4"   border = "1;1;1;1;-1" >микрофон</Cell>
+		<Cell no = "4" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;4"   border = "1;1;1;1;-1" >Philips SBC MD185/00</Cell>
+		<Cell no = "5" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "1;1;1;1;-1" ></Cell>
+		<Cell no = "6" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >287.28</Cell>
+		<Cell no = "7" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >-</Cell>
+		<Cell no = "8" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >287.28</Cell>
+		<Cell no = "9" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >1</Cell>
+		<Cell no = "10" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >шт.</Cell>
+		<Cell no = "11" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >287.28</Cell>
+		<Cell no = "12" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" ></Cell>
+	</RowItem>
+	<RowItem no = "48" cellCnt = "12" LMaxToRight = "0" LMaxToLeft = "0" LFromCell = "917" lengthMaxOver = "0" >
+		<Cell no = "1" font = "0;8;0;0;0;-1;-1"  textAtr = "3;2;1;1"   border = "1;1;1;1;-1" >36</Cell>
+		<Cell no = "2" font = "0;8;0;0;0;-1;-1"  textAtr = "3;2;1;1"   border = "1;1;1;1;-1" >09684</Cell>
+		<Cell no = "3" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;4"   border = "1;1;1;1;-1" >MP- плеер</Cell>
+		<Cell no = "4" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;4"   border = "1;1;1;1;-1" >Samsung MCD-CF570</Cell>
+		<Cell no = "5" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "1;1;1;1;-1" ></Cell>
+		<Cell no = "6" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >2'796.39</Cell>
+		<Cell no = "7" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >-</Cell>
+		<Cell no = "8" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >2'796.39</Cell>
+		<Cell no = "9" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >1</Cell>
+		<Cell no = "10" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >шт.</Cell>
+		<Cell no = "11" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >2'796.39</Cell>
+		<Cell no = "12" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" ></Cell>
+	</RowItem>
+	<RowItem no = "49" cellCnt = "12" LMaxToRight = "0" LMaxToLeft = "0" LFromCell = "917" lengthMaxOver = "0" >
+		<Cell no = "1" font = "0;8;0;0;0;-1;-1"  textAtr = "3;2;1;1"   border = "1;1;1;1;-1" >37</Cell>
+		<Cell no = "2" font = "0;8;0;0;0;-1;-1"  textAtr = "3;2;1;1"   border = "1;1;1;1;-1" >30585</Cell>
+		<Cell no = "3" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;4"   border = "1;1;1;1;-1" >видеокамера</Cell>
+		<Cell no = "4" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;4"   border = "1;1;1;1;-1" >Sony DCR-DVD105E</Cell>
+		<Cell no = "5" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "1;1;1;1;-1" ></Cell>
+		<Cell no = "6" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >12'811.18</Cell>
+		<Cell no = "7" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >-</Cell>
+		<Cell no = "8" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >12'811.18</Cell>
+		<Cell no = "9" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >2</Cell>
+		<Cell no = "10" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >шт.</Cell>
+		<Cell no = "11" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >25'622.36</Cell>
+		<Cell no = "12" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" ></Cell>
+	</RowItem>
+	<RowItem no = "50" cellCnt = "12" LMaxToRight = "0" LMaxToLeft = "0" LFromCell = "917" lengthMaxOver = "0" >
+		<Cell no = "1" font = "0;8;0;0;0;-1;-1"  textAtr = "3;2;1;1"   border = "1;1;1;1;-1" >38</Cell>
+		<Cell no = "2" font = "0;8;0;0;0;-1;-1"  textAtr = "3;2;1;1"   border = "1;1;1;1;-1" >20011</Cell>
+		<Cell no = "3" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;4"   border = "1;1;1;1;-1" >видеокамера</Cell>
+		<Cell no = "4" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;4"   border = "1;1;1;1;-1" >Sony DCR-HC17E</Cell>
+		<Cell no = "5" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "1;1;1;1;-1" ></Cell>
+		<Cell no = "6" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >10'126.87</Cell>
+		<Cell no = "7" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >-</Cell>
+		<Cell no = "8" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >10'126.87</Cell>
+		<Cell no = "9" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >1</Cell>
+		<Cell no = "10" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >шт.</Cell>
+		<Cell no = "11" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >10'126.87</Cell>
+		<Cell no = "12" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" ></Cell>
+	</RowItem>
+	<RowItem no = "51" cellCnt = "12" LMaxToRight = "0" LMaxToLeft = "0" LFromCell = "917" lengthMaxOver = "0" >
+		<Cell no = "1" font = "0;8;0;0;0;-1;-1"  textAtr = "3;2;1;1"   border = "1;1;1;1;-1" >39</Cell>
+		<Cell no = "2" font = "0;8;0;0;0;-1;-1"  textAtr = "3;2;1;1"   border = "1;1;1;1;-1" >09866</Cell>
+		<Cell no = "3" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;4"   border = "1;1;1;1;-1" >видеокамера</Cell>
+		<Cell no = "4" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;4"   border = "1;1;1;1;-1" >Sony DCR-HC90E</Cell>
+		<Cell no = "5" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "1;1;1;1;-1" ></Cell>
+		<Cell no = "6" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >22'198.18</Cell>
+		<Cell no = "7" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >-</Cell>
+		<Cell no = "8" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >22'198.18</Cell>
+		<Cell no = "9" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >1</Cell>
+		<Cell no = "10" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >шт.</Cell>
+		<Cell no = "11" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >22'198.18</Cell>
+		<Cell no = "12" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" ></Cell>
+	</RowItem>
+	<RowItem no = "52" cellCnt = "12" LMaxToRight = "0" LMaxToLeft = "0" LFromCell = "917" lengthMaxOver = "0" >
+		<Cell no = "1" font = "0;8;0;0;0;-1;-1"  textAtr = "3;2;1;1"   border = "1;1;1;1;-1" >40</Cell>
+		<Cell no = "2" font = "0;8;0;0;0;-1;-1"  textAtr = "3;2;1;1"   border = "1;1;1;1;-1" >19949</Cell>
+		<Cell no = "3" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;4"   border = "1;1;1;1;-1" >цифровая фотокамера</Cell>
+		<Cell no = "4" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;4"   border = "1;1;1;1;-1" >Sony DSC-H1</Cell>
+		<Cell no = "5" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "1;1;1;1;-1" ></Cell>
+		<Cell no = "6" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >12'361.56</Cell>
+		<Cell no = "7" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >-</Cell>
+		<Cell no = "8" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >12'361.56</Cell>
+		<Cell no = "9" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >2</Cell>
+		<Cell no = "10" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >шт.</Cell>
+		<Cell no = "11" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >24'723.12</Cell>
+		<Cell no = "12" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" ></Cell>
+	</RowItem>
+	<RowItem no = "53" cellCnt = "12" LMaxToRight = "0" LMaxToLeft = "0" LFromCell = "917" lengthMaxOver = "0" >
+		<Cell no = "1" font = "0;8;0;0;0;-1;-1"  textAtr = "3;2;1;1"   border = "1;1;1;1;-1" >41</Cell>
+		<Cell no = "2" font = "0;8;0;0;0;-1;-1"  textAtr = "3;2;1;1"   border = "1;1;1;1;-1" >09810</Cell>
+		<Cell no = "3" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;4"   border = "1;1;1;1;-1" >цифровая фотокамера</Cell>
+		<Cell no = "4" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;4"   border = "1;1;1;1;-1" >Sony DSC-W15</Cell>
+		<Cell no = "5" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "1;1;1;1;-1" ></Cell>
+		<Cell no = "6" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >8'360.35</Cell>
+		<Cell no = "7" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >-</Cell>
+		<Cell no = "8" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >8'360.35</Cell>
+		<Cell no = "9" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >1</Cell>
+		<Cell no = "10" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >шт.</Cell>
+		<Cell no = "11" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >8'360.35</Cell>
+		<Cell no = "12" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" ></Cell>
+	</RowItem>
+	<RowItem no = "54" cellCnt = "12" LMaxToRight = "0" LMaxToLeft = "0" LFromCell = "917" lengthMaxOver = "0" >
+		<Cell no = "1" font = "0;8;0;0;0;-1;-1"  textAtr = "3;2;1;1"   border = "1;1;1;1;-1" >42</Cell>
+		<Cell no = "2" font = "0;8;0;0;0;-1;-1"  textAtr = "3;2;1;1"   border = "1;1;1;1;-1" >01868</Cell>
+		<Cell no = "3" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;4"   border = "1;1;1;1;-1" >микрофон</Cell>
+		<Cell no = "4" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;4"   border = "1;1;1;1;-1" >Sony F-V120//C</Cell>
+		<Cell no = "5" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "1;1;1;1;-1" ></Cell>
+		<Cell no = "6" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >236.40</Cell>
+		<Cell no = "7" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >-</Cell>
+		<Cell no = "8" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >236.40</Cell>
+		<Cell no = "9" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >2</Cell>
+		<Cell no = "10" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >шт.</Cell>
+		<Cell no = "11" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >472.80</Cell>
+		<Cell no = "12" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" ></Cell>
+	</RowItem>
+	<RowItem no = "55" cellCnt = "12" LMaxToRight = "0" LMaxToLeft = "0" LFromCell = "917" lengthMaxOver = "0" >
+		<Cell no = "1" font = "0;8;0;0;0;-1;-1"  textAtr = "3;2;1;1"   border = "1;1;1;1;-1" >43</Cell>
+		<Cell no = "2" font = "0;8;0;0;0;-1;-1"  textAtr = "3;2;1;1"   border = "1;1;1;1;-1" >09856</Cell>
+		<Cell no = "3" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;4"   border = "1;1;1;1;-1" >приемник</Cell>
+		<Cell no = "4" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;4"   border = "1;1;1;1;-1" >Sony ICF-S22</Cell>
+		<Cell no = "5" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "1;1;1;1;-1" ></Cell>
+		<Cell no = "6" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >314.23</Cell>
+		<Cell no = "7" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >-</Cell>
+		<Cell no = "8" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >314.23</Cell>
+		<Cell no = "9" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >1</Cell>
+		<Cell no = "10" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >шт.</Cell>
+		<Cell no = "11" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >314.23</Cell>
+		<Cell no = "12" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" ></Cell>
+	</RowItem>
+	<RowItem no = "56" cellCnt = "12" LMaxToRight = "0" LMaxToLeft = "0" LFromCell = "917" lengthMaxOver = "0" >
+		<Cell no = "1" font = "0;8;0;0;0;-1;-1"  textAtr = "3;2;1;1"   border = "1;1;1;1;-1" >44</Cell>
+		<Cell no = "2" font = "0;8;0;0;0;-1;-1"  textAtr = "3;2;1;1"   border = "1;1;1;1;-1" >19970</Cell>
+		<Cell no = "3" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;4"   border = "1;1;1;1;-1" >наушники</Cell>
+		<Cell no = "4" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;4"   border = "1;1;1;1;-1" >Sony MDR-E755</Cell>
+		<Cell no = "5" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "1;1;1;1;-1" ></Cell>
+		<Cell no = "6" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >144.14</Cell>
+		<Cell no = "7" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >-</Cell>
+		<Cell no = "8" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >144.14</Cell>
+		<Cell no = "9" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >1</Cell>
+		<Cell no = "10" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >шт.</Cell>
+		<Cell no = "11" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >144.14</Cell>
+		<Cell no = "12" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" ></Cell>
+	</RowItem>
+	<RowItem no = "57" cellCnt = "12" LMaxToRight = "0" LMaxToLeft = "0" LFromCell = "917" lengthMaxOver = "0" >
+		<Cell no = "1" font = "0;8;0;0;0;-1;-1"  textAtr = "3;2;1;1"   border = "1;1;1;1;-1" >45</Cell>
+		<Cell no = "2" font = "0;8;0;0;0;-1;-1"  textAtr = "3;2;1;1"   border = "1;1;1;1;-1" >09551</Cell>
+		<Cell no = "3" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;4"   border = "1;1;1;1;-1" >наушники</Cell>
+		<Cell no = "4" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;4"   border = "1;1;1;1;-1" >Sony MDR-ED21LP</Cell>
+		<Cell no = "5" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "1;1;1;1;-1" ></Cell>
+		<Cell no = "6" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >412.25</Cell>
+		<Cell no = "7" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >-</Cell>
+		<Cell no = "8" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >412.25</Cell>
+		<Cell no = "9" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >2</Cell>
+		<Cell no = "10" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >шт.</Cell>
+		<Cell no = "11" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >824.50</Cell>
+		<Cell no = "12" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" ></Cell>
+	</RowItem>
+	<RowItem no = "58" cellCnt = "12" LMaxToRight = "0" LMaxToLeft = "0" LFromCell = "917" lengthMaxOver = "0" >
+		<Cell no = "1" font = "0;8;0;0;0;-1;-1"  textAtr = "3;2;1;1"   border = "1;1;1;1;-1" >46</Cell>
+		<Cell no = "2" font = "0;8;0;0;0;-1;-1"  textAtr = "3;2;1;1"   border = "1;1;1;1;-1" >27402</Cell>
+		<Cell no = "3" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;4"   border = "1;1;1;1;-1" >наушники</Cell>
+		<Cell no = "4" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;4"   border = "1;1;1;1;-1" >Sony MDR-EX71SL/B black</Cell>
+		<Cell no = "5" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "1;1;1;1;-1" ></Cell>
+		<Cell no = "6" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >879.28</Cell>
+		<Cell no = "7" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >-</Cell>
+		<Cell no = "8" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >879.28</Cell>
+		<Cell no = "9" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >1</Cell>
+		<Cell no = "10" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >шт.</Cell>
+		<Cell no = "11" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >879.28</Cell>
+		<Cell no = "12" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" ></Cell>
+	</RowItem>
+	<RowItem no = "59" cellCnt = "12" LMaxToRight = "0" LMaxToLeft = "0" LFromCell = "917" lengthMaxOver = "0" >
+		<Cell no = "1" font = "0;8;0;0;0;-1;-1"  textAtr = "3;2;1;1"   border = "1;1;1;1;-1" >47</Cell>
+		<Cell no = "2" font = "0;8;0;0;0;-1;-1"  textAtr = "3;2;1;1"   border = "1;1;1;1;-1" >01848</Cell>
+		<Cell no = "3" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;4"   border = "1;1;1;1;-1" >наушники</Cell>
+		<Cell no = "4" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;4"   border = "1;1;1;1;-1" >Sony MDR-V150</Cell>
+		<Cell no = "5" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "1;1;1;1;-1" ></Cell>
+		<Cell no = "6" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >441.38</Cell>
+		<Cell no = "7" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >-</Cell>
+		<Cell no = "8" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >441.38</Cell>
+		<Cell no = "9" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >4</Cell>
+		<Cell no = "10" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >шт.</Cell>
+		<Cell no = "11" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >1'765.52</Cell>
+		<Cell no = "12" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" ></Cell>
+	</RowItem>
+	<RowItem no = "60" cellCnt = "12" LMaxToRight = "0" LMaxToLeft = "0" LFromCell = "917" lengthMaxOver = "0" >
+		<Cell no = "1" font = "0;8;0;0;0;-1;-1"  textAtr = "3;2;1;1"   border = "1;1;1;1;-1" >48</Cell>
+		<Cell no = "2" font = "0;8;0;0;0;-1;-1"  textAtr = "3;2;1;1"   border = "1;1;1;1;-1" >30277</Cell>
+		<Cell no = "3" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;4"   border = "1;1;1;1;-1" >MP- плеер</Cell>
+		<Cell no = "4" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;4"   border = "1;1;1;1;-1" >Sony NW-E305 512Mb black</Cell>
+		<Cell no = "5" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "1;1;1;1;-1" ></Cell>
+		<Cell no = "6" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >3'718.92</Cell>
+		<Cell no = "7" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >-</Cell>
+		<Cell no = "8" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >3'718.92</Cell>
+		<Cell no = "9" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >1</Cell>
+		<Cell no = "10" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >шт.</Cell>
+		<Cell no = "11" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >3'718.92</Cell>
+		<Cell no = "12" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" ></Cell>
+	</RowItem>
+	<RowItem no = "61" cellCnt = "12" LMaxToRight = "0" LMaxToLeft = "0" LFromCell = "917" lengthMaxOver = "0" >
+		<Cell no = "1" font = "0;8;0;0;0;-1;-1"  textAtr = "3;2;1;1"   border = "1;1;1;1;-1" >49</Cell>
+		<Cell no = "2" font = "0;8;0;0;0;-1;-1"  textAtr = "3;2;1;1"   border = "1;1;1;1;-1" >08306</Cell>
+		<Cell no = "3" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;4"   border = "1;1;1;1;-1" >наушники</Cell>
+		<Cell no = "4" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;4"   border = "1;1;1;1;-1" >Technics RP-DJ1210 black/silver</Cell>
+		<Cell no = "5" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "1;1;1;1;-1" ></Cell>
+		<Cell no = "6" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >3'069.36</Cell>
+		<Cell no = "7" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >-</Cell>
+		<Cell no = "8" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >3'069.36</Cell>
+		<Cell no = "9" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >1</Cell>
+		<Cell no = "10" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >шт.</Cell>
+		<Cell no = "11" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >3'069.36</Cell>
+		<Cell no = "12" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" ></Cell>
+	</RowItem>
+	<RowItem no = "62" cellCnt = "12" LMaxToRight = "0" LMaxToLeft = "0" LFromCell = "917" lengthMaxOver = "0" >
+		<Cell no = "1" font = "0;8;0;0;0;-1;-1"  textAtr = "3;2;1;1"   border = "1;1;1;1;-1" >50</Cell>
+		<Cell no = "2" font = "0;8;0;0;0;-1;-1"  textAtr = "3;2;1;1"   border = "1;1;1;1;-1" >00471</Cell>
+		<Cell no = "3" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;4"   border = "1;1;1;1;-1" >микрофон</Cell>
+		<Cell no = "4" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;4"   border = "1;1;1;1;-1" >Минор 08</Cell>
+		<Cell no = "5" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "1;1;1;1;-1" ></Cell>
+		<Cell no = "6" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >199.33</Cell>
+		<Cell no = "7" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >-</Cell>
+		<Cell no = "8" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >199.33</Cell>
+		<Cell no = "9" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >5</Cell>
+		<Cell no = "10" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >шт.</Cell>
+		<Cell no = "11" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >996.65</Cell>
+		<Cell no = "12" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" ></Cell>
+	</RowItem>
+	<RowItem no = "63" cellCnt = "12" LMaxToRight = "0" LMaxToLeft = "0" LFromCell = "917" lengthMaxOver = "0" >
+		<Cell no = "1" font = "0;8;0;0;0;-1;-1"  textAtr = "3;2;1;1"   border = "1;1;1;1;-1" >51</Cell>
+		<Cell no = "2" font = "0;8;0;0;0;-1;-1"  textAtr = "3;2;1;1"   border = "1;1;1;1;-1" >00473</Cell>
+		<Cell no = "3" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;4"   border = "1;1;1;1;-1" >микрофон</Cell>
+		<Cell no = "4" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;4"   border = "1;1;1;1;-1" >Минор 09</Cell>
+		<Cell no = "5" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "1;1;1;1;-1" ></Cell>
+		<Cell no = "6" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >216.22</Cell>
+		<Cell no = "7" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >-</Cell>
+		<Cell no = "8" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >216.22</Cell>
+		<Cell no = "9" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >1</Cell>
+		<Cell no = "10" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >шт.</Cell>
+		<Cell no = "11" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" >216.22</Cell>
+		<Cell no = "12" font = "0;8;0;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "1;1;1;1;-1" ></Cell>
+	</RowItem>
+	<RowItem no = "64" cellCnt = "12" LMaxToRight = "0" LMaxToLeft = "0" LFromCell = "917" lengthMaxOver = "29" >
+		<Cell no = "1" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+		<Cell no = "2" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+		<Cell no = "3" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+		<Cell no = "4" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+		<Cell no = "5" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+		<Cell no = "6" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+		<Cell no = "7" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+		<Cell no = "8" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+		<Cell no = "9" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+		<Cell no = "10" font = "0;8;1;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" >Итого:</Cell>
+		<Cell no = "11" font = "0;8;1;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+		<Cell no = "12" font = "0;8;1;0;0;-1;-1"  textAtr = "3;1;1;1"   border = "-1;-1;-1;-1;-1" >406'181.56 руб.</Cell>
+	</RowItem>
+	<RowItem no = "65" cellCnt = "12" LMaxToRight = "805" LMaxToLeft = "0" LFromCell = "917" lengthMaxOver = "8" >
+		<Cell no = "1" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+		<Cell no = "2" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+		<Cell no = "3" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+		<Cell no = "4" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+		<Cell no = "5" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+		<Cell no = "6" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+		<Cell no = "7" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+		<Cell no = "8" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+		<Cell no = "9" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+		<Cell no = "10" font = "0;8;1;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" >В том числе</Cell>
+		<Cell no = "11" font = "0;8;1;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+		<Cell no = "12" font = "0;8;1;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+	</RowItem>
+	<RowItem no = "66" cellCnt = "12" LMaxToRight = "879" LMaxToLeft = "0" LFromCell = "917" lengthMaxOver = "22" >
+		<Cell no = "1" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+		<Cell no = "2" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+		<Cell no = "3" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+		<Cell no = "4" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+		<Cell no = "5" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+		<Cell no = "6" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+		<Cell no = "7" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+		<Cell no = "8" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+		<Cell no = "9" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+		<Cell no = "10" font = "0;8;1;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" >НДС</Cell>
+		<Cell no = "11" font = "0;8;1;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" >61'959.86 руб.</Cell>
+		<Cell no = "12" font = "0;8;1;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+	</RowItem>
+	<RowItem no = "67" cellCnt = "12" LMaxToRight = "0" LMaxToLeft = "0" LFromCell = "917" lengthMaxOver = "0" >
+		<Cell no = "1" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+		<Cell no = "2" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+		<Cell no = "3" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+		<Cell no = "4" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+		<Cell no = "5" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+		<Cell no = "6" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+		<Cell no = "7" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+		<Cell no = "8" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+		<Cell no = "9" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+		<Cell no = "10" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+		<Cell no = "11" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+		<Cell no = "12" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+	</RowItem>
+	<RowItem no = "68" cellCnt = "12" LMaxToRight = "625" LMaxToLeft = "0" LFromCell = "917" lengthMaxOver = "565" >
+		<Cell no = "1" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" >ИП Репта А.Г. РОСБ5221/0370 не является плательщиком налога на добавленную стоимость согласно статьи 346.11 п.3  </Cell>
+		<Cell no = "2" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+		<Cell no = "3" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+		<Cell no = "4" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+		<Cell no = "5" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+		<Cell no = "6" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+		<Cell no = "7" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+		<Cell no = "8" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+		<Cell no = "9" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+		<Cell no = "10" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+		<Cell no = "11" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+		<Cell no = "12" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+	</RowItem>
+	<RowItem no = "69" cellCnt = "12" LMaxToRight = "628" LMaxToLeft = "0" LFromCell = "917" lengthMaxOver = "568" >
+		<Cell no = "1" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" >Налогового Кодекса РФ, так как ведет налоговый учет по упрощенной системе налогообложения. В связи с этим выдачу </Cell>
+		<Cell no = "2" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+		<Cell no = "3" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+		<Cell no = "4" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+		<Cell no = "5" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+		<Cell no = "6" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+		<Cell no = "7" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+		<Cell no = "8" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+		<Cell no = "9" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+		<Cell no = "10" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+		<Cell no = "11" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+		<Cell no = "12" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+	</RowItem>
+	<RowItem no = "70" cellCnt = "12" LMaxToRight = "527" LMaxToLeft = "0" LFromCell = "917" lengthMaxOver = "467" >
+		<Cell no = "1" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" >счетов-фактур и других документов, относящихся к общей системе налогообложения не производит.</Cell>
+		<Cell no = "2" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+		<Cell no = "3" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+		<Cell no = "4" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+		<Cell no = "5" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+		<Cell no = "6" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+		<Cell no = "7" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+		<Cell no = "8" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+		<Cell no = "9" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+		<Cell no = "10" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+		<Cell no = "11" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+		<Cell no = "12" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+	</RowItem>
+	<RowItem no = "71" cellCnt = "12" LMaxToRight = "0" LMaxToLeft = "0" LFromCell = "917" lengthMaxOver = "0" >
+		<Cell no = "1" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+		<Cell no = "2" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+		<Cell no = "3" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+		<Cell no = "4" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+		<Cell no = "5" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+		<Cell no = "6" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+		<Cell no = "7" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+		<Cell no = "8" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+		<Cell no = "9" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+		<Cell no = "10" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+		<Cell no = "11" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+		<Cell no = "12" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+	</RowItem>
+	<RowItem no = "72" cellCnt = "12" LMaxToRight = "0" LMaxToLeft = "0" LFromCell = "917" lengthMaxOver = "0" >
+		<Cell no = "1" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+		<Cell no = "2" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+		<Cell no = "3" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+		<Cell no = "4" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+		<Cell no = "5" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+		<Cell no = "6" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+		<Cell no = "7" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+		<Cell no = "8" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+		<Cell no = "9" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+		<Cell no = "10" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+		<Cell no = "11" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+		<Cell no = "12" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+	</RowItem>
+	<RowItem no = "73" cellCnt = "12" LMaxToRight = "251" LMaxToLeft = "0" LFromCell = "917" lengthMaxOver = "191" >
+		<Cell no = "1" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" >Всего наименований 51, на сумму 406'181.56 руб.</Cell>
+		<Cell no = "2" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+		<Cell no = "3" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+		<Cell no = "4" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+		<Cell no = "5" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+		<Cell no = "6" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+		<Cell no = "7" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+		<Cell no = "8" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+		<Cell no = "9" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+		<Cell no = "10" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+		<Cell no = "11" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+		<Cell no = "12" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+	</RowItem>
+	<RowItem no = "74" cellCnt = "12" LMaxToRight = "365" LMaxToLeft = "0" LFromCell = "917" lengthMaxOver = "305" >
+		<Cell no = "1" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" >Сумма: Четыреста шесть тысяч сто восемьдесят один рубль 56 копеек</Cell>
+		<Cell no = "2" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+		<Cell no = "3" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+		<Cell no = "4" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+		<Cell no = "5" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+		<Cell no = "6" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+		<Cell no = "7" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+		<Cell no = "8" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+		<Cell no = "9" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+		<Cell no = "10" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+		<Cell no = "11" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+		<Cell no = "12" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+	</RowItem>
+	<RowItem no = "75" cellCnt = "12" LMaxToRight = "0" LMaxToLeft = "0" LFromCell = "917" lengthMaxOver = "0" >
+		<Cell no = "1" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+		<Cell no = "2" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+		<Cell no = "3" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+		<Cell no = "4" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+		<Cell no = "5" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+		<Cell no = "6" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+		<Cell no = "7" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+		<Cell no = "8" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+		<Cell no = "9" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+		<Cell no = "10" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+		<Cell no = "11" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+		<Cell no = "12" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+	</RowItem>
+	<RowItem no = "76" cellCnt = "12" LMaxToRight = "660" LMaxToLeft = "0" LFromCell = "917" lengthMaxOver = "133" >
+		<Cell no = "1" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+		<Cell no = "2" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" >Отпустил_______________________  </Cell>
+		<Cell no = "3" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+		<Cell no = "4" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+		<Cell no = "5" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+		<Cell no = "6" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" >Получил____________________</Cell>
+		<Cell no = "7" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+		<Cell no = "8" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+		<Cell no = "9" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+		<Cell no = "10" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+		<Cell no = "11" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+		<Cell no = "12" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+	</RowItem>
+	<RowItem no = "77" cellCnt = "12" LMaxToRight = "0" LMaxToLeft = "0" LFromCell = "917" lengthMaxOver = "0" >
+		<Cell no = "1" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+		<Cell no = "2" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+		<Cell no = "3" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+		<Cell no = "4" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" >М.П.</Cell>
+		<Cell no = "5" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+		<Cell no = "6" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+		<Cell no = "7" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+		<Cell no = "8" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" >М.П.</Cell>
+		<Cell no = "9" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+		<Cell no = "10" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+		<Cell no = "11" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+		<Cell no = "12" font = "0;8;0;0;0;-1;-1"  textAtr = "1;1;1;1"   border = "-1;-1;-1;-1;-1" ></Cell>
+	</RowItem>
+	</Rows>
+	<Fonts count = "1">
+		<Font name = "MS Shell Dlg 2" />
+	</Fonts>
+</Doc>

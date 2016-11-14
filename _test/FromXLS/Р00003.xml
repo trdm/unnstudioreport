@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Doc type = "uoReportDocXML" version = "0.3">
+<DocSize>
+	<Sizes row = "3" col = "31" sizeV = "90" sizeH = "2460" />
+	<SizesV sizeV = "90" sizeH = "2460" />
+	<DefSizes row = "15" col = "60"/>
+</DocSize>
+<Scales type = "2" count = "109">
+	<Scale no = "1" hide = "0" size="6" fixed="0"/>
+	<Scale no = "2" hide = "0" size="6" fixed="0"/>
+	<Scale no = "3" hide = "0" size="6" fixed="0"/>
+	<Scale no = "4" hide = "0" size="6" fixed="0"/>
+	<Scale no = "5" hide = "0" size="6" fixed="0"/>
+	<Scale no = "6" hide = "0" size="6" fixed="0"/>
+	<Scale no = "7" hide = "0" size="6" fixed="0"/>
+	<Scale no = "8" hide = "0" size="6" fixed="0"/>
+	<Scale no = "9" hide = "0" size="6" fixed="0"/>
+	<Scale no = "10" hide = "0" size="6" fixed="0"/>
+	<Scale no = "11" hide = "0" size="6" fixed="0"/>
+	<Scale no = "12" hide = "0" size="6" fixed="0"/>
+	<Scale no = "13" hide = "0" size="6" fixed="0"/>
+	<Scale no = "14" hide = "0" size="6" fixed="0"/>
+	<Scale no = "15" hide = "0" size="6" fixed="0"/>
+	<Scale no = "16" hide = "0" size="6" fixed="0"/>
+	<Scale no = "17" hide = "0" size="6" fixed="0"/>
+	<Scale no = "18" hide = "0" size="6" fixed="0"/>
+	<Scale no = "19" hide = "0" size="6" fixed="0"/>
+	<Scale no = "20" hide = "0" size="6" fixed="0"/>
+	<Scale no = "21" hide = "0" size="6" fixed="0"/>
+	<Scale no = "22" hide = "0" size="6" fixed="0"/>
+	<Scale no = "23" hide = "0" size="6" fixed="0"/>
+	<Scale no = "24" hide = "0" size="6" fixed="0"/>
+	<Scale no = "25" hide = "0" size="6" fixed="0"/>
+	<Scale no = "26" hide = "0" size="6" fixed="0"/>
+	<Scale no = "27" hide = "0" size="6" fixed="0"/>
+	<Scale no = "28" hide = "0" size="6" fixed="0"/>
+	<Scale no = "29" hide = "0" size="6" fixed="0"/>
+	<Scale no = "30" hide = "0" size="6" fixed="0"/>
+	<Scale no = "31" hide = "0" size="6" fixed="0"/>
+	<Scale no = "32" hide = "0" size="6" fixed="0"/>
+	<Scale no = "33" hide = "0" size="6" fixed="0"/>
+	<Scale no = "34" hide = "0" size="6" fixed="0"/>
+	<Scale no = "35" hide = "0" size="6" fixed="0"/>
+	<Scale no = "36" hide = "0" size="6" fixed="0"/>
+	<Scale no = "37" hide = "0" size="6" fixed="0"/>
+	<Scale no = "38" hide = "0" size="6" fixed="0"/>
+	<Scale no = "39" hide = "0" size="6" fixed="0"/>
+	<Scale no = "40" hide = "0" size="6" fixed="0"/>
+	<Scale no = "41" hide = "0" size="6" fixed="0"/>
+	<Scale no = "42" hide = "0" size="6" fixed="0"/>
+	<Scale no = "43" hide = "0" size="6" fixed="0"/>
+	<Scale no = "44" hide = "0" size="6" fixed="0"/>
+	<Scale no = "45" hide = "0" size="6" fixed="0"/>
+	<Scale no = "46" hide = "0" size="6" fixed="0"/>
+	<Scale no = "47" hide = "0" size="6" fixed="0"/>
+	<Scale no = "48" hide = "0" size="6" fixed="0"/>
+	<Scale no = "49" hide = "0" size="6" fixed="0"/>
+	<Scale no = "50" hide = "0" size="6" fixed="0"/>
+	<Scale no = "51" hide = "0" size="6" fixed="0"/>
+	<Scale no = "52" hide = "0" size="6" fixed="0"/>
+	<Scale no = "53" hide = "0" size="6" fixed="0"/>
+	<Scale no = "54" hide = "0" size="6" fixed="0"/>
+	<Scale no = "55" hide = "0" size="6" fixed="0"/>
+	<Scale no = "56" hide = "0" size="6" fixed="0"/>
+	<Scale no = "57" hide = "0" size="6" fixed="0"/>
+	<Scale no = "58" hide = "0" size="6" fixed="0"/>
+	<Scale no = "59" hide = "0" size="6" fixed="0"/>
+	<Scale no = "60" hide = "0" size="6" fixed="0"/>
+	<Scale no = "61" hide = "0" size="6" fixed="0"/>
+	<Scale no = "62" hide = "0" size="6" fixed="0"/>
+	<Scale no = "63" hide = "0" size="6" fixed="0"/>
+	<Scale no = "64" hide = "0" size="6" fixed="0"/>
+	<Scale no = "65" hide = "0" size="6" fixed="0"/>
+	<Scale no = "66" hide = "0" size="6" fixed="0"/>
+	<Scale no = "67" hide = "0" size="6" fixed="0"/>
+	<Scale no = "68" hide = "0" size="6" fixed="0"/>
+	<Scale no = "69" hide = "0" size="6" fixed="0"/>
+	<Scale no = "70" hide = "0" size="6" fixed="0"/>
+	<Scale no = "71" hide = "0" size="6" fixed="0"/>
+	<Scale no = "72" hide = "0" size="6" fixed="0"/>
+	<Scale no = "73" hide = "0" size="6" fixed="0"/>
+	<Scale no = "74" hide = "0" size="6" fixed="0"/>
+	<Scale no = "75" hide = "0" size="6" fixed="0"/>
+	<Scale no = "76" hide = "0" size="6" fixed="0"/>
+	<Scale no = "77" hide = "0" size="6" fixed="0"/>
+	<Scale no = "78" hide = "0" size="6" fixed="0"/>
+	<Scale no = "79" hide = "0" size="6" fixed="0"/>
+	<Scale no = "80" hide = "0" size="6" fixed="0"/>
+	<Scale no = "81" hide = "0" size="6" fixed="0"/>
+	<Scale no = "82" hide = "0" size="6" fixed="0"/>
+	<Scale no = "83" hide = "0" size="6" fixed="0"/>
+	<Scale no = "84" hide = "0" size="6" fixed="0"/>
+	<Scale no = "85" hide = "0" size="6" fixed="0"/>
+	<Scale no = "86" hide = "0" size="6" fixed="0"/>
+	<Scale no = "87" hide = "0" size="6" fixed="0"/>
+	<Scale no = "88" hide = "0" size="6" fixed="0"/>
+	<Scale no = "89" hide = "0" size="6" fixed="0"/>
+	<Scale no = "90" hide = "0" size="6" fixed="0"/>
+	<Scale no = "91" hide = "0" size="6" fixed="0"/>
+	<Scale no = "92" hide = "0" size="6" fixed="0"/>
+	<Scale no = "93" hide = "0" size="6" fixed="0"/>
+	<Scale no = "94" hide = "0" size="6" fixed="0"/>
+	<Scale no = "95" hide = "0" size="6" fixed="0"/>
+	<Scale no = "96" hide = "0" size="6" fixed="0"/>
+	<Scale no = "97" hide = "0" size="6" fixed="0"/>
+	<Scale no = "98" hide = "0" size="6" fixed="0"/>
+	<Scale no = "99" hide = "0" size="6" fixed="0"/>
+	<Scale no = "100" hide = "0" size="6" fixed="0"/>
+	<Scale no = "101" hide = "0" size="6" fixed="0"/>
+	<Scale no = "102" hide = "0" size="6" fixed="0"/>
+	<Scale no = "103" hide = "0" size="6" fixed="0"/>
+	<Scale no = "104" hide = "0" size="6" fixed="0"/>
+	<Scale no = "105" hide = "0" size="6" fixed="0"/>
+	<Scale no = "106" hide = "0" size="6" fixed="0"/>
+	<Scale no = "107" hide = "0" size="6" fixed="0"/>
+	<Scale no = "108" hide = "0" size="6" fixed="0"/>
+	<Scale no = "109" hide = "0" size="6" fixed="0"/>
+</Scales>
+<Scales type = "1" count = "1">
+	<Scale no = "3" hide = "0" size="15" fixed="0"/>
+</Scales>
+<Rows count = "1">
+	<RowItem no = "3" cellCnt = "20" LMaxToRight = "201" LMaxToLeft = "0" LFromCell = "300" lengthMaxOver = "15" >
+		<Cell no = "31" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="-1;-1;-1;-1;-1"   join="2;1;5" >ИНН</Cell>
+		<Cell no = "32" font="0;0;0;0;0;-1;-1"  textAtr="1;1;0;1"   border="-1;-1;-1;-1;-1"   join="1;3;31" ></Cell>
+		<Cell no = "33" font="0;0;0;0;0;-1;-1"  textAtr="1;1;0;1"   border="-1;-1;-1;-1;-1"   join="1;3;31" ></Cell>
+		<Cell no = "34" font="0;0;0;0;0;-1;-1"  textAtr="1;1;0;1"   border="-1;-1;-1;-1;-1"   join="1;3;31" ></Cell>
+		<Cell no = "35" font="0;0;0;0;0;-1;-1"  textAtr="1;1;0;1"   border="-1;-1;-1;-1;-1"   join="1;3;31" ></Cell>
+		<Cell no = "36" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="1;1;1;1;-1"   join="2;1;3" ></Cell>
+		<Cell no = "37" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="-1;-1;-1;-1;-1"   join="1;3;37" ></Cell>
+		<Cell no = "38" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="-1;-1;-1;-1;-1"   join="1;3;37" ></Cell>
+		<Cell no = "39" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="1;1;1;1;-1"   join="2;1;3" ></Cell>
+		<Cell no = "40" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="-1;-1;-1;-1;-1"   join="1;3;40" ></Cell>
+		<Cell no = "41" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="-1;-1;-1;-1;-1"   join="1;3;40" ></Cell>
+		<Cell no = "42" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="1;1;1;1;-1"   join="2;1;3" ></Cell>
+		<Cell no = "43" font="0;0;0;0;0;-1;-1"  textAtr="1;1;0;1"   border="-1;-1;-1;-1;-1"   join="1;3;43" ></Cell>
+		<Cell no = "44" font="0;0;0;0;0;-1;-1"  textAtr="1;1;0;1"   border="-1;-1;-1;-1;-1"   join="1;3;43" ></Cell>
+		<Cell no = "45" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="1;1;1;1;-1"   join="2;1;3" ></Cell>
+		<Cell no = "46" font="0;0;0;0;0;-1;-1"  textAtr="1;1;0;1"   border="-1;-1;-1;-1;-1"   join="1;3;46" ></Cell>
+		<Cell no = "47" font="0;0;0;0;0;-1;-1"  textAtr="1;1;0;1"   border="-1;-1;-1;-1;-1"   join="1;3;46" ></Cell>
+		<Cell no = "48" font="0;8;0;0;0;-1;-1"  textAtr="1;1;1;1"   border="1;1;1;1;-1"   join="2;1;3" ></Cell>
+		<Cell no = "49" font="0;0;0;0;0;-1;-1"  textAtr="1;1;0;1"   border="-1;-1;-1;-1;-1"   join="1;3;49" ></Cell>
+		<Cell no = "50" font="0;0;0;0;0;-1;-1"  textAtr="1;1;0;1"   border="-1;-1;-1;-1;-1"   join="1;3;49" ></Cell>
+	</RowItem>
+	</Rows>
+	<Fonts count = "1">
+		<Font name = "MS Shell Dlg 2" />
+	</Fonts>
+</Doc>
