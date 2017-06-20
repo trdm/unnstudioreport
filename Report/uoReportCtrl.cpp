@@ -985,13 +985,16 @@ void uoReportCtrl::drawHeaderControlGroup(uoPainter& painter)
 				painter.setClipRect(m_rectGroupRow); // Устанавливаем область прорисовки. Будем рисовать только в ней.
 				for (cntr = 0; cntr<m_groupListCols->size(); cntr++) {
 					grItem = m_groupListCols->at(cntr);
-
-					if (grItem->m_rectIteract.height() > minDrawSize) {
-						painter.drawRect(grItem->m_rectIteract);
-						paintStr = "-";
-						if (grItem->m_folded)
-							paintStr = "+";
-						painter.drawText(grItem->m_rectIteract,Qt::AlignCenter,  paintStr);
+                    uorRect rcc = grItem->m_rectIteract;
+                    rcc.setWidth(rcc.width()-1);
+                    if (rcc.height() > minDrawSize) {
+                        //painter.drawRect(grItem->m_rectIteract);
+                        painter.drawRoundedRect(rcc, 2.0, 3.0);
+                        paintStr = " -";    //paintStr = "-";
+                        if (grItem->m_folded) {
+                            paintStr = " +"; // paintStr = "+";
+                        }
+                        painter.drawText(rcc,Qt::AlignCenter,  paintStr);
 					}
 					if (grItem->m_sizeTail > 0) {
 						pointStart.setX(grItem->m_rectMidlePos);
@@ -1001,7 +1004,7 @@ void uoReportCtrl::drawHeaderControlGroup(uoPainter& painter)
 						if (grItem->m_tailPosIsAbs) {
 							pos = m_rectGroupRow.top(); //grItem->m_rectEndPos;
 						}
-						pointStart.setY(pos);
+                        pointStart.setY(pos+1);
 						pointEnd.setY(pos + grItem->m_sizeTail);
 
 						painter.drawLine(pointStart, pointEnd );
