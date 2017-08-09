@@ -213,6 +213,7 @@ enum uoRptStoreFormat {
 	, uoRsf_Binary = 3
 	, uoRsf_HTML = 4
 	, uoRsf_TXL = 5
+    , uoRsf_PDF = 6
 };
 /**
 	\enum uorFixationTypes - тип фиксации областей отчета при просмотре

@@ -731,7 +731,12 @@ bool uoReportDoc::saveToFile(QString path, uoRptStoreFormat stFormat, uoReportSe
 	}
 	uoReportLoader* loader = uoReportLoader::getLoader(stFormat);
 	if (!loader) {
-		qWarning() << tr("Can not create loader");		return false;
+        if (stFormat == uoRsf_PDF) {
+            ///\todo Печать в PDF сделать.
+            printDoc();
+        } else {
+            qWarning() << tr("Can not create loader");		return false;
+        }
 	}
 
 	loader->setFileName(path);

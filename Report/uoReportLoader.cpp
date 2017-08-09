@@ -103,7 +103,8 @@ QMap<uoRptStoreFormat,QString> uoReportLoader::getAviableStoreFormat(QString& fi
 	QMap<uoRptStoreFormat,QString> map;
 	map.insert(uoRsf_XML, QObject::tr("XML Files (*.xml)"));
 	map.insert(uoRsf_TXL, QObject::tr("Text files (*.txt)"));
-	filter = "XML Files (*.xml);;Text files (*.txt)";
+    map.insert(uoRsf_PDF, QObject::tr("Pdf files (*.pdf)"));
+    filter = "XML Files (*.xml);;Text files (*.txt);;PDF files (*.pdf)";
 	return map;
 }
 
@@ -113,9 +114,11 @@ uoRptStoreFormat uoReportLoader::getFormatByName(QString fileName)
 	if (!fileName.isEmpty()){
 		if (fileName.endsWith(QString(".xml"), Qt::CaseInsensitive)){
 			format = uoRsf_XML;
-		} else if (fileName.endsWith(QString(".txt"), Qt::CaseInsensitive)){
-			format = uoRsf_TXL;
-		}
+        } else if (fileName.endsWith(QString(".txt"), Qt::CaseInsensitive)){
+            format = uoRsf_TXL;
+        } else if (fileName.endsWith(QString(".pdf"), Qt::CaseInsensitive)){
+            format = uoRsf_PDF;
+        }
 	}
 	return format;
 }
